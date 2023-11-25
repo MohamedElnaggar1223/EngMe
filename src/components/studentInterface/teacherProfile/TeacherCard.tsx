@@ -127,7 +127,7 @@ export default function TeacherCard()
                 </Stack>
                 <Button
                     sx={{
-                        width: '180px',
+                        width: {xs: '120px', sm: '120px', lg: '180px'},
                         padding: 1.5,
                         borderRadius: '10px',
                         background: 'linear-gradient(98deg, #6A9DBC 0%, #226E9F 97.94%)',
@@ -142,7 +142,7 @@ export default function TeacherCard()
                 </Button>
                 <Button
                     sx={{
-                        width: '145px',
+                        width: {xs: '105px', sm: '105px', lg: '145px'},
                         height: '56px',
                         color: '#226E9F',
                         border: '1.5px solid #226E9F',
