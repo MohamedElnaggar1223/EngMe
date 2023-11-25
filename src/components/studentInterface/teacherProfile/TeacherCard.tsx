@@ -134,15 +134,15 @@ export default function TeacherCard()
                         color: '#fff',
                         fontSize: 18,
                         fontWeight: 600,
-                        paddingRight: 12,
-                        paddingLeft: 12
+                        paddingRight: {xs: 2, sm: 2, lg: 12},
+                        paddingLeft: {xs: 2, sm: 2, lg: 12}
                     }}
                 >
                     Follow
                 </Button>
                 <Button
                     sx={{
-                        width: {xs: '90px', sm: '90px', lg: '145px'},
+                        width: {xs: '110px', sm: '110px', lg: '145px'},
                         height: '56px',
                         color: '#226E9F',
                         border: '1.5px solid #226E9F',
