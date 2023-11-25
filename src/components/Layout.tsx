@@ -1,4 +1,4 @@
-import Header from './header/Header'
+import Header from './studentInterface/header/Header'
 import { Outlet } from 'react-router-dom'
 
 export default function Layout() 

@@ -1,5 +1,5 @@
 #root, body, html {
   margin: 0;
   overflow-x: hidden;
-  height: auto;
+  height: max-content;
 }

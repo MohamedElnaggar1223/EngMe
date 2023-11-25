@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom"
-import TeacherProfile from "./components/teacherProfile/TeacherProfile"
+import TeacherProfile from "./components/studentInterface/teacherProfile/TeacherProfile"
 import Layout from "./components/Layout"
 
 function App() {
