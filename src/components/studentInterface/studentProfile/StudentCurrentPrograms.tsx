@@ -1,5 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, Avatar, Box, Stack, SvgIcon, Typography } from '@mui/material'
 import avatar from '../../../assets/Ellipse 3.png'
+import ReactApexChart from 'react-apexcharts'
+import star from '../../../assets/Star 4.png'
 
 export default function StudentCurrentPrograms() 
 {
@@ -8,7 +10,22 @@ export default function StudentCurrentPrograms()
             mx={14}
             borderRadius='20px'
             bgcolor='#FEF4EB'
+            overflow='hidden'
+            boxShadow='0px 4px 4px 0px rgba(0, 0, 0, 0.25)'
         >
+            <Box
+                px={3}
+                bgcolor='#FEF4EB'
+                py={3}
+            >
+                <Typography
+                    fontWeight={900}
+                    fontFamily='Inter'
+                    fontSize={24}
+                >
+                    Current Programs
+                </Typography>
+            </Box>
             <Accordion sx={{ background: '#FFFBF8', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 } }}>
                 <AccordionSummary
                     // expandIcon={<ExpandMoreIcon sx={{ color: '#FFFBF8' }} />}
@@ -56,7 +73,7 @@ export default function StudentCurrentPrograms()
                                 justifyContent='space-between'
                                 alignItems='center'
                             >
-                                <Typography fontSize={16} fontWeight={300} fontFamily='Inter'>Nanodegree Program</Typography>
+                                <Typography fontSize={16} fontWeight={400} fontFamily='Inter'>Nanodegree Program</Typography>
                                 <Stack
                                     direction='row'
                                     gap={1}
@@ -127,12 +144,15 @@ export default function StudentCurrentPrograms()
                         >
                             <Typography fontSize={18} fontFamily='Inter' fontWeight={600}>Taught By:</Typography>
                         
-                            <Stack>
+                            <Stack
+                                ml={2}
+                                direction='row'
+                                justifyContent='space-between'
+                            >
                                 <Stack
                                     direction='row'
                                     gap={2}
                                     mt={4}
-                                    ml={2}
                                     // mr={7}
                                 >
                                     <Avatar src={avatar} sx={{ width: '70px', height: '70px' }} />
@@ -161,6 +181,38 @@ export default function StudentCurrentPrograms()
                                                 <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>4.3</Typography>
                                             </Stack>
                                         </Stack>
+                                    </Stack>
+                                </Stack>
+                                <Stack
+                                    direction='column'
+                                >
+                                    <Box
+                                        sx={{ position: 'relative' }}
+                                    >
+                                        <ReactApexChart
+                                            options={{
+                                                chart: { type: "donut" },
+                                                colors: ['#fff', '#FF9F06'],
+                                                legend: { show: false },
+                                                dataLabels: { enabled: false },
+                                                // fill: { image: { src: star, height: 100, width: 100 } }
+                                            }}
+                                            series={[20, 83]}
+                                            type="donut"
+                                            width="120px"
+                                        />
+                                        <img src={star} width='40px' height='40px' style={{ position: 'absolute', top: 18, left: 40.5 }} />
+                                        <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 50 }} sx={{ color: '#fff' }}>83%</Typography>
+                                    </Box>
+                                    <Stack
+                                        direction='column'
+                                        alignItems='flex-start'
+                                        width='400px'
+                                    >
+                                        <Typography fontSize={10} fontWeight={500} fontFamily='Inter'>Progress Bar</Typography>
+                                        <Box>
+
+                                        </Box>
                                     </Stack>
                                 </Stack>
                             </Stack>
