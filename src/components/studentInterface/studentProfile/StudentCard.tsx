@@ -88,7 +88,7 @@ export default function StudentCard()
                     width={{ xs: '100px', sm: '120px', lg: '180px' }}
                 >
                     <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>7</Typography>
-                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Programs</Typography>
+                    <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Programs</Typography>
                 </Stack>
                 <Stack
                     direction='column'
@@ -100,7 +100,7 @@ export default function StudentCard()
                     width={{ xs: '100px', sm: '120px', lg: '180px' }}
                 >
                     <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>1</Typography>
-                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Recommendation Letter</Typography>
+                    <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Recommendation Letter</Typography>
                 </Stack>
                 <Stack
                     direction='column'
@@ -112,7 +112,7 @@ export default function StudentCard()
                     width={{ xs: '100px', sm: '120px', lg: '180px' }}
                 >
                     <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>4</Typography>
-                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Certificates</Typography>
+                    <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Certificates</Typography>
                 </Stack>
             </Stack>
         </Box>
