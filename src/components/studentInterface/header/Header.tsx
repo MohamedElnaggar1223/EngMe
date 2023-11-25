@@ -63,6 +63,7 @@ export default function Header()
                 justifyContent='space-between'
                 mb={2}
                 mt={3}
+                gap={5}
             >
                 <Stack
                     direction='row'
