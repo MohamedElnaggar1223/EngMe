@@ -25,11 +25,11 @@ export default function StudentCard()
             <Stack
                 direction='row'
                 alignItems='center'
-                gap={8}
+                gap={{xs: 3, sm: 3, lg: 8}}
             >
                 <img 
                     style={{ 
-                        borderRadius: '211px',
+                        borderRadius: '50%',
                         border: '5px solid #FFF',
                         background: 'lightgray -30.877px 0px / 185.106% 100% no-repeat',
                         objectFit: 'cover',
@@ -46,12 +46,13 @@ export default function StudentCard()
                 >
                     <Stack
                         direction='row'
-                        gap={2.5}
+                        gap={{xs: 1, sm: 1, lg: 2.5}}
                     >
                         <Typography 
                             fontWeight={600} 
                             fontSize={16} 
                             sx={{ color: '#000' }}
+                            noWrap
                         >
                             Lama Amr Mohamady
                         </Typography>
@@ -84,7 +85,7 @@ export default function StudentCard()
                     alignItems='center'
                     borderRadius='10px'
                     py={0.5}
-                    px={8}
+                    px={{xs: 4, sm: 4, lg: 8}}
                 >
                     <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>7</Typography>
                     <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Programs</Typography>
@@ -96,7 +97,7 @@ export default function StudentCard()
                     alignItems='center'
                     borderRadius='10px'
                     py={0.5}
-                    px={8}
+                    px={{xs: 4, sm: 4, lg: 8}}
                 >
                     <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>312</Typography>
                     <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Students</Typography>
@@ -108,7 +109,7 @@ export default function StudentCard()
                     alignItems='center'
                     borderRadius='10px'
                     py={0.5}
-                    px={8}
+                    px={{xs: 4, sm: 4, lg: 8}}
                 >
                     <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>91</Typography>
                     <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Followers</Typography>

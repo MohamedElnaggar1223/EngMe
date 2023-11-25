@@ -79,7 +79,7 @@ export default function StudentConsultations()
                             Flutter http+ Certificate
                         </Typography>
                     </Stack>
-                S</Box>
+                </Box>
             </Box>
         </Box>
     )

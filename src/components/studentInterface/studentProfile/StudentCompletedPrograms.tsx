@@ -40,7 +40,7 @@ export default function StudentCompletedPrograms()
                         borderTopLeftRadius: '20px',
                         borderTopRightRadius: '20px',
                     }}
-                    width='49%'
+                    width={{xs: '100%', sm: '100%', lg: '49%'}}
                 >
                     <Stack
                         direction='column'
@@ -127,7 +127,7 @@ export default function StudentCompletedPrograms()
                                 borderRadius='50%'
                                 position='absolute'
                                 top='70%'
-                                left='90%'
+                                left={{xs: '80%', sm: '80%', lg: '90%'}}
                                 bgcolor='#FF7E00'
                                 width='45px'
                                 height='45px'
@@ -157,7 +157,7 @@ export default function StudentCompletedPrograms()
                         borderTopLeftRadius: '20px',
                         borderTopRightRadius: '20px',
                     }}
-                    width='49%'
+                    width={{xs: '100%', sm: '100%', lg: '49%'}}
                 >
                     <Stack
                         direction='column'
@@ -244,7 +244,7 @@ export default function StudentCompletedPrograms()
                                 borderRadius='50%'
                                 position='absolute'
                                 top='70%'
-                                left='90%'
+                                left={{xs: '80%', sm: '80%', lg: '90%'}}
                                 bgcolor='#FF7E00'
                                 width='45px'
                                 height='45px'
