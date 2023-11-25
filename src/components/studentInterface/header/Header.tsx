@@ -79,7 +79,7 @@ export default function Header()
                     <Stack
                         direction='row'
                         gap={2}
-                        ml={8}
+                        ml={{xs: 4, sm: 4, lg: 8}}
                         alignItems='center'
                     >
                         <Typography>
