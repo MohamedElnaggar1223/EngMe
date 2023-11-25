@@ -4,6 +4,7 @@ import StudentCertificates from './StudentCredentials'
 import StudentLetters from './StudentLetters'
 import StudentCompletedPrograms from './StudentCompletedPrograms'
 import StudentConsultations from './StudentConsultations'
+import StudentCurrentPrograms from './StudentCurrentPrograms'
 
 export default function StudentProfile() 
 {
@@ -16,6 +17,7 @@ export default function StudentProfile()
             <StudentCard />
             <StudentCertificates />
             <StudentConsultations />
+            <StudentCurrentPrograms />
             <StudentCompletedPrograms />
             <StudentLetters />
         </Box>

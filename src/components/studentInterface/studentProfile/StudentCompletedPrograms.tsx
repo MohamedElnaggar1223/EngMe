@@ -30,6 +30,7 @@ export default function StudentCompletedPrograms()
                 gap={3}
                 mx={15}
                 flexWrap='wrap'
+                justifyContent={{xs: 'center !important', sm: 'center !important', lg: 'space-between'}}
             >
                 <Box
                     display='flex'
