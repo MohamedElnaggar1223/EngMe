@@ -84,8 +84,8 @@ export default function StudentCard()
                     gap={0.2}
                     alignItems='center'
                     borderRadius='10px'
-                    py={0.5}
-                    px={{xs: 2.5, sm: 2.5, lg: 6}}
+                    py={1}
+                    width={{ xs: '100px', sm: '120px', lg: '180px' }}
                 >
                     <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>7</Typography>
                     <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Programs</Typography>
@@ -96,8 +96,8 @@ export default function StudentCard()
                     gap={0.2}
                     alignItems='center'
                     borderRadius='10px'
-                    py={0.5}
-                    px={{xs: 2.5, sm: 2.5, lg: 6}}
+                    py={1}
+                    width={{ xs: '100px', sm: '120px', lg: '180px' }}
                 >
                     <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>1</Typography>
                     <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Recommendation Letter</Typography>
@@ -108,8 +108,8 @@ export default function StudentCard()
                     gap={0.2}
                     alignItems='center'
                     borderRadius='10px'
-                    py={0.5}
-                    px={{xs: 2.5, sm: 2.5, lg: 6}}
+                    py={1}
+                    width={{ xs: '100px', sm: '120px', lg: '180px' }}
                 >
                     <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>4</Typography>
                     <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Certificates</Typography>
