@@ -99,8 +99,8 @@ export default function StudentCard()
                     py={0.5}
                     px={{xs: 4, sm: 4, lg: 8}}
                 >
-                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>312</Typography>
-                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Students</Typography>
+                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>1</Typography>
+                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Recommendation Letter</Typography>
                 </Stack>
                 <Stack
                     direction='column'
@@ -111,8 +111,8 @@ export default function StudentCard()
                     py={0.5}
                     px={{xs: 4, sm: 4, lg: 8}}
                 >
-                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>91</Typography>
-                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Followers</Typography>
+                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>4</Typography>
+                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Certificates</Typography>
                 </Stack>
             </Stack>
         </Box>
