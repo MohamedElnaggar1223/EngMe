@@ -43,7 +43,7 @@ export default function TeacherPrograms()
                         gap={3}
                         flexWrap='wrap'
                         p={0.5}
-                        justifyContent='space-between'
+                        justifyContent={{xs: 'center', sm: 'center', lg: 'space-between'}}
                     >
                         <Card sx={{ width: '384px', borderRadius: '15px' }}>
                             <CardMedia
