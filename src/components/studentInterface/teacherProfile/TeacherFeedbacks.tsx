@@ -29,6 +29,7 @@ export default function TeacherFeedbacks()
                 direction='row'
                 gap={3}
                 mx={15}
+                flexWrap='wrap'
             >
                 <Box
                     display='flex'
@@ -39,6 +40,7 @@ export default function TeacherFeedbacks()
                         borderTopLeftRadius: '20px',
                         borderTopRightRadius: '20px',
                     }}
+                    width={{xs: '100%', sm: '100%', lg: '49%'}}
                 >
                     <Stack
                         direction='column'
