@@ -1,9 +1,10 @@
 import { Stack, Box, Button, Input, Select, MenuItem } from '@mui/material'
 import StudentCardEditProps from '../../../../interfaces/StudentCardEditProps'
 import { Country, City }  from 'country-state-city'
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
-export default function EditStudentCard(
+//eslint-disable-next-line
+function EditStudentCard(
 { 
 name,
 major,
@@ -14,7 +15,8 @@ setCity,
 setCountry,
 setImage,
 setMajor,
-setName }: StudentCardEditProps) 
+setName,
+setEdit }: StudentCardEditProps) 
 {
     const [countries, setCountries] = useState<string[]>([])
     const [cities, setCities] = useState<string[]>([])
@@ -162,6 +164,7 @@ setName }: StudentCardEditProps)
                             }}
                             variant='standard'
                             disableUnderline
+                            onChange={(e) => setMajor(e.target.value)}
                         >
                             <MenuItem value={major}>{major}</MenuItem>
                         </Select>
@@ -188,6 +191,7 @@ setName }: StudentCardEditProps)
                             }}
                             variant='standard'
                             disableUnderline
+                            onChange={(e) => setCity(e.target.value)}
                         >
                             { cities.map(city => <MenuItem value={city} key={city}>{city}</MenuItem>) }
                         </Select>
@@ -214,6 +218,7 @@ setName }: StudentCardEditProps)
                             }}
                             variant='standard'
                             disableUnderline
+                            onChange={(e) => setCountry(e.target.value)}
                         >
                             { countries.map(country => <MenuItem value={country} key={country}>{country}</MenuItem>) }
                         </Select>
@@ -240,6 +245,7 @@ setName }: StudentCardEditProps)
                                     opacity: 1
                                 }
                             }}
+                            onClick={() => setEdit(false)}
                         >
                             Cancel
                         </Button>
@@ -267,3 +273,6 @@ setName }: StudentCardEditProps)
         </Box>
     )
 }
+
+const memoizedEditStudentCard = memo(EditStudentCard)
+export default memoizedEditStudentCard

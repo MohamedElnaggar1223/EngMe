@@ -1,7 +1,9 @@
 import { Stack, Typography, SvgIcon } from '@mui/material'
 import StudentCardProps from '../../../../interfaces/StudentCardProps'
+import { memo } from 'react'
 
-export default function DefaultStudentCard({ name, major, city, country, image, setEdit }: StudentCardProps) 
+//eslint-disable-next-line
+function DefaultStudentCard({ name, major, city, country, image, setEdit }: StudentCardProps) 
 {
     return (
         <>
@@ -101,3 +103,6 @@ export default function DefaultStudentCard({ name, major, city, country, image, 
             </>
     )
 }
+
+const memoizedDefaultStudentCard = memo(DefaultStudentCard)
+export default memoizedDefaultStudentCard
