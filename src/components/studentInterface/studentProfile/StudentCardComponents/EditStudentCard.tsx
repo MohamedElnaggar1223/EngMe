@@ -1,0 +1,269 @@
+import { Stack, Box, Button, Input, Select, MenuItem } from '@mui/material'
+import StudentCardEditProps from '../../../../interfaces/StudentCardEditProps'
+import { Country, City }  from 'country-state-city'
+import { useEffect, useState } from 'react';
+
+export default function EditStudentCard(
+{ 
+name,
+major,
+city,
+country,
+image,
+setCity,
+setCountry,
+setImage,
+setMajor,
+setName }: StudentCardEditProps) 
+{
+    const [countries, setCountries] = useState<string[]>([])
+    const [cities, setCities] = useState<string[]>([])
+
+    const handleImageChange = (file: File) => {
+        const reader = (readFile: File) =>
+            new Promise<string>((resolve) => {
+                const fileReader = new FileReader();
+                fileReader.onload = () => resolve(fileReader.result as string);
+                fileReader.readAsDataURL(readFile);
+            });
+
+        reader(file).then((result: string) =>
+            setImage(result),
+        );
+    };
+
+    useEffect(() => {
+        setCountries(Country.getAllCountries().map(country => country.name))
+    }, [])
+
+    useEffect(() => {
+        const code = Country.getAllCountries().find(c => c.name.toString() === country)?.isoCode
+        //@ts-expect-error cities
+        setCities(City.getCitiesOfCountry(code)?.map(city => city.name))
+    }, [country])
+    
+
+    return (
+        <Box
+            width='100%'
+            height='100%'
+            display='flex'
+            alignItems='center'
+            gap={4}
+        >
+            <Box
+                position='relative'
+                width='250px'
+                minWidth='250px'
+                height='250px'
+                borderRadius='50%'
+                overflow='hidden'
+                mx={2}
+                border='4px solid rgba(0, 0, 0, 0.80)'
+                display='flex'
+                alignItems='center'
+                justifyContent='center'
+                sx={{
+                    backgroundImage: `url(${image})`,
+                }}
+            >
+                <Box
+                    position='absolute'
+                    bgcolor='#000'
+                    width='100%'
+                    height='100%'
+                    sx={{
+                        opacity: 0.5
+                    }}
+                >
+                    
+                </Box>
+                <Button
+                    component='label'
+                    sx={{
+                        zIndex: 3,
+                        position: 'relative',
+                        background: '#FEF4EB',
+                        color: '#000',
+                        border: '1px solid #000',
+                        fontSize: 14,
+                        fontWeight: 500,
+                        fontFamily: 'Inter',
+                        paddingX: 2.5,
+                        paddingY: 1,
+                        '&:hover': {
+                            background: '#FEF4EB',
+                            opacity: 1,
+                        }
+                    }}
+                >
+                    Edit Photo
+                    <input
+                        hidden
+                        accept="image/*"
+                        width='100%'
+                        height='100%'
+                        type="file"
+                        onChange={(
+                            e: React.ChangeEvent<HTMLInputElement>,
+                        ) => {
+                            handleImageChange(e.target.files![0]);
+                        }}
+                    />
+                </Button>
+            </Box>
+            <Stack
+                direction='column'
+                gap={8}
+                alignItems='center'
+            >
+                    <Stack
+                        direction='row'
+                        gap={4}
+                        alignItems='center'
+                        justifyContent='space-between'
+                        flexWrap='wrap'
+                        mr={4}
+                    >
+                        <Input 
+                            value={name} 
+                            color='primary' 
+                            disableUnderline
+                            sx={{
+                                border: '1px solid #226E9F',
+                                width: '280px',
+                                background: '#fff',
+                                borderRadius: '5px',
+                                paddingX: 1,
+                                paddingY: 0.5,
+                            }}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                        <Select
+                            defaultValue={major}
+                            sx={{
+                                width: '200px !important',
+                                height: '38px !important',
+                                boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                borderRadius: '5px !important',
+                                outline: 'none !important',
+                                boxSizing: 'border-box !important',
+                                background: '#fff',
+                                paddingX: 1,
+                                '&:hover': {
+                                    boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                    background: '#fff',
+                                }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'center',
+                                '.MuiSvgIcon-root': {
+                                    fontSize: 24,
+                                    fill: '#226E9F',
+                                    boxShadow: '-1px 0px 0px 0px rgba(34,110,159,0.39)'
+                                },
+                            }}
+                            variant='standard'
+                            disableUnderline
+                        >
+                            <MenuItem value={major}>{major}</MenuItem>
+                        </Select>
+                        <Select
+                            defaultValue={city}
+                            sx={{
+                                width: '180px !important',
+                                height: '38px !important',
+                                boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                borderRadius: '5px !important',
+                                outline: 'none !important',
+                                boxSizing: 'border-box !important',
+                                background: '#fff',
+                                paddingX: 1,
+                                '&:hover': {
+                                    boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                    background: '#fff',
+                                }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'center',
+                                '.MuiSvgIcon-root': {
+                                    fontSize: 24,
+                                    fill: '#226E9F',
+                                    boxShadow: '-1px 0px 0px 0px rgba(34,110,159,0.39)'
+                                },
+                            }}
+                            variant='standard'
+                            disableUnderline
+                        >
+                            { cities.map(city => <MenuItem value={city} key={city}>{city}</MenuItem>) }
+                        </Select>
+                        <Select
+                            defaultValue={country}
+                            sx={{
+                                width: '180px !important',
+                                height: '38px !important',
+                                boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                borderRadius: '5px !important',
+                                outline: 'none !important',
+                                boxSizing: 'border-box !important',
+                                background: '#fff',
+                                paddingX: 1,
+                                '&:hover': {
+                                    boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                    background: '#fff',
+                                }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'center',
+                                '.MuiSvgIcon-root': {
+                                    fontSize: 24,
+                                    fill: '#226E9F',
+                                    boxShadow: '-1px 0px 0px 0px rgba(34,110,159,0.39)'
+                                },
+                            }}
+                            variant='standard'
+                            disableUnderline
+                        >
+                            { countries.map(country => <MenuItem value={country} key={country}>{country}</MenuItem>) }
+                        </Select>
+                    </Stack>
+                    <Stack
+                        direction='row'
+                        gap={3.5}
+                        alignItems='center'
+                        justifyContent='space-evenly'
+                    >
+                        <Button
+                            sx={{
+                                width: '180px',
+                                height: '45px',
+                                background: '#fff',
+                                color: '#000',
+                                fontFamily: 'Inter',
+                                fontSizze: 14,
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                border: '2px solid #226E9F',
+                                '&:hover': {
+                                    background: '#fff',
+                                    opacity: 1
+                                }
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            sx={{
+                                width: '180px',
+                                height: '45px',
+                                background: '#D0EBFC',
+                                color: '#000',
+                                fontFamily: 'Inter',
+                                fontSizze: 14,
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                border: '2px solid #226E9F',
+                                '&:hover': {
+                                    background: '#D0EBFC',
+                                    opacity: 1
+                                }
+                            }}
+                        >
+                            Confirm
+                        </Button>
+                    </Stack>
+            </Stack>
+        </Box>
+    )
+}
