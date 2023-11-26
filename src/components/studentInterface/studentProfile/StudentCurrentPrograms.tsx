@@ -21,6 +21,7 @@ export default function StudentCurrentPrograms()
         >
             <Box
                 px={3}
+                //w
                 bgcolor='#FEF4EB'
                 py={3}
             >
