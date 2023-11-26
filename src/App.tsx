@@ -4,6 +4,8 @@ import Layout from "./components/Layout"
 import StudentProfile from "./components/studentInterface/studentProfile/StudentProfile"
 import HomeLayout from "./components/studentInterface/HomeLayout"
 import Programs from "./components/studentInterface/programs/Programs"
+import Login from "./components/studentInterface/authentication/login/Login"
+import Signup from "./components/studentInterface/authentication/signup/Signup"
 
 function App() {
 
@@ -19,6 +21,12 @@ function App() {
 				</Route>
 				<Route path='programs'>
 					<Route index element={<Programs />} />
+				</Route>
+				<Route path='login'>
+					<Route index element={<Login />} />
+				</Route>
+				<Route path='signup'>
+					<Route index element={<Signup />} />
 				</Route>
 			</Route>
 		</Routes>

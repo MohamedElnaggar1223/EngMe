@@ -1,9 +1,9 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
-import ProgramsCompleted from './ProgramsCompleted'
-import ProgramsCurrent from './ProgramsCurrent'
-import ProgramsExplore from './ProgramsExplore'
-import ProgramsFavorites from './ProgramsFavorites'
+import ProgramsCompleted from './Completed/ProgramsCompleted'
+import ProgramsCurrent from './Current/ProgramsCurrent'
+import ProgramsExplore from './Explore/ProgramsExplore'
+import ProgramsFavorites from './Favorites/ProgramsFavorites'
 
 export default function Programs() 
 {
