@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useLayoutEffect, useState } from 'react'
 import Header from './studentInterface/header/Header'
 import { Outlet, useNavigate } from 'react-router-dom'
 import useAuth from './studentInterface/authentication/auth/Auth'
@@ -13,7 +13,7 @@ export default function Layout()
 
   const navigate = useNavigate()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     user ?
     page === 'profile' ? navigate('/profile') : navigate('/programs') :
     navigate('/signup')
