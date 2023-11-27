@@ -16,7 +16,7 @@ export default function Layout()
   useEffect(() => {
     user ?
     page === 'profile' ? navigate('/profile') : navigate('/programs') :
-    navigate('/login')
+    navigate('/signup')
   }, [page, navigate, user])
 
   return (
