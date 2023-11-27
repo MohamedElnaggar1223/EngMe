@@ -244,6 +244,7 @@ export default function StudentSignUp()
                         },
                         paddingY: 1.5
                     }}
+                    type="submit"
                 >
                     Sign Up
                 </Button>
