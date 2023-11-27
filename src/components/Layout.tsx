@@ -13,15 +13,15 @@ export default function Layout()
 
   const navigate = useNavigate()
 
-  useEffect(() => {
-    user ?
-    page === 'profile' ? navigate('/profile') : navigate('/programs') :
-    navigate('/login')
-  }, [page, navigate, user])
+  // useEffect(() => {
+  //   user ?
+  //   page === 'profile' ? navigate('/profile') : navigate('/programs') :
+  //   navigate('/login')
+  // }, [page, navigate, user])
 
   return (
     <PageContext.Provider value={{page, setPage}} >
-        <Header />
+        { user ? <Header /> : <></> }
         <Outlet />
     </PageContext.Provider>
   )
