@@ -5,7 +5,7 @@ import ProgramExploreCardProps from "../../../../interfaces/ProgramExploreCardPr
 export default function ProgramExploreCard({ setPageShowed }: ProgramExploreCardProps) 
 {
     return (
-        <Card onClick={() => setPageShowed('test')} sx={{ width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 } }}>
+        <Card onClick={() => setPageShowed('test')} sx={{ cursor: 'pointer', width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 } }}>
             <CardMedia
                 sx={{ height: 180 }}
                 image={cardimage}
