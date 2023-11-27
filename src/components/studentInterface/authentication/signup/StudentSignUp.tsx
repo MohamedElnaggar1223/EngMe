@@ -8,7 +8,7 @@ import MenuItem from "@mui/material/MenuItem";
 
 export default function StudentSignUp() 
 {
-    const[number, setNumber] = useState('')
+    const[number, setNumber] = useState('+20')
     const[firstname, setFirstname] = useState('')
     const[lastname, setLastname] = useState('')
     const[email, setEmail] = useState('')
@@ -33,6 +33,15 @@ export default function StudentSignUp()
             setLastname('')
             setNumber('')
         }
+    }
+
+    function handleNumber(e: string)
+    {
+        if(e === '+20 0' && number === '+20')
+        { 
+            return
+        }
+        else setNumber(e)
     }
 
     useEffect(() => {
@@ -132,7 +141,7 @@ export default function StudentSignUp()
                 <FormControl>
                     <MuiTelInput 
                         value={number} 
-                        onChange={(e) => setNumber(e)} 
+                        onChange={handleNumber} 
                         placeholder='Phone Number'
                         inputProps={{
                             style: {

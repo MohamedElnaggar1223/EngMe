@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material'
-import { lazy } from 'react'
+import { Suspense, lazy } from 'react'
 const Avatar = lazy(() => import('./AvatarLazyLoad'))
  
 export default function StudentLetters() 
@@ -40,7 +40,9 @@ export default function StudentLetters()
                     width='fit-content'
                     gap={1.5}
                 >
-                    <Avatar />
+                    <Suspense fallback={<></>}>
+                        <Avatar />
+                    </Suspense>
                     <Typography
                         fontSize={18}
                         fontFamily='Inter'
