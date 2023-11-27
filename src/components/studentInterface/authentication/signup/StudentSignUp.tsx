@@ -68,7 +68,7 @@ export default function StudentSignUp()
                         <TextField 
                             fullWidth
                             required
-                            id="outlined-basic"
+                            
                             color="info"
                             variant="outlined"
                             placeholder="First Name"
@@ -88,7 +88,7 @@ export default function StudentSignUp()
                         <TextField 
                             fullWidth
                             required
-                            id="outlined-basic"
+                            
                             color="info"
                             variant="outlined"
                             placeholder="Last Name"
@@ -109,7 +109,7 @@ export default function StudentSignUp()
                     <TextField 
                         fullWidth
                         required
-                        id="outlined-basic"
+                        
                         color="info"
                         variant="outlined"
                         placeholder="Email"
@@ -187,7 +187,7 @@ export default function StudentSignUp()
                     <TextField 
                         fullWidth
                         required
-                        id="outlined-basic"
+                        
                         color="info"
                         variant="outlined"
                         placeholder="Password"
@@ -209,7 +209,7 @@ export default function StudentSignUp()
                     <TextField 
                         fullWidth
                         required
-                        id="outlined-basic"
+                        
                         color="info"
                         variant="outlined"
                         placeholder="Confirm Password"
