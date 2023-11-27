@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-import profile from '../../assets/teacherprofile.png'
+import profile from '../../assets/teacherprofile-min.png'
 
 export default function TeacherCard() 
 {

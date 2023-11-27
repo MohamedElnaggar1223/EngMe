@@ -1,5 +1,5 @@
 import { Avatar, Box, Stack, Typography } from '@mui/material'
-import avatar from '../../../assets/teacherprofile.png'
+import avatar from '../../../assets/teacherprofile-min.png'
 
 export default function StudentLetters() 
 {
