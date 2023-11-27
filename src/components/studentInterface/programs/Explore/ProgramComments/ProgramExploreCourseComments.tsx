@@ -2,7 +2,11 @@ import { Stack } from "@mui/material";
 import Comment from './Comment'
 import AddComment from "./AddComment";
 
-export default function ProgramExploreCourseComments() 
+interface CourseCommentsProps{
+    NoAdd?: boolean
+}
+
+export default function ProgramExploreCourseComments({ NoAdd }: CourseCommentsProps) 
 {
     return (
         <Stack
@@ -16,7 +20,7 @@ export default function ProgramExploreCourseComments()
             <Comment />
             <Comment />
             <Comment />
-            <AddComment />
+            {!NoAdd && <AddComment />}
         </Stack>
     )
 }

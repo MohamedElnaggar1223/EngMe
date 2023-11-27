@@ -1,6 +1,7 @@
+import ProgramExploreCourseComments from "../Explore/ProgramComments/ProgramExploreCourseComments";
 
 export default function Discussions() {
   return (
-    <div>Discussions</div>
+    <ProgramExploreCourseComments NoAdd={true} />
   )
 }
