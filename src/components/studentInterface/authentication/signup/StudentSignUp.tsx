@@ -26,6 +26,12 @@ export default function StudentSignUp()
             createUserWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => console.log(userCredentials))
             .catch(e => console.error(e))
+            setEmail('')
+            setPassword('')
+            setConfirmPassword('')
+            setFirstname('')
+            setLastname('')
+            setNumber('')
         }
     }
 
