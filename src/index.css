@@ -4,3 +4,8 @@
   height: max-content;
   width: 100%
 }
+
+.css-1g92jzo-MuiPaper-root-MuiAccordion-root:first-of-type
+{
+  border-radius: 20px !important;
+}
