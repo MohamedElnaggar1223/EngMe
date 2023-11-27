@@ -52,15 +52,21 @@ export default function Signup()
                 alignSelf='flex-end'
                 boxShadow='0px 0px 0px 100px rgba(255,255,255,1)'
             >
+                <Box
+                    overflow='auto'
+                    height='100vh'
+                    sx={{
+                        transform: 'rotate(-5deg)'
+                    }}
+                >
                 <Stack
                     direction='column'
                     pl={{xs: 1, sm: 1, lg: 3}}
                     pr={{xs: 1, sm: 1, lg: 26}}
                     mt={8}
                     mr={{ xs: 8, sm: 8, lg: 0 }}
-                    sx={{
-                        transform: 'rotate(-5deg)'
-                    }}
+                    
+                    
                 >
                     <Stack
                         direction='column'
@@ -105,6 +111,7 @@ export default function Signup()
                         <TeacherSignUp />
                     }
                 </Stack>
+                </Box>
             </Box>
         </Box>
     )

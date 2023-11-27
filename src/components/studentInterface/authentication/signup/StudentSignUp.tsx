@@ -47,6 +47,7 @@ export default function StudentSignUp()
         <Box
             display='flex'
             flexDirection='column'
+            flex={1}
         >
             <Stack flex={1} mb={4} textAlign='center'>
                 <Typography fontSize={20} fontFamily='Inter' fontWeight={700}>Sign Up</Typography>
@@ -57,6 +58,7 @@ export default function StudentSignUp()
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '30px',
+                    flex: 1
                 }}
                 onSubmit={signUp}
             >
