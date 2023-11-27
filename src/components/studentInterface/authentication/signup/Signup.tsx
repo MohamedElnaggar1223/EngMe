@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Box, Stack, Typography } from "@mui/material"
 import StudentSignUp from "./StudentSignUp"
 import TeacherSignUp from "./TeacherSignUp"
+import icon from '../../../../assets/Ellipse 1.png'
 
 export default function Signup() 
 {
@@ -18,7 +19,15 @@ export default function Signup()
             maxHeight='100vh'
             justifyContent='flex-end'
             bgcolor='#FEF4EB'
+            position='relative'
         >
+            <Box
+                position='absolute'
+                top='1%'
+                left='1%'
+            >
+                <img src={icon} width='109px' height='100px' />
+            </Box>
             {/* <Box
                 bgcolor='#FEF4EB'
                 sx={{
