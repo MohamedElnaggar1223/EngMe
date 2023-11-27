@@ -1,6 +1,7 @@
 import { Stack, Typography, SvgIcon } from '@mui/material'
 import StudentCardProps from '../../../../interfaces/StudentCardProps'
 import { memo } from 'react'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 
 //eslint-disable-next-line
 function DefaultStudentCard({ name, major, city, country, image, setEdit }: StudentCardProps) 
@@ -12,7 +13,7 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                     alignItems='center'
                     gap={{xs: 3, sm: 3, lg: 8}}
                 >
-                    <img 
+                    <LazyLoadImage 
                         style={{ 
                             borderRadius: '50%',
                             border: '5px solid #FFF',

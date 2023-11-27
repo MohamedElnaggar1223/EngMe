@@ -1,6 +1,7 @@
-import { Avatar, Box, Stack, Typography } from '@mui/material'
-import avatar from '../../../assets/teacherprofile-min.png'
-
+import { Box, Stack, Typography } from '@mui/material'
+import { lazy } from 'react'
+const Avatar = lazy(() => import('./AvatarLazyLoad'))
+ 
 export default function StudentLetters() 
 {
     return (
@@ -39,7 +40,7 @@ export default function StudentLetters()
                     width='fit-content'
                     gap={1.5}
                 >
-                    <Avatar src={avatar} sx={{ width: '82px', height: '82px' }} />
+                    <Avatar />
                     <Typography
                         fontSize={18}
                         fontFamily='Inter'
