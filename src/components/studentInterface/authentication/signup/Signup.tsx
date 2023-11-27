@@ -1,19 +1,11 @@
 import { useState } from "react"
-import { auth } from '../../../../firebase/firebaseConfig'
-import { createUserWithEmailAndPassword } from "firebase/auth"
 import { Box, Stack, Typography } from "@mui/material"
+import StudentSignUp from "./StudentSignUp"
+import TeacherSignUp from "./TeacherSignUp"
 
 export default function Signup() 
 {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-
-    const signUp = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredentials) => console.log(userCredentials))
-        .catch(e => console.error(e))
-    }
+    const [selectedPage, setSelectedPage] = useState('Student')
 
     return (
         <Box
@@ -53,9 +45,10 @@ export default function Signup()
             >
                 <Stack
                     direction='column'
-                    pl={3}
-                    pr={26}
-                    mt={20}
+                    pl={{xs: 1, sm: 1, lg: 3}}
+                    pr={{xs: 1, sm: 1, lg: 26}}
+                    mt={8}
+                    mr={{ xs: 8, sm: 8, lg: 0 }}
                     sx={{
                         transform: 'rotate(-5deg)'
                     }}
@@ -64,22 +57,26 @@ export default function Signup()
                         direction='column'
                         flex={1}
                         position='relative'
+                        mb={4}
                     >
                         <Stack
                             direction='row'
                             justifyContent='space-between'
                             alignItems='center'
+                            gap={5}
                         >
-                            <Typography sx={{ paddingLeft: 12 }} fontFamily='Inter' fontSize={18} fontWeight={600}>Student</Typography>
-                            <Typography sx={{ paddingRight: 12 }} fontFamily='Inter' fontSize={18} fontWeight={600}>Teacher</Typography>
+                            <Typography onClick={() => setSelectedPage('Student')} sx={{ paddingLeft: {xs: 3, sm: 3, lg: 8, xl: 16}, cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Student</Typography>
+                            <Typography onClick={() => setSelectedPage('Teacher')} sx={{ paddingRight: {xs: 3, sm: 3, lg: 8, xl: 16}, cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Teacher</Typography>
                         </Stack>
                         <Box
-                            width='60%'
+                            width='55%'
                             position='absolute'
                             bgcolor='#6A9DBC'
                             height='8px'
                             sx={{
-                                top: '63%'
+                                top: '63%',
+                                left: selectedPage === 'Student' ? '0%' : '45%',
+                                transition: '0.3s'
                             }}
                         >
 
@@ -93,6 +90,11 @@ export default function Signup()
 
                         </Box>
                     </Stack>
+                    {
+                        selectedPage === 'Student' ?
+                        <StudentSignUp /> :
+                        <TeacherSignUp />
+                    }
                 </Stack>
             </Box>
         </Box>
