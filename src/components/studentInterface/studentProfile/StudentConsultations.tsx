@@ -1,5 +1,6 @@
 import { Avatar, Box, Button, MenuItem, Select, Stack, Typography } from '@mui/material'
 import avatar from '../../../assets/profile1.png'
+import ExpandMore from "@mui/icons-material/ExpandMore"
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -37,7 +38,7 @@ export default function StudentConsultations()
                     // labelId="demo-select-small-label"
                     // id="demo-select-small"
                     sx={{
-                        width: '128px !important',
+                        width: '160px !important',
                         height: '38px !important',
                         boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
                         borderRadius: '7.5px !important',
@@ -49,13 +50,10 @@ export default function StudentConsultations()
                             boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
                             background: '#fff',
                         }, fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F',
-                        '.MuiSvgIcon-root': {
-                            fontSize: 24,
-                            fill: '#226E9F',
-                            boxShadow: '-1px 0px 0px 0px rgba(34,110,159,0.39)'
-                        },
+                        
                     }}
                     defaultValue={days[new Date().getDay()]}
+                    IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%' }} />}
                     variant='standard'
                     disableUnderline
                     color='primary'

@@ -5,9 +5,11 @@ import ProgramCurrentCard from "./ProgramCurrentCard";
 export default function ProgramsCurrent() {
 	return (
 		<Box
-			p={4}
+			px={4}
+			py={4}
 			display='flex'
-			alignItems='center'
+			flex={1}
+			alignItems='stretch'
 			flexDirection='column'
 			gap={6}
 		>

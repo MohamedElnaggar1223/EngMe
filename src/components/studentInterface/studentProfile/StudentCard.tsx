@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
 import profile from '../../../assets/studentprofile.jfif'
-import { useState } from "react";
+import { lazy, useState } from "react";
 import DefaultStudentCard from "./StudentCardComponents/DefaultStudentCard";
-import EditStudentCard from "./StudentCardComponents/EditStudentCard";
+const EditStudentCard = lazy(() => import("./StudentCardComponents/EditStudentCard"))
 
 export default function StudentCard() 
 {

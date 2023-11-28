@@ -2,6 +2,8 @@ import { Stack, Box, Button, Input, Select, MenuItem } from '@mui/material'
 import StudentCardEditProps from '../../../../interfaces/StudentCardEditProps'
 import { Country, City }  from 'country-state-city'
 import { memo, useEffect, useState } from 'react';
+import ExpandMore from "@mui/icons-material/ExpandMore"
+import { useQuery } from '@tanstack/react-query';
 
 //eslint-disable-next-line
 function EditStudentCard(
@@ -21,6 +23,25 @@ setEdit }: StudentCardEditProps)
     const [countries, setCountries] = useState<string[]>([])
     const [cities, setCities] = useState<string[]>([])
 
+    const { data: countriesData, isSuccess } = useQuery({
+        queryFn: () => Country.getAllCountries(),
+        queryKey: ['countries'],
+    })
+
+    function getCitiesOfCountry(country: string)
+    {
+        if(isSuccess)
+        {
+            const code = countriesData.find(c => c.name.toString() === country)?.isoCode ?? ''
+            return City.getCitiesOfCountry(code)?.map(city => city.name)
+        }
+    }
+
+    const { data: citiesData, isSuccess: CitySuccess } = useQuery({
+        queryFn: () => getCitiesOfCountry(country),
+        queryKey: ['cities']
+    })
+
     const handleImageChange = (file: File) => {
         const reader = (readFile: File) =>
             new Promise<string>((resolve) => {
@@ -33,16 +54,18 @@ setEdit }: StudentCardEditProps)
             setImage(result),
         );
     };
+    
 
     useEffect(() => {
-        setCountries(Country.getAllCountries().map(country => country.name))
-    }, [])
+        if(isSuccess) setCountries(countriesData.map(country => country.name))
+    }, [isSuccess, countriesData])
 
     useEffect(() => {
-        const code = Country.getAllCountries().find(c => c.name.toString() === country)?.isoCode
-        //@ts-expect-error cities
-        setCities(City.getCitiesOfCountry(code)?.map(city => city.name))
-    }, [country])
+        if(isSuccess && CitySuccess)
+        {
+            setCities(citiesData ?? [''])
+        }
+    }, [country, isSuccess, countriesData, citiesData, CitySuccess])
     
 
     return (
@@ -156,12 +179,9 @@ setEdit }: StudentCardEditProps)
                                     boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
                                     background: '#fff',
                                 }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'center',
-                                '.MuiSvgIcon-root': {
-                                    fontSize: 24,
-                                    fill: '#226E9F',
-                                    boxShadow: '-1px 0px 0px 0px rgba(34,110,159,0.39)'
-                                },
+                                
                             }}
+                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', position: 'absolute', left: '80%' }} />}
                             variant='standard'
                             disableUnderline
                             onChange={(e) => setMajor(e.target.value)}
@@ -183,13 +203,9 @@ setEdit }: StudentCardEditProps)
                                     boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
                                     background: '#fff',
                                 }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'center',
-                                '.MuiSvgIcon-root': {
-                                    fontSize: 24,
-                                    fill: '#226E9F',
-                                    boxShadow: '-1px 0px 0px 0px rgba(34,110,159,0.39)'
-                                },
+                                
                             }}
-                            variant='standard'
+                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', position: 'absolute', left: '80%' }} />}                            variant='standard'
                             disableUnderline
                             onChange={(e) => setCity(e.target.value)}
                         >
@@ -210,13 +226,9 @@ setEdit }: StudentCardEditProps)
                                     boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
                                     background: '#fff',
                                 }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'center',
-                                '.MuiSvgIcon-root': {
-                                    fontSize: 24,
-                                    fill: '#226E9F',
-                                    boxShadow: '-1px 0px 0px 0px rgba(34,110,159,0.39)'
-                                },
+                                
                             }}
-                            variant='standard'
+                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', position: 'absolute', left: '80%' }} />}                            variant='standard'
                             disableUnderline
                             onChange={(e) => setCountry(e.target.value)}
                         >
@@ -236,7 +248,7 @@ setEdit }: StudentCardEditProps)
                                 background: '#fff',
                                 color: '#000',
                                 fontFamily: 'Inter',
-                                fontSizze: 14,
+                                fontSize: 14,
                                 textTransform: 'none',
                                 fontWeight: 600,
                                 border: '2px solid #226E9F',
@@ -256,7 +268,7 @@ setEdit }: StudentCardEditProps)
                                 background: '#D0EBFC',
                                 color: '#000',
                                 fontFamily: 'Inter',
-                                fontSizze: 14,
+                                fontSize: 14,
                                 textTransform: 'none',
                                 fontWeight: 600,
                                 border: '2px solid #226E9F',

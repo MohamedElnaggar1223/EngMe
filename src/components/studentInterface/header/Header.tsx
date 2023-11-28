@@ -1,9 +1,10 @@
 import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
 import logo from '../../../assets/Ellipse 1.png'
-import { useContext } from "react";
+import { memo, useContext } from "react";
 import { PageContext } from "../../Layout";
 
-export default function Header() 
+// eslint-disable-next-line react-refresh/only-export-components
+function Header() 
 {
     //@ts-expect-error context
     const { page, setPage } = useContext(PageContext)
@@ -166,3 +167,6 @@ export default function Header()
         </Box>
     )
 }
+
+const memoizedHeader = memo(Header)
+export default memoizedHeader

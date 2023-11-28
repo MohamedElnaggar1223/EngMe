@@ -13,3 +13,7 @@
 .css-1k6qxng-MuiPaper-root-MuiAccordion-root.Mui-expanded{
   margin: 0 !important;
 }
+
+.css-1rxz5jq-MuiSelect-select-MuiInputBase-input-MuiInput-input{
+  z-index: 7;
+}

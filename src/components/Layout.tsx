@@ -15,7 +15,7 @@ export default function Layout()
 
   useLayoutEffect(() => {
     user ?
-    page === 'profile' ? navigate('/profile') : navigate('/programs') :
+    page === 'profile' ? navigate('/profile') : page === 'exam' ? navigate('/exam') : navigate('/programs') :
     navigate('/signup')
   }, [page, navigate, user])
 

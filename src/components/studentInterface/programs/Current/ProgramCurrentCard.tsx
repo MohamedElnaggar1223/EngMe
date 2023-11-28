@@ -19,7 +19,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
     const [programPage, setProgramPage] = useState('Components')
 
     return (
-        <Accordion sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
+        <Accordion sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
                 style: { 
                     borderRadius: '20px',
@@ -32,20 +32,25 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                     margin: '0 !important',
                     boxShadow: 'none',
                     height: 'auto',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    flex: 1,
+                    width: '100% !important',
                     // background: '#E8E8E8',
                 }}
             >
-                <Box>
+                <Box
+                    maxWidth='100%'
+                >
                     <Box
                         p={3}
                         display='flex'
-                        flexDirection='row'
+                        flexDirection={{xs: 'column', sm: 'column', lg: 'row'}}
                         justifyContent='space-between'
                         alignItems='center'
                         bgcolor='#FFFBF8'
                         m={0}
                         width='auto'
+                        flexWrap='wrap'
                     >
                         <Stack
                             direction='column'
@@ -336,9 +341,9 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                             width: '300px',
                                             height: '50px',
                                             background: '#fff',
-                                            color: '#226E9F',
+                                            color: '#000',
                                             fontFamily: 'Inter',
-                                            fontSizze: 14,
+                                            fontSize: 14,
                                             textTransform: 'none',
                                             fontWeight: 400,
                                             border: '1px solid #226E9F',
@@ -375,10 +380,10 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                             sx={{
                                 width: '200px',
                                 height: '40px',
-                                background: '#fff',
-                                color: '#226E9F',
+                                background: programPage === 'Components' ? '#D0EBFC' : '#fff',
+                                color: '#000',
                                 fontFamily: 'Inter',
-                                fontSizze: 14,
+                                fontSize: 14,
                                 textTransform: 'none',
                                 fontWeight: 400,
                                 border: '1px solid #226E9F',
@@ -396,10 +401,10 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                             sx={{
                                 width: '200px',
                                 height: '40px',
-                                background: '#fff',
-                                color: '#226E9F',
+                                background: programPage === 'Exams' ? '#D0EBFC' : '#fff',
+                                color: '#000',
                                 fontFamily: 'Inter',
-                                fontSizze: 14,
+                                fontSize: 14,
                                 textTransform: 'none',
                                 fontWeight: 400,
                                 border: '1px solid #226E9F',
@@ -417,10 +422,10 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                             sx={{
                                 width: '200px',
                                 height: '40px',
-                                background: '#fff',
-                                color: '#226E9F',
+                                background: programPage === 'Grades' ? '#D0EBFC' : '#fff',
+                                color: '#000',
                                 fontFamily: 'Inter',
-                                fontSizze: 14,
+                                fontSize: 14,
                                 textTransform: 'none',
                                 fontWeight: 400,
                                 border: '1px solid #226E9F',
@@ -438,10 +443,10 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                             sx={{
                                 width: '200px',
                                 height: '40px',
-                                background: '#fff',
-                                color: '#226E9F',
+                                background: programPage === 'Discussions' ? '#D0EBFC' : '#fff',
+                                color: '#000',
                                 fontFamily: 'Inter',
-                                fontSizze: 14,
+                                fontSize: 14,
                                 textTransform: 'none',
                                 fontWeight: 400,
                                 border: '1px solid #226E9F',

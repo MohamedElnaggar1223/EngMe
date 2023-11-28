@@ -6,30 +6,39 @@ import HomeLayout from "./components/studentInterface/HomeLayout"
 import Programs from "./components/studentInterface/programs/Programs"
 import Login from "./components/studentInterface/authentication/login/Login"
 import Signup from "./components/studentInterface/authentication/signup/Signup"
+import Exam from "./components/studentInterface/programs/Current/Exam"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+
+const queryClient = new QueryClient()
 
 function App() {
 
 	return (
-		<Routes>
-			<Route path='/' element={<Layout />}>
-				<Route index element={<HomeLayout />} />
-				<Route path='teacherprofile'>
-					<Route index element={<TeacherProfile />} />
+		<QueryClientProvider client={queryClient}>
+			<Routes>
+				<Route path='/' element={<Layout />}>
+					<Route index element={<HomeLayout />} />
+					<Route path='teacherprofile'>
+						<Route index element={<TeacherProfile />} />
+					</Route>
+					<Route path='profile'>
+						<Route index element={<StudentProfile />} />
+					</Route>
+					<Route path='programs'>
+						<Route index element={<Programs />} />
+					</Route>
+					<Route path='login'>
+						<Route index element={<Login />} />
+					</Route>
+					<Route path='signup'>
+						<Route index element={<Signup />} />
+					</Route>
+					<Route path='exam'>
+						<Route index element={<Exam />} />
+					</Route>
 				</Route>
-				<Route path='profile'>
-					<Route index element={<StudentProfile />} />
-				</Route>
-				<Route path='programs'>
-					<Route index element={<Programs />} />
-				</Route>
-				<Route path='login'>
-					<Route index element={<Login />} />
-				</Route>
-				<Route path='signup'>
-					<Route index element={<Signup />} />
-				</Route>
-			</Route>
-		</Routes>
+			</Routes>
+		</QueryClientProvider>
 	)
 }
 

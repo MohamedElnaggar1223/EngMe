@@ -1,10 +1,11 @@
+import { Suspense, lazy } from 'react'
 import { Box } from '@mui/material'
-import StudentCard from './StudentCard'
-import StudentCertificates from './StudentCredentials'
-import StudentLetters from './StudentLetters'
-import StudentCompletedPrograms from './StudentCompletedPrograms'
-import StudentConsultations from './StudentConsultations'
-import StudentCurrentPrograms from './StudentCurrentPrograms'
+const StudentCard = lazy(() => import('./StudentCard'))
+const StudentCertificates = lazy(() => import('./StudentCredentials'))
+const StudentLetters = lazy(() => import('./StudentLetters'))
+const StudentCompletedPrograms = lazy(() => import('./StudentCompletedPrograms'))
+const StudentConsultations = lazy(() => import('./StudentConsultations'))
+const StudentCurrentPrograms = lazy(() => import('./StudentCurrentPrograms'))
 
 export default function StudentProfile() 
 {
@@ -14,12 +15,24 @@ export default function StudentProfile()
             display='flex'
             flexDirection='column'
         >
-            <StudentCard />
-            <StudentCertificates />
-            <StudentConsultations />
-            <StudentCurrentPrograms />
-            <StudentCompletedPrograms />
-            <StudentLetters />
+            <Suspense>
+                <StudentCard />
+            </Suspense>
+            <Suspense>
+                <StudentCertificates />
+            </Suspense>
+            <Suspense>
+                <StudentConsultations />
+            </Suspense>
+            <Suspense>
+                <StudentCurrentPrograms />
+            </Suspense>
+            <Suspense>
+                <StudentCompletedPrograms />
+            </Suspense>
+            <Suspense>
+                <StudentLetters />
+            </Suspense>
         </Box>
     )
 }
