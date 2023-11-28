@@ -1,25 +1,32 @@
-import { Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
-import { Box, Stack } from '@mui/system'
-import ReactApexChart from "react-apexcharts";
+import { Accordion, AccordionSummary, Box, Stack, Typography, SvgIcon, Avatar, Button, AccordionDetails } from "@mui/material"
+import { useState } from "react"
+import ReactApexChart from "react-apexcharts"
+import Discussions from "../Current/Discussions"
+import FinalExams from "../Current/FinalExams"
+import Grades from "../Current/Grades"
+import Components from "../Current/Components"
 import avatar from '../../../../assets/Ellipse 3.png'
 import star from '../../../../assets/Star 4.png'
-import { memo, useState } from 'react';
-import Components from './Components';
-import FinalExams from './FinalExams';
-import Discussions from './Discussions';
-import Grades from './Grades';
 
-interface CurrentCardProps{
-    Request?: boolean
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-function ProgramCurrentCard({ Request }: CurrentCardProps) 
+export default function ProgramsCompletedCard() 
 {
     const [programPage, setProgramPage] = useState('Components')
+    const [expand, setExpand] = useState(false)
+
+    function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)
+    {
+        if(e.target instanceof HTMLButtonElement || e.target instanceof HTMLParagraphElement || e.target instanceof SVGElement)
+        {
+            return
+        }
+        else
+        {
+            setExpand(prev => !prev)
+        }
+    }
 
     return (
-        <Accordion sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
+        <Accordion expanded={expand} sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
                 style: { 
                     borderRadius: '20px',
@@ -41,6 +48,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                 <Box
                     maxWidth='100%'
                     flex={1}
+                    onClick={(e) => handleExpand(e)}
                 >
                     <Box
                         p={3}
@@ -150,10 +158,6 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                             pl={10}
                             bgcolor='#FEF4EB'
                             py={4}
-                            sx={{
-                                borderBottomLeftRadius: '20px',
-                                borderBottomRightRadius: '20px',
-                            }}
                             // width='100%'
                         >
                             <Typography fontSize={18} fontFamily='Inter' fontWeight={600}>Taught By:</Typography>
@@ -298,34 +302,76 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                     <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>Completion Certificate</Typography>
                                 </Box>
                                 </Stack>
-                                {
-                                    Request &&
-                                    <Button
-                                        sx={{
-                                            marginLeft: 'auto',
-                                            marginRight: 24,
-                                            marginBottom: -24,
-                                            width: '300px',
-                                            height: '50px',
-                                            background: '#fff',
-                                            color: '#000',
-                                            fontFamily: 'Inter',
-                                            fontSize: 14,
-                                            textTransform: 'none',
-                                            fontWeight: 400,
-                                            border: '1px solid #226E9F',
-                                            borderRadius: '15px',
-                                            '&:hover': {
-                                                background: '#fff',
-                                                opacity: 1
-                                            }
-                                        }}
-                                    >
-                                        Request Certificate
-                                    </Button>
-                                }
-                            </Stack>
 
+                                <Button
+                                    sx={{
+                                        marginLeft: 'auto',
+                                        marginRight: 24,
+                                        marginTop: -10,
+                                        width: '300px',
+                                        height: '50px',
+                                        background: '#fff',
+                                        color: '#226E9F',
+                                        fontFamily: 'Inter',
+                                        fontSize: 14,
+                                        textTransform: 'none',
+                                        fontWeight: 700,
+                                        border: '1px solid #226E9F',
+                                        borderRadius: '15px',
+                                        '&:hover': {
+                                            background: '#fff',
+                                            opacity: 1
+                                        }
+                                    }}
+                                    onClick={() => console.log('ts')}
+                                >
+                                    Request Certificate
+                                </Button>
+                            </Stack>
+                        </Box>
+                        <Box
+                            bgcolor='#FFFBF8'
+                            flex={1}
+                            px={4}
+                            py={1}
+                            sx={{
+                                borderBottomLeftRadius: '20px',
+                                borderBottomRightRadius: '20px',
+                            }}
+                        >
+                            <Typography
+                                fontFamily='Inter'
+                                fontSize={14}
+                                fontWeight={600}
+                                sx={{
+                                    color: '#226E9F'
+                                }}
+                                mt={1}
+                            >
+                                Let us know about your experience!
+                            </Typography>
+                            <Stack
+                                gap={6}
+                                direction='row'
+                                mt={3.5}
+                            >
+                                <Typography 
+                                    fontFamily='Inter'
+                                    fontSize={12}
+                                    fontWeight={500}
+                                >
+                                    Program Rating
+                                </Typography>
+                                <SvgIcon sx={{ fontSize: 110, height: 'fit-content' }} onClick={() => console.log('test')}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="87" height="15" viewBox="0 0 87 15" fill="none">
+                                        <path d="M6.32837 4.88518L7.41499 1.59457L8.50162 4.88518C8.63095 5.27686 8.99692 5.54141 9.4094 5.54141H12.9079L10.0909 7.55522C9.75043 7.79863 9.60787 8.23524 9.73911 8.63269L10.8185 11.9013L7.97096 9.86565C7.63843 9.62793 7.19155 9.62793 6.85902 9.86565L4.01152 11.9013L5.09087 8.63269C5.22212 8.23524 5.07955 7.79863 4.73906 7.55522L1.92209 5.54141H5.42058C5.83306 5.54141 6.19903 5.27686 6.32837 4.88518Z" stroke="#FF9F06"/>
+                                        <path d="M24.3284 4.88518L25.415 1.59457L26.5016 4.88518C26.631 5.27686 26.9969 5.54141 27.4094 5.54141H30.9079L28.0909 7.55522C27.7504 7.79863 27.6079 8.23524 27.7391 8.63269L28.8185 11.9013L25.971 9.86565C25.6384 9.62793 25.1916 9.62793 24.859 9.86565L22.0115 11.9013L23.0909 8.63269C23.2221 8.23524 23.0796 7.79863 22.7391 7.55522L19.9221 5.54141H23.4206C23.8331 5.54141 24.199 5.27686 24.3284 4.88518Z" stroke="#FF9F06"/>
+                                        <path d="M42.3284 4.88518L43.415 1.59457L44.5016 4.88518C44.631 5.27686 44.9969 5.54141 45.4094 5.54141H48.9079L46.0909 7.55522C45.7504 7.79863 45.6079 8.23524 45.7391 8.63269L46.8185 11.9013L43.971 9.86565C43.6384 9.62793 43.1916 9.62793 42.859 9.86565L40.0115 11.9013L41.0909 8.63269C41.2221 8.23524 41.0796 7.79863 40.7391 7.55522L37.9221 5.54141H41.4206C41.8331 5.54141 42.199 5.27686 42.3284 4.88518Z" stroke="#FF9F06"/>
+                                        <path d="M60.3284 4.88518L61.415 1.59457L62.5016 4.88518C62.631 5.27686 62.9969 5.54141 63.4094 5.54141H66.9079L64.0909 7.55522C63.7504 7.79863 63.6079 8.23524 63.7391 8.63269L64.8185 11.9013L61.971 9.86565C61.6384 9.62793 61.1916 9.62793 60.859 9.86565L58.0115 11.9013L59.0909 8.63269C59.2221 8.23524 59.0796 7.79863 58.7391 7.55522L55.9221 5.54141H59.4206C59.8331 5.54141 60.199 5.27686 60.3284 4.88518Z" stroke="#FF9F06"/>
+                                        <path d="M78.3284 4.88518L79.415 1.59457L80.5016 4.88518C80.631 5.27686 80.9969 5.54141 81.4094 5.54141H84.9079L82.0909 7.55522C81.7504 7.79863 81.6079 8.23524 81.7391 8.63269L82.8185 11.9013L79.971 9.86565C79.6384 9.62793 79.1916 9.62793 78.859 9.86565L76.0115 11.9013L77.0909 8.63269C77.2221 8.23524 77.0796 7.79863 76.7391 7.55522L73.9221 5.54141H77.4206C77.8331 5.54141 78.199 5.27686 78.3284 4.88518Z" stroke="#FF9F06"/>
+                                    </svg>
+                                </SvgIcon>
+                            </Stack>
                         </Box>
                     </Box>
                 </Box>
@@ -442,6 +488,3 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
         </Accordion>
     )
 }
-
-const memoizedProgramCurrentCard = memo(ProgramCurrentCard)
-export default memoizedProgramCurrentCard

@@ -4,6 +4,7 @@ import Stack from "@mui/material/Stack";
 import { useEffect, useState } from "react";
 import ExamQuestionOptions from "./ExamQuestionOptions";
 import ExamQuestionSelects from "./ExamQuestionSelects";
+import ExamQuestionPic from "./ExamQuestionPic";
 
 export default function Exam() 
 {
@@ -65,14 +66,14 @@ export default function Exam()
                         setIndex={setIndex}
                         total={questions.length}
                     />
-                    : index === 2 ?
+                    : index === 1 ?
                     <ExamQuestionSelects
                         number={questions[index]} 
                         setIndex={setIndex}
                         total={questions.length}
                     />
-                    : index === 3 ?
-                    <ExamQuestionSelects
+                    : index === 2 ?
+                    <ExamQuestionPic
                         number={questions[index]} 
                         setIndex={setIndex}
                         total={questions.length}

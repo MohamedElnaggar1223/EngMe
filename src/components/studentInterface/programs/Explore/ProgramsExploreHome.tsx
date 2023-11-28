@@ -1,5 +1,6 @@
+import { lazy, Suspense } from "react";
 import { Stack, Typography, Box, Input, SvgIcon, FormGroup, FormHelperText, FormControlLabel, Checkbox, Button } from "@mui/material";
-import ProgramExploreCard from "./ProgramExploreCard";
+const ProgramExploreCard = lazy(() => import("./ProgramExploreCard"))
 import ProgramsExploreHomeProps from "../../../../interfaces/ProgramsExploreHomeProps";
 
 export default function ProgramsExploreHome(
@@ -273,11 +274,21 @@ export default function ProgramsExploreHome(
                 mt={8}
                 justifyContent={{xs: 'center', sm: 'center', lg: 'space-between'}}
             >
-                <ProgramExploreCard setPageShowed={setPageShowed} />
-                <ProgramExploreCard setPageShowed={setPageShowed} />
-                <ProgramExploreCard setPageShowed={setPageShowed} />
-                <ProgramExploreCard setPageShowed={setPageShowed} />
-                <ProgramExploreCard setPageShowed={setPageShowed} />
+                <Suspense>
+                    <ProgramExploreCard setPageShowed={setPageShowed} />
+                </Suspense>
+                <Suspense>
+                    <ProgramExploreCard setPageShowed={setPageShowed} />
+                </Suspense>
+                <Suspense>
+                    <ProgramExploreCard setPageShowed={setPageShowed} />
+                </Suspense>
+                <Suspense>
+                    <ProgramExploreCard setPageShowed={setPageShowed} />
+                </Suspense>
+                <Suspense>
+                    <ProgramExploreCard setPageShowed={setPageShowed} />
+                </Suspense>
             </Stack>
         </>
     )

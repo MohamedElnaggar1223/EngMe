@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
-import { useState } from "react";
-import ProgramsExploreHome from "./ProgramsExploreHome";
-import ProgramsExploreProgram from "./ProgramsExploreProgram";
+import { lazy, useState, Suspense } from "react";
+const ProgramsExploreHome = lazy(() => import("./ProgramsExploreHome"))
+const ProgramsExploreProgram = lazy(() => import("./ProgramsExploreProgram"))
 
 export default function ProgramsExplore() 
 {
@@ -40,20 +40,24 @@ export default function ProgramsExplore()
         >
             {
                 pageShowed === 'home' ?
-                <ProgramsExploreHome 
-                    applyFilters={applyFilters}
-                    filters={filters}
-                    handleFilters={handleFilters}
-                    handleRemoveFilter={handleRemoveFilter}
-                    setApplyFilters={setApplyFilters}
-                    setFilters={setFilters}
-                    selectedFilters={selectedFilters}
-                    setSelectedFilters={setSelectedFilters}
-                    setPageShowed={setPageShowed}
-                /> :
-                <ProgramsExploreProgram 
-                    setPageShowed={setPageShowed}
-                />
+                <Suspense>
+                    <ProgramsExploreHome 
+                        applyFilters={applyFilters}
+                        filters={filters}
+                        handleFilters={handleFilters}
+                        handleRemoveFilter={handleRemoveFilter}
+                        setApplyFilters={setApplyFilters}
+                        setFilters={setFilters}
+                        selectedFilters={selectedFilters}
+                        setSelectedFilters={setSelectedFilters}
+                        setPageShowed={setPageShowed}
+                    />
+                </Suspense> :
+                <Suspense>
+                    <ProgramsExploreProgram 
+                        setPageShowed={setPageShowed}
+                    />
+                </Suspense>
             }
         </Box>
     )

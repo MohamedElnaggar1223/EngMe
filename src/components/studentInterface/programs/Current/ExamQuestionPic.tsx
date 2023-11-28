@@ -1,4 +1,4 @@
-import { InputLabel, MenuItem, Select } from "@mui/material"
+import { Box, InputLabel, MenuItem, Select } from "@mui/material"
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import Button from "@mui/material/Button"
 import Stack from "@mui/material/Stack"
@@ -11,19 +11,15 @@ interface ExamQuestionProps{
     total: number
 }
 
-export default function ExamQuestionSelects({ number, setIndex, total }: ExamQuestionProps)
+export default function ExamQuestionPic({ number, setIndex, total }: ExamQuestionProps)
 {
     const [firstSelectOption, setFirstSelectOption] = useState('')
-    const [secondSelectOption, setSecondSelectOption] = useState('')
     const [thirdSelectOption, setThirdSelectOption] = useState('')
-    const [fourthSelectOption, setFourthSelectOption] = useState('')
 
     function handleNext()
     {
         setFirstSelectOption('')
-        setSecondSelectOption('')
         setThirdSelectOption('')
-        setFourthSelectOption('')
         setIndex(prev => prev + 1)
     }
     
@@ -49,14 +45,17 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                 <Typography fontFamily='Inter'>Q{number}: What color is an Orange</Typography>
                 <Typography fontFamily='Inter' sx={{ justifySelf: 'flex-end' }}>{number}/{total}</Typography>
             </Stack>
+            <Box
+                width='588px'
+                height='225px'
+                bgcolor='#D9D9D9'
+            >
+
+            </Box>
             <Stack 
                 flex={1}
                 gap={4}
             >
-                <Stack
-                    direction='row'
-                    gap={2}
-                >
                     <Stack
                         direction='column'
                         gap={2}
@@ -66,7 +65,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                         </InputLabel>
                         <Select
                             sx={{
-                                width: '380px !important',
+                                width: '588px !important',
                                 height: '45px !important',
                                 boxShadow: '0px 0px 0px 1px rgba(0,0,0,1)',
                                 borderRadius: '5px !important',
@@ -83,7 +82,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                                 
                             }}
                             id='firstSelect'
-                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '80%' }} />}
+                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '90%' }} />}
                             variant='standard'
                             disableUnderline
                             inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
@@ -100,55 +99,12 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                         direction='column'
                         gap={2}
                     >
-                        <InputLabel sx={{ fontWeight: 500, color: '#000', fontFamily: 'Inter' }} htmlFor="secondSelect">
-                            Orange
-                        </InputLabel>
-                        <Select
-                            sx={{
-                                width: '380px !important',
-                                height: '45px !important',
-                                boxShadow: '0px 0px 0px 1px rgba(0,0,0,1)',
-                                borderRadius: '5px !important',
-                                outline: 'none !important',
-                                boxSizing: 'border-box !important',
-                                background: '#fff',
-                                paddingX: 1,
-                                paddingY: 0.5,
-                                '&:hover': {
-                                    boxShadow: '0px 0px 0px 1px rgba(0,0,0,0.39)',
-                                    background: '#fff',
-                                }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'left', textIndent: '5px'
-                                
-                            }}
-                            id='secondSelect'
-                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '80%' }} />}
-                            inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
-                            variant='standard'
-                            disableUnderline
-                            value={secondSelectOption}
-                            onChange={(e) => setSecondSelectOption(e.target.value)}
-                        >
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                        </Select>
-                    </Stack>
-                </Stack>
-                <Stack
-                    direction='row'
-                    gap={2}
-                >
-                    <Stack
-                        direction='column'
-                        gap={2}
-                    >
                         <InputLabel sx={{ fontWeight: 500, color: '#000', fontFamily: 'Inter' }} htmlFor="thirdSelect">
                             Orange
                         </InputLabel>
                         <Select
                             sx={{
-                                width: '380px !important',
+                                width: '588px !important',
                                 height: '45px !important',
                                 boxShadow: '0px 0px 0px 1px rgba(0,0,0,1)',
                                 borderRadius: '5px !important',
@@ -164,7 +120,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                                 
                             }}
                             id='thirdSelect'
-                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '80%' }} />}
+                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '90%' }} />}
                             inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
                             variant='standard'
                             disableUnderline
@@ -177,45 +133,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                             <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
                         </Select>
                     </Stack>
-                    <Stack
-                        direction='column'
-                        gap={2}
-                    >
-                        <InputLabel sx={{ fontWeight: 500, color: '#000', fontFamily: 'Inter' }} htmlFor="fourthSelect">
-                            Orange
-                        </InputLabel>
-                        <Select
-                            sx={{
-                                width: '380px !important',
-                                height: '45px !important',
-                                boxShadow: '0px 0px 0px 1px rgba(0,0,0,1)',
-                                borderRadius: '5px !important',
-                                outline: 'none !important',
-                                boxSizing: 'border-box !important',
-                                background: '#fff',
-                                paddingX: 1,
-                                paddingY: 0.5,
-                                '&:hover': {
-                                    boxShadow: '0px 0px 0px 1px rgba(0,0,0,0.39)',
-                                    background: '#fff',
-                                }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'left', textIndent: '5px'
-                                
-                            }}
-                            id='fourthSelect'
-                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '80%' }} />}
-                            inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
-                            variant='standard'
-                            disableUnderline
-                            value={fourthSelectOption}
-                            onChange={(e) => setFourthSelectOption(e.target.value)}
-                        >
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                        </Select>
-                    </Stack>
-                </Stack>
+                    
             </Stack>
             <Stack
                 direction='row'

@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import profile from '../../../assets/studentprofile.jfif'
-import { lazy, useState } from "react";
-import DefaultStudentCard from "./StudentCardComponents/DefaultStudentCard";
+import { Suspense, lazy, useState } from "react";
+const DefaultStudentCard = lazy(() => import("./StudentCardComponents/DefaultStudentCard"));
 const EditStudentCard = lazy(() => import("./StudentCardComponents/EditStudentCard"))
 
 export default function StudentCard() 
@@ -34,28 +34,32 @@ export default function StudentCard()
         >
             {
                 edit ?
-                <EditStudentCard 
-                    name={name} 
-                    major={major} 
-                    city={city} 
-                    country={country} 
-                    image={image} 
-                    setEdit={setEdit}
-                    setName={setName}
-                    setMajor={setMajor}
-                    setCity={setCity}
-                    setCountry={setCountry}
-                    setImage={setImage}
-                />
+                <Suspense>
+                    <EditStudentCard 
+                        name={name} 
+                        major={major} 
+                        city={city} 
+                        country={country} 
+                        image={image} 
+                        setEdit={setEdit}
+                        setName={setName}
+                        setMajor={setMajor}
+                        setCity={setCity}
+                        setCountry={setCountry}
+                        setImage={setImage}
+                    />
+                </Suspense>
                      :
-                <DefaultStudentCard 
-                    name={name} 
-                    major={major} 
-                    city={city} 
-                    country={country} 
-                    image={image} 
-                    setEdit={setEdit} 
-                />
+                <Suspense>
+                    <DefaultStudentCard 
+                        name={name} 
+                        major={major} 
+                        city={city} 
+                        country={country} 
+                        image={image} 
+                        setEdit={setEdit} 
+                    />
+                </Suspense>
             }
         </Box>
     )

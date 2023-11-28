@@ -1,9 +1,17 @@
-import { Stack, Box, Button, Input, Select, MenuItem } from '@mui/material'
+// import { Stack, Box, Button, Input, Select, MenuItem } from '@mui/material'
+import { Suspense, lazy, memo, useEffect, useState } from 'react';
+const Stack = lazy(() => import('@mui/material/Stack'))
+const Box = lazy(() => import('@mui/material/Box'))
+const Button = lazy(() => import('@mui/material/Button'))
+const Input = lazy(() => import('@mui/material/Input'))
+const Select = lazy(() => import('@mui/material/Select'))
+const MenuItem = lazy(() => import('@mui/material/MenuItem'))
 import StudentCardEditProps from '../../../../interfaces/StudentCardEditProps'
-import { Country, City }  from 'country-state-city'
-import { memo, useEffect, useState } from 'react';
-import ExpandMore from "@mui/icons-material/ExpandMore"
+// import { Country, City }  from 'country-state-city'
+//eslint-disable-next-line
+const ExpandMore = lazy(() => import("@mui/icons-material/ExpandMore"))
 import { useQuery } from '@tanstack/react-query';
+import {Country, City} from 'country-state-city'
 
 //eslint-disable-next-line
 function EditStudentCard(
@@ -69,6 +77,7 @@ setEdit }: StudentCardEditProps)
     
 
     return (
+        <Suspense>
         <Box
             width='100%'
             height='100%'
@@ -104,6 +113,7 @@ setEdit }: StudentCardEditProps)
                     
                 </Box>
                 <Button
+                    //@ts-expect-error ddd
                     component='label'
                     sx={{
                         zIndex: 3,
@@ -184,6 +194,7 @@ setEdit }: StudentCardEditProps)
                             IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', position: 'absolute', left: '80%' }} />}
                             variant='standard'
                             disableUnderline
+                            //@ts-expect-error ddd
                             onChange={(e) => setMajor(e.target.value)}
                         >
                             <MenuItem value={major}>{major}</MenuItem>
@@ -207,6 +218,7 @@ setEdit }: StudentCardEditProps)
                             }}
                             IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', position: 'absolute', left: '80%' }} />}                            variant='standard'
                             disableUnderline
+                            //@ts-expect-error ddd
                             onChange={(e) => setCity(e.target.value)}
                         >
                             { cities.map(city => <MenuItem value={city} key={city}>{city}</MenuItem>) }
@@ -230,6 +242,7 @@ setEdit }: StudentCardEditProps)
                             }}
                             IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', position: 'absolute', left: '80%' }} />}                            variant='standard'
                             disableUnderline
+                            //@ts-expect-error ddd
                             onChange={(e) => setCountry(e.target.value)}
                         >
                             { countries.map(country => <MenuItem value={country} key={country}>{country}</MenuItem>) }
@@ -283,6 +296,7 @@ setEdit }: StudentCardEditProps)
                     </Stack>
             </Stack>
         </Box>
+        </Suspense>
     )
 }
 

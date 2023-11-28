@@ -1,4 +1,5 @@
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Suspense, lazy } from "react";
+const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails } from "@mui/material";
 
 interface T{
@@ -20,6 +21,7 @@ export default function Question({ second }: T)
     )
 
     return (
+        <Suspense>
         <Accordion sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon sx={{ paddingRight: 2, paddingLeft: 6, color: '#fff' }} />}
@@ -112,5 +114,6 @@ export default function Question({ second }: T)
                     </Stack>
                 </AccordionDetails>
             </Accordion>
+        </Suspense>
     )
 }

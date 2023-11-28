@@ -1,19 +1,10 @@
-import { Suspense, lazy, useState } from 'react'
-import avatar from '../../../../assets/Ellipse 3.png'   
-import ProgramsExploreProgramProps from '../../../../interfaces/ProgramsExploreProgramProps'
-import { Typography, SvgIcon, Avatar, Button } from '@mui/material'
-import { Box, Stack } from '@mui/system'
-const ProgramExploreCourseCard = lazy(() => import('./ProgramExploreCourseCard'))
-const ProgramExploreCourseComments = lazy(() => import('./ProgramComments/ProgramExploreCourseComments'))
+import { Box, Stack, SvgIcon, Typography, Avatar, Button } from "@mui/material";
+import avatar from '../../../../assets/Ellipse 3.png'
 
-export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExploreProgramProps) 
+export default function ProgramCurrentExpired() 
 {
-    const [programShow, setProgramShow] = useState('components')
-
-    return (
-        <Box
-        >
-            <Box
+  return (
+    <Box
                 display='flex'
                 flexDirection='column'
                 borderRadius='20px'
@@ -26,7 +17,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                     flexDirection='row'
                     justifyContent='space-between'
                     alignItems='center'
-                    bgcolor='#FFFBF8'
+                    bgcolor='#F8F8F8'
                     // mx={14}
                     flex={1}
                     // width='100%'
@@ -35,15 +26,10 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                         width={{xs: '40%', sm: '40%', lg: '35%'}}
                         direction='row'
                     >
-                        <SvgIcon onClick={() => setPageShowed('home')} sx={{ fontSize: 34, marginRight: 2, cursor: 'pointer' }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="21" viewBox="0 0 35 21" fill="none">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.8107 20.5607C12.3964 19.9749 12.3964 19.0251 11.8107 18.4393L5.37132 12H33.25C34.0784 12 34.75 11.3284 34.75 10.5C34.75 9.67157 34.0784 9 33.25 9H5.37132L11.8107 2.56066C12.3964 1.97487 12.3964 1.02513 11.8107 0.43934C11.2249 -0.146447 10.2751 -0.146447 9.68934 0.43934L0.68934 9.43934C0.103553 10.0251 0.103553 10.9749 0.68934 11.5607L9.68934 20.5607C10.2751 21.1464 11.2249 21.1464 11.8107 20.5607Z" fill="#060000"/>
-                            </svg>
-                        </SvgIcon>
                         <Stack
                             direction='column'
                             gap={2}
-                            bgcolor='#FFFBF8'
+                            bgcolor='#F8F8F8'
                             flex={1}
                         >
                             <Stack
@@ -126,7 +112,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                         pl={9}
                         pb={2}
                         pt={4}
-                        bgcolor='#FFFBF8'
+                        bgcolor='#F8F8F8'
                     >
                         <Typography fontSize={18} fontFamily='Inter' fontWeight={600}>Prerequisites:</Typography>
                         <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate Python</Typography>
@@ -137,7 +123,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                     <Box
                         px={6}
                         pl={10}
-                        bgcolor='#FEF4EB'
+                        bgcolor='#E8E8E8'
                         py={4}
                         // width='100%'
                     >
@@ -298,88 +284,17 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                                         '&:hover': {
                                             background: '#fff',
                                             opacity: 1
-                                        }
+                                        },
+                                        paddingX: 6
                                     }}
                                 >
-                                    Get Access to Program
+                                    This program expired.
+                                    Repurchase to complete
                                 </Button>
                             </Stack>
 
                     </Box>
                 </Box>
             </Box>
-            <Stack
-                flex={1}
-                alignItems='center'
-                mt={4}
-                mb={6}
-                direction='row'
-                justifyContent='center'
-                gap={2}
-            >
-                <Button
-                    sx={{
-                        width: '180px',
-                        height: '40px',
-                        background: programShow === 'components' ? '#D0EBFC' : '#fff',
-                        color: '#226E9F',
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        textTransform: 'none',
-                        fontWeight: 400,
-                        border: '1px solid #226E9F',
-                        borderRadius: '15px',
-                        '&:hover': {
-                            background: '#fff',
-                            opacity: 1
-                        }
-                    }}
-                    onClick={() => setProgramShow('components')}
-                >
-                    Components
-                </Button>
-                <Button
-                    sx={{
-                        width: '180px',
-                        height: '40px',
-                        background: programShow === 'comments' ? '#D0EBFC' : '#fff',
-                        color: '#226E9F',
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        textTransform: 'none',
-                        fontWeight: 400,
-                        border: '1px solid #226E9F',
-                        borderRadius: '15px',
-                        '&:hover': {
-                            background: '#fff',
-                            opacity: 1
-                        }
-                    }}
-                    onClick={() => setProgramShow('comments')}
-                >
-                    Comments
-                </Button>
-            </Stack>
-            {
-                programShow === 'components' ?
-                <Stack
-                    direction='column'
-                    mx={14}
-                >
-                    <Suspense>
-                        <ProgramExploreCourseCard />
-                    </Suspense>
-                    <Suspense>
-                        <ProgramExploreCourseCard />
-                    </Suspense>
-                    <Suspense>
-                    <ProgramExploreCourseCard />
-                    </Suspense>
-                </Stack> :
-                <Suspense>
-                    <ProgramExploreCourseComments />
-                </Suspense>
-            }
-        </Box>
-    )
+  )
 }

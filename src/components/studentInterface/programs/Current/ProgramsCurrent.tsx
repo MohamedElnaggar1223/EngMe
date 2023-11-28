@@ -1,5 +1,7 @@
 import { Box } from "@mui/material";
-import ProgramCurrentCard from "./ProgramCurrentCard";
+import { Suspense, lazy } from "react";
+import ProgramCurrentExpired from "./ProgramCurrentExpired";
+const ProgramCurrentCard = lazy(() => import("./ProgramCurrentCard"))
 
 
 export default function ProgramsCurrent() {
@@ -13,10 +15,21 @@ export default function ProgramsCurrent() {
 			flexDirection='column'
 			gap={6}
 		>
-			<ProgramCurrentCard />
-			<ProgramCurrentCard Request={true} />
-			<ProgramCurrentCard />
-			<ProgramCurrentCard />
+			<Suspense>
+				<ProgramCurrentCard />
+			</Suspense>
+			<Suspense>
+				<ProgramCurrentExpired />
+			</Suspense>
+			<Suspense>
+				<ProgramCurrentCard Request={true} />
+			</Suspense>
+			<Suspense>
+				<ProgramCurrentCard />
+			</Suspense>
+			<Suspense>
+				<ProgramCurrentCard />
+			</Suspense>
 		</Box>
 	)
 }

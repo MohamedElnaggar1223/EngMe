@@ -17,3 +17,19 @@
 .css-1rxz5jq-MuiSelect-select-MuiInputBase-input-MuiInput-input{
   z-index: 7;
 }
+
+.css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root.Mui-selected{
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.css-48d81r-MuiPaper-root-MuiAccordion-root .css-o4b71y-MuiAccordionSummary-content
+{
+  width: 100%;
+  flex-grow: 1;
+}
+.css-48d81r-MuiPaper-root-MuiAccordion-root:first-of-type{
+  border-radius: 20px !important;
+}

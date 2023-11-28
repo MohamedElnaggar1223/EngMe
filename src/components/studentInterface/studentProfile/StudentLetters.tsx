@@ -40,7 +40,7 @@ export default function StudentLetters()
                     width='fit-content'
                     gap={1.5}
                 >
-                    <Suspense fallback={<></>}>
+                    <Suspense>
                         <Avatar />
                     </Suspense>
                     <Typography

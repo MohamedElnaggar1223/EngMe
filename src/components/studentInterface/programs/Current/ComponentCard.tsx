@@ -1,6 +1,7 @@
+import { Suspense, lazy, memo } from "react";
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails, Button } from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { memo } from "react";
+// eslint-disable-next-line react-refresh/only-export-components
+const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
 interface ComponentCardProps{
     Quiz?: boolean
@@ -9,6 +10,7 @@ interface ComponentCardProps{
 // eslint-disable-next-line react-refresh/only-export-components
 function ComponentCard({ Quiz }: ComponentCardProps) {
   return (
+    <Suspense>
         <Accordion sx={{ width: '100%', flex: 1, '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon sx={{ paddingRight: 2, paddingLeft: 6, color: '#fff' }} />}
@@ -119,6 +121,7 @@ function ComponentCard({ Quiz }: ComponentCardProps) {
                 </Stack>
             </AccordionDetails>
         </Accordion>
+    </Suspense>
   )
 }
 
