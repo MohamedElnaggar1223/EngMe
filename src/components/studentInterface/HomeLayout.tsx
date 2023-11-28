@@ -9,7 +9,15 @@ export default function HomeLayout()
     const navigate = useNavigate()
     
     useEffect(() => {
-        page === 'profile' ? navigate('/profile') : page === 'exam' ? navigate('/exam') : navigate('/programs')
+        page === 'profile' ? 
+        navigate('/profile') : 
+        page === 'exam' ? 
+        navigate('/exam') : 
+        page === 'programs' ? 
+        navigate('/programs') : 
+        page === 'quiz' ? 
+        navigate('/quiz') : 
+        navigate('/assessment')
     }, [page, navigate])
 
     return (

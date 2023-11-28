@@ -1,5 +1,5 @@
-import { Accordion, AccordionSummary, Box, Stack, Typography, SvgIcon, Avatar, Button, AccordionDetails } from "@mui/material"
-import { useState } from "react"
+import { Accordion, AccordionSummary, Box, Stack, Typography, SvgIcon, Avatar, Button, AccordionDetails, Input } from "@mui/material"
+import { useEffect, useState } from "react"
 import ReactApexChart from "react-apexcharts"
 import Discussions from "../Current/Discussions"
 import FinalExams from "../Current/FinalExams"
@@ -7,15 +7,25 @@ import Grades from "../Current/Grades"
 import Components from "../Current/Components"
 import avatar from '../../../../assets/Ellipse 3.png'
 import star from '../../../../assets/Star 4.png'
+import StarOutlineIcon from '@mui/icons-material/StarOutline'
+import StarRateIcon from '@mui/icons-material/StarRate';
 
 export default function ProgramsCompletedCard() 
 {
     const [programPage, setProgramPage] = useState('Components')
     const [expand, setExpand] = useState(false)
+    const [selectedStars, setSelectedStars] = useState(0)
+    const [feedback, setFeedback] = useState('')
+    const [submitFeedback, setSubmitFeedback] = useState(false)
+    const [disappear, setDisappear] = useState(false)
+
+    useEffect(() => {
+        if(submitFeedback) setTimeout(() => setDisappear(true), 1500)
+    }, [submitFeedback])
 
     function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)
     {
-        if(e.target instanceof HTMLButtonElement || e.target instanceof HTMLParagraphElement || e.target instanceof SVGElement)
+        if(e.target instanceof HTMLInputElement ||  e.target instanceof HTMLButtonElement || e.target instanceof HTMLParagraphElement || e.target instanceof SVGElement)
         {
             return
         }
@@ -187,18 +197,6 @@ export default function ProgramsCompletedCard()
                                             gap={1}
                                         >
                                             <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>The German University in Cairo</Typography>
-                                            <Stack
-                                                direction='row'
-                                                alignItems='center'
-                                                gap={0.5}
-                                            >
-                                                <SvgIcon sx={{ fontSize: 12 }}>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
-                                                        <path d="M5.98199 1.22337C6.11981 0.806014 6.71018 0.806015 6.84799 1.22337L7.9764 4.64051C8.03809 4.82733 8.21265 4.95352 8.4094 4.95352H12.0451C12.4886 4.95352 12.6711 5.52254 12.3103 5.78048L9.38171 7.87408C9.2193 7.99018 9.1513 8.19844 9.2139 8.38802L10.3355 11.7846C10.4738 12.2034 9.99612 12.555 9.63731 12.2985L6.68018 10.1845C6.52157 10.0711 6.30841 10.0711 6.1498 10.1845L3.19268 12.2985C2.83387 12.555 2.35618 12.2034 2.49448 11.7846L3.61609 8.38802C3.67869 8.19844 3.61069 7.99018 3.44828 7.87408L0.519688 5.78048C0.158882 5.52254 0.341356 4.95352 0.784878 4.95352H4.42058C4.61733 4.95352 4.79189 4.82733 4.85359 4.64051L5.98199 1.22337Z" fill="#FF9F06"/>
-                                                    </svg>
-                                                </SvgIcon>
-                                                <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>4.3</Typography>
-                                            </Stack>
                                         </Stack>
                                     </Stack>
                                 </Stack>
@@ -329,50 +327,178 @@ export default function ProgramsCompletedCard()
                                 </Button>
                             </Stack>
                         </Box>
-                        <Box
-                            bgcolor='#FFFBF8'
-                            flex={1}
-                            px={4}
-                            py={1}
-                            sx={{
-                                borderBottomLeftRadius: '20px',
-                                borderBottomRightRadius: '20px',
-                            }}
-                        >
-                            <Typography
-                                fontFamily='Inter'
-                                fontSize={14}
-                                fontWeight={600}
-                                sx={{
-                                    color: '#226E9F'
-                                }}
-                                mt={1}
-                            >
-                                Let us know about your experience!
-                            </Typography>
-                            <Stack
-                                gap={6}
-                                direction='row'
-                                mt={3.5}
-                            >
-                                <Typography 
-                                    fontFamily='Inter'
-                                    fontSize={12}
-                                    fontWeight={500}
+                        {
+                            submitFeedback 
+                            ?
+                            disappear 
+                            ?
+                                <></>
+                            :
+                                <Box
+                                    display='flex'
+                                    alignItems='center'
+                                    justifyContent='center'
+                                    py={10}
+                                    flex={1}
+                                    bgcolor='#FFFBF8'
                                 >
-                                    Program Rating
+                                    <Typography sx={{ color: '#226E9F' }} fontSize={14} fontWeight={700} fontFamily='Inter'>Thank you! Your feedback has been submitted.</Typography>
+                                </Box>
+                            :
+                            <Box
+                                bgcolor='#FFFBF8'
+                                flex={1}
+                                px={4}
+                                py={1}
+                                sx={{
+                                    borderBottomLeftRadius: '20px',
+                                    borderBottomRightRadius: '20px',
+                                }}
+                            >
+                                <Typography
+                                    fontFamily='Inter'
+                                    fontSize={14}
+                                    fontWeight={600}
+                                    sx={{
+                                        color: '#226E9F'
+                                    }}
+                                    mt={1}
+                                >
+                                    Let us know about your experience!
                                 </Typography>
-                                <SvgIcon sx={{ fontSize: 110, height: 'fit-content' }} onClick={() => console.log('test')}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="87" height="15" viewBox="0 0 87 15" fill="none">
-                                        <path d="M6.32837 4.88518L7.41499 1.59457L8.50162 4.88518C8.63095 5.27686 8.99692 5.54141 9.4094 5.54141H12.9079L10.0909 7.55522C9.75043 7.79863 9.60787 8.23524 9.73911 8.63269L10.8185 11.9013L7.97096 9.86565C7.63843 9.62793 7.19155 9.62793 6.85902 9.86565L4.01152 11.9013L5.09087 8.63269C5.22212 8.23524 5.07955 7.79863 4.73906 7.55522L1.92209 5.54141H5.42058C5.83306 5.54141 6.19903 5.27686 6.32837 4.88518Z" stroke="#FF9F06"/>
-                                        <path d="M24.3284 4.88518L25.415 1.59457L26.5016 4.88518C26.631 5.27686 26.9969 5.54141 27.4094 5.54141H30.9079L28.0909 7.55522C27.7504 7.79863 27.6079 8.23524 27.7391 8.63269L28.8185 11.9013L25.971 9.86565C25.6384 9.62793 25.1916 9.62793 24.859 9.86565L22.0115 11.9013L23.0909 8.63269C23.2221 8.23524 23.0796 7.79863 22.7391 7.55522L19.9221 5.54141H23.4206C23.8331 5.54141 24.199 5.27686 24.3284 4.88518Z" stroke="#FF9F06"/>
-                                        <path d="M42.3284 4.88518L43.415 1.59457L44.5016 4.88518C44.631 5.27686 44.9969 5.54141 45.4094 5.54141H48.9079L46.0909 7.55522C45.7504 7.79863 45.6079 8.23524 45.7391 8.63269L46.8185 11.9013L43.971 9.86565C43.6384 9.62793 43.1916 9.62793 42.859 9.86565L40.0115 11.9013L41.0909 8.63269C41.2221 8.23524 41.0796 7.79863 40.7391 7.55522L37.9221 5.54141H41.4206C41.8331 5.54141 42.199 5.27686 42.3284 4.88518Z" stroke="#FF9F06"/>
-                                        <path d="M60.3284 4.88518L61.415 1.59457L62.5016 4.88518C62.631 5.27686 62.9969 5.54141 63.4094 5.54141H66.9079L64.0909 7.55522C63.7504 7.79863 63.6079 8.23524 63.7391 8.63269L64.8185 11.9013L61.971 9.86565C61.6384 9.62793 61.1916 9.62793 60.859 9.86565L58.0115 11.9013L59.0909 8.63269C59.2221 8.23524 59.0796 7.79863 58.7391 7.55522L55.9221 5.54141H59.4206C59.8331 5.54141 60.199 5.27686 60.3284 4.88518Z" stroke="#FF9F06"/>
-                                        <path d="M78.3284 4.88518L79.415 1.59457L80.5016 4.88518C80.631 5.27686 80.9969 5.54141 81.4094 5.54141H84.9079L82.0909 7.55522C81.7504 7.79863 81.6079 8.23524 81.7391 8.63269L82.8185 11.9013L79.971 9.86565C79.6384 9.62793 79.1916 9.62793 78.859 9.86565L76.0115 11.9013L77.0909 8.63269C77.2221 8.23524 77.0796 7.79863 76.7391 7.55522L73.9221 5.54141H77.4206C77.8331 5.54141 78.199 5.27686 78.3284 4.88518Z" stroke="#FF9F06"/>
-                                    </svg>
-                                </SvgIcon>
-                            </Stack>
-                        </Box>
+                                <Stack
+                                    gap={6}
+                                    direction='row'
+                                    mt={3.5}
+                                    alignItems='center'
+                                >
+                                    <Typography 
+                                        fontFamily='Inter'
+                                        fontSize={12}
+                                        fontWeight={500}
+                                    >
+                                        Program Rating
+                                    </Typography>
+                                    <Stack
+                                        direction='row'
+                                        gap={0.2}
+                                    >
+                                        {
+                                            selectedStars >= 1 
+                                            ? 
+                                            <StarRateIcon onClick={() => selectedStars === 1 ? setSelectedStars(0) : setSelectedStars(1)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutlineIcon onClick={() => setSelectedStars(1)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                        {
+                                            selectedStars >= 2 
+                                            ? 
+                                            <StarRateIcon onClick={() => selectedStars === 2 ? setSelectedStars(0) : setSelectedStars(2)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutlineIcon onClick={() => setSelectedStars(2)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                        {
+                                            selectedStars >= 3 
+                                            ? 
+                                            <StarRateIcon onClick={() => selectedStars === 3 ? setSelectedStars(0) : setSelectedStars(3)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutlineIcon onClick={() => setSelectedStars(3)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                        {
+                                            selectedStars >= 4
+                                            ? 
+                                            <StarRateIcon onClick={() => selectedStars === 4 ? setSelectedStars(0) : setSelectedStars(4)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutlineIcon onClick={() => setSelectedStars(4)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                        {
+                                            selectedStars >= 5 
+                                            ? 
+                                            <StarRateIcon onClick={() => selectedStars === 5 ? setSelectedStars(0) : setSelectedStars(5)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutlineIcon onClick={() => setSelectedStars(5)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                    </Stack>
+                                </Stack>
+                                <Stack
+                                    direction='row'
+                                >
+                                    <Input 
+                                        color='primary' 
+                                        disableUnderline
+                                        value={feedback}
+                                        sx={{
+                                            border: '1px solid #226E9F',
+                                            background: '#fff',
+                                            borderRadius: '5px',
+                                            paddingX: 2.5,
+                                            paddingY: 1.5,
+                                            flex: 1,
+                                            paddingBottom: 5,
+                                            marginY: 0.5,
+                                            fontSize: 12
+                                        }}
+                                        placeholder='50 words max'
+                                        onChange={(e) => setFeedback(e.target.value)}
+                                    />
+                                    <Stack
+                                        direction='row'
+                                        gap={2}
+                                        mr={2}
+                                        ml={14}
+                                        alignItems='center'
+                                    >
+                                        <Button
+                                            sx={{
+                                                width: '140px',
+                                                height: '40px',
+                                                background: '#fff',
+                                                color: '#000',
+                                                fontFamily: 'Inter',
+                                                fontSize: 14,
+                                                textTransform: 'none',
+                                                fontWeight: 400,
+                                                border: '1px solid #9D9D9D',
+                                                borderRadius: '8px',
+                                                '&:hover': {
+                                                    background: '#fff',
+                                                    opacity: 1
+                                                }
+                                            }}
+                                            onClick={() => {
+                                                setFeedback('')
+                                                setSelectedStars(0)
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            sx={{
+                                                width: '140px',
+                                                height: '40px',
+                                                background: '#9D9D9D',
+                                                color: '#fff',
+                                                fontFamily: 'Inter',
+                                                fontSize: 14,
+                                                textTransform: 'none',
+                                                fontWeight: 400,
+                                                border: '1px solid #9D9D9D',
+                                                borderRadius: '8px',
+                                                '&:hover': {
+                                                    background: '#9D9D9D',
+                                                    opacity: 1
+                                                }
+                                            }}
+                                            onClick={() => {
+                                                [feedback.length, selectedStars > 0].every(Boolean) && setSubmitFeedback(true)
+                                            }}
+                                        >
+                                            Confirm
+                                        </Button>
+                                    </Stack>
+                                </Stack>
+                            </Box>
+                        }
                     </Box>
                 </Box>
             </AccordionSummary>

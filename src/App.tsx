@@ -8,6 +8,8 @@ import Login from "./components/studentInterface/authentication/login/Login"
 import Signup from "./components/studentInterface/authentication/signup/Signup"
 import Exam from "./components/studentInterface/programs/Current/Exam"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import Quiz from "./components/studentInterface/programs/Current/Quiz"
+import Assessment from "./components/studentInterface/programs/Current/Assessment"
 
 const queryClient = new QueryClient()
 
@@ -35,6 +37,12 @@ function App() {
 					</Route>
 					<Route path='exam'>
 						<Route index element={<Exam />} />
+					</Route>
+					<Route path='quiz'>
+						<Route index element={<Quiz />} />
+					</Route>
+					<Route path='assessment'>
+						<Route index element={<Assessment />} />
 					</Route>
 				</Route>
 			</Routes>
