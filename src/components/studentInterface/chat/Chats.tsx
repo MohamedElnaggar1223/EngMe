@@ -1,17 +1,30 @@
 import { Box } from "@mui/material";
-import { createContext, useState } from "react";
-import ChatsHome from "./ChatsHome";
+import { Suspense, createContext, lazy, useState } from "react";
+import ChatRoom from "./ChatRoom";
+import useAuth from "../authentication/auth/Auth";
+const ChatsHome = lazy(() => import("./ChatsHome"))
+
+export interface UserProps{
+    friends?: [],
+    id: string,
+    name: string,
+    email: string
+}
 
 //@ts-expect-error context
 export const ChatContext = createContext()
 
 export default function Chats() 
 {
-    const [chatDisplayed, setChatDisplayed] = useState(true)
-    const [chat, setChat] = useState()
+    const [chatDisplayed, setChatDisplayed] = useState(false)
+    const [chat, setChat] = useState<UserProps[]>()
+    const [chatUserData, setChatUserData] = useState()
+    const { user } = useAuth()
+
+    console.log(user?.email)
 
     return (
-        <ChatContext.Provider value={{ chat, setChat, setChatDisplayed, chatDisplayed }}>
+        <ChatContext.Provider value={{ chat, setChat, setChatDisplayed, chatDisplayed, user, chatUserData, setChatUserData }}>
             <Box
                 display='flex'
                 flexDirection='column'
@@ -25,9 +38,16 @@ export default function Chats()
                 width='fit-content'
             >
                 {
-                    chat && chatDisplayed ?
-                    <></> :
-                    <ChatsHome />
+                    chat && chatDisplayed 
+                    ?
+                        <Suspense>
+                            {/*//@ts-expect-error context */}
+                            <ChatRoom user={chat[0]} friend={chat[1]} />
+                        </Suspense>
+                    :
+                        <Suspense fallback={<></>}>
+                            <ChatsHome />
+                        </Suspense>
                 }
             </Box>
         </ChatContext.Provider>

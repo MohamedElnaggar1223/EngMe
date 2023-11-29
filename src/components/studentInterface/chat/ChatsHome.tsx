@@ -1,12 +1,100 @@
-import { useContext } from 'react'
+import { lazy, useContext, useEffect, useState } from 'react'
 import { Box, Typography, SvgIcon, Stack } from "@mui/material";
-import ChatCard from "./ChatCard";
+const ChatCard = lazy(() => import("./ChatCard"))
 import { ChatContext } from "./Chats";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db } from "../../../firebase/firebaseConfig";
+import { PageContext } from '../../Layout';
+
 
 export default function ChatsHome() 
 {
     //@ts-expect-error context
-    const { chatDisplayed, setChatDisplayed } = useContext(ChatContext)
+    const { user } = useContext(PageContext)
+    //@ts-expect-error context
+    const { chatDisplayed, setChatDisplayed, setChatUserData } = useContext(ChatContext)
+    const [userFriends, setUserFriends] = useState([])
+
+    const usersRef = collection(db, 'users')
+
+    useEffect(() => {
+        // const queryFriends = query(usersRef, 
+        //         where('email', '==', user?.email)
+        //     )
+        // onSnapshot(queryFriends, (snapshot) => {
+        //     //@ts-expect-error data
+        //     const userData = []
+        //     snapshot.forEach((doc) => {
+        //         userData.push({...doc.data(), id: doc.id})
+        //     })
+        //     //@ts-expect-error data
+        //     userData[0].friends.map(async (friend) => {
+        //         const friendDoc = doc(db, 'users', friend)
+        //         const friendData = await getDoc(friendDoc)
+        //         console.log(friendData)
+        //         const oldArray = [...users]
+        //         oldArray.push(friendData)
+        //         setUsers(oldArray)
+        //     })
+        // })
+        // async function getUserFriends()
+        // {
+        //     const queryFriends = query(usersRef, where('email', '==', user.email))
+        //     const userDoc = await getDocs(queryFriends)
+        //     //@ts-expect-error wdwd
+        //     const friendsArray = []
+        //     const getFriendsArray = async (friendsArray: []) =>
+        //     { 
+        //         userDoc.forEach(async (docu) => {
+        //             const userFriendsIds = docu.data().friends
+        //             console.log(userFriendsIds)
+        //             //@ts-expect-error wdwd
+        //             userFriendsIds.forEach(async (friend) => {
+        //                 const friendDoc = doc(db, 'users', friend.id)
+        //                 const friendData = await getDoc(friendDoc)
+        //                 console.log(friendData.data())
+        //                 //@ts-expect-error wdwd
+        //                 friendsArray.push({...friendData.data(), id: friendData.id})
+        //             })
+                    
+        //         })
+        //     }
+        //     //@ts-expect-error wdwd
+        //     await getFriendsArray(friendsArray)
+        //     //@ts-expect-error wdwd
+        //     setUsers(friendsArray)
+        // }
+    
+        // getUserFriends()
+        
+        const queryFriends = query(usersRef, where('email', '==', user?.email))
+
+        const unsub = onSnapshot(queryFriends, (querySnapshot) => {
+            //@ts-expect-error errrr
+            const users = []
+            querySnapshot.forEach((doc) => {
+                users.push({...doc.data(), id: doc.id})
+            })
+            //@ts-expect-error errrr
+            setUserFriends(users[0].friends)
+            //@ts-expect-error errrr
+            setChatUserData({...users[0]})
+        })
+
+        return () => {
+            unsub()
+        }
+        //eslint-disable-next-line
+    }, [user])
+
+    // console.log(userChat)
+
+    const displayedChats = userFriends?.map(user => 
+        //@ts-expect-error idd
+        <ChatCard id={user.id} />
+    )
+
+    // console.log(displayedChats.length)
 
     return (
         <>
@@ -53,14 +141,7 @@ export default function ChatsHome()
             >
                 {
                     chatDisplayed &&
-                    <>
-                        <ChatCard />
-                        <ChatCard />
-                        <ChatCard />
-                        <ChatCard />
-                        <ChatCard />
-                        <ChatCard />
-                    </>
+                    displayedChats
                 }
             </Stack>
             <Box

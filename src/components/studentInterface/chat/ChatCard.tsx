@@ -1,7 +1,43 @@
 import { Stack, Avatar, Typography, Box, SvgIcon } from "@mui/material";
 import avatar from '../../../assets/Ellipse 3.png'
+import { ChatContext, UserProps } from "./Chats";
+import { useContext, useEffect, useState } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../../firebase/firebaseConfig";
 
-export default function ChatCard() {
+interface Props{
+    id: string
+}
+
+export default function ChatCard({ id }: Props) 
+{
+    //@ts-expect-error dad
+    const { chatUserData, setChat } = useContext(ChatContext)
+    const [userData, setUserData] = useState<UserProps>()
+
+    const usersRef = collection(db, 'users')
+
+    useEffect(() => {
+
+        const unsub = onSnapshot(usersRef, (querySnapshot) => {
+            //@ts-expect-error errrr
+            const users = []
+            querySnapshot.forEach((doc) => {
+                doc.id === id &&
+                users.push({...doc.data(), id: doc.id})
+            })
+            //@ts-expect-error errrr
+            setUserData(users)
+        })
+
+        return () => {
+            unsub()
+        }
+        //eslint-disable-next-line
+    }, [])
+
+    if(!userData) return <></>
+
     return (
         <Box
             display='flex'
@@ -13,6 +49,8 @@ export default function ChatCard() {
                 cursor: 'pointer',
                 borderBottom: '1px solid rgba(0, 0, 0, 0.2)'
             }}
+            key={id}
+            onClick={() => setChat([chatUserData, userData])}
         >
             <Stack
                 direction='row'
@@ -20,13 +58,14 @@ export default function ChatCard() {
                 alignItems='center'
                 // mr={7}
             >
-                <Avatar src={avatar} sx={{ width: '70px', height: '70px' }} />
+                <Avatar src={avatar ?? ''} sx={{ width: '70px', height: '70px' }} />
                 <Stack
                     direction='column'
                     justifyContent='center'
                     gap={1}
                 >
-                    <Typography noWrap sx={{ color: '#000' }} fontFamily='Inter' fontSize={14} fontWeight={600}>Dr.Mohamed El Tokhy</Typography>
+                    {/*//@ts-expect-error ddd*/}
+                    <Typography noWrap sx={{ color: '#000' }} fontFamily='Inter' fontSize={14} fontWeight={600}>{userData[0]?.name}: {userData[0]?.email.slice(0, 5)}... </Typography>
                     <Stack
                         direction='row'
                         justifyContent='space-between'

@@ -1,9 +1,10 @@
 import { Box } from '@mui/material'
-import TeacherCard from './TeacherCard'
-import TeacherCredentials from './TeacherCredentials'
-import TeacherPrograms from './TeacherPrograms'
-import TeacherFeedbacks from './TeacherFeedbacks'
-import TeacherTestimonials from './TeacherTestimonials'
+import { Suspense, lazy } from 'react'
+const TeacherCard = lazy(() => import('./TeacherCard'))
+const TeacherCredentials = lazy(() => import('./TeacherCredentials'))
+const TeacherPrograms = lazy(() => import('./TeacherPrograms'))
+const TeacherFeedbacks = lazy(() => import('./TeacherFeedbacks'))
+const TeacherTestimonials = lazy(() => import('./TeacherTestimonials'))
 
 export default function TeacherProfile() 
 {
@@ -13,11 +14,25 @@ export default function TeacherProfile()
             display='flex'
             flexDirection='column'
         >
-            <TeacherCard />
-            <TeacherCredentials />
-            <TeacherPrograms />
-            <TeacherFeedbacks />
-            <TeacherTestimonials />
+            <Suspense>
+                <TeacherCard />
+            </Suspense>
+
+            <Suspense>
+                <TeacherCredentials />
+            </Suspense>
+
+            <Suspense>
+                <TeacherPrograms />
+            </Suspense>
+
+            <Suspense>
+                <TeacherFeedbacks />
+            </Suspense>
+            
+            <Suspense>
+                <TeacherTestimonials />
+            </Suspense>
         </Box>
     )
 }

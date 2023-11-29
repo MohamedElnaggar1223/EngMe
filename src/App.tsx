@@ -1,15 +1,16 @@
 import { Route, Routes } from "react-router-dom"
-import TeacherProfile from "./components/studentInterface/teacherProfile/TeacherProfile"
+import { Suspense, lazy } from "react"
+const TeacherProfile = lazy(() => import("./components/studentInterface/teacherProfile/TeacherProfile"))
 import Layout from "./components/Layout"
 import StudentProfile from "./components/studentInterface/studentProfile/StudentProfile"
 import HomeLayout from "./components/studentInterface/HomeLayout"
-import Programs from "./components/studentInterface/programs/Programs"
+const Programs = lazy(() => import("./components/studentInterface/programs/Programs"))
 import Login from "./components/studentInterface/authentication/login/Login"
 import Signup from "./components/studentInterface/authentication/signup/Signup"
-import Exam from "./components/studentInterface/programs/Current/Exam"
+const Exam = lazy(() => import("./components/studentInterface/programs/Current/Exam"))
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import Quiz from "./components/studentInterface/programs/Current/Quiz"
-import Assessment from "./components/studentInterface/programs/Current/Assessment"
+const Quiz = lazy(() => import("./components/studentInterface/programs/Current/Quiz"))
+const Assessment = lazy(() => import("./components/studentInterface/programs/Current/Assessment"))
 
 const queryClient = new QueryClient()
 
@@ -21,13 +22,21 @@ function App() {
 				<Route path='/' element={<Layout />}>
 					<Route index element={<HomeLayout />} />
 					<Route path='teacherprofile'>
-						<Route index element={<TeacherProfile />} />
+						<Route index element={
+							<Suspense>
+								<TeacherProfile />
+							</Suspense>
+						} />
 					</Route>
 					<Route path='profile'>
 						<Route index element={<StudentProfile />} />
 					</Route>
 					<Route path='programs'>
-						<Route index element={<Programs />} />
+						<Route index element={
+							<Suspense>
+								<Programs />
+							</Suspense>
+						} />
 					</Route>
 					<Route path='login'>
 						<Route index element={<Login />} />
@@ -36,13 +45,25 @@ function App() {
 						<Route index element={<Signup />} />
 					</Route>
 					<Route path='exam'>
-						<Route index element={<Exam />} />
+						<Route index element={
+							<Suspense>
+								<Exam />
+							</Suspense>
+						} />
 					</Route>
 					<Route path='quiz'>
-						<Route index element={<Quiz />} />
+						<Route index element={
+							<Suspense>
+								<Quiz />
+							</Suspense>
+						} />
 					</Route>
 					<Route path='assessment'>
-						<Route index element={<Assessment />} />
+						<Route index element={
+							<Suspense>
+								<Assessment />
+							</Suspense>
+						} />
 					</Route>
 				</Route>
 			</Routes>

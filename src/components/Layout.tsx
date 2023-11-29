@@ -29,7 +29,7 @@ export default function Layout()
   }, [page, navigate, user])
 
   return (
-    <PageContext.Provider value={{page, setPage}} >
+    <PageContext.Provider value={{page, setPage, user}} >
         { user && <Header /> }
         <Outlet />
         { user && <Chats />}
