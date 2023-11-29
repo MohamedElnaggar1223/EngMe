@@ -5,16 +5,17 @@ import { ChatContext } from "./Chats";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import { PageContext } from '../../Layout';
+import useUnReadMessages from './useUnReadMessages';
 
 
 export default function ChatsHome() 
 {
     //@ts-expect-error context
     const { user } = useContext(PageContext)
+    const { unReadMessages } = useUnReadMessages()
     //@ts-expect-error context
     const { chatDisplayed, setChatDisplayed, setChatUserData } = useContext(ChatContext)
     const [userFriends, setUserFriends] = useState([])
-
     const usersRef = collection(db, 'users')
 
     useEffect(() => {
@@ -184,7 +185,7 @@ export default function ChatsHome()
                         <circle cx="14" cy="14" r="14" fill="#226E9F"/>
                     </svg>
                 </SvgIcon>
-                <Typography sx={{ color: '#fff', fontSize: 14, position: 'absolute', top: '2%', right: '-0.01%', left: '97%', bottom: '100%', zIndex: 99999999999}}>5</Typography>
+                <Typography sx={{ color: '#fff', fontSize: 14, position: 'absolute', top: '2%', right: '-0.01%', left: '97%', bottom: '100%', zIndex: 99999999999}}>{unReadMessages}</Typography>
             </Box>
         </>
     )

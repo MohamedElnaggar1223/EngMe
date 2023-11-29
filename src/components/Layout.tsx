@@ -24,7 +24,11 @@ export default function Layout()
     navigate('/programs') : 
     page === 'quiz' ? 
     navigate('/quiz') : 
-    navigate('/assessment') : 
+    page === 'assessment' ?
+    navigate('/assessment') :
+    page === 'knowledgebank' ? 
+    navigate('/knowledgebank') :
+    navigate('/exambank') :
     navigate('/signup')
   }, [page, navigate, user])
 

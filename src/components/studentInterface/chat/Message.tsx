@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material"
-import { FieldValue } from "firebase/firestore"
+import { FieldValue, doc, updateDoc } from "firebase/firestore"
 import { memo, useEffect, useRef } from "react"
+import { db } from "../../../firebase/firebaseConfig"
 
 interface Message{
     isSender: boolean,
@@ -13,15 +14,29 @@ interface Message{
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-function Message({ isSender, isLast, createdAt, message }: Message) 
+function Message({ id, isSender, isLast, createdAt, message }: Message) 
 {
     const scrollRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        isLast && scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+        isLast && scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start'})
     }, [scrollRef, isLast])
 
+    useEffect(() => {
+        if(!isSender)
+        {
+            const updateMessage = async () => {
+                const getMessage = doc(db, 'messages', id)
+                await updateDoc(getMessage,{
+                    read: true
+                })
+            }
+            updateMessage()
+        }
+    }, [isSender, id])
+
     return (
+        <>
         <Box
             flex={1}
             alignItems={isSender ? 'flex-end' : 'flex-start'}
@@ -29,9 +44,7 @@ function Message({ isSender, isLast, createdAt, message }: Message)
             display='flex'
             flexDirection='column'
             alignSelf='stretch'
-            maxHeight='fit-content'
-            minHeight='50px'
-            my={4}
+            height='fit-content'
         >
             <Box
                 bgcolor={isSender ? '#226E9F' : '#F8F8F8'}
@@ -39,6 +52,7 @@ function Message({ isSender, isLast, createdAt, message }: Message)
                 pl={2.5}
                 pr={1}
                 py={1}
+                my={0.1}
                 borderRadius='15px'
                 maxWidth='450px'
                 height='fit-content'
@@ -51,9 +65,11 @@ function Message({ isSender, isLast, createdAt, message }: Message)
                     {/*//@ts-expect-error ddd */}
                     {createdAt?.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </Typography>
-                <div ref={scrollRef}></div>
+                
             </Box>
         </Box>
+        <div ref={scrollRef}></div>
+        </>
     )
 }
 

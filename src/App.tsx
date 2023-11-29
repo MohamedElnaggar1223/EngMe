@@ -9,6 +9,8 @@ import Login from "./components/studentInterface/authentication/login/Login"
 import Signup from "./components/studentInterface/authentication/signup/Signup"
 const Exam = lazy(() => import("./components/studentInterface/programs/Current/Exam"))
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
+const KnowledgeBank = lazy(() => import("./components/studentInterface/knowledgebank/KnowledgeBank"))
 const Quiz = lazy(() => import("./components/studentInterface/programs/Current/Quiz"))
 const Assessment = lazy(() => import("./components/studentInterface/programs/Current/Assessment"))
 
@@ -62,6 +64,20 @@ function App() {
 						<Route index element={
 							<Suspense>
 								<Assessment />
+							</Suspense>
+						} />
+					</Route>
+					<Route path='knowledgebank'>
+						<Route index element={
+							<Suspense>
+								<KnowledgeBank />
+							</Suspense>
+						} />
+					</Route>
+					<Route path='exambank'>
+						<Route index element={
+							<Suspense>
+								<ExamBank />
 							</Suspense>
 						} />
 					</Route>

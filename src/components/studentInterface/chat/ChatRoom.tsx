@@ -3,7 +3,8 @@ import { ChatContext, UserProps } from "./Chats"
 import { Box, Typography, SvgIcon, Stack, Input } from "@mui/material"
 import { FieldValue, addDoc, and, collection, onSnapshot, or, orderBy, query, serverTimestamp, where } from "firebase/firestore"
 import { db } from "../../../firebase/firebaseConfig"
-import Message from "./Message"
+import useUnReadMessages from "./useUnReadMessages"
+const Message = lazy(() => import("./Message"))
 const Avatar = lazy(() => import('./AvatarLazy'))
 
 interface Props{
@@ -17,18 +18,21 @@ interface Message{
     receiver: string,
     message: string,
     createdAt: FieldValue,
+    read: boolean
 }
 
 export default function ChatRoom({ user, friend }: Props)
 {  
     //@ts-expect-error context
     const { chatDisplayed, setChatDisplayed, setChat } = useContext(ChatContext)
+    const { unReadMessages } = useUnReadMessages()
     const [messages, setMessages] = useState<Message[]>([])
     const [message, setMessage] = useState<Message>({
         sender: user.id,
         receiver: friend[0].id,
         message: '',
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        read: false
     })
 
     console.log(friend[0])
@@ -58,11 +62,9 @@ export default function ChatRoom({ user, friend }: Props)
     {
         e.preventDefault()
         if(message.message === '') return
-        await addDoc(messagesRef, {...message, createdAt: serverTimestamp()})
+        await addDoc(messagesRef, {...message, createdAt: serverTimestamp(), read: false})
         setMessage(prev => ({...prev, message: ''}))
     }
-
-    // console.log(messages)
 
     const displayedMessages = messages.map((message, index) => <Message isLast={messages.length === index + 1} isSender={message.sender === user.id} {...message} id={message.id ?? ''}></Message>)
 
@@ -126,7 +128,7 @@ export default function ChatRoom({ user, friend }: Props)
                 px={2.5}
                 py={1}
                 direction='column'
-                
+                gap={1.5}
             >
                 {
                     chatDisplayed &&
@@ -173,7 +175,7 @@ export default function ChatRoom({ user, friend }: Props)
                         <circle cx="14" cy="14" r="14" fill="#226E9F"/>
                     </svg>
                 </SvgIcon>
-                <Typography sx={{ color: '#fff', fontSize: 14, position: 'absolute', top: '2%', right: '-0.01%', left: '97%', bottom: '100%', zIndex: 99999999999}}>5</Typography>
+                <Typography sx={{ color: '#fff', fontSize: 14, position: 'absolute', top: '2%', right: '-0.01%', left: '97%', bottom: '100%', zIndex: 99999999999}}>{unReadMessages}</Typography>
                 <Box
                     px={3}
                     // py={0.4}

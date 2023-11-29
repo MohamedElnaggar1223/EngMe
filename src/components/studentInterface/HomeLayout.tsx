@@ -1,24 +1,25 @@
-import { useContext, useEffect } from 'react'
-import { PageContext } from '../Layout'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 
 export default function HomeLayout() 
 {
-    //@ts-expect-error context
-    const { page } = useContext(PageContext)
-    const navigate = useNavigate()
+    // const { page } = useContext(PageContext)
+    // const navigate = useNavigate()
     
-    useEffect(() => {
-        page === 'profile' ? 
-        navigate('/profile') : 
-        page === 'exam' ? 
-        navigate('/exam') : 
-        page === 'programs' ? 
-        navigate('/programs') : 
-        page === 'quiz' ? 
-        navigate('/quiz') : 
-        navigate('/assessment')
-    }, [page, navigate])
+    // useEffect(() => {
+    //     page === 'profile' ? 
+    //     navigate('/profile') : 
+    //     page === 'exam' ? 
+    //     navigate('/exam') : 
+    //     page === 'programs' ? 
+    //     navigate('/programs') : 
+    //     page === 'quiz' ? 
+    //     navigate('/quiz') : 
+    //     page === 'assessment' ?
+    //     navigate('/assessment') :
+    //     page === 'knowledgebank' ?
+    //     navigate('/knowledgebank') :
+    //     navigate('/exambank')
+    // }, [page, navigate])
 
     return (
         <Outlet />
