@@ -24,7 +24,6 @@ interface Message{
 
 export default function ChatRoom({ user, friend }: Props)
 {  
-    console.log(user.id, friend.id)
     //@ts-expect-error context
     const { chatDisplayed, setChatDisplayed, setChat } = useContext(ChatContext)
     const { unReadMessages } = useUnReadMessages()
@@ -37,7 +36,6 @@ export default function ChatRoom({ user, friend }: Props)
         read: false
     })
 
-    console.log(friend)
 
     const messagesRef = collection(db, 'messages')
 

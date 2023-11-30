@@ -1,8 +1,8 @@
-import { createContext, useLayoutEffect, useState } from 'react'
+import { createContext, useEffect, useLayoutEffect, useState } from 'react'
 import { auth, db } from '../../../firebase/firebaseConfig'
 import { doc, getDoc } from 'firebase/firestore'
 import { User, onAuthStateChanged } from 'firebase/auth'
-import UserProps from '../../../interfaces/UserProps'
+import { useQuery } from '@tanstack/react-query'
 
 //@ts-expect-error context
 export const AuthContext = createContext()
@@ -11,21 +11,36 @@ export const AuthContext = createContext()
 export default function AuthProvider({ children }) 
 {   
     const [user, setUser] = useState<User | null>(null)
-    const [userData, setUserData] = useState<UserProps | null>()
+    const { data: userData, refetch } = useQuery({
+        queryKey: ['userData'],
+        queryFn: () => getUserData(user?.uid ?? '')
+    })
+
+    useEffect(() => {
+        refetch()
+    }, [user, refetch])
 
     // const []
     async function getUserData(uid: string)
     {
-        const userRef = doc(db, 'students', uid)
-        const userSnapshot = await getDoc(userRef)
-
-        if(userSnapshot.exists())
+        try
         {
-            const userData = {...userSnapshot.data(), id: userSnapshot.id}
-            return userData
+            const userRef = doc(db, 'students', uid ?? '')
+            const userSnapshot = await getDoc(userRef)
+    
+            if(userSnapshot.exists())
+            {
+                const userData = {...userSnapshot.data(), id: userSnapshot.id}
+                return userData
+            }
+            else
+            {
+                return null
+            }
         }
-        else
+        catch(e)
         {
+            console.error(e)
             return null
         }
     }
@@ -36,13 +51,10 @@ export default function AuthProvider({ children })
             if(authUser)
             {
                 setUser(authUser)
-                const userDataFetched = await getUserData(authUser.uid)
-                setUserData(userDataFetched as UserProps)
             }
             else
             {
                 setUser(null)
-                setUserData(null)
             }
         })
 
@@ -50,6 +62,8 @@ export default function AuthProvider({ children })
             listen()
         }
     }, [])
+
+    console.log(userData)
 
     return (
         <AuthContext.Provider

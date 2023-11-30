@@ -5,6 +5,7 @@ const ProgramsExploreProgram = lazy(() => import("./ProgramsExploreProgram"))
 
 export default function ProgramsExplore() 
 {
+
     const [filters, setFilters] = useState(false)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedFilters, setSelectedFilters] = useState<any>({
@@ -31,9 +32,7 @@ export default function ProgramsExplore()
         const newFilters = {...selectedFilters, [filter]: newArray}
         setSelectedFilters(newFilters)
     }
-
     
-
     return (
         <Box
             my={5}

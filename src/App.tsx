@@ -20,8 +20,8 @@ const queryClient = new QueryClient()
 function App() {
 
 	return (
-		<AuthProvider>
-			<QueryClientProvider client={queryClient}>
+		<QueryClientProvider client={queryClient}>
+			<AuthProvider>
 				<Routes>
 					<Route path='/' element={
 						<StudentPrivateRoute>
@@ -108,8 +108,8 @@ function App() {
 							</Route>
 					</Route>
 				</Routes>
-			</QueryClientProvider>
-		</AuthProvider>
+			</AuthProvider>
+		</QueryClientProvider>
 	)
 }
 

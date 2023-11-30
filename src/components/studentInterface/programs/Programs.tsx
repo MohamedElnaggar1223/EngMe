@@ -4,10 +4,80 @@ import ProgramsCompleted from './Completed/ProgramsCompleted'
 import ProgramsCurrent from './Current/ProgramsCurrent'
 import ProgramsExplore from './Explore/ProgramsExplore'
 import ProgramsFavorites from './Favorites/ProgramsFavorites'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { collection, getDocs, query, where, documentId } from 'firebase/firestore'
+import { db } from '../../../firebase/firebaseConfig'
 
 export default function Programs() 
 {
+    const userData = useQueryClient().getQueryData(['userData'])
+    
     const [tab, setTab] = useState('Explore')
+
+    const { data: currentPrograms } = useQuery({
+        //@ts-expect-error idk man
+        queryKey: ['currentPrograms', userData?.id],
+        queryFn: () => getCurrentPrograms(),
+        //@ts-expect-error idk man
+        enabled: !!userData?.id
+    })
+
+    const { data: explorePrograms } = useQuery({
+        //@ts-expect-error idk man
+        queryKey: ['explorePrograms', userData?.id],
+        queryFn: () => getExplorePrograms(),
+        //@ts-expect-error idk man
+        enabled: !!userData?.id && !!currentPrograms
+    })
+
+    async function getCurrentPrograms()
+    {
+        const studentProgramsRef = collection(db, 'studentProgram')
+        //@ts-expect-error query
+        const q = query(studentProgramsRef, where('studentId', '==', userData?.id))
+
+        const querySnapshot  = await getDocs(q)
+
+        const currentProgramsData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }))
+
+        return currentProgramsData
+    }
+
+    async function getExplorePrograms()
+    {
+        const programsRef = collection(db, 'programs')
+
+        if(currentPrograms?.length)
+        {
+            //@ts-expect-error idd
+            const q = query(programsRef, where(documentId(), 'not-in', currentPrograms?.map(program => program.programId)))
+    
+            const querySnapshot  = await getDocs(q)
+    
+            const exploreProgramsData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }))
+    
+            return exploreProgramsData
+        }
+        else
+        {
+            const querySnapshot  = await getDocs(programsRef)
+    
+            const exploreProgramsData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }))
+    
+            return exploreProgramsData
+        }
+    }
+
+    console.log(explorePrograms)
 
     return (
         <Box

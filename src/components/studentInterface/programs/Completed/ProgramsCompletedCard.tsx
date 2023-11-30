@@ -321,7 +321,7 @@ export default function ProgramsCompletedCard()
                                             opacity: 1
                                         }
                                     }}
-                                    onClick={() => console.log('ts')}
+                                    // onClick={() => console.log('ts')}
                                 >
                                     Request Certificate
                                 </Button>

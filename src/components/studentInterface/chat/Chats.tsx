@@ -16,8 +16,6 @@ export default function Chats()
     //@ts-expect-error context
     const { user } = useContext(AuthContext)
 
-    console.log(user?.email)
-
     return (
         <ChatContext.Provider value={{ chat, setChat, setChatDisplayed, chatDisplayed, user, chatUserData, setChatUserData }}>
             <Box

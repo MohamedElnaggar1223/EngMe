@@ -30,7 +30,9 @@ export default function StudentSignUp()
 
                 const userRef = doc(db, 'students', uid)
                 await setDoc(userRef, {
-                    programs: [],
+                    completedPrograms: [],
+                    favoritePrograms: [],
+                    certifactes: [],
                     name: `${firstname} ${lastname}`,
                     email,
                     number
