@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
-import { Suspense, createContext, lazy, useState } from "react";
+import { Suspense, createContext, lazy, useContext, useState } from "react";
 import ChatRoom from "./ChatRoom";
-import useAuth from "../../authentication/auth/Auth";
+import { AuthContext } from "../../authentication/auth/AuthProvider";
 const ChatsHome = lazy(() => import("./ChatsHome"))
 
 export interface UserProps{
@@ -19,7 +19,8 @@ export default function Chats()
     const [chatDisplayed, setChatDisplayed] = useState(false)
     const [chat, setChat] = useState<UserProps[]>()
     const [chatUserData, setChatUserData] = useState()
-    const { user } = useAuth()
+    //@ts-expect-error context
+    const { user } = useContext(AuthContext)
 
     console.log(user?.email)
 

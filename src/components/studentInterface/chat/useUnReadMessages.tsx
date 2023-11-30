@@ -1,13 +1,14 @@
 import { onSnapshot, collection, query, where } from "firebase/firestore"
 import { useEffect, useContext, useState } from "react"
 import { db } from "../../../firebase/firebaseConfig"
-import { PageContext } from "../../Layout"
+// import { PageContext } from "../../Layout"
 import { UserProps } from "./Chats"
+import { AuthContext } from "../../authentication/auth/AuthProvider"
 
 export default function useUnReadMessages()
 {
     //@ts-expect-error context
-    const { user } = useContext(PageContext)
+    const { user } = useContext(AuthContext)
     const [unReadMessages, setUnReadMessages] = useState(0)
     const [userData, setUserData] = useState<UserProps>()
 

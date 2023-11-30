@@ -3,11 +3,17 @@ import { Box, Stack, Typography } from "@mui/material"
 import StudentSignUp from "./StudentSignUp"
 import TeacherSignUp from "./TeacherSignUp"
 import icon from '../../../assets/Ellipse 1.png'
+// import { PageContext } from '../../Layout'
 
 export default function Signup() 
 {
+    // const { setPage, user } = useContext(PageContext)
     const [selectedPage, setSelectedPage] = useState('Student')
 
+    // useLayoutEffect(() => {
+    //     if(user) setPage('profile')
+    // }, [user])
+    
     return (
         <Box
             overflow='hidden'

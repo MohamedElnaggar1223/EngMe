@@ -1,13 +1,14 @@
 import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
 import logo from '../../../assets/Ellipse 1.png'
-import { memo, useContext } from "react";
-import { PageContext } from "../../Layout";
+import { memo } from "react";
+// import { PageContext } from "../../Layout";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react-refresh/only-export-components
 function Header() 
 {
-    //@ts-expect-error context
-    const { page, setPage } = useContext(PageContext)
+    const navigate = useNavigate()
+    const { pathname } = useLocation()
 
     return (
         <Box
@@ -88,7 +89,7 @@ function Header()
                         ml={{xs: 4, sm: 4, lg: 8}}
                         alignItems='center'
                     >
-                        <Typography onClick={() => setPage('profile')} sx={{ color: page === 'profile' ? '#226E9F' : '#000', cursor: 'pointer' }}>
+                        <Typography onClick={() => navigate('/')} sx={{ color: pathname === '/' ? '#226E9F' : '#000', cursor: 'pointer' }}>
                             Profile
                         </Typography>
                         <SvgIcon>
@@ -96,7 +97,7 @@ function Header()
                                 <line x1="0.501953" y1="2.18558e-08" x2="0.501952" y2="22" stroke="black"/>
                             </svg>
                         </SvgIcon>
-                        <Typography onClick={() => setPage('programs')} sx={{ color: page === 'profile' ? '#000' : '#226E9F', cursor: 'pointer' }}>
+                        <Typography onClick={() => navigate('/programs')} sx={{ color: pathname === '/' ? '#000' : '#226E9F', cursor: 'pointer' }}>
                             Programs
                         </Typography>
                     </Stack>
@@ -116,7 +117,7 @@ function Header()
                             alignItems: 'center',
                             gap: 1
                         }}
-                        onClick={() => setPage('knowledgebank')}
+                        onClick={() => navigate('/knowledgebank')}
                     >
                         <SvgIcon>
                             <svg width="19" height="21" viewBox="0 0 19 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -145,7 +146,7 @@ function Header()
                             alignItems: 'center',
                             gap: 1
                         }}
-                        onClick={() => setPage('exambank')}
+                        onClick={() => navigate('/exambank')}
                     >
                         <SvgIcon>
                             <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">

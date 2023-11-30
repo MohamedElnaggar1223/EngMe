@@ -4,7 +4,7 @@ import { memo, useContext } from "react";
 import ReactApexChart from "react-apexcharts";
 import { QuestionsContext } from "./FinalExams";
 import { useNavigate } from "react-router-dom";
-import { PageContext } from "../../../Layout";
+// import { PageContext } from "../../../Layout";
 
 interface FinalExamCardProps{
     disabled?: boolean,
@@ -16,14 +16,13 @@ function FinalExamCard({ disabled, showQuestions }: FinalExamCardProps)
 {
     //@ts-expect-error context
     const { questions, setQuestions } = useContext(QuestionsContext)
-    //@ts-expect-error context
-    const { setPage } = useContext(PageContext)
+    // const { setPage } = useContext(PageContext)
 
     const navigate = useNavigate()
 
     function handleExam()
     {
-        setPage('exam')
+        // setPage('exam')
         navigate('/exam')
     }
 

@@ -4,14 +4,15 @@ const ChatCard = lazy(() => import("./ChatCard"))
 import { ChatContext } from "./Chats";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
-import { PageContext } from '../../Layout';
+// import { PageContext } from '../../Layout';
 import useUnReadMessages from './useUnReadMessages';
+import { AuthContext } from '../../authentication/auth/AuthProvider';
 
 
 export default function ChatsHome() 
 {
     //@ts-expect-error context
-    const { user } = useContext(PageContext)
+    const { user } = useContext(AuthContext)
     const { unReadMessages } = useUnReadMessages()
     //@ts-expect-error context
     const { chatDisplayed, setChatDisplayed, setChatUserData } = useContext(ChatContext)

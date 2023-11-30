@@ -1,6 +1,6 @@
-import { Suspense, lazy, memo, useContext } from "react";
+import { Suspense, lazy, memo } from "react";
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails, Button } from "@mui/material";
-import { PageContext } from "../../../Layout";
+// import { PageContext } from "../../../Layout";
 import { useNavigate } from "react-router-dom";
 // eslint-disable-next-line react-refresh/only-export-components
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
@@ -12,8 +12,7 @@ interface ComponentCardProps{
 // eslint-disable-next-line react-refresh/only-export-components
 function ComponentCard({ Quiz }: ComponentCardProps) 
 {
-    //@ts-expect-error context
-    const { setPage } = useContext(PageContext)
+    // const { setPage } = useContext(PageContext)
 
     const navigate = useNavigate()
     return (
@@ -93,7 +92,7 @@ function ComponentCard({ Quiz }: ComponentCardProps)
                                         }
                                     }}
                                     onClick={() => {
-                                        setPage('quiz')
+                                        // setPage('quiz')
                                         navigate('/quiz')
                                     }}
                                 >
