@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Box, Stack, Typography } from "@mui/material"
 import StudentSignUp from "./StudentSignUp"
 import TeacherSignUp from "./TeacherSignUp"
-import icon from '../../../../assets/Ellipse 1.png'
+import icon from '../../../assets/Ellipse 1.png'
 
 export default function Signup() 
 {

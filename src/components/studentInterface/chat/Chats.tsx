@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { Suspense, createContext, lazy, useState } from "react";
 import ChatRoom from "./ChatRoom";
-import useAuth from "../authentication/auth/Auth";
+import useAuth from "../../authentication/auth/Auth";
 const ChatsHome = lazy(() => import("./ChatsHome"))
 
 export interface UserProps{

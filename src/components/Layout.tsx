@@ -1,7 +1,7 @@
 import { createContext, useLayoutEffect, useState } from 'react'
 import Header from './studentInterface/header/Header'
 import { Outlet, useNavigate } from 'react-router-dom'
-import useAuth from './studentInterface/authentication/auth/Auth'
+import useAuth from './authentication/auth/Auth'
 import Chats from './studentInterface/chat/Chats'
 
 //@ts-expect-error context
@@ -13,6 +13,12 @@ export default function Layout()
   const { user } = useAuth()
 
   const navigate = useNavigate()
+
+  function handleSignUp()
+  {
+    setPage('signup')
+    navigate('/signup')
+  }
 
   useLayoutEffect(() => {
     user ?
@@ -29,7 +35,7 @@ export default function Layout()
     page === 'knowledgebank' ? 
     navigate('/knowledgebank') :
     navigate('/exambank') :
-    navigate('/signup')
+    handleSignUp()
   }, [page, navigate, user])
 
   return (

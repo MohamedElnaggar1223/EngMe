@@ -5,8 +5,8 @@ import Layout from "./components/Layout"
 import StudentProfile from "./components/studentInterface/studentProfile/StudentProfile"
 import HomeLayout from "./components/studentInterface/HomeLayout"
 const Programs = lazy(() => import("./components/studentInterface/programs/Programs"))
-import Login from "./components/studentInterface/authentication/login/Login"
-import Signup from "./components/studentInterface/authentication/signup/Signup"
+import Login from "./components/authentication/login/Login"
+const Signup = lazy(() => import("./components/authentication/signup/Signup"))
 const Exam = lazy(() => import("./components/studentInterface/programs/Current/Exam"))
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
@@ -44,7 +44,11 @@ function App() {
 						<Route index element={<Login />} />
 					</Route>
 					<Route path='signup'>
-						<Route index element={<Signup />} />
+						<Route index element={
+							<Suspense>
+								<Signup />
+							</Suspense>
+						} />
 					</Route>
 					<Route path='exam'>
 						<Route index element={

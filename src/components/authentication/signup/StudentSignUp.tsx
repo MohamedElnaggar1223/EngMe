@@ -1,13 +1,17 @@
 import FormControl from "@mui/material/FormControl";
-import { auth } from '../../../../firebase/firebaseConfig'
+import { auth } from '../../../firebase/firebaseConfig'
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { Box, Button, Select, Stack, TextField, Typography } from "@mui/material";
 import { MuiTelInput } from 'mui-tel-input'
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import MenuItem from "@mui/material/MenuItem";
+import { PageContext } from "../../Layout";
 
 export default function StudentSignUp() 
 {
+    //@ts-expect-error context
+    const { setPage } = useContext(PageContext)
+
     const[number, setNumber] = useState('+20')
     const[firstname, setFirstname] = useState('')
     const[lastname, setLastname] = useState('')
@@ -24,7 +28,7 @@ export default function StudentSignUp()
         if(canSave)
         {
             createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredentials) => console.log(userCredentials))
+            .then(() => setPage('profile'))
             .catch(e => console.error(e))
             setEmail('')
             setPassword('')
