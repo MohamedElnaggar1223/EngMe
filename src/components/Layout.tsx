@@ -3,6 +3,8 @@ import Header from './studentInterface/header/Header'
 import { Outlet } from 'react-router-dom'
 // import useAuth from './authentication/auth/AuthProvider'
 import Chats from './studentInterface/chat/Chats'
+import { useContext } from 'react'
+import { AuthContext } from './authentication/auth/AuthProvider'
 
 // export const PageContext = createContext()
 
@@ -10,6 +12,8 @@ export default function Layout()
 {
   // const [page, setPage] = useState('profile')
   // const { user } = useAuth()
+  //@ts-expect-error context
+  const { user } = useContext(AuthContext)
 
   // const navigate = useNavigate()
 
@@ -40,9 +44,9 @@ export default function Layout()
 
   return (
     <>
-        <Header />
+        { user && <Header /> }
           <Outlet />
-        <Chats />
+        { user && <Chats /> }
     </>
   )
 }

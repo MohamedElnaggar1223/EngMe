@@ -1,6 +1,7 @@
 import { useContext } from 'react'
 import { AuthContext } from "./AuthProvider"
 import { useNavigate } from 'react-router-dom'
+import Signup from '../signup/Signup'
 
 //@ts-expect-error children
 export default function StudentPrivateRoute({ children }) 
@@ -10,8 +11,13 @@ export default function StudentPrivateRoute({ children })
 
     const navigate = useNavigate()
 
-    if(!user) navigate('/signup')
+    console.log(user)
 
+    if(!user) {
+        navigate('/signup')
+        return <Signup />
+    }
+    else
     return (
         <>
             {children}
