@@ -17,7 +17,7 @@ export default function useUnReadMessages()
 
     useEffect(() => {
         
-        const queryFriends = query(usersRef, where('email', '==', user?.email))
+        const queryFriends = query(usersRef, where('email', '==', user?.email ?? ''))
 
         const unsub = onSnapshot(queryFriends, (querySnapshot) => {
             //@ts-expect-error errrr

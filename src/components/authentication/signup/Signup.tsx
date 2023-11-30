@@ -1,11 +1,12 @@
-import { useState } from "react"
+import { memo, useState } from "react"
 import { Box, Stack, Typography } from "@mui/material"
 import StudentSignUp from "./StudentSignUp"
 import TeacherSignUp from "./TeacherSignUp"
 import icon from '../../../assets/Ellipse 1.png'
 // import { PageContext } from '../../Layout'
 
-export default function Signup() 
+//eslint-disable-next-line
+function Signup() 
 {
     // const { setPage, user } = useContext(PageContext)
     const [selectedPage, setSelectedPage] = useState('Student')
@@ -122,3 +123,6 @@ export default function Signup()
         </Box>
     )
 }
+
+const memoizedSignUp = memo(Signup)
+export default memoizedSignUp

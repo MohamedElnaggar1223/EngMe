@@ -1,7 +1,6 @@
 import { createContext, useLayoutEffect, useState } from 'react'
 import { auth } from '../../../firebase/firebaseConfig'
 import { User, onAuthStateChanged } from 'firebase/auth'
-import Signup from '../signup/Signup'
 
 //@ts-expect-error context
 export const AuthContext = createContext()
@@ -32,11 +31,7 @@ export default function AuthProvider({ children })
         <AuthContext.Provider
             value={{ user }}
         >
-            {
-                user ?
-                children :
-                <Signup />
-            }
+            { children }
         </AuthContext.Provider>
     )
 }

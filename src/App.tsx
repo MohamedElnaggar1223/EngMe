@@ -9,6 +9,7 @@ const Signup = lazy(() => import("./components/authentication/signup/Signup"))
 const Exam = lazy(() => import("./components/studentInterface/programs/Current/Exam"))
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import AuthProvider from "./components/authentication/auth/AuthProvider"
+import StudentPrivateRoute from "./components/authentication/auth/StudentPrivateRoute"
 const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
 const KnowledgeBank = lazy(() => import("./components/studentInterface/knowledgebank/KnowledgeBank"))
 const Quiz = lazy(() => import("./components/studentInterface/programs/Current/Quiz"))
@@ -22,22 +23,34 @@ function App() {
 		<AuthProvider>
 			<QueryClientProvider client={queryClient}>
 				<Routes>
-					<Route path='/' element={<Layout />}>
-						<Route index element={<StudentProfile />} />
-						<Route path='teacherprofile'>
+					<Route path='/' element={
+						<StudentPrivateRoute>
+							<Layout />
+						</StudentPrivateRoute>
+					}>
 							<Route index element={
-								<Suspense>
-									<TeacherProfile />
-								</Suspense>
+								<StudentPrivateRoute>
+									<StudentProfile />
+								</StudentPrivateRoute>
 							} />
-						</Route>
-						<Route path='programs'>
-							<Route index element={
-								<Suspense>
-									<Programs />
-								</Suspense>
-							} />
-						</Route>
+							<Route path='teacherprofile'>
+								<Route index element={
+									<StudentPrivateRoute>
+										<Suspense>
+											<TeacherProfile />
+										</Suspense>
+									</StudentPrivateRoute>
+								} />
+							</Route>
+							<Route path='programs'>
+								<Route index element={
+									<StudentPrivateRoute>
+										<Suspense>
+											<Programs />
+										</Suspense>
+									</StudentPrivateRoute>
+								} />
+							</Route>
 						<Route path='login'>
 							<Route index element={<Login />} />
 						</Route>
@@ -48,41 +61,51 @@ function App() {
 								</Suspense>
 							} />
 						</Route>
-						<Route path='exam'>
-							<Route index element={
-								<Suspense>
-									<Exam />
-								</Suspense>
-							} />
-						</Route>
-						<Route path='quiz'>
-							<Route index element={
-								<Suspense>
-									<Quiz />
-								</Suspense>
-							} />
-						</Route>
-						<Route path='assessment'>
-							<Route index element={
-								<Suspense>
-									<Assessment />
-								</Suspense>
-							} />
-						</Route>
-						<Route path='knowledgebank'>
-							<Route index element={
-								<Suspense>
-									<KnowledgeBank />
-								</Suspense>
-							} />
-						</Route>
-						<Route path='exambank'>
-							<Route index element={
-								<Suspense>
-									<ExamBank />
-								</Suspense>
-							} />
-						</Route>
+							<Route path='exam'>
+								<Route index element={
+									<StudentPrivateRoute>
+										<Suspense>
+											<Exam />
+										</Suspense>
+									</StudentPrivateRoute>
+								} />
+							</Route>
+							<Route path='quiz'>
+								<Route index element={
+									<StudentPrivateRoute>
+										<Suspense>
+											<Quiz />
+										</Suspense>
+									</StudentPrivateRoute>
+								} />
+							</Route>
+							<Route path='assessment'>
+								<Route index element={
+									<StudentPrivateRoute>
+										<Suspense>
+											<Assessment />
+										</Suspense>
+									</StudentPrivateRoute>
+								} />
+							</Route>
+							<Route path='knowledgebank'>
+								<Route index element={
+									<StudentPrivateRoute>
+										<Suspense>
+											<KnowledgeBank />
+										</Suspense>
+									</StudentPrivateRoute>
+								} />
+							</Route>
+							<Route path='exambank'>
+								<Route index element={
+									<StudentPrivateRoute>
+										<Suspense>
+											<ExamBank />
+										</Suspense>
+									</StudentPrivateRoute>
+								} />
+							</Route>
 					</Route>
 				</Routes>
 			</QueryClientProvider>

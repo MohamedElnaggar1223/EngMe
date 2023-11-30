@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, memo } from 'react'
 import { Box } from '@mui/material'
 const StudentCard = lazy(() => import('./StudentCard'))
 const StudentCertificates = lazy(() => import('./StudentCredentials'))
@@ -7,7 +7,8 @@ const StudentCompletedPrograms = lazy(() => import('./StudentCompletedPrograms')
 const StudentConsultations = lazy(() => import('./StudentConsultations'))
 const StudentCurrentPrograms = lazy(() => import('./StudentCurrentPrograms'))
 
-export default function StudentProfile() 
+//eslint-disable-next-line
+function StudentProfile() 
 {
     return (
         <Box
@@ -36,3 +37,6 @@ export default function StudentProfile()
         </Box>
     )
 }
+
+const memoizedStudentProfile = memo(StudentProfile)
+export default memoizedStudentProfile

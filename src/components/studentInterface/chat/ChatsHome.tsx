@@ -69,7 +69,7 @@ export default function ChatsHome()
     
         // getUserFriends()
         
-        const queryFriends = query(usersRef, where('email', '==', user?.email))
+        const queryFriends = query(usersRef, where('email', '==', user?.email ?? ''))
 
         const unsub = onSnapshot(queryFriends, (querySnapshot) => {
             //@ts-expect-error errrr
