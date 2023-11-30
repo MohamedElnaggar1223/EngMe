@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { AuthContext } from "./AuthProvider"
 import { useNavigate } from 'react-router-dom'
 import Signup from '../signup/Signup'
@@ -11,10 +11,12 @@ export default function StudentPrivateRoute({ children })
 
     const navigate = useNavigate()
 
-    console.log(user)
+    useEffect(() => {
+        if(!user) navigate('/signup')
+        else navigate('/')
+    }, [user, navigate])
 
     if(!user) {
-        navigate('/signup')
         return <Signup />
     }
     else

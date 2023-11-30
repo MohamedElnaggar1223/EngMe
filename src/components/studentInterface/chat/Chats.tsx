@@ -2,14 +2,8 @@ import { Box } from "@mui/material";
 import { Suspense, createContext, lazy, useContext, useState } from "react";
 import ChatRoom from "./ChatRoom";
 import { AuthContext } from "../../authentication/auth/AuthProvider";
+import UserProps from "../../../interfaces/UserProps";
 const ChatsHome = lazy(() => import("./ChatsHome"))
-
-export interface UserProps{
-    friends?: [],
-    id: string,
-    name: string,
-    email: string
-}
 
 //@ts-expect-error context
 export const ChatContext = createContext()
@@ -42,7 +36,6 @@ export default function Chats()
                     chat && chatDisplayed 
                     ?
                         <Suspense>
-                            {/*//@ts-expect-error context */}
                             <ChatRoom user={chat[0]} friend={chat[1]} />
                         </Suspense>
                     :

@@ -1,10 +1,11 @@
 import FormControl from "@mui/material/FormControl";
-import { auth } from '../../../firebase/firebaseConfig'
+import { auth, db } from '../../../firebase/firebaseConfig'
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { Box, Button, Select, Stack, TextField, Typography } from "@mui/material";
 import { MuiTelInput } from 'mui-tel-input'
 import { useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function StudentSignUp() 
 {
@@ -24,7 +25,17 @@ export default function StudentSignUp()
         if(canSave)
         {
             createUserWithEmailAndPassword(auth, email, password)
-            .then((user) => user)
+            .then(async (user) => {
+                const uid = user.user.uid
+
+                const userRef = doc(db, 'students', uid)
+                await setDoc(userRef, {
+                    programs: [],
+                    name: `${firstname} ${lastname}`,
+                    email,
+                    number
+                })
+            })
             .catch(e => console.error(e))
             setEmail('')
             setPassword('')

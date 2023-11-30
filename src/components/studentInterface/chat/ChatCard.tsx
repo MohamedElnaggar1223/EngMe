@@ -1,9 +1,10 @@
 import { Stack, Avatar, Typography, Box, SvgIcon } from "@mui/material";
 import avatar from '../../../assets/Ellipse 3.png'
-import { ChatContext, UserProps } from "./Chats";
+import { ChatContext } from "./Chats";
 import { useContext, useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
+import UserProps from "../../../interfaces/UserProps";
 
 interface Props{
     id: string
@@ -15,19 +16,18 @@ export default function ChatCard({ id }: Props)
     const { chatUserData, setChat } = useContext(ChatContext)
     const [userData, setUserData] = useState<UserProps>()
 
-    const usersRef = collection(db, 'users')
+    const userRef = doc(db, 'users', id)
 
     useEffect(() => {
 
-        const unsub = onSnapshot(usersRef, (querySnapshot) => {
+        const unsub = onSnapshot(userRef, (querySnapshot) => {
             //@ts-expect-error errrr
-            const users = []
-            querySnapshot.forEach((doc) => {
-                doc.id === id &&
-                users.push({...doc.data(), id: doc.id})
-            })
-            //@ts-expect-error errrr
-            setUserData(users)
+            if(querySnapshot.exists)
+            {
+                const data = querySnapshot.data()
+                //@ts-expect-error errrr
+                setUserData({...data, id: querySnapshot.id})
+            }
         })
 
         return () => {
@@ -64,8 +64,7 @@ export default function ChatCard({ id }: Props)
                     justifyContent='center'
                     gap={1}
                 >
-                    {/*//@ts-expect-error ddd*/}
-                    <Typography noWrap sx={{ color: '#000' }} fontFamily='Inter' fontSize={14} fontWeight={600}>{userData[0]?.name}: {userData[0]?.email.slice(0, 5)}... </Typography>
+                    <Typography noWrap sx={{ color: '#000' }} fontFamily='Inter' fontSize={14} fontWeight={600}>{userData?.name}: {userData?.email.slice(0, 5)}... </Typography>
                     <Stack
                         direction='row'
                         justifyContent='space-between'

@@ -1,15 +1,16 @@
 import { lazy, useContext, useEffect, useState } from "react"
-import { ChatContext, UserProps } from "./Chats"
+import { ChatContext } from "./Chats"
 import { Box, Typography, SvgIcon, Stack, Input } from "@mui/material"
 import { FieldValue, addDoc, and, collection, onSnapshot, or, orderBy, query, serverTimestamp, where } from "firebase/firestore"
 import { db } from "../../../firebase/firebaseConfig"
 import useUnReadMessages from "./useUnReadMessages"
+import UserProps from "../../../interfaces/UserProps"
 const Message = lazy(() => import("./Message"))
 const Avatar = lazy(() => import('./AvatarLazy'))
 
 interface Props{
     user: UserProps,
-    friend: UserProps[]
+    friend: UserProps
 }
 
 interface Message{
@@ -23,24 +24,25 @@ interface Message{
 
 export default function ChatRoom({ user, friend }: Props)
 {  
+    console.log(user.id, friend.id)
     //@ts-expect-error context
     const { chatDisplayed, setChatDisplayed, setChat } = useContext(ChatContext)
     const { unReadMessages } = useUnReadMessages()
     const [messages, setMessages] = useState<Message[]>([])
     const [message, setMessage] = useState<Message>({
         sender: user.id,
-        receiver: friend[0].id,
+        receiver: friend.id,
         message: '',
         createdAt: serverTimestamp(),
         read: false
     })
 
-    console.log(friend[0])
+    console.log(friend)
 
     const messagesRef = collection(db, 'messages')
 
     useEffect(() => {
-        const queryMessages = query(messagesRef, or(and(where('sender', '==', user.id), where('receiver', '==', friend[0]?.id)),and(where('sender', '==', friend[0]?.id), where('receiver', '==', user.id))), orderBy("createdAt", "asc"))
+        const queryMessages = query(messagesRef, or(and(where('sender', '==', user.id ?? ''), where('receiver', '==', friend?.id ?? '')),and(where('sender', '==', friend?.id ?? ''), where('receiver', '==', user.id ?? ''))), orderBy("createdAt", "asc"))
 
         const unsub = onSnapshot(queryMessages, (querySnapshot) => {
             //@ts-expect-error errrr
@@ -102,7 +104,7 @@ export default function ChatRoom({ user, friend }: Props)
                                 justifyContent='center'
                                 gap={1.5}
                             >
-                                <Typography noWrap sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{friend[0]?.name}</Typography>
+                                <Typography noWrap sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{friend?.name}</Typography>
                                 <Stack
                                     direction='row'
                                     justifyContent='space-between'

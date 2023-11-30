@@ -2,8 +2,8 @@ import { onSnapshot, collection, query, where } from "firebase/firestore"
 import { useEffect, useContext, useState } from "react"
 import { db } from "../../../firebase/firebaseConfig"
 // import { PageContext } from "../../Layout"
-import { UserProps } from "./Chats"
 import { AuthContext } from "../../authentication/auth/AuthProvider"
+import UserProps from "../../../interfaces/UserProps"
 
 export default function useUnReadMessages()
 {
