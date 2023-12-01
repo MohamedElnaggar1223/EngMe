@@ -1,21 +1,19 @@
-import { Suspense, lazy, useContext, useEffect, useState } from 'react'
+import { Suspense, lazy, useContext, useState } from 'react'
 import { Typography, SvgIcon, Avatar, Button } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AuthContext } from '../../../authentication/auth/AuthProvider'
 import ProgramProps from '../../../../interfaces/ProgramProps'
-import { db } from '../../../../firebase/firebaseConfig'
-import { collection, doc, documentId, getDoc, getDocs, query, where } from 'firebase/firestore'
 import ProgramExploreCourseComponents from './ProgramExploreCourseComponents'
 const ProgramExploreCourseComments = lazy(() => import('./ProgramComments/ProgramExploreCourseComments'))
 import { ProgramExploreContext } from "./ProgramsExplore";
-import { getCoursesData } from '../getCoursesData'
-import { getAssessmentsData } from '../getAssessmentsData'
-import { getLessonsData } from '../getLessonsData'
-import { getQuizzesData } from '../getQuizzesData'
-import { getStudentCount } from '../getStudentCount'
-import { getTeacherDataFromProgram } from '../getTeacherDataFromProgram'
-import { getPrereqs } from '../getPrereqs'
+import { getCoursesData } from '../../../helpers/getCoursesData'
+import { getAssessmentsData } from '../../../helpers/getAssessmentsData'
+import { getLessonsData } from '../../../helpers/getLessonsData'
+import { getQuizzesData } from '../../../helpers/getQuizzesData'
+import { getStudentCount } from '../../../helpers/getStudentCount'
+import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram'
+import { getPrereqs } from '../../../helpers/getPrereqs'
 
 export default function ProgramsExploreProgram() 
 {
@@ -39,7 +37,6 @@ export default function ProgramsExploreProgram()
         queryKey: ['teacherData', program?.id ?? ''],
         queryFn: () => getTeacherDataFromProgram(program),
         refetchOnMount: false,
-        
     })
 
     const { data: studentCount } = useQuery({
@@ -261,18 +258,21 @@ export default function ProgramsExploreProgram()
                                 alignItems='center'
                                 // mr={7}
                             >
+                                {/*//@ts-expect-error error*/}
                                 <Avatar src={teacherData?.image} sx={{ width: '70px', height: '70px' }} />
                                 <Stack
                                     direction='column'
                                     justifyContent='center'
                                     gap={0.5}
                                 >
-                                    <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name}</Typography>
+                                    {/*//@ts-expect-error error*/}
+                                    <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
                                     <Stack
                                         direction='row'
                                         justifyContent='space-between'
                                         gap={1}
                                     >
+                                        {/*//@ts-expect-error error*/}
                                         <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>{teacherData?.university}</Typography>
                                         <Stack
                                             direction='row'
@@ -284,7 +284,8 @@ export default function ProgramsExploreProgram()
                                                     <path d="M5.98199 1.22337C6.11981 0.806014 6.71018 0.806015 6.84799 1.22337L7.9764 4.64051C8.03809 4.82733 8.21265 4.95352 8.4094 4.95352H12.0451C12.4886 4.95352 12.6711 5.52254 12.3103 5.78048L9.38171 7.87408C9.2193 7.99018 9.1513 8.19844 9.2139 8.38802L10.3355 11.7846C10.4738 12.2034 9.99612 12.555 9.63731 12.2985L6.68018 10.1845C6.52157 10.0711 6.30841 10.0711 6.1498 10.1845L3.19268 12.2985C2.83387 12.555 2.35618 12.2034 2.49448 11.7846L3.61609 8.38802C3.67869 8.19844 3.61069 7.99018 3.44828 7.87408L0.519688 5.78048C0.158882 5.52254 0.341356 4.95352 0.784878 4.95352H4.42058C4.61733 4.95352 4.79189 4.82733 4.85359 4.64051L5.98199 1.22337Z" fill="#FF9F06"/>
                                                 </svg>
                                             </SvgIcon>
-                                            <Typography textAlign='center' fontSize={12} fontWeight={700} fontFamily='Poppins'>{teacherData?.rating}</Typography>
+                                            {/*//@ts-expect-error error*/}
+                                            <Typography textAlign='center' fontSize={12} fontWeight={700} fontFamily='Poppins'>{teacherData?.averageRating}</Typography>
                                         </Stack>
                                     </Stack>
                                 </Stack>

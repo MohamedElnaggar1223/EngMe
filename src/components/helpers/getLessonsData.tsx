@@ -1,5 +1,5 @@
 import { collection, documentId, getDocs, query, where } from "firebase/firestore"
-import { db } from "../../../firebase/firebaseConfig"
+import { db } from "../../firebase/firebaseConfig"
 
 //@ts-expect-error course
 export const getLessonsData = async (courses) => {

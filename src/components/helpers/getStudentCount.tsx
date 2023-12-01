@@ -1,5 +1,5 @@
 import { collection, getDocs, query, where } from "firebase/firestore"
-import { db } from "../../../firebase/firebaseConfig"
+import { db } from "../../firebase/firebaseConfig"
 
 //@ts-expect-error iderr
 export const getStudentCount = async (id) => {
