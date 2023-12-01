@@ -135,7 +135,7 @@ export default function Programs()
                 <ProgramsCurrent currentPrograms={currentPrograms} /> :
                 tab === 'Completed' ?
                 <ProgramsCompleted /> :
-                <ProgramsFavorites favoritePrograms={userData.favoritePrograms} />
+                <ProgramsFavorites />
             }
         </Box>
     )

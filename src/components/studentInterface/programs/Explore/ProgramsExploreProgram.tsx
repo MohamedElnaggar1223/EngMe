@@ -14,6 +14,9 @@ import { getQuizzesData } from '../../../helpers/getQuizzesData'
 import { getStudentCount } from '../../../helpers/getStudentCount'
 import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram'
 import { getPrereqs } from '../../../helpers/getPrereqs'
+import { getStudentRequest } from '../../../helpers/getStudentRequest'
+import { setStudentRequestProgram } from '../../../helpers/setStudentRequestProgram'
+import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFavorite'
 
 export default function ProgramsExploreProgram() 
 {
@@ -74,11 +77,29 @@ export default function ProgramsExploreProgram()
         refetchOnMount: true
     })
 
-    // const { data: studentRequest } = useQuery({
-    //     queryKey: ['studentRequest', program?.id ?? ''],
-    //     queryFn: () => getStudentRequest(),
-    //     enabled: !!program.id
-    // })
+    const { data: studentRequest } = useQuery({
+        queryKey: ['studentRequest', program?.id ?? ''],
+        queryFn: () => getStudentRequest(userData?.id, program.id),
+        enabled: !!program.id
+    })
+
+    const handleStudentRequestProgram = async () => {
+        await setStudentRequestProgram(studentRequest, userData.id, program.id)
+        queryClient.invalidateQueries({
+            queryKey: ['studentRequest', program?.id]
+        })
+    }
+
+    const handleStudentFavoriteProgram = async () => {
+        console.log('a7a')
+        await setStudentProgramFavorite(userData.id, program.id)
+        queryClient.invalidateQueries({
+            queryKey: ['userData']
+        })
+        queryClient.invalidateQueries({
+            queryKey: ['explorePrograms', userData?.id]
+        })
+    }
 
     // useLayoutEffect(() => {
     //     queryClient.prefetchQuery({
@@ -110,10 +131,6 @@ export default function ProgramsExploreProgram()
     //     console.log(assError)
     //     console.log(quizError)
     // }, [isAssessmentsSuccess, isCoursesSuccess, isLessonsSuccess, isQuizzesSuccess, courseError, lessonError, assError, quizError])
-
-    const handleRequestToProgram = async () => {
-
-    }
 
     const materialCount = (courses?.length ?? [].length) + (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
 
@@ -169,7 +186,7 @@ export default function ProgramsExploreProgram()
                                     {program?.name}
                                 </Typography>
 
-                                <SvgIcon sx={{ fontSize: 24 }}>
+                                <SvgIcon onClick={() => handleStudentFavoriteProgram()} sx={{ fontSize: 24, cursor: 'pointer' }}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
                                         <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713ZM9.22844 15.0107C9.77849 14.7215 10.5263 14.7204 11.0784 15.0107L14.7783 16.9559L14.0717 12.836C13.9667 12.2235 14.1967 11.5119 14.6434 11.0765L17.6367 8.15877L13.5001 7.55768C12.8851 7.46832 12.2795 7.02965 12.0034 6.47029L10.1534 2.72187L8.30348 6.47029C8.02846 7.02755 7.4241 7.46799 6.80681 7.55768L2.67018 8.15877L5.66347 11.0765C6.10847 11.5103 6.3406 12.2211 6.23515 12.836L5.52853 16.9559L9.22844 15.0107Z" fill="#FF7E00"/>
                                     </svg>
@@ -402,14 +419,17 @@ export default function ProgramsExploreProgram()
                                         fontWeight: 700,
                                         border: '1px solid #226E9F',
                                         borderRadius: '15px',
+                                        cursor: 'pointer',
                                         '&:hover': {
                                             background: '#fff',
                                             opacity: 1
                                         }
                                     }}
-                                    onClick={() => handleRequestToProgram()}
+                                    //@ts-expect-error bigger
+                                    disabled={[(studentRequest?.length > 0)].every(Boolean)}
+                                    onClick={() => handleStudentRequestProgram()}
                                 >
-                                    Get Access to Program
+                                    {studentRequest?.length ? 'Request is Being Processed' : 'Get Access to Program'}
                                 </Button>
                             </Stack>
 

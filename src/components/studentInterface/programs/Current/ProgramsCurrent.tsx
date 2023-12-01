@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 import ProgramCurrentExpired from "./ProgramCurrentExpired";
 const ProgramCurrentCard = lazy(() => import("./ProgramCurrentCard"))
 
-
+//@ts-expect-error aaa
 export default function ProgramsCurrent({ currentPrograms }) {
 	return (
 		<Box

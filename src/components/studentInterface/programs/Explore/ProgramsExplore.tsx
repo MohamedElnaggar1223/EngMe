@@ -29,9 +29,13 @@ export default function ProgramsExplore({ currentPrograms })
     const { data: explorePrograms } = useQuery({
         queryKey: ['explorePrograms', userData?.id],
         queryFn: () => getExplorePrograms(),
-        enabled: !!userData?.id,
+        enabled: !!userData,
         refetchOnMount: false
     })
+
+    // useEffect(() => {
+    //     refetch()
+    // }, [userData, refetch])
 
     async function getExplorePrograms()
     {
@@ -43,8 +47,10 @@ export default function ProgramsExplore({ currentPrograms })
             const q = query(programsRef, where(documentId(), 'not-in', currentPrograms?.map(program => program.programId)))
     
             const querySnapshot  = await getDocs(q)
+
+            const filteredArray = querySnapshot.docs.slice().filter(doc => !userData.favoritePrograms.includes(doc.id))
     
-            const exploreProgramsData = querySnapshot.docs.map(doc => ({
+            const exploreProgramsData = filteredArray.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }))
@@ -55,7 +61,9 @@ export default function ProgramsExplore({ currentPrograms })
         {
             const querySnapshot  = await getDocs(programsRef)
     
-            const exploreProgramsData = querySnapshot.docs.map(doc => ({
+            const filteredArray = querySnapshot.docs.slice().filter(doc => !userData.favoritePrograms.includes(doc.id))
+    
+            const exploreProgramsData = filteredArray.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }))
