@@ -33,6 +33,7 @@ export default function StudentSignUp()
                     completedPrograms: [],
                     favoritePrograms: [],
                     certifactes: [],
+                    friends: [],
                     name: `${firstname} ${lastname}`,
                     email,
                     number
