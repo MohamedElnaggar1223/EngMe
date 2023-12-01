@@ -3,37 +3,37 @@ import { useEffect, useContext, useState } from "react"
 import { db } from "../../../firebase/firebaseConfig"
 // import { PageContext } from "../../Layout"
 import { AuthContext } from "../../authentication/auth/AuthProvider"
-import UserProps from "../../../interfaces/UserProps"
+// import UserProps from "../../../interfaces/UserProps"
 
 export default function useUnReadMessages()
 {
     //@ts-expect-error context
-    const { user } = useContext(AuthContext)
+    const { userData } = useContext(AuthContext)
     const [unReadMessages, setUnReadMessages] = useState(0)
-    const [userData, setUserData] = useState<UserProps>()
+    // const [userData, setUserData] = useState<UserProps>()
 
-    const usersRef = collection(db, 'users')
+    // const usersRef = collection(db, 'users')
     const messagesRef = collection(db, 'messages')
 
-    useEffect(() => {
+    // useEffect(() => {
         
-        const queryFriends = query(usersRef, where('email', '==', user?.email ?? ''))
+    //     const queryFriends = query(usersRef, where('email', '==', user?.email ?? ''))
 
-        const unsub = onSnapshot(queryFriends, (querySnapshot) => {
-            //@ts-expect-error errrr
-            const users = []
-            querySnapshot.forEach((doc) => {
-                users.push({...doc.data(), id: doc.id})
-            })
-            //@ts-expect-error errrr
-            setUserData({...users[0]})
-        })
+    //     const unsub = onSnapshot(queryFriends, (querySnapshot) => {
+    //         //@ts-expect-error errrr
+    //         const users = []
+    //         querySnapshot.forEach((doc) => {
+    //             users.push({...doc.data(), id: doc.id})
+    //         })
+    //         //@ts-expect-error errrr
+    //         setUserData({...users[0]})
+    //     })
 
-        return () => {
-            unsub()
-        }
-        //eslint-disable-next-line
-    }, [user])
+    //     return () => {
+    //         unsub()
+    //     }
+    //     //eslint-disable-next-line
+    // }, [user])
 
     useEffect(() => {
         const queryMessages = query(messagesRef, where('receiver', '==', userData?.id ?? ''))

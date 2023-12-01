@@ -1,10 +1,12 @@
 import { Stack, Avatar, Typography, Box, SvgIcon } from "@mui/material";
 import avatar from '../../../assets/Ellipse 3.png'
 import { ChatContext } from "./Chats";
-import { useContext, useEffect, useState } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
+import { useContext, useEffect } from "react";
+import { DocumentData, DocumentReference, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
-import UserProps from "../../../interfaces/UserProps";
+// import UserProps from "../../../interfaces/UserProps";
+import { AuthContext } from "../../authentication/auth/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
 
 interface Props{
     id: string
@@ -13,10 +15,23 @@ interface Props{
 export default function ChatCard({ id }: Props) 
 {
     //@ts-expect-error dad
-    const { chatUserData, setChat } = useContext(ChatContext)
-    const [userData, setUserData] = useState<UserProps>()
+    const { setChat } = useContext(ChatContext)
+    //@ts-expect-error dad
+    const { userData } = useContext(AuthContext)
+    const userRef = doc(db, 'students', id)
+    // const [chatUserData, setChatUserData] = useState()
 
-    const userRef = doc(db, 'users', id)
+    async function getInitialFriendData(userRef: DocumentReference<DocumentData, DocumentData>)
+    {
+        console.log('hi')
+        const data = await getDoc(userRef)
+        return data.exists() ? {...data.data(), id: data.id} : {}
+    }
+
+    const { data: chatUserData, refetch } = useQuery({
+        queryKey: ['chatUserData', id],
+        queryFn: () => getInitialFriendData(userRef),
+    })
 
     useEffect(() => {
 
@@ -24,9 +39,7 @@ export default function ChatCard({ id }: Props)
             //@ts-expect-error errrr
             if(querySnapshot.exists)
             {
-                const data = querySnapshot.data()
-                //@ts-expect-error errrr
-                setUserData({...data, id: querySnapshot.id})
+                refetch()
             }
         })
 
@@ -36,7 +49,7 @@ export default function ChatCard({ id }: Props)
         //eslint-disable-next-line
     }, [])
 
-    if(!userData) return <></>
+    if(!userData || !chatUserData) return <></>
 
     return (
         <Box
@@ -50,7 +63,7 @@ export default function ChatCard({ id }: Props)
                 borderBottom: '1px solid rgba(0, 0, 0, 0.2)'
             }}
             key={id}
-            onClick={() => setChat([chatUserData, userData])}
+            onClick={() => setChat([userData, chatUserData])}
         >
             <Stack
                 direction='row'
@@ -64,7 +77,8 @@ export default function ChatCard({ id }: Props)
                     justifyContent='center'
                     gap={1}
                 >
-                    <Typography noWrap sx={{ color: '#000' }} fontFamily='Inter' fontSize={14} fontWeight={600}>{userData?.name}: {userData?.email.slice(0, 5)}... </Typography>
+                    {/*//@ts-expect-error erraa*/}
+                    <Typography noWrap sx={{ color: '#000' }} fontFamily='Inter' fontSize={14} fontWeight={600}>{chatUserData?.name}: {chatUserData?.email.slice(0, 5)}... </Typography>
                     <Stack
                         direction='row'
                         justifyContent='space-between'

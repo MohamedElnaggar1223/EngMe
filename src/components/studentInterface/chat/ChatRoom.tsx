@@ -1,10 +1,11 @@
 import { lazy, useContext, useEffect, useState } from "react"
 import { ChatContext } from "./Chats"
 import { Box, Typography, SvgIcon, Stack, Input } from "@mui/material"
-import { FieldValue, addDoc, and, collection, onSnapshot, or, orderBy, query, serverTimestamp, where } from "firebase/firestore"
+import { CollectionReference, DocumentData, FieldValue, addDoc, and, collection, getDocs, onSnapshot, or, orderBy, query, serverTimestamp, where } from "firebase/firestore"
 import { db } from "../../../firebase/firebaseConfig"
 import useUnReadMessages from "./useUnReadMessages"
 import UserProps from "../../../interfaces/UserProps"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 const Message = lazy(() => import("./Message"))
 const Avatar = lazy(() => import('./AvatarLazy'))
 
@@ -24,10 +25,12 @@ interface Message{
 
 export default function ChatRoom({ user, friend }: Props)
 {  
+    const queryClient = useQueryClient()
+    console.log(user, friend)
     //@ts-expect-error context
     const { chatDisplayed, setChatDisplayed, setChat } = useContext(ChatContext)
     const { unReadMessages } = useUnReadMessages()
-    const [messages, setMessages] = useState<Message[]>([])
+    // const [messages, setMessages] = useState<Message[]>([])
     const [message, setMessage] = useState<Message>({
         sender: user.id,
         receiver: friend.id,
@@ -36,20 +39,37 @@ export default function ChatRoom({ user, friend }: Props)
         read: false
     })
 
-
     const messagesRef = collection(db, 'messages')
 
-    useEffect(() => {
+    async function getChats(messagesRef: CollectionReference<DocumentData, DocumentData>)
+    {
         const queryMessages = query(messagesRef, or(and(where('sender', '==', user.id ?? ''), where('receiver', '==', friend?.id ?? '')),and(where('sender', '==', friend?.id ?? ''), where('receiver', '==', user.id ?? ''))), orderBy("createdAt", "asc"))
+        // onSnapshot(queryMessages, (querySnapshot) => {
+        //     //@ts-expect-error errrr
+        //     const messagesData = []
+        //     querySnapshot.forEach((doc) => {
+        //         messagesData.push({...doc.data(), id: doc.id})
+        //     })
+        //     //@ts-expect-error errrr
+        //     return messagesData
+        // })
+
+        const messagesData = await getDocs(queryMessages)
+        const messagesArray = messagesData.docs.map(doc => ({...doc.data(), id: doc.id}))
+
+        return messagesArray
+    }
+
+    const { data: messages } = useQuery({
+        queryKey: ['chatData', user.id, friend.id],
+        queryFn: () => getChats(messagesRef)
+    })
+
+    useEffect(() => {
+        const queryMessages = query(messagesRef, or(and(where('sender', '==', user?.id ?? ''), where('receiver', '==', friend?.id ?? '')),and(where('sender', '==', friend?.id ?? ''), where('receiver', '==', user.id ?? ''))), orderBy("createdAt", "asc"))
 
         const unsub = onSnapshot(queryMessages, (querySnapshot) => {
-            //@ts-expect-error errrr
-            const messagesData = []
-            querySnapshot.forEach((doc) => {
-                messagesData.push({...doc.data(), id: doc.id})
-            })
-            //@ts-expect-error errrr
-            setMessages(messagesData)
+            queryClient.invalidateQueries({ queryKey: ['chatData', user.id, friend.id] })
         })
 
         return () => {
@@ -66,7 +86,9 @@ export default function ChatRoom({ user, friend }: Props)
         setMessage(prev => ({...prev, message: ''}))
     }
 
-    const displayedMessages = messages.map((message, index) => <Message isLast={messages.length === index + 1} isSender={message.sender === user.id} {...message} id={message.id ?? ''}></Message>)
+    console.log(messages)
+
+    const displayedMessages = messages?.map((message, index) => <Message isLast={messages.length === index + 1} isSender={message.sender === user.id} {...message} id={message.id ?? ''}></Message>) ?? []
 
     return (
         <>

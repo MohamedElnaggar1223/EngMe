@@ -16,6 +16,8 @@ export default function AuthProvider({ children })
         queryFn: () => getUserData(user?.uid ?? '')
     })
 
+    console.log(userData)
+
     useEffect(() => {
         refetch()
     }, [user, refetch])
