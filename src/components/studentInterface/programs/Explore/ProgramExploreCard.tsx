@@ -1,8 +1,7 @@
 import { Card, CardMedia, CardContent, Stack, SvgIcon, Typography, Box } from "@mui/material";
-import cardimage from '../../../../assets/cardpic-min.png'
 import ProgramExploreCardProps from "../../../../interfaces/ProgramExploreCardProps";
 
-export default function ProgramExploreCard({ setPageShowed }: ProgramExploreCardProps) 
+export default function ProgramExploreCard({ setPageShowed, program }: ProgramExploreCardProps) 
 {
     const icon = setPageShowed ? 
     (
@@ -18,11 +17,12 @@ export default function ProgramExploreCard({ setPageShowed }: ProgramExploreCard
 
     return (
         //@ts-expect-error set
-        <Card onClick={() => setPageShowed('test')} sx={{ cursor: 'pointer', width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 } }}>
+        <Card onClick={() => setPageShowed(program.id)} sx={{ cursor: 'pointer', width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 }, zIndex: 99999 }}>
             <CardMedia
                 sx={{ height: 180 }}
-                image={cardimage}
+                image={program.image}
                 title="green iguana"
+                // onClick={() => console.log('image clicked')}
             />
             <CardContent sx={{ padding: 0 }}>
                 <Stack
@@ -46,8 +46,8 @@ export default function ProgramExploreCard({ setPageShowed }: ProgramExploreCard
                                 <path d="M7.72751 0.779086C7.89978 0.257395 8.63774 0.257394 8.81001 0.779084L10.2205 5.05051C10.2976 5.28404 10.5158 5.44178 10.7618 5.44178H15.3064C15.8608 5.44178 16.0889 6.15306 15.6379 6.47548L11.9772 9.09247C11.7741 9.23761 11.6891 9.49793 11.7674 9.73491L13.1694 13.9806C13.3423 14.5041 12.7452 14.9437 12.2967 14.623L8.60025 11.9805C8.40198 11.8388 8.13554 11.8388 7.93727 11.9805L4.24085 14.623C3.79234 14.9437 3.19523 14.5041 3.36811 13.9806L4.77012 9.73491C4.84837 9.49793 4.76337 9.23761 4.56036 9.09247L0.899615 6.47548C0.448606 6.15306 0.676701 5.44178 1.2311 5.44178H5.77575C6.02168 5.44178 6.23988 5.28404 6.317 5.05051L7.72751 0.779086Z" fill="#FF9F06"/>
                             </svg>
                         </SvgIcon>
-                        <Typography sx={{ color: '#004643' }}fontSize={14} fontWeight={700} fontFamily='Poppins'>4.3</Typography>
-                        <Typography fontSize={14} fontFamily='Inter'>{'(1290)'}</Typography>
+                        <Typography sx={{ color: '#004643' }}fontSize={14} fontWeight={700} fontFamily='Poppins'>{program.averageRating}</Typography>
+                        <Typography fontSize={14} fontFamily='Inter'>{`(${program.totalFeedbacks})`}</Typography>
                     </Stack>
                 </Stack>
                 <Box
@@ -61,8 +61,8 @@ export default function ProgramExploreCard({ setPageShowed }: ProgramExploreCard
                         gap={0.5}
                         mt={2}
                     >
-                        <Typography fontSize={16} fontWeight={600} fontFamily='Inter'>Data Engineering with AWS</Typography>
-                        <Typography fontSize={12} fontWeight={300} fontFamily='Inter'>Nanodegree Program</Typography>
+                        <Typography fontSize={16} fontWeight={600} fontFamily='Inter'>{program.name}</Typography>
+                        <Typography fontSize={12} fontWeight={300} fontFamily='Inter'>{program.category}</Typography>
                     </Stack>
                     <Typography
                         fontFamily='Inter'
@@ -71,9 +71,7 @@ export default function ProgramExploreCard({ setPageShowed }: ProgramExploreCard
                         my={3}
                         pr={3}
                     >
-                        Learn to design data models, build data 
-                        warehouses and data lakes, automate data 
-                        pipelines, and work with massive datasets.
+                        {program.description}
                     </Typography>
                     <Stack
                         direction='row'
@@ -90,7 +88,7 @@ export default function ProgramExploreCard({ setPageShowed }: ProgramExploreCard
                             px={1.5}
                             py={0.5}
                         >
-                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>2 months</Typography>
+                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program.duration}</Typography>
                         </Box>
                         <Box
                             bgcolor='#D0EBFC'

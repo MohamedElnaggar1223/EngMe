@@ -1,10 +1,20 @@
 import { Box } from "@mui/material";
-import { lazy, useState, Suspense } from "react";
+import { lazy, useState, Suspense, useContext, createContext } from "react";
+import { AuthContext } from "../../../authentication/auth/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+import { collection, documentId, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../../../firebase/firebaseConfig";
 const ProgramsExploreHome = lazy(() => import("./ProgramsExploreHome"))
 const ProgramsExploreProgram = lazy(() => import("./ProgramsExploreProgram"))
 
-export default function ProgramsExplore() 
+//@ts-expect-error context
+export const ProgramExploreContext = createContext()
+
+//@ts-expect-error current
+export default function ProgramsExplore({ currentPrograms }) 
 {
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
 
     const [filters, setFilters] = useState(false)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,6 +25,46 @@ export default function ProgramsExplore()
     //filters cant be applied until confirm is clicked, note for queries too
     const [applyFilters, setApplyFilters] = useState(false)
     const [pageShowed, setPageShowed] = useState('home')
+
+    const { data: explorePrograms } = useQuery({
+        queryKey: ['explorePrograms', userData?.id],
+        queryFn: () => getExplorePrograms(),
+        enabled: !!userData?.id,
+        refetchOnMount: false
+    })
+
+    async function getExplorePrograms()
+    {
+        const programsRef = collection(db, 'programs')
+
+        if(currentPrograms?.length)
+        {
+            //@ts-expect-error idd
+            const q = query(programsRef, where(documentId(), 'not-in', currentPrograms?.map(program => program.programId)))
+    
+            const querySnapshot  = await getDocs(q)
+    
+            const exploreProgramsData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }))
+    
+            return exploreProgramsData
+        }
+        else
+        {
+            const querySnapshot  = await getDocs(programsRef)
+    
+            const exploreProgramsData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }))
+
+            // console.log(exploreProgramsData, 'testprogexdocs')
+    
+            return exploreProgramsData
+        }
+    }
 
     function handleFilters(type: string, e: React.ChangeEvent<HTMLInputElement>)
     {
@@ -34,30 +84,30 @@ export default function ProgramsExplore()
     }
     
     return (
-        <Box
-            my={5}
-        >
-            {
-                pageShowed === 'home' ?
-                <Suspense>
-                    <ProgramsExploreHome 
-                        applyFilters={applyFilters}
-                        filters={filters}
-                        handleFilters={handleFilters}
-                        handleRemoveFilter={handleRemoveFilter}
-                        setApplyFilters={setApplyFilters}
-                        setFilters={setFilters}
-                        selectedFilters={selectedFilters}
-                        setSelectedFilters={setSelectedFilters}
-                        setPageShowed={setPageShowed}
-                    />
-                </Suspense> :
-                <Suspense>
-                    <ProgramsExploreProgram 
-                        setPageShowed={setPageShowed}
-                    />
-                </Suspense>
-            }
-        </Box>
+        <ProgramExploreContext.Provider value={{ setPageShowed, pageShowed }}>
+            <Box
+                my={5}
+            >
+                {
+                    pageShowed === 'home' ?
+                    <Suspense>
+                        <ProgramsExploreHome 
+                            applyFilters={applyFilters}
+                            filters={filters}
+                            handleFilters={handleFilters}
+                            handleRemoveFilter={handleRemoveFilter}
+                            setApplyFilters={setApplyFilters}
+                            setFilters={setFilters}
+                            selectedFilters={selectedFilters}
+                            setSelectedFilters={setSelectedFilters}
+                            explorePrograms={explorePrograms}
+                        />
+                    </Suspense> :
+                    <Suspense>
+                        <ProgramsExploreProgram />
+                    </Suspense>
+                }
+            </Box>
+        </ProgramExploreContext.Provider>
     )
 }

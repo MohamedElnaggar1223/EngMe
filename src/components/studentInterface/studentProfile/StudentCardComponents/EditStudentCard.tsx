@@ -34,6 +34,7 @@ setEdit }: StudentCardEditProps)
     const { data: countriesData, isSuccess } = useQuery({
         queryFn: () => Country.getAllCountries(),
         queryKey: ['countries'],
+        refetchOnMount: false
     })
 
     function getCitiesOfCountry(country: string)
@@ -47,7 +48,8 @@ setEdit }: StudentCardEditProps)
 
     const { data: citiesData, isSuccess: CitySuccess } = useQuery({
         queryFn: () => getCitiesOfCountry(country),
-        queryKey: ['cities']
+        queryKey: ['cities'],
+        refetchOnMount: false
     })
 
     const handleImageChange = (file: File) => {

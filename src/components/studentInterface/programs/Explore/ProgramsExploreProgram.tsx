@@ -1,14 +1,126 @@
-import { Suspense, lazy, useState } from 'react'
-import avatar from '../../../../assets/Ellipse 3.png'   
-import ProgramsExploreProgramProps from '../../../../interfaces/ProgramsExploreProgramProps'
+import { Suspense, lazy, useContext, useEffect, useState } from 'react'
 import { Typography, SvgIcon, Avatar, Button } from '@mui/material'
 import { Box, Stack } from '@mui/system'
-const ProgramExploreCourseCard = lazy(() => import('./ProgramExploreCourseCard'))
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { AuthContext } from '../../../authentication/auth/AuthProvider'
+import ProgramProps from '../../../../interfaces/ProgramProps'
+import { db } from '../../../../firebase/firebaseConfig'
+import { collection, doc, documentId, getDoc, getDocs, query, where } from 'firebase/firestore'
+import ProgramExploreCourseComponents from './ProgramExploreCourseComponents'
 const ProgramExploreCourseComments = lazy(() => import('./ProgramComments/ProgramExploreCourseComments'))
+import { ProgramExploreContext } from "./ProgramsExplore";
+import { getCoursesData } from '../getCoursesData'
+import { getAssessmentsData } from '../getAssessmentsData'
+import { getLessonsData } from '../getLessonsData'
+import { getQuizzesData } from '../getQuizzesData'
+import { getStudentCount } from '../getStudentCount'
+import { getTeacherDataFromProgram } from '../getTeacherDataFromProgram'
+import { getPrereqs } from '../getPrereqs'
 
-export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExploreProgramProps) 
+export default function ProgramsExploreProgram() 
 {
+    const queryClient = useQueryClient()
+    //@ts-expect-error context
+    const { setPageShowed, pageShowed } = useContext(ProgramExploreContext)
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+    //@ts-expect-error idk man
+    const program = queryClient.getQueryData(['explorePrograms', userData?.id]).find(program => program.id === pageShowed) as ProgramProps
     const [programShow, setProgramShow] = useState('components')
+
+    const { data: prereqsData } = useQuery({
+        queryKey: ['preReqData', program?.id ?? ''],
+        queryFn: () => getPrereqs(program),
+        refetchOnMount: false,
+       
+    })
+
+    const { data: teacherData } = useQuery({
+        queryKey: ['teacherData', program?.id ?? ''],
+        queryFn: () => getTeacherDataFromProgram(program),
+        refetchOnMount: false,
+        
+    })
+
+    const { data: studentCount } = useQuery({
+        queryKey: ['studentCount', program?.id ?? ''],
+        queryFn: () => getStudentCount(pageShowed),
+        refetchOnMount: true,
+        
+    })
+
+    const { data: courses, isSuccess: isCoursesSuccess } = useQuery({
+        queryKey: ['courses', program?.id ?? ''],
+        queryFn: () => getCoursesData(program),
+        refetchOnMount: true,
+        enabled: !!program.id
+    })
+
+    const { data: assessments, isSuccess: isAssessmentsSuccess } = useQuery({
+        queryKey: ['assessments', program?.id ?? ''],
+        queryFn: () => getAssessmentsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    const { data: lessons, isSuccess: isLessonsSuccess } = useQuery({
+        queryKey: ['lessons', program?.id ?? ''],
+        queryFn: () => getLessonsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    const { data: quizzes, isSuccess: isQuizzesSuccess } = useQuery({
+        queryKey: ['quizzes', program?.id ?? ''],
+        queryFn: () => getQuizzesData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    // const { data: studentRequest } = useQuery({
+    //     queryKey: ['studentRequest', program?.id ?? ''],
+    //     queryFn: () => getStudentRequest(),
+    //     enabled: !!program.id
+    // })
+
+    // useLayoutEffect(() => {
+    //     queryClient.prefetchQuery({
+    //         queryKey: ['courses', program?.id ?? ''], 
+    //         queryFn: () => getCoursesData()
+    //     })
+    //     queryClient.prefetchQuery({
+    //         queryKey: ['assessments', program?.id ?? ''], 
+    //         queryFn: () => getAssessmentsData()
+    //     })
+    //     queryClient.prefetchQuery({
+    //         queryKey: ['lessons', program?.id ?? ''], 
+    //         queryFn: () => getLessonsData()
+    //     })
+    //     queryClient.prefetchQuery({
+    //         queryKey: ['quizzes', program?.id ?? ''], 
+    //         queryFn: () => getQuizzesData()
+    //     })
+    //     //eslint-disable-next-line
+    // }, [program.id, queryClient])
+
+    // useEffect(() => {
+    //     console.log(isAssessmentsSuccess)
+    //     console.log(isCoursesSuccess)
+    //     console.log(isLessonsSuccess)
+    //     console.log(isQuizzesSuccess)
+    //     console.log(courseError)
+    //     console.log(lessonError)
+    //     console.log(assError)
+    //     console.log(quizError)
+    // }, [isAssessmentsSuccess, isCoursesSuccess, isLessonsSuccess, isQuizzesSuccess, courseError, lessonError, assError, quizError])
+
+    const handleRequestToProgram = async () => {
+
+    }
+
+    const materialCount = (courses?.length ?? [].length) + (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
+
+    const displayedPrereqs = prereqsData?.map(preqreq => <Typography sx={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setPageShowed(preqreq.id)} fontSize={18} fontFamily='Inter' fontWeight={400}>{preqreq.name}</Typography>)
 
     return (
         <Box
@@ -57,7 +169,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                                     fontWeight={900}
                                     fontFamily='Inter'
                                 >
-                                    Data Engineering with AWS
+                                    {program?.name}
                                 </Typography>
 
                                 <SvgIcon sx={{ fontSize: 24 }}>
@@ -71,7 +183,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                                 justifyContent='space-between'
                                 alignItems='center'
                             >
-                                <Typography fontSize={16} fontWeight={400} fontFamily='Inter'>Nanodegree Program</Typography>
+                                <Typography fontSize={16} fontWeight={400} fontFamily='Inter'>{program?.category}</Typography>
                                 <Stack
                                     direction='row'
                                     gap={1}
@@ -89,7 +201,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                                         fontWeight={700}
                                         sx={{ color: '#004643' }}
                                     >
-                                        4.3
+                                        {program?.averageRating}
                                     </Typography>
                                     <Typography
                                         fontFamily='Inter'
@@ -97,7 +209,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                                         fontWeight={400}
                                         // ml={0.5}
                                     >
-                                        {'(1290)'}
+                                        {`(${program?.totalFeedbacks})`}
                                     </Typography>
                                 </Stack>
                             </Stack>
@@ -111,9 +223,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                             fontWeight={400}
                             fontFamily='Inter'
                         >
-                            Learn to design data models, build data 
-                            warehouses and data lakes, automate data 
-                            pipelines, and work with massive datasets.
+                            {program?.description}
                         </Typography>
                     </Stack>
                 </Box>
@@ -129,11 +239,8 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                         bgcolor='#FFFBF8'
                     >
                         <Typography fontSize={18} fontFamily='Inter' fontWeight={600}>Prerequisites:</Typography>
-                        <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate Python</Typography>
-                        <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
-                        <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
-                        <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
-                    </Stack>
+                            {displayedPrereqs}
+                        </Stack>
                     <Box
                         px={6}
                         pl={10}
@@ -142,7 +249,6 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                         // width='100%'
                     >
                         <Typography fontSize={18} fontFamily='Inter' fontWeight={600}>Taught By:</Typography>
-                    
                         <Stack
                             ml={2}
                             direction='row'
@@ -155,19 +261,19 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                                 alignItems='center'
                                 // mr={7}
                             >
-                                <Avatar src={avatar} sx={{ width: '70px', height: '70px' }} />
+                                <Avatar src={teacherData?.image} sx={{ width: '70px', height: '70px' }} />
                                 <Stack
                                     direction='column'
                                     justifyContent='center'
                                     gap={0.5}
                                 >
-                                    <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>Dr. Ahmed El Adl | Professor in Human Biology</Typography>
+                                    <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name}</Typography>
                                     <Stack
                                         direction='row'
                                         justifyContent='space-between'
                                         gap={1}
                                     >
-                                        <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>The German University in Cairo</Typography>
+                                        <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>{teacherData?.university}</Typography>
                                         <Stack
                                             direction='row'
                                             alignItems='center'
@@ -178,7 +284,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                                                     <path d="M5.98199 1.22337C6.11981 0.806014 6.71018 0.806015 6.84799 1.22337L7.9764 4.64051C8.03809 4.82733 8.21265 4.95352 8.4094 4.95352H12.0451C12.4886 4.95352 12.6711 5.52254 12.3103 5.78048L9.38171 7.87408C9.2193 7.99018 9.1513 8.19844 9.2139 8.38802L10.3355 11.7846C10.4738 12.2034 9.99612 12.555 9.63731 12.2985L6.68018 10.1845C6.52157 10.0711 6.30841 10.0711 6.1498 10.1845L3.19268 12.2985C2.83387 12.555 2.35618 12.2034 2.49448 11.7846L3.61609 8.38802C3.67869 8.19844 3.61069 7.99018 3.44828 7.87408L0.519688 5.78048C0.158882 5.52254 0.341356 4.95352 0.784878 4.95352H4.42058C4.61733 4.95352 4.79189 4.82733 4.85359 4.64051L5.98199 1.22337Z" fill="#FF9F06"/>
                                                 </svg>
                                             </SvgIcon>
-                                            <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>4.3</Typography>
+                                            <Typography textAlign='center' fontSize={12} fontWeight={700} fontFamily='Poppins'>{teacherData?.rating}</Typography>
                                         </Stack>
                                     </Stack>
                                 </Stack>
@@ -192,16 +298,16 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                                     gap={6}
                                 >
                                     <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
-                                        <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>3</Typography>
-                                        <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Final Exams</Typography>
+                                        <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{Object.keys(program?.finalExams ?? []).length}</Typography>
+                                        <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Final Exam(s)</Typography>
                                     </Box>
                                     <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
-                                        <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>53</Typography>
-                                        <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Students</Typography>
+                                        <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{studentCount}</Typography>
+                                        <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Student(s)</Typography>
                                     </Box>
                                     <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
-                                        <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>20+</Typography>
-                                        <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Materials</Typography>
+                                        <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{materialCount > 1 ? `${materialCount - 1}+` : materialCount}</Typography>
+                                        <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Material(s)</Typography>
                                     </Box>
                                 </Stack>
                             </Stack>
@@ -300,6 +406,7 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
                                             opacity: 1
                                         }
                                     }}
+                                    onClick={() => handleRequestToProgram()}
                                 >
                                     Get Access to Program
                                 </Button>
@@ -362,20 +469,10 @@ export default function ProgramsExploreProgram({ setPageShowed }: ProgramsExplor
             </Stack>
             {
                 programShow === 'components' ?
-                <Stack
-                    direction='column'
-                    mx={14}
-                >
-                    <Suspense>
-                        <ProgramExploreCourseCard />
-                    </Suspense>
-                    <Suspense>
-                        <ProgramExploreCourseCard />
-                    </Suspense>
-                    <Suspense>
-                    <ProgramExploreCourseCard />
-                    </Suspense>
-                </Stack> :
+                //<ProgramExploreCourseComponents /> :
+                [isLessonsSuccess, isAssessmentsSuccess, isCoursesSuccess, isQuizzesSuccess].every(Boolean) ?
+                    <ProgramExploreCourseComponents /> :
+                <></>:
                 <Suspense>
                     <ProgramExploreCourseComments />
                 </Suspense>

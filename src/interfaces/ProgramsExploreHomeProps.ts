@@ -9,5 +9,6 @@ export default interface ProgramsExploreHomeProps{
     setApplyFilters: React.Dispatch<React.SetStateAction<boolean>>,
     handleFilters: (type: string, e: React.ChangeEvent<HTMLInputElement>) => void,
     handleRemoveFilter: (filter: string, item: string) => void,
-    setPageShowed: React.Dispatch<React.SetStateAction<string>>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    explorePrograms: any
 }

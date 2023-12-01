@@ -4,7 +4,7 @@ import ProgramCurrentExpired from "./ProgramCurrentExpired";
 const ProgramCurrentCard = lazy(() => import("./ProgramCurrentCard"))
 
 
-export default function ProgramsCurrent() {
+export default function ProgramsCurrent({ currentPrograms }) {
 	return (
 		<Box
 			px={4}

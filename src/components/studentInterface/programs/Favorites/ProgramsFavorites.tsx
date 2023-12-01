@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
 import ProgramExploreCard from "../Explore/ProgramExploreCard";
 
-export default function ProgramsFavorites() {
+export default function ProgramsFavorites({ favoritePrograms }) {
     return (
         <Stack
             direction='row'

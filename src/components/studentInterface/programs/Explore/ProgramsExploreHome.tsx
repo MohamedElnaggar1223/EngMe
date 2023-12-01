@@ -1,7 +1,8 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useContext } from "react";
 import { Stack, Typography, Box, Input, SvgIcon, FormGroup, FormHelperText, FormControlLabel, Checkbox, Button } from "@mui/material";
 const ProgramExploreCard = lazy(() => import("./ProgramExploreCard"))
 import ProgramsExploreHomeProps from "../../../../interfaces/ProgramsExploreHomeProps";
+import { ProgramExploreContext } from "./ProgramsExplore";
 
 export default function ProgramsExploreHome(
 {
@@ -13,9 +14,18 @@ export default function ProgramsExploreHome(
     setFilters,
     selectedFilters,
     setSelectedFilters,
-    setPageShowed
+    explorePrograms
 }: ProgramsExploreHomeProps) 
 {
+    //@ts-expect-error context
+    const { setPageShowed } = useContext(ProgramExploreContext)
+    //@ts-expect-error anyerr
+    const displayedPrograms = explorePrograms?.map(program => (
+        <Suspense key={program.id}>
+            <ProgramExploreCard setPageShowed={setPageShowed} program={program} />
+        </Suspense>
+    )) ?? []
+
     return (
         <>
             <Stack
@@ -274,21 +284,7 @@ export default function ProgramsExploreHome(
                 mt={8}
                 justifyContent={{xs: 'center', sm: 'center', lg: 'space-between'}}
             >
-                <Suspense>
-                    <ProgramExploreCard setPageShowed={setPageShowed} />
-                </Suspense>
-                <Suspense>
-                    <ProgramExploreCard setPageShowed={setPageShowed} />
-                </Suspense>
-                <Suspense>
-                    <ProgramExploreCard setPageShowed={setPageShowed} />
-                </Suspense>
-                <Suspense>
-                    <ProgramExploreCard setPageShowed={setPageShowed} />
-                </Suspense>
-                <Suspense>
-                    <ProgramExploreCard setPageShowed={setPageShowed} />
-                </Suspense>
+                {displayedPrograms}
             </Stack>
         </>
     )

@@ -26,7 +26,7 @@ export default function Chats()
                     bottom: '-0.1%',
                     right: '-0.01%',
                     fontSize: 60,
-                    zIndex: 99999998
+                    zIndex: chatDisplayed ? 99999997 : 0
                 }}
                 width='fit-content'
             >

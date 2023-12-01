@@ -1,39 +1,32 @@
 import { Box, Stack, Typography } from '@mui/material'
-import { useState } from 'react'
-import ProgramsCompleted from './Completed/ProgramsCompleted'
-import ProgramsCurrent from './Current/ProgramsCurrent'
-import ProgramsExplore from './Explore/ProgramsExplore'
-import ProgramsFavorites from './Favorites/ProgramsFavorites'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { collection, getDocs, query, where, documentId } from 'firebase/firestore'
+import { lazy, useState, useContext } from 'react'
+const ProgramsCompleted = lazy(() => import('./Completed/ProgramsCompleted'))
+const ProgramsCurrent = lazy(() => import('./Current/ProgramsCurrent'))
+const ProgramsExplore = lazy(() => import('./Explore/ProgramsExplore'))
+const ProgramsFavorites = lazy(() => import('./Favorites/ProgramsFavorites'))
+import { useQuery } from '@tanstack/react-query'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../../../firebase/firebaseConfig'
+import { AuthContext } from '../../authentication/auth/AuthProvider'
+import ProgramProps from '../../../interfaces/ProgramProps'
 
 export default function Programs() 
 {
-    const userData = useQueryClient().getQueryData(['userData'])
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
     
     const [tab, setTab] = useState('Explore')
 
     const { data: currentPrograms } = useQuery({
-        //@ts-expect-error idk man
         queryKey: ['currentPrograms', userData?.id],
         queryFn: () => getCurrentPrograms(),
-        //@ts-expect-error idk man
-        enabled: !!userData?.id
-    })
-
-    const { data: explorePrograms } = useQuery({
-        //@ts-expect-error idk man
-        queryKey: ['explorePrograms', userData?.id],
-        queryFn: () => getExplorePrograms(),
-        //@ts-expect-error idk man
-        enabled: !!userData?.id && !!currentPrograms
+        enabled: !!userData?.id,
+        refetchOnMount: false
     })
 
     async function getCurrentPrograms()
     {
         const studentProgramsRef = collection(db, 'studentProgram')
-        //@ts-expect-error query
         const q = query(studentProgramsRef, where('studentId', '==', userData?.id))
 
         const querySnapshot  = await getDocs(q)
@@ -43,41 +36,8 @@ export default function Programs()
             ...doc.data()
         }))
 
-        return currentProgramsData
+        return currentProgramsData as ProgramProps[]
     }
-
-    async function getExplorePrograms()
-    {
-        const programsRef = collection(db, 'programs')
-
-        if(currentPrograms?.length)
-        {
-            //@ts-expect-error idd
-            const q = query(programsRef, where(documentId(), 'not-in', currentPrograms?.map(program => program.programId)))
-    
-            const querySnapshot  = await getDocs(q)
-    
-            const exploreProgramsData = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }))
-    
-            return exploreProgramsData
-        }
-        else
-        {
-            const querySnapshot  = await getDocs(programsRef)
-    
-            const exploreProgramsData = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }))
-    
-            return exploreProgramsData
-        }
-    }
-
-    console.log(explorePrograms)
 
     return (
         <Box
@@ -170,12 +130,12 @@ export default function Programs()
             </Stack>
             {
                 tab === 'Explore' ?
-                <ProgramsExplore /> :
+                <ProgramsExplore currentPrograms={currentPrograms} /> :
                 tab === 'Current' ?
-                <ProgramsCurrent /> :
+                <ProgramsCurrent currentPrograms={currentPrograms} /> :
                 tab === 'Completed' ?
                 <ProgramsCompleted /> :
-                <ProgramsFavorites />
+                <ProgramsFavorites favoritePrograms={userData.favoritePrograms} />
             }
         </Box>
     )
