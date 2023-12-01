@@ -68,7 +68,7 @@ export default function ChatRoom({ user, friend }: Props)
     useEffect(() => {
         const queryMessages = query(messagesRef, or(and(where('sender', '==', user?.id ?? ''), where('receiver', '==', friend?.id ?? '')),and(where('sender', '==', friend?.id ?? ''), where('receiver', '==', user.id ?? ''))), orderBy("createdAt", "asc"))
 
-        const unsub = onSnapshot(queryMessages, (querySnapshot) => {
+        const unsub = onSnapshot(queryMessages, () => {
             queryClient.invalidateQueries({ queryKey: ['chatData', user.id, friend.id] })
         })
 
@@ -88,7 +88,21 @@ export default function ChatRoom({ user, friend }: Props)
 
     console.log(messages)
 
-    const displayedMessages = messages?.map((message, index) => <Message isLast={messages.length === index + 1} isSender={message.sender === user.id} {...message} id={message.id ?? ''}></Message>) ?? []
+    const displayedMessages = messages?.map((message, index) => (
+        <Message 
+            isLast={messages.length === index + 1} 
+            //@ts-expect-error data
+            isSender={message.sender === user.id} 
+            //@ts-expect-error data
+            sender={message.sender} 
+            //@ts-expect-error data
+            receiver={message.receiver} 
+            //@ts-expect-error data
+            message={message.message}
+            //@ts-expect-error data 
+            createdAt={message.createdAt} 
+            id={message.id ?? ''} />)
+    ) ?? []
 
     return (
         <>
