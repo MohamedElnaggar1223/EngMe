@@ -26,8 +26,8 @@ export default function Chats()
                     bottom: '-0.1%',
                     right: '-0.01%',
                     fontSize: 60,
-                    zIndex: chatDisplayed ? 99999997 : -1
                 }}
+                className='chatBox'
                 width='fit-content'
             >
                 {

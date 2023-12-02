@@ -16,7 +16,23 @@ interface Message{
 // eslint-disable-next-line react-refresh/only-export-components
 function Message({ id, isSender, isLast, createdAt, message }: Message) 
 {
+    console.log(createdAt)
     const scrollRef = useRef<HTMLDivElement>(null)
+
+    let date
+    if(createdAt instanceof Date)
+    {
+        date = createdAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+    }
+    else if(createdAt !== null && createdAt !== undefined)
+    {
+        //@ts-expect-error date err
+        date = createdAt.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+    }
+    else
+    {
+        date = ''
+    }
 
     useEffect(() => {
         isLast && scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start'})
@@ -62,8 +78,7 @@ function Message({ id, isSender, isLast, createdAt, message }: Message)
                     {message}
                 </Typography>
                 <Typography fontSize={10} sx={{ marginLeft: 'auto', width: 'fit-content' }}>
-                    {/*//@ts-expect-error ddd */}
-                    {createdAt?.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    {date}
                 </Typography>
                 
             </Box>

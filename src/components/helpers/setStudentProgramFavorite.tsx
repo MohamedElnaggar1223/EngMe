@@ -5,8 +5,18 @@ export const setStudentProgramFavorite = async (studentId: string, programId: st
     const docRef = doc(db, 'students', studentId)
 
     const studentData = await getDoc(docRef)
-    //@ts-expect-error error
-    const newFavs = [...studentData.data().favoritePrograms ?? [], programId]
+    //@ts-expect-error data
+    const oldFavs = studentData?.data().favoritePrograms ?? []
+    let newFavs
+    if(oldFavs?.length)
+    {
+        //@ts-expect-error anytype
+        newFavs = oldFavs.includes(programId) ? oldFavs.slice().filter(fav => fav !== programId) : [...oldFavs, programId]
+    }
+    else
+    {
+        newFavs = [programId]
+    }
 
     const newStudent = {...studentData.data(), favoritePrograms: newFavs}
 

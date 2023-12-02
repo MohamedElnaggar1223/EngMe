@@ -5,7 +5,7 @@ import { CollectionReference, DocumentData, FieldValue, addDoc, and, collection,
 import { db } from "../../../firebase/firebaseConfig"
 import useUnReadMessages from "./useUnReadMessages"
 import UserProps from "../../../interfaces/UserProps"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 const Message = lazy(() => import("./Message"))
 const Avatar = lazy(() => import('./AvatarLazy'))
 
@@ -78,6 +78,20 @@ export default function ChatRoom({ user, friend }: Props)
         //eslint-disable-next-line
     }, [])
 
+    const { mutate } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['chatData', user.id, friend.id])
+
+            queryClient.setQueryData(['chatData', user.id, friend.id], (oldData: []) => {
+                console.log(oldData)
+                return [...oldData, {...message, createdAt: new Date()}]
+            })
+
+            return () => queryClient.setQueryData(['chatData', user.id, friend.id], previousData)
+        },
+        mutationFn: (e: React.FormEvent<HTMLFormElement>) => handleSendMessage(e)
+    })
+
     async function handleSendMessage(e: React.FormEvent<HTMLFormElement>)
     {
         e.preventDefault()
@@ -85,8 +99,6 @@ export default function ChatRoom({ user, friend }: Props)
         await addDoc(messagesRef, {...message, createdAt: serverTimestamp(), read: false})
         setMessage(prev => ({...prev, message: ''}))
     }
-
-    console.log(messages)
 
     const displayedMessages = messages?.map((message, index) => (
         <Message 
@@ -227,7 +239,7 @@ export default function ChatRoom({ user, friend }: Props)
                     alignSelf='center'
                     top='7.8%'
                 >
-                    <form style={{ flex: 1, marginRight: 2, fontSize: 20 }} onSubmit={handleSendMessage}>
+                    <form style={{ flex: 1, marginRight: 2, fontSize: 20 }} onSubmit={(e) => mutate(e)}>
                         <Input 
                             sx={{ 
                                 flex: 1,

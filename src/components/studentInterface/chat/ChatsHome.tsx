@@ -134,11 +134,13 @@ export default function ChatsHome()
                 bgcolor={chatDisplayed ? 'rgba(208, 235, 252, 1)' : 'transparent'}
                 alignItems='center'
                 justifyContent='flex-start'
-                height='445px'
+                height={chatDisplayed ? '445px' : '0px'}
+                // zIndex = {chatDisplayed ? 9999999999 : -1}
                 width='460px'
                 sx={{
                     overflowY: 'auto',
                     overflowX: 'hidden',
+                    transition: '0.25s'
                 }}
                 px={1}
             >

@@ -1,7 +1,7 @@
 import { Suspense, lazy, useContext, useState } from 'react'
 import { Typography, SvgIcon, Avatar, Button } from '@mui/material'
 import { Box, Stack } from '@mui/system'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AuthContext } from '../../../authentication/auth/AuthProvider'
 import ProgramProps from '../../../../interfaces/ProgramProps'
 import ProgramExploreCourseComponents from './ProgramExploreCourseComponents'
@@ -13,10 +13,12 @@ import { getLessonsData } from '../../../helpers/getLessonsData'
 import { getQuizzesData } from '../../../helpers/getQuizzesData'
 import { getStudentCount } from '../../../helpers/getStudentCount'
 import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram'
-import { getPrereqs } from '../../../helpers/getPrereqs'
+// import { getPrereqs } from '../../../helpers/getPrereqs'
 import { getStudentRequest } from '../../../helpers/getStudentRequest'
 import { setStudentRequestProgram } from '../../../helpers/setStudentRequestProgram'
 import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFavorite'
+import { getStudentCompletedPrograms } from '../../../helpers/getStudentCompletedPrograms'
+import { getProgramsData } from '../../../helpers/getProgramsData'
 
 export default function ProgramsExploreProgram() 
 {
@@ -29,15 +31,35 @@ export default function ProgramsExploreProgram()
     const program = queryClient.getQueryData(['explorePrograms', userData?.id]).find(program => program.id === pageShowed) as ProgramProps
     const [programShow, setProgramShow] = useState('components')
 
-    const { data: prereqsData } = useQuery({
+    const icon = userData.favoritePrograms.length && userData.favoritePrograms.includes(program.id) ? 
+    (
+        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+            <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713Z" fill="#FF7E00"/>
+        </svg>
+        
+    ) :
+    (
+        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+            <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713ZM9.22844 15.0107C9.77849 14.7215 10.5263 14.7204 11.0784 15.0107L14.7783 16.9559L14.0717 12.836C13.9667 12.2235 14.1967 11.5119 14.6434 11.0765L17.6367 8.15877L13.5001 7.55768C12.8851 7.46832 12.2795 7.02965 12.0034 6.47029L10.1534 2.72187L8.30348 6.47029C8.02846 7.02755 7.4241 7.46799 6.80681 7.55768L2.67018 8.15877L5.66347 11.0765C6.10847 11.5103 6.3406 12.2211 6.23515 12.836L5.52853 16.9559L9.22844 15.0107Z" fill="#FF7E00"/>
+        </svg>
+    )
+
+    const { data: studentCompletedPrograms, isLoading: isCompletedProgsLoading } = useQuery({
+        queryKey: ['studentCompleted', userData.id],
+        queryFn: () => getStudentCompletedPrograms(userData.id),
+        refetchOnMount: false
+    })
+
+    const { data: prereqsData, isLoading: isPrereqsLoading } = useQuery({
         queryKey: ['preReqData', program?.id ?? ''],
-        queryFn: () => getPrereqs(program),
+        //@ts-expect-error err program
+        queryFn: () => getProgramsData(program?.prerequisites),
         refetchOnMount: false,
-       
+        enabled: !!program.prerequisites
     })
 
     const { data: teacherData } = useQuery({
-        queryKey: ['teacherData', program?.id ?? ''],
+        queryKey: ['teacherData'],
         queryFn: () => getTeacherDataFromProgram(program),
         refetchOnMount: false,
     })
@@ -77,7 +99,7 @@ export default function ProgramsExploreProgram()
         refetchOnMount: true
     })
 
-    const { data: studentRequest } = useQuery({
+    const { data: studentRequest, isLoading: isRequestLoading } = useQuery({
         queryKey: ['studentRequest', program?.id ?? ''],
         queryFn: () => getStudentRequest(userData?.id, program.id),
         enabled: !!program.id
@@ -90,8 +112,34 @@ export default function ProgramsExploreProgram()
         })
     }
 
+    const { mutate } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['userData'])
+
+            queryClient.setQueryData(['userData'], (oldData: unknown) => {
+                //@ts-expect-error ddddataold
+                const oldFavs = oldData.favoritePrograms
+                let newFavs
+                if(oldFavs.length)
+                {
+                    //@ts-expect-error favs
+                    newFavs = oldFavs.includes(program.id) ? oldFavs.slice().filter(fav => fav !== program.id) : [...oldFavs, program.id]
+                }
+                else
+                {
+                    newFavs = [program.id]
+                }
+
+                //@ts-expect-error ddddataold
+                return {...oldData, favoritePrograms: newFavs}
+            })
+
+            return () => queryClient.setQueryData(['userData'], previousData)
+        },
+        mutationFn: () => handleStudentFavoriteProgram()
+    })
+    
     const handleStudentFavoriteProgram = async () => {
-        console.log('a7a')
         await setStudentProgramFavorite(userData.id, program.id)
         queryClient.invalidateQueries({
             queryKey: ['userData']
@@ -100,41 +148,33 @@ export default function ProgramsExploreProgram()
             queryKey: ['explorePrograms', userData?.id]
         })
     }
-
-    // useLayoutEffect(() => {
-    //     queryClient.prefetchQuery({
-    //         queryKey: ['courses', program?.id ?? ''], 
-    //         queryFn: () => getCoursesData()
-    //     })
-    //     queryClient.prefetchQuery({
-    //         queryKey: ['assessments', program?.id ?? ''], 
-    //         queryFn: () => getAssessmentsData()
-    //     })
-    //     queryClient.prefetchQuery({
-    //         queryKey: ['lessons', program?.id ?? ''], 
-    //         queryFn: () => getLessonsData()
-    //     })
-    //     queryClient.prefetchQuery({
-    //         queryKey: ['quizzes', program?.id ?? ''], 
-    //         queryFn: () => getQuizzesData()
-    //     })
-    //     //eslint-disable-next-line
-    // }, [program.id, queryClient])
-
-    // useEffect(() => {
-    //     console.log(isAssessmentsSuccess)
-    //     console.log(isCoursesSuccess)
-    //     console.log(isLessonsSuccess)
-    //     console.log(isQuizzesSuccess)
-    //     console.log(courseError)
-    //     console.log(lessonError)
-    //     console.log(assError)
-    //     console.log(quizError)
-    // }, [isAssessmentsSuccess, isCoursesSuccess, isLessonsSuccess, isQuizzesSuccess, courseError, lessonError, assError, quizError])
-
+    
     const materialCount = (courses?.length ?? [].length) + (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
 
+    //@ts-expect-error prereq
     const displayedPrereqs = prereqsData?.map(preqreq => <Typography sx={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setPageShowed(preqreq.id)} fontSize={18} fontFamily='Inter' fontWeight={400}>{preqreq.name}</Typography>)
+ 
+    const getCanRequest = () => {
+        const preReqsIds = prereqsData?.map(prereq => prereq.id)
+        studentCompletedPrograms?.map(d => console.log(d))
+        let tookPrereqs
+        if(studentCompletedPrograms?.length)
+        {
+            //@ts-expect-error pre
+            tookPrereqs = studentCompletedPrograms?.every(data => preReqsIds?.includes(data.programId))
+        }
+        else
+        {
+            //@ts-expect-error  pre
+            tookPrereqs = preReqsIds?.length > 0 ? false : true 
+        }
+        //@ts-expect-error length
+        const onGoing = [(studentRequest?.length > 0)].every(Boolean)
+
+        const canRequest = !onGoing && tookPrereqs
+
+        return canRequest
+    }
 
     return (
         <Box
@@ -185,11 +225,8 @@ export default function ProgramsExploreProgram()
                                 >
                                     {program?.name}
                                 </Typography>
-
-                                <SvgIcon onClick={() => handleStudentFavoriteProgram()} sx={{ fontSize: 24, cursor: 'pointer' }}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
-                                        <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713ZM9.22844 15.0107C9.77849 14.7215 10.5263 14.7204 11.0784 15.0107L14.7783 16.9559L14.0717 12.836C13.9667 12.2235 14.1967 11.5119 14.6434 11.0765L17.6367 8.15877L13.5001 7.55768C12.8851 7.46832 12.2795 7.02965 12.0034 6.47029L10.1534 2.72187L8.30348 6.47029C8.02846 7.02755 7.4241 7.46799 6.80681 7.55768L2.67018 8.15877L5.66347 11.0765C6.10847 11.5103 6.3406 12.2211 6.23515 12.836L5.52853 16.9559L9.22844 15.0107Z" fill="#FF7E00"/>
-                                    </svg>
+                                <SvgIcon onClick={() => mutate()} sx={{ fontSize: 24, cursor: 'pointer' }}>
+                                    {icon}
                                 </SvgIcon>
                             </Stack>
                             <Stack
@@ -425,8 +462,7 @@ export default function ProgramsExploreProgram()
                                             opacity: 1
                                         }
                                     }}
-                                    //@ts-expect-error bigger
-                                    disabled={[(studentRequest?.length > 0)].every(Boolean)}
+                                    disabled={isCompletedProgsLoading || isRequestLoading || isPrereqsLoading || !getCanRequest()}
                                     onClick={() => handleStudentRequestProgram()}
                                 >
                                     {studentRequest?.length ? 'Request is Being Processed' : 'Get Access to Program'}

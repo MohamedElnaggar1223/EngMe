@@ -4,7 +4,24 @@ import ProgramCurrentExpired from "./ProgramCurrentExpired";
 const ProgramCurrentCard = lazy(() => import("./ProgramCurrentCard"))
 
 //@ts-expect-error aaa
-export default function ProgramsCurrent({ currentPrograms }) {
+export default function ProgramsCurrent({ currentPrograms }) 
+{
+	//@ts-expect-error program
+	const displayedPrograms = currentPrograms.map(program => {
+		program.expired ?
+		(
+			<Suspense>
+				<ProgramCurrentExpired {...program} />
+			</Suspense>
+		)
+		:
+		(
+			<Suspense>
+				<ProgramCurrentCard {...program} />
+			</Suspense>
+		)
+	})
+
 	return (
 		<Box
 			px={4}
@@ -15,21 +32,7 @@ export default function ProgramsCurrent({ currentPrograms }) {
 			flexDirection='column'
 			gap={6}
 		>
-			<Suspense>
-				<ProgramCurrentCard />
-			</Suspense>
-			<Suspense>
-				<ProgramCurrentExpired />
-			</Suspense>
-			<Suspense>
-				<ProgramCurrentCard Request={true} />
-			</Suspense>
-			<Suspense>
-				<ProgramCurrentCard />
-			</Suspense>
-			<Suspense>
-				<ProgramCurrentCard />
-			</Suspense>
+			{displayedPrograms}
 		</Box>
 	)
 }

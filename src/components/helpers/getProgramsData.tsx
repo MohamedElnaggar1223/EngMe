@@ -1,12 +1,13 @@
-import { collection, documentId, getDocs, query, where } from "firebase/firestore"
+import { doc, getDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 
 export const getProgramsData = async (programs: string[]) => {
-    const programsRef = collection(db, 'programs')
-    const programQueryRef = query(programsRef, where(documentId(), 'in', programs))
-    const programsData = await getDocs(programQueryRef)
-
-    const programsArray = programsData.docs.map(doc => ({...doc.data(), id: doc.id}))
-
-    return programsArray
+    const programsDisplay = programs.map(async (prereq: string) => {
+        const programRef = doc(db, 'programs', prereq)
+        const programData = await getDoc(programRef)
+        const programName = {...programData.data(), id: programData?.id ?? ''}
+        return programName
+    })
+    const finalDisplay = await Promise.all(programsDisplay || [])
+    return finalDisplay
 }

@@ -1,23 +1,69 @@
+import { useContext } from "react";
 import { Card, CardMedia, CardContent, Stack, SvgIcon, Typography, Box } from "@mui/material";
 import ProgramExploreCardProps from "../../../../interfaces/ProgramExploreCardProps";
+import { AuthContext } from "../../../authentication/auth/AuthProvider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { setStudentProgramFavorite } from "../../../helpers/setStudentProgramFavorite";
 
 export default function ProgramExploreCard({ setPageShowed, program }: ProgramExploreCardProps) 
 {
-    const icon = setPageShowed ? 
-    (
-        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
-            <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713ZM9.22844 15.0107C9.77849 14.7215 10.5263 14.7204 11.0784 15.0107L14.7783 16.9559L14.0717 12.836C13.9667 12.2235 14.1967 11.5119 14.6434 11.0765L17.6367 8.15877L13.5001 7.55768C12.8851 7.46832 12.2795 7.02965 12.0034 6.47029L10.1534 2.72187L8.30348 6.47029C8.02846 7.02755 7.4241 7.46799 6.80681 7.55768L2.67018 8.15877L5.66347 11.0765C6.10847 11.5103 6.3406 12.2211 6.23515 12.836L5.52853 16.9559L9.22844 15.0107Z" fill="#FF7E00"/>
-        </svg>
-    ) :
+    const queryClient = useQueryClient()
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+    
+    const { mutate } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['userData'])
+
+            queryClient.setQueryData(['userData'], (oldData: unknown) => {
+                //@ts-expect-error ddddataold
+                const oldFavs = oldData.favoritePrograms
+                let newFavs
+                if(oldFavs.length)
+                {
+                    //@ts-expect-error favs
+                    newFavs = oldFavs.includes(program.id) ? oldFavs.slice().filter(fav => fav !== program.id) : [...oldFavs, program.id]
+                }
+                else
+                {
+                    newFavs = [program.id]
+                }
+
+                //@ts-expect-error ddddataold
+                return {...oldData, favoritePrograms: newFavs}
+            })
+
+            return () => queryClient.setQueryData(['userData'], previousData)
+        },
+        mutationFn: () => handleStudentFavoriteProgram()
+    })
+    
+    const handleStudentFavoriteProgram = async () => {
+        await setStudentProgramFavorite(userData.id, program.id)
+        queryClient.invalidateQueries({
+            queryKey: ['userData']
+        })
+        queryClient.invalidateQueries({
+            queryKey: ['explorePrograms', userData?.id]
+        })
+    }
+
+    const icon = userData.favoritePrograms.length && userData.favoritePrograms.includes(program.id) ? 
     (
         <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
             <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713Z" fill="#FF7E00"/>
+        </svg>
+        
+    ) :
+    (
+        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+            <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713ZM9.22844 15.0107C9.77849 14.7215 10.5263 14.7204 11.0784 15.0107L14.7783 16.9559L14.0717 12.836C13.9667 12.2235 14.1967 11.5119 14.6434 11.0765L17.6367 8.15877L13.5001 7.55768C12.8851 7.46832 12.2795 7.02965 12.0034 6.47029L10.1534 2.72187L8.30348 6.47029C8.02846 7.02755 7.4241 7.46799 6.80681 7.55768L2.67018 8.15877L5.66347 11.0765C6.10847 11.5103 6.3406 12.2211 6.23515 12.836L5.52853 16.9559L9.22844 15.0107Z" fill="#FF7E00"/>
         </svg>
     )
 
     return (
         //@ts-expect-error set
-        <Card onClick={() => setPageShowed(program.id)} sx={{ cursor: 'pointer', width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 }, zIndex: 99999 }}>
+        <Card onClick={() => setPageShowed(program.id)} sx={{ cursor: 'pointer', width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 } }}>
             <CardMedia
                 sx={{ height: 180 }}
                 image={program.image}
@@ -33,7 +79,10 @@ export default function ProgramExploreCard({ setPageShowed, program }: ProgramEx
                     px={2}
                     pb={1}
                 >
-                    <SvgIcon sx={{ fontSize: 22 }}>
+                    <SvgIcon onClick={(e) => {
+                        e.stopPropagation()
+                        mutate()
+                    }} sx={{ fontSize: 22 }}>
                         {icon}
                     </SvgIcon>
                     <Stack

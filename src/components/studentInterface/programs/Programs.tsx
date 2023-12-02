@@ -5,10 +5,8 @@ const ProgramsCurrent = lazy(() => import('./Current/ProgramsCurrent'))
 const ProgramsExplore = lazy(() => import('./Explore/ProgramsExplore'))
 const ProgramsFavorites = lazy(() => import('./Favorites/ProgramsFavorites'))
 import { useQuery } from '@tanstack/react-query'
-import { collection, getDocs, query, where } from 'firebase/firestore'
-import { db } from '../../../firebase/firebaseConfig'
 import { AuthContext } from '../../authentication/auth/AuthProvider'
-import ProgramProps from '../../../interfaces/ProgramProps'
+import { getStudentCurrentPrograms } from '../../helpers/getStudentCurrentPrograms'
 
 export default function Programs() 
 {
@@ -19,25 +17,10 @@ export default function Programs()
 
     const { data: currentPrograms } = useQuery({
         queryKey: ['currentPrograms', userData?.id],
-        queryFn: () => getCurrentPrograms(),
+        queryFn: () => getStudentCurrentPrograms(userData.id),
         enabled: !!userData?.id,
         refetchOnMount: false
     })
-
-    async function getCurrentPrograms()
-    {
-        const studentProgramsRef = collection(db, 'studentProgram')
-        const q = query(studentProgramsRef, where('studentId', '==', userData?.id))
-
-        const querySnapshot  = await getDocs(q)
-
-        const currentProgramsData = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }))
-
-        return currentProgramsData as ProgramProps[]
-    }
 
     return (
         <Box

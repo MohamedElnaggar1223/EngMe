@@ -1,7 +1,8 @@
 import { Box, Stack, SvgIcon, Typography, Avatar, Button } from "@mui/material";
 import avatar from '../../../../assets/Ellipse 3.png'
+import ProgramProps from "../../../../interfaces/ProgramProps";
 
-export default function ProgramCurrentExpired() 
+export default function ProgramCurrentExpired(program: ProgramProps) 
 {
   return (
     <Box
