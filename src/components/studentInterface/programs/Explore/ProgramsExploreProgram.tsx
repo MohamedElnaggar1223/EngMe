@@ -17,7 +17,7 @@ import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromPr
 import { getStudentRequest } from '../../../helpers/getStudentRequest'
 import { setStudentRequestProgram } from '../../../helpers/setStudentRequestProgram'
 import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFavorite'
-import { getStudentCompletedPrograms } from '../../../helpers/getStudentCompletedPrograms'
+// import { getStudentCompletedPrograms } from '../../../helpers/getStudentCompletedPrograms'
 import { getProgramsData } from '../../../helpers/getProgramsData'
 
 export default function ProgramsExploreProgram() 
@@ -44,13 +44,13 @@ export default function ProgramsExploreProgram()
         </svg>
     )
 
-    const { data: studentCompletedPrograms, isLoading: isCompletedProgsLoading } = useQuery({
-        queryKey: ['studentCompleted', userData.id],
-        queryFn: () => getStudentCompletedPrograms(userData.id),
-        refetchOnMount: false
-    })
+    // const { data: studentCompletedPrograms, isLoading: isCompletedProgsLoading } = useQuery({
+    //     queryKey: ['studentCompleted', userData.id],
+    //     queryFn: () => getStudentCompletedPrograms(userData.id),
+    //     refetchOnMount: false
+    // })
 
-    const { data: prereqsData, isLoading: isPrereqsLoading } = useQuery({
+    const { data: prereqsData } = useQuery({
         queryKey: ['preReqData', program?.id ?? ''],
         //@ts-expect-error err program
         queryFn: () => getProgramsData(program?.prerequisites),
@@ -155,23 +155,10 @@ export default function ProgramsExploreProgram()
     const displayedPrereqs = prereqsData?.map(preqreq => <Typography sx={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setPageShowed(preqreq.id)} fontSize={18} fontFamily='Inter' fontWeight={400}>{preqreq.name}</Typography>)
  
     const getCanRequest = () => {
-        const preReqsIds = prereqsData?.map(prereq => prereq.id)
-        studentCompletedPrograms?.map(d => console.log(d))
-        let tookPrereqs
-        if(studentCompletedPrograms?.length)
-        {
-            //@ts-expect-error pre
-            tookPrereqs = studentCompletedPrograms?.every(data => preReqsIds?.includes(data.programId))
-        }
-        else
-        {
-            //@ts-expect-error  pre
-            tookPrereqs = preReqsIds?.length > 0 ? false : true 
-        }
         //@ts-expect-error length
         const onGoing = [(studentRequest?.length > 0)].every(Boolean)
 
-        const canRequest = !onGoing && tookPrereqs
+        const canRequest = !onGoing
 
         return canRequest
     }
@@ -462,7 +449,7 @@ export default function ProgramsExploreProgram()
                                             opacity: 1
                                         }
                                     }}
-                                    disabled={isCompletedProgsLoading || isRequestLoading || isPrereqsLoading || !getCanRequest()}
+                                    disabled={ isRequestLoading || !getCanRequest()}
                                     onClick={() => handleStudentRequestProgram()}
                                 >
                                     {studentRequest?.length ? 'Request is Being Processed' : 'Get Access to Program'}

@@ -6,6 +6,7 @@ const ProgramCurrentCard = lazy(() => import("./ProgramCurrentCard"))
 //@ts-expect-error aaa
 export default function ProgramsCurrent({ currentPrograms }) 
 {
+	console.log(currentPrograms)
 	//@ts-expect-error program
 	const displayedPrograms = currentPrograms.map(program => {
 		program.expired ?

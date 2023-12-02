@@ -1,5 +1,6 @@
 import { collection, addDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
+import { getProgramsData } from "./getProgramsData"
 
 //@ts-expect-error array
 export const setStudentRequestProgram = async (studentRequest, studentId: string, programId: string) => {
@@ -10,8 +11,13 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
         const newRequest = {
             studentId,
             programId,
-            status: 'pending'
+            status: 'accepted'
         }
+
+        const programData = await getProgramsData([programId])
+        const studentProgramRef = collection(db, 'studentProgram')
+
+        
 
         await addDoc(studentRequestRef, newRequest)
     }
