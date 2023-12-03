@@ -19,6 +19,8 @@ export default function ProgramsCompletedCard()
     const [submitFeedback, setSubmitFeedback] = useState(false)
     const [disappear, setDisappear] = useState(false)
 
+    const program = {id: '0'}
+
     useEffect(() => {
         if(submitFeedback) setTimeout(() => setDisappear(true), 1500)
     }, [submitFeedback])
@@ -602,7 +604,7 @@ export default function ProgramsCompletedCard()
                     </Stack>
                     {
                         programPage === 'Components' ?
-                        <Components /> :
+                        <Components {...program} /> :
                         programPage === 'Exams' ?
                         <FinalExams /> :
                         programPage === 'Grades' ?
