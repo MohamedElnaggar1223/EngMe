@@ -1,7 +1,7 @@
 import { lazy, useContext, useEffect, useState } from "react"
 import { ChatContext } from "./Chats"
 import { Box, Typography, SvgIcon, Stack, Input } from "@mui/material"
-import { CollectionReference, DocumentData, FieldValue, addDoc, and, collection, getDocs, onSnapshot, or, orderBy, query, serverTimestamp, where } from "firebase/firestore"
+import { CollectionReference, DocumentData, FieldValue, Timestamp, addDoc, and, collection, getDocs, onSnapshot, or, orderBy, query, where } from "firebase/firestore"
 import { db } from "../../../firebase/firebaseConfig"
 import useUnReadMessages from "./useUnReadMessages"
 import UserProps from "../../../interfaces/UserProps"
@@ -35,7 +35,7 @@ export default function ChatRoom({ user, friend }: Props)
         sender: user.id,
         receiver: friend.id,
         message: '',
-        createdAt: serverTimestamp(),
+        createdAt: Timestamp.now(),
         read: false
     })
 
@@ -96,7 +96,7 @@ export default function ChatRoom({ user, friend }: Props)
     {
         e.preventDefault()
         if(message.message === '') return
-        await addDoc(messagesRef, {...message, createdAt: serverTimestamp(), read: false})
+        await addDoc(messagesRef, {...message, createdAt: Timestamp.now(), read: false})
         setMessage(prev => ({...prev, message: ''}))
     }
 

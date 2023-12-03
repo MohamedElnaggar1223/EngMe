@@ -110,6 +110,12 @@ export default function ProgramsExploreProgram()
         queryClient.invalidateQueries({
             queryKey: ['studentRequest', program?.id]
         })
+        queryClient.invalidateQueries({
+            queryKey: ['currentPrograms', userData?.id],
+        })
+        queryClient.invalidateQueries({
+            queryKey: ['explorePrograms', userData?.id],
+        })
     }
 
     const { mutate } = useMutation({
@@ -142,10 +148,7 @@ export default function ProgramsExploreProgram()
     const handleStudentFavoriteProgram = async () => {
         await setStudentProgramFavorite(userData.id, program.id)
         queryClient.invalidateQueries({
-            queryKey: ['userData']
-        })
-        queryClient.invalidateQueries({
-            queryKey: ['explorePrograms', userData?.id]
+            queryKey: ['userData'],
         })
     }
     

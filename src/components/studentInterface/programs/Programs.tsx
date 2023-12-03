@@ -18,8 +18,7 @@ export default function Programs()
     const { data: currentPrograms } = useQuery({
         queryKey: ['currentPrograms', userData?.id],
         queryFn: () => getStudentCurrentPrograms(userData.id),
-        enabled: !!userData?.id,
-        refetchOnMount: false
+        enabled: !!userData?.id
     })
 
     return (

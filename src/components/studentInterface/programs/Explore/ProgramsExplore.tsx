@@ -26,11 +26,10 @@ export default function ProgramsExplore({ currentPrograms })
     const [applyFilters, setApplyFilters] = useState(false)
     const [pageShowed, setPageShowed] = useState('home')
 
-    const { data: explorePrograms } = useQuery({
+    const { data: explorePrograms, refetch } = useQuery({
         queryKey: ['explorePrograms', userData?.id],
         queryFn: () => getExplorePrograms(),
         enabled: !!userData,
-        refetchOnWindowFocus: true
     })
 
     // useEffect(() => {
