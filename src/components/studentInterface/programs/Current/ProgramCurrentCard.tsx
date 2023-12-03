@@ -1,23 +1,103 @@
 import { Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import ReactApexChart from "react-apexcharts";
-import avatar from '../../../../assets/Ellipse 3.png'
 import star from '../../../../assets/Star 4.png'
 import { memo, useState } from 'react';
 import Components from './Components';
 import FinalExams from './FinalExams';
 import Discussions from './Discussions';
 import Grades from './Grades';
-
-interface CurrentCardProps{
-    Request?: boolean
-}
+import ProgramProps from '../../../../interfaces/ProgramProps';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram';
+import { getProgramsData } from '../../../helpers/getProgramsData';
+import { getAssessmentsData } from '../../../helpers/getAssessmentsData';
+import { getCoursesData } from '../../../helpers/getCoursesData';
+import { getLessonsData } from '../../../helpers/getLessonsData';
+import { getQuizzesData } from '../../../helpers/getQuizzesData';
+import { getStudentAssessments } from '../../../helpers/getStudentAssessments';
+import { getStudentLessons } from '../../../helpers/getStudentLessons';
+import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes';
 
 // eslint-disable-next-line react-refresh/only-export-components
-function ProgramCurrentCard({ Request }: CurrentCardProps) 
-{
-    const [programPage, setProgramPage] = useState('Components')
+function ProgramCurrentCard(program: ProgramProps) 
+{   
+    const queryClient = useQueryClient()
+    const userData = queryClient.getQueryData(['userData'])
 
+    const { data: teacherData } = useQuery({
+        queryKey: ['teacherData'],
+        queryFn: () => getTeacherDataFromProgram(program),
+        refetchOnMount: false,
+    })
+
+    const { data: courses, isLoading: coursesLoading } = useQuery({
+        queryKey: ['courses', program?.id],
+        queryFn: () => getCoursesData(program),
+        refetchOnMount: true,
+        enabled: !!program.id
+    })
+
+    const { data: assessments, isLoading: assessmentsLoading } = useQuery({
+        queryKey: ['assessments', program?.id ?? ''],
+        queryFn: () => getAssessmentsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    const { data: lessons, isLoading: lessonsLoading } = useQuery({
+        queryKey: ['lessons', program?.id ?? ''],
+        queryFn: () => getLessonsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    const { data: quizzes, isLoading: quizzesLoading } = useQuery({
+        queryKey: ['quizzes', program?.id ?? ''],
+        queryFn: () => getQuizzesData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    const { data: studentLesson, isLoading: studentLessonLoading } = useQuery({
+        //@ts-expect-error user
+        queryKey: ['studentLesson', userData?.id],
+        //@ts-expect-error user
+        queryFn: () => getStudentLessons(userData?.id, lessons),
+        enabled: !!lessons
+    })
+    console.log(studentLesson)
+
+    const { data: studentAssessment, isLoading: studentAssessmentLoading } = useQuery({
+        //@ts-expect-error user
+        queryKey: ['studentAssessment', userData?.id],
+        //@ts-expect-error user
+        queryFn: () => getStudentAssessments(userData?.id, assessments),
+        enabled: !!assessments
+    })
+    console.log(studentAssessment)
+
+    const { data: studentQuizzes, isLoading: studentQuizzesLoading } = useQuery({
+        //@ts-expect-error user
+        queryKey: ['studentQuizzes', userData?.id],
+        //@ts-expect-error user
+        queryFn: () => getStudentQuizzes(userData?.id, quizzes),
+        enabled: !!quizzes
+    })
+    console.log(studentQuizzes)
+
+    const {data: prereqs } = useQuery({
+        queryKey: ['preReqData', program.id],
+        //@ts-expect-error erro
+        queryFn: () => getProgramsData(program.prerequisites),
+        enabled: !!program.prerequisites
+    })
+
+    const [programPage, setProgramPage] = useState('Components')
+    //@ts-expect-error error
+    const displayedPrereqs = prereqs?.map(prereq => <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>) 
+
+    if(coursesLoading || lessonsLoading || assessmentsLoading || quizzesLoading || studentAssessmentLoading || studentLessonLoading || studentQuizzesLoading) return <></>
     return (
         <Accordion sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
@@ -70,7 +150,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                     fontWeight={900}
                                     fontFamily='Inter'
                                 >
-                                    Data Engineering with AWS
+                                    {program.name}
                                 </Typography>
                                 <SvgIcon sx={{ fontSize: 24 }}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
@@ -83,7 +163,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                 justifyContent='space-between'
                                 alignItems='center'
                             >
-                                <Typography fontSize={16} fontWeight={400} fontFamily='Inter'>Nanodegree Program</Typography>
+                                <Typography fontSize={16} fontWeight={400} fontFamily='Inter'>{program.category}</Typography>
                                 <Stack
                                     direction='row'
                                     gap={1}
@@ -101,7 +181,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                         fontWeight={700}
                                         sx={{ color: '#004643' }}
                                     >
-                                        4.3
+                                        {program.averageRating}
                                     </Typography>
                                     <Typography
                                         fontFamily='Inter'
@@ -109,7 +189,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                         fontWeight={400}
                                         ml={0.5}
                                     >
-                                        {'(1290)'}
+                                        ({program.totalFeedbacks})
                                     </Typography>
                                 </Stack>
                             </Stack>
@@ -122,9 +202,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                 fontWeight={400}
                                 fontFamily='Inter'
                             >
-                                Learn to design data models, build data 
-                                warehouses and data lakes, automate data 
-                                pipelines, and work with massive datasets.
+                                {program.description}
                             </Typography>
                         </Stack>
                     </Box>
@@ -140,10 +218,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                             bgcolor='#FFFBF8'
                         >
                             <Typography fontSize={18} fontFamily='Inter' fontWeight={600}>Prerequisites:</Typography>
-                            <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate Python</Typography>
-                            <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
-                            <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
-                            <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
+                            {displayedPrereqs}
                         </Stack>
                         <Box
                             px={6}
@@ -170,19 +245,22 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                     alignItems='center'
                                     // mr={7}
                                 >
-                                    <Avatar src={avatar} sx={{ width: '70px', height: '70px' }} />
+                                    {/*//@ts-expect-error add */}
+                                    <Avatar src={teacherData?.image ?? ''} sx={{ width: '70px', height: '70px' }} />
                                     <Stack
                                         direction='column'
                                         justifyContent='center'
                                         gap={0.5}
                                     >
-                                        <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>Dr. Ahmed El Adl | Professor in Human Biology</Typography>
+                                        {/*//@ts-expect-error add */}
+                                        <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
                                         <Stack
                                             direction='row'
                                             justifyContent='space-between'
                                             gap={1}
                                         >
-                                            <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>The German University in Cairo</Typography>
+                                            {/*//@ts-expect-error add */}
+                                            <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>{teacherData?.university}</Typography>
                                             <Stack
                                                 direction='row'
                                                 alignItems='center'
@@ -193,7 +271,8 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                                         <path d="M5.98199 1.22337C6.11981 0.806014 6.71018 0.806015 6.84799 1.22337L7.9764 4.64051C8.03809 4.82733 8.21265 4.95352 8.4094 4.95352H12.0451C12.4886 4.95352 12.6711 5.52254 12.3103 5.78048L9.38171 7.87408C9.2193 7.99018 9.1513 8.19844 9.2139 8.38802L10.3355 11.7846C10.4738 12.2034 9.99612 12.555 9.63731 12.2985L6.68018 10.1845C6.52157 10.0711 6.30841 10.0711 6.1498 10.1845L3.19268 12.2985C2.83387 12.555 2.35618 12.2034 2.49448 11.7846L3.61609 8.38802C3.67869 8.19844 3.61069 7.99018 3.44828 7.87408L0.519688 5.78048C0.158882 5.52254 0.341356 4.95352 0.784878 4.95352H4.42058C4.61733 4.95352 4.79189 4.82733 4.85359 4.64051L5.98199 1.22337Z" fill="#FF9F06"/>
                                                     </svg>
                                                 </SvgIcon>
-                                                <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>4.3</Typography>
+                                                {/*//@ts-expect-error add */}
+                                                <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>{teacherData?.averageRating}</Typography>
                                             </Stack>
                                         </Stack>
                                     </Stack>
@@ -221,7 +300,41 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                         <img src={star} width='40px' height='40px' style={{ position: 'absolute', top: 18, left: 40.5 }} />
                                         <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 50 }} sx={{ color: '#fff' }}>83%</Typography>
                                     </Box>
-                                    
+                                    <Stack
+                                        direction='column'
+                                        alignItems='flex-start'
+                                        width='510px'
+                                        gap={1}
+                                    >
+                                        <Typography fontSize={10} fontWeight={500} fontFamily='Inter'>Progress Bar</Typography>
+                                        <Box
+                                            border='1px solid #6A9DBC'
+                                            height='15px'
+                                            width='80%'
+                                            bgcolor='#D0EBFC'
+                                            position='relative'
+                                        >
+                                            <Box
+                                                width='10%' //grade
+                                                height='100%'
+                                                bgcolor='#6A9DBC'
+                                                position='relative'
+                                                display='flex'
+                                                justifyContent='flex-end'
+                                                alignSelf='center'
+                                            >
+                                                <Box
+                                                    height='22px'
+                                                    width='5px'
+                                                    bgcolor='#FF7E00'
+                                                    mt='-3.5px'
+                                                    position='relative'
+                                                >
+                                                    {/* grade */}<Typography sx={{ color: '#FF7E00' }} position='absolute' top='98%' left='-100%' fontSize={12} fontFamily='Inter' fontWeight={600} >10%</Typography>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                    </Stack>
                                 </Stack>
                             </Stack>
 
@@ -247,7 +360,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                     px={1.5}
                                     py={0.5}
                                 >
-                                    <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>2 months</Typography>
+                                    <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program.duration}</Typography>
                                 </Box>
                                 <Box
                                     bgcolor='#D0EBFC'
@@ -298,32 +411,6 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                                     <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>Completion Certificate</Typography>
                                 </Box>
                                 </Stack>
-                                {
-                                    Request &&
-                                    <Button
-                                        sx={{
-                                            marginLeft: 'auto',
-                                            marginRight: 24,
-                                            marginBottom: -24,
-                                            width: '300px',
-                                            height: '50px',
-                                            background: '#fff',
-                                            color: '#000',
-                                            fontFamily: 'Inter',
-                                            fontSize: 14,
-                                            textTransform: 'none',
-                                            fontWeight: 400,
-                                            border: '1px solid #226E9F',
-                                            borderRadius: '15px',
-                                            '&:hover': {
-                                                background: '#fff',
-                                                opacity: 1
-                                            }
-                                        }}
-                                    >
-                                        Request Certificate
-                                    </Button>
-                                }
                             </Stack>
 
                         </Box>
@@ -342,6 +429,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                         mt={4}
                         mb={8}
                         justifyContent='space-between'
+                        gap={4}
                     >
                         <Button
                             sx={{
@@ -430,7 +518,7 @@ function ProgramCurrentCard({ Request }: CurrentCardProps)
                     </Stack>
                     {
                         programPage === 'Components' ?
-                        <Components /> :
+                        <Components programId={program.id} /> :
                         programPage === 'Exams' ?
                         <FinalExams /> :
                         programPage === 'Grades' ?
