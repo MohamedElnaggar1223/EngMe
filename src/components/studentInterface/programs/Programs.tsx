@@ -15,11 +15,13 @@ export default function Programs()
     
     const [tab, setTab] = useState('Explore')
 
-    const { data: currentPrograms } = useQuery({
+    const { data: currentPrograms, isLoading } = useQuery({
         queryKey: ['currentPrograms', userData?.id],
         queryFn: () => getStudentCurrentPrograms(userData.id),
         enabled: !!userData?.id
     })
+
+    if(!isLoading) console.log(currentPrograms)
 
     return (
         <Box
@@ -111,13 +113,14 @@ export default function Programs()
                 </Box>
             </Stack>
             {
-                tab === 'Explore' ?
-                <ProgramsExplore currentPrograms={currentPrograms} /> :
+                !isLoading &&
+                (tab === 'Explore' ?
+                <ProgramsExplore setTab={setTab} /> :
                 tab === 'Current' ?
-                <ProgramsCurrent currentPrograms={currentPrograms} /> :
+                <ProgramsCurrent /> :
                 tab === 'Completed' ?
                 <ProgramsCompleted /> :
-                <ProgramsFavorites />
+                <ProgramsFavorites />)
             }
         </Box>
     )

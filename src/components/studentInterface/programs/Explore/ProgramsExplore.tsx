@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { lazy, useState, Suspense, useContext, createContext } from "react";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { collection, documentId, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
 const ProgramsExploreHome = lazy(() => import("./ProgramsExploreHome"))
@@ -10,9 +10,13 @@ const ProgramsExploreProgram = lazy(() => import("./ProgramsExploreProgram"))
 //@ts-expect-error context
 export const ProgramExploreContext = createContext()
 
-//@ts-expect-error current
-export default function ProgramsExplore({ currentPrograms }) 
+interface ProgramsExplore{
+    setTab: React.Dispatch<React.SetStateAction<string>>
+}
+
+export default function ProgramsExplore({ setTab }: ProgramsExplore) 
 {
+    const queryClient = useQueryClient()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
 
@@ -26,11 +30,14 @@ export default function ProgramsExplore({ currentPrograms })
     const [applyFilters, setApplyFilters] = useState(false)
     const [pageShowed, setPageShowed] = useState('home')
 
-    const { data: explorePrograms, refetch } = useQuery({
+    const { data: explorePrograms } = useQuery({
         queryKey: ['explorePrograms', userData?.id],
         queryFn: () => getExplorePrograms(),
         enabled: !!userData,
     })
+
+    const programFound = explorePrograms?.find(program => program.id === pageShowed) || pageShowed === 'home'
+    if(!programFound) setTab('Current')
 
     // useEffect(() => {
     //     refetch()
@@ -40,11 +47,14 @@ export default function ProgramsExplore({ currentPrograms })
     {
         const programsRef = collection(db, 'programs')
 
-        if(currentPrograms?.length)
+        const cPrograms = queryClient.getQueryData(['currentPrograms', userData?.id])
+
+        //@ts-expect-error array
+        if(cPrograms?.length)
         {
-            console.log(currentPrograms)
+            console.log(cPrograms)
             //@ts-expect-error idd
-            const q = query(programsRef, where(documentId(), 'not-in', currentPrograms?.map(program => program.id)))
+            const q = query(programsRef, where(documentId(), 'not-in', cPrograms?.map(program => program.id)))
     
             const querySnapshot  = await getDocs(q)
 

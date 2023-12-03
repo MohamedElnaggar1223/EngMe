@@ -1,12 +1,17 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Card, CardMedia, CardContent, Stack, SvgIcon, Typography, Box } from "@mui/material";
 import ProgramExploreCardProps from "../../../../interfaces/ProgramExploreCardProps";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { setStudentProgramFavorite } from "../../../helpers/setStudentProgramFavorite";
+import { useNavigate } from "react-router-dom";
 
 export default function ProgramExploreCard({ setPageShowed, program }: ProgramExploreCardProps) 
 {
+    const navigate = useNavigate()
+    useEffect(() => {
+        if(!program.id) navigate('/programs')
+    }, [program, navigate])
     const queryClient = useQueryClient()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)

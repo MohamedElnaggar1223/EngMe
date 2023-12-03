@@ -22,6 +22,7 @@ import { getProgramsData } from '../../../helpers/getProgramsData'
 
 export default function ProgramsExploreProgram() 
 {
+    //PAGE SHOWED MAKE IT FOR EXPLORE, CURRENT, COMPLETED, CHECKS WHICH PROGRAM IT BELONGS TO BEFORE NAVIGATING
     const queryClient = useQueryClient()
     //@ts-expect-error context
     const { setPageShowed, pageShowed } = useContext(ProgramExploreContext)
@@ -29,6 +30,7 @@ export default function ProgramsExploreProgram()
     const { userData } = useContext(AuthContext)
     //@ts-expect-error idk man
     const program = queryClient.getQueryData(['explorePrograms', userData?.id]).find(program => program.id === pageShowed) as ProgramProps
+    if(!program) setPageShowed('home')
     const [programShow, setProgramShow] = useState('components')
 
     const icon = userData.favoritePrograms.length && userData.favoritePrograms.includes(program.id) ? 
@@ -103,6 +105,26 @@ export default function ProgramsExploreProgram()
         queryKey: ['studentRequest', program?.id ?? ''],
         queryFn: () => getStudentRequest(userData?.id, program.id),
         enabled: !!program.id
+    })
+
+    const { mutate: mutateRequest } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['studentRequest', program.id])
+
+            //@ts-expect-error olddata
+            queryClient.setQueryData(['studentRequest', program.id], (oldData) => {
+                const newRequest = {
+                    programId: program.id,
+                    studentId: userData.id,
+                    status: 'pending'
+                }
+                //@ts-expect-error olddata
+                return [...oldData, newRequest]
+            })
+
+            return () => queryClient.setQueryData(['studentRequest', program.id], previousData)
+        },
+        mutationFn: () => handleStudentRequestProgram()
     })
 
     const handleStudentRequestProgram = async () => {
@@ -191,7 +213,10 @@ export default function ProgramsExploreProgram()
                         width={{xs: '40%', sm: '40%', lg: '35%'}}
                         direction='row'
                     >
-                        <SvgIcon onClick={() => setPageShowed('home')} sx={{ fontSize: 34, marginRight: 2, cursor: 'pointer' }}>
+                        <SvgIcon onClick={() => {
+                            queryClient.invalidateQueries({queryKey: ['explorePrograms', userData.id]})
+                            setPageShowed('home')
+                        }} sx={{ fontSize: 34, marginRight: 2, cursor: 'pointer' }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="35" height="21" viewBox="0 0 35 21" fill="none">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M11.8107 20.5607C12.3964 19.9749 12.3964 19.0251 11.8107 18.4393L5.37132 12H33.25C34.0784 12 34.75 11.3284 34.75 10.5C34.75 9.67157 34.0784 9 33.25 9H5.37132L11.8107 2.56066C12.3964 1.97487 12.3964 1.02513 11.8107 0.43934C11.2249 -0.146447 10.2751 -0.146447 9.68934 0.43934L0.68934 9.43934C0.103553 10.0251 0.103553 10.9749 0.68934 11.5607L9.68934 20.5607C10.2751 21.1464 11.2249 21.1464 11.8107 20.5607Z" fill="#060000"/>
                             </svg>
@@ -453,7 +478,7 @@ export default function ProgramsExploreProgram()
                                         }
                                     }}
                                     disabled={ isRequestLoading || !getCanRequest()}
-                                    onClick={() => handleStudentRequestProgram()}
+                                    onClick={() => mutateRequest()}
                                 >
                                     {studentRequest?.length ? 'Request is Being Processed' : 'Get Access to Program'}
                                 </Button>

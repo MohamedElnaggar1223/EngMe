@@ -1,12 +1,16 @@
 import { Box } from "@mui/material";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useContext } from "react";
 import ProgramCurrentExpired from "./ProgramCurrentExpired";
+import { useQueryClient } from "@tanstack/react-query";
+import { AuthContext } from "../../../authentication/auth/AuthProvider";
 const ProgramCurrentCard = lazy(() => import("./ProgramCurrentCard"))
 
-//@ts-expect-error aaa
-export default function ProgramsCurrent({ currentPrograms }) 
+export default function ProgramsCurrent() 
 {
-	console.log(currentPrograms)
+	const queryClient = useQueryClient()
+	//@ts-expect-error context
+	const { userData } = useContext(AuthContext)
+	const currentPrograms = queryClient.getQueryData(['currentPrograms', userData?.id])
 	//@ts-expect-error program
 	const displayedPrograms = currentPrograms.map(program => {
 		program.expired ?
