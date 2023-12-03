@@ -111,8 +111,7 @@ export default function ProgramsExploreProgram()
         onMutate: () => {
             const previousData = queryClient.getQueryData(['studentRequest', program.id])
 
-            //@ts-expect-error olddata
-            queryClient.setQueryData(['studentRequest', program.id], (oldData) => {
+            queryClient.setQueryData(['studentRequest', program.id], (oldData: unknown) => {
                 const newRequest = {
                     programId: program.id,
                     studentId: userData.id,
