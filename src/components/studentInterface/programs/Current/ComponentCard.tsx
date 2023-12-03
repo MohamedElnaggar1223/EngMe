@@ -1,9 +1,15 @@
-import { Suspense, lazy, memo } from "react";
+import { Suspense, lazy, memo, useEffect } from "react";
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails, Button } from "@mui/material";
 // import { PageContext } from "../../../Layout";
 import { useNavigate } from "react-router-dom";
 import CourseProps from "../../../../interfaces/CourseProps";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAssessmentsData } from "../../../helpers/getAssessmentsData";
+import { getLessonsData } from "../../../helpers/getLessonsData";
+import { getQuizzesData } from "../../../helpers/getQuizzesData";
+import { getStudentAssessments } from "../../../helpers/getStudentAssessments";
+import { getStudentLessons } from "../../../helpers/getStudentLessons";
+import { getStudentQuizzes } from "../../../helpers/getStudentQuizzes";
 // eslint-disable-next-line react-refresh/only-export-components
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
@@ -11,14 +17,73 @@ const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 function ComponentCard(course: CourseProps) 
 {
     const queryClient = useQueryClient()
-    console.log(course)
+
+    //PREFETCHING FOR LATER
+    // useEffect(() => {
+    //     const prefetchData = async () => {
+    //         await queryClient.prefetchQuery({
+    //             queryKey: ['lessons', ]
+    //         })
+    //     }
+
+    //     prefetchData()
+    // }, [])
+    
     //@ts-expect-error created
-    const lessons = (queryClient.getQueryData(['lessons', course?.programId]))?.filter(lesson => (course?.lessons)?.includes(lesson.id)) as LessonProps[]
-    console.log(lessons)
-    //@ts-expect-error created
-    const assessments = (queryClient.getQueryData(['assessments', course?.programId]))?.filter(assessment => (course?.assessments)?.includes(assessment.id)) as AssessmentProps[]
-    //@ts-expect-error created
-    const quizzes = (queryClient.getQueryData(['quizzes', course?.programId]))?.filter(quiz => (course?.quizzes)?.includes(quiz.id))
+    // const lessons = (queryClient.getQueryData(['lessons', course?.programId]))?.filter(lesson => (course?.lessons)?.includes(lesson.id)) as LessonProps[]
+    // //@ts-expect-error created
+    // const assessments = (queryClient.getQueryData(['assessments', course?.programId]))?.filter(assessment => (course?.assessments)?.includes(assessment.id)) as AssessmentProps[]
+    // //@ts-expect-error created
+    // const quizzes = (queryClient.getQueryData(['quizzes', course?.programId]))?.filter(quiz => (course?.quizzes)?.includes(quiz.id))
+
+    // const
+
+    const userData = queryClient.getQueryData(['userData'])
+
+    const { data: assessments } = useQuery({
+        queryKey: ['assessments', course.programId],
+        queryFn: () => getAssessmentsData([course]),
+        enabled: !!course,
+        refetchOnMount: true
+    })
+
+    const { data: lessons } = useQuery({
+        queryKey: ['lessons', course.programId],
+        queryFn: () => getLessonsData([course]),
+        enabled: !!course,
+        refetchOnMount: true
+    })
+
+    const { data: quizzes } = useQuery({
+        queryKey: ['quizzes', course.programId],
+        queryFn: () => getQuizzesData([course]),
+        enabled: !!course,
+        refetchOnMount: true
+    })
+
+    const { data: studentLesson } = useQuery({
+        //@ts-expect-error user
+        queryKey: ['studentLesson', userData?.id],
+        //@ts-expect-error user
+        queryFn: () => getStudentLessons(userData?.id, lessons),
+        enabled: !!lessons
+    })
+
+    const { data: studentAssessment } = useQuery({
+        //@ts-expect-error user
+        queryKey: ['studentAssessment', userData?.id],
+        //@ts-expect-error user
+        queryFn: () => getStudentAssessments(userData?.id, assessments),
+        enabled: !!assessments
+    })
+
+    const { data: studentQuizzes } = useQuery({
+        //@ts-expect-error user
+        queryKey: ['studentQuizzes', userData?.id],
+        //@ts-expect-error user
+        queryFn: () => getStudentQuizzes(userData?.id, quizzes),
+        enabled: !!quizzes
+    })
 
     const displayedLessons = lessons?.map(lesson => (
             <Stack
@@ -44,8 +109,7 @@ function ComponentCard(course: CourseProps)
             </Stack>
         )
     )
-
-    //@ts-expect-error quiz
+    
     const displayedQuizzes = quizzes?.map((quiz, index: number) => (
             <Stack
                 direction='row'

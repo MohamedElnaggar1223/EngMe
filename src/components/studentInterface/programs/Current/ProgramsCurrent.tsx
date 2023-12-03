@@ -11,7 +11,6 @@ export default function ProgramsCurrent()
 	//@ts-expect-error context
 	const { userData } = useContext(AuthContext)
 	const currentPrograms = queryClient.getQueryData(['currentPrograms', userData?.id])
-	console.log(currentPrograms)
 	//@ts-expect-error program
 	const displayedPrograms = currentPrograms.map(program => {
 		const programDisplay = program.expired ?

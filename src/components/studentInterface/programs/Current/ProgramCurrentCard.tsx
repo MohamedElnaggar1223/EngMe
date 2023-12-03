@@ -8,83 +8,21 @@ import FinalExams from './FinalExams';
 import Discussions from './Discussions';
 import Grades from './Grades';
 import ProgramProps from '../../../../interfaces/ProgramProps';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram';
 import { getProgramsData } from '../../../helpers/getProgramsData';
-import { getAssessmentsData } from '../../../helpers/getAssessmentsData';
-import { getCoursesData } from '../../../helpers/getCoursesData';
-import { getLessonsData } from '../../../helpers/getLessonsData';
-import { getQuizzesData } from '../../../helpers/getQuizzesData';
-import { getStudentAssessments } from '../../../helpers/getStudentAssessments';
-import { getStudentLessons } from '../../../helpers/getStudentLessons';
-import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes';
 
 // eslint-disable-next-line react-refresh/only-export-components
 function ProgramCurrentCard(program: ProgramProps) 
 {   
-    const queryClient = useQueryClient()
-    const userData = queryClient.getQueryData(['userData'])
+    // const queryClient = useQueryClient()
+    // const userData = queryClient.getQueryData(['userData'])
 
     const { data: teacherData } = useQuery({
         queryKey: ['teacherData'],
         queryFn: () => getTeacherDataFromProgram(program),
         refetchOnMount: false,
     })
-
-    const { data: courses, isLoading: coursesLoading } = useQuery({
-        queryKey: ['courses', program?.id],
-        queryFn: () => getCoursesData(program),
-        refetchOnMount: true,
-        enabled: !!program.id
-    })
-
-    const { data: assessments, isLoading: assessmentsLoading } = useQuery({
-        queryKey: ['assessments', program?.id ?? ''],
-        queryFn: () => getAssessmentsData(courses),
-        enabled: !!courses,
-        refetchOnMount: true
-    })
-
-    const { data: lessons, isLoading: lessonsLoading } = useQuery({
-        queryKey: ['lessons', program?.id ?? ''],
-        queryFn: () => getLessonsData(courses),
-        enabled: !!courses,
-        refetchOnMount: true
-    })
-
-    const { data: quizzes, isLoading: quizzesLoading } = useQuery({
-        queryKey: ['quizzes', program?.id ?? ''],
-        queryFn: () => getQuizzesData(courses),
-        enabled: !!courses,
-        refetchOnMount: true
-    })
-
-    const { data: studentLesson, isLoading: studentLessonLoading } = useQuery({
-        //@ts-expect-error user
-        queryKey: ['studentLesson', userData?.id],
-        //@ts-expect-error user
-        queryFn: () => getStudentLessons(userData?.id, lessons),
-        enabled: !!lessons
-    })
-    console.log(studentLesson)
-
-    const { data: studentAssessment, isLoading: studentAssessmentLoading } = useQuery({
-        //@ts-expect-error user
-        queryKey: ['studentAssessment', userData?.id],
-        //@ts-expect-error user
-        queryFn: () => getStudentAssessments(userData?.id, assessments),
-        enabled: !!assessments
-    })
-    console.log(studentAssessment)
-
-    const { data: studentQuizzes, isLoading: studentQuizzesLoading } = useQuery({
-        //@ts-expect-error user
-        queryKey: ['studentQuizzes', userData?.id],
-        //@ts-expect-error user
-        queryFn: () => getStudentQuizzes(userData?.id, quizzes),
-        enabled: !!quizzes
-    })
-    console.log(studentQuizzes)
 
     const {data: prereqs } = useQuery({
         queryKey: ['preReqData', program.id],
@@ -97,7 +35,6 @@ function ProgramCurrentCard(program: ProgramProps)
     //@ts-expect-error error
     const displayedPrereqs = prereqs?.map(prereq => <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>) 
 
-    if(coursesLoading || lessonsLoading || assessmentsLoading || quizzesLoading || studentAssessmentLoading || studentLessonLoading || studentQuizzesLoading) return <></>
     return (
         <Accordion sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
@@ -517,8 +454,9 @@ function ProgramCurrentCard(program: ProgramProps)
                         </Button>
                     </Stack>
                     {
+                        // !coursesLoading && !assessmentsLoading && !quizzesLoading && !lessonsLoading && !studentAssessmentLoading && !studentLessonLoading && !studentQuizzesLoading &&
                         programPage === 'Components' ?
-                        <Components programId={program.id} /> :
+                        <Components {...program} /> :
                         programPage === 'Exams' ?
                         <FinalExams /> :
                         programPage === 'Grades' ?
