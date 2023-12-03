@@ -2,24 +2,81 @@ import { Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, Accor
 import { Box, Stack } from '@mui/system'
 import ReactApexChart from "react-apexcharts";
 import star from '../../../../assets/Star 4.png'
-import { memo, useState } from 'react';
+import { memo, useContext, useState } from 'react';
 import Components from './Components';
 import FinalExams from './FinalExams';
 import Discussions from './Discussions';
 import Grades from './Grades';
 import ProgramProps from '../../../../interfaces/ProgramProps';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram';
 import { getProgramsData } from '../../../helpers/getProgramsData';
+import { AuthContext } from '../../../authentication/auth/AuthProvider';
+import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFavorite';
+import { getAssessmentsData } from '../../../helpers/getAssessmentsData';
+import { getCoursesData } from '../../../helpers/getCoursesData';
+import { getLessonsData } from '../../../helpers/getLessonsData';
+import { getQuizzesData } from '../../../helpers/getQuizzesData';
+import { getStudentAssessments } from '../../../helpers/getStudentAssessments';
+import { getStudentLessons } from '../../../helpers/getStudentLessons';
+import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes';
 
 // eslint-disable-next-line react-refresh/only-export-components
 function ProgramCurrentCard(program: ProgramProps) 
 {   
-    // const queryClient = useQueryClient()
-    // const userData = queryClient.getQueryData(['userData'])
+    const queryClient = useQueryClient()
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const icon = userData.favoritePrograms.length && userData.favoritePrograms.includes(program.id) ? 
+    (
+        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+            <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713Z" fill="#FF7E00"/>
+        </svg>
+        
+    ) :
+    (
+        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+            <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713ZM9.22844 15.0107C9.77849 14.7215 10.5263 14.7204 11.0784 15.0107L14.7783 16.9559L14.0717 12.836C13.9667 12.2235 14.1967 11.5119 14.6434 11.0765L17.6367 8.15877L13.5001 7.55768C12.8851 7.46832 12.2795 7.02965 12.0034 6.47029L10.1534 2.72187L8.30348 6.47029C8.02846 7.02755 7.4241 7.46799 6.80681 7.55768L2.67018 8.15877L5.66347 11.0765C6.10847 11.5103 6.3406 12.2211 6.23515 12.836L5.52853 16.9559L9.22844 15.0107Z" fill="#FF7E00"/>
+        </svg>
+    )
+
+    const { mutate } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['userData'])
+
+            queryClient.setQueryData(['userData'], (oldData: unknown) => {
+                //@ts-expect-error ddddataold
+                const oldFavs = oldData.favoritePrograms
+                let newFavs
+                if(oldFavs.length)
+                {
+                    //@ts-expect-error favs
+                    newFavs = oldFavs.includes(program.id) ? oldFavs.slice().filter(fav => fav !== program.id) : [...oldFavs, program.id]
+                }
+                else
+                {
+                    newFavs = [program.id]
+                }
+
+                //@ts-expect-error ddddataold
+                return {...oldData, favoritePrograms: newFavs}
+            })
+
+            return () => queryClient.setQueryData(['userData'], previousData)
+        },
+        mutationFn: () => handleStudentFavoriteProgram()
+    })
+    
+    const handleStudentFavoriteProgram = async () => {
+        await setStudentProgramFavorite(userData.id, program.id)
+        queryClient.invalidateQueries({
+            queryKey: ['userData'],
+        })
+    }
 
     const { data: teacherData } = useQuery({
-        queryKey: ['teacherData'],
+        queryKey: ['teacherData', program.id],
         queryFn: () => getTeacherDataFromProgram(program),
         refetchOnMount: false,
     })
@@ -30,6 +87,66 @@ function ProgramCurrentCard(program: ProgramProps)
         queryFn: () => getProgramsData(program.prerequisites),
         enabled: !!program.prerequisites
     })
+
+    const { data: courses } = useQuery({
+        queryKey: ['courses', program?.id, 'currentCard'],
+        queryFn: () => getCoursesData(program),
+        refetchOnMount: true,
+        enabled: !!program.id
+    })
+
+    const { data: assessments } = useQuery({
+        queryKey: ['assessments', program.id, 'currentCard'],
+        queryFn: () => getAssessmentsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+    console.log(program.id, program.courses)
+    const { data: lessons } = useQuery({
+        queryKey: ['lessons', program.id, 'currentCard'],
+        queryFn: () => getLessonsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+    console.log(lessons)
+    const { data: quizzes } = useQuery({
+        queryKey: ['quizzes', program.id, 'currentCard'],
+        queryFn: () => getQuizzesData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    const { data: studentLesson } = useQuery({
+        queryKey: ['studentLesson', userData?.id, 'currentCard'],
+        //@ts-expect-error lesson
+        queryFn: () => getStudentLessons(userData?.id, lessons?.map(lesson => lesson.id)),
+        enabled: !!lessons
+    })
+
+    //console.log(lessons)
+
+    const { data: studentAssessment } = useQuery({
+        queryKey: ['studentAssessment', userData?.id, 'currentCard'],
+        //@ts-expect-error lesson
+        queryFn: () => getStudentAssessments(userData?.id, assessments?.map(assessment => assessment.id)),
+        enabled: !!assessments
+    })
+
+    const { data: studentQuizzes } = useQuery({
+        queryKey: ['studentQuizzes', userData?.id, 'currentCard'],
+        //@ts-expect-error lesson
+        queryFn: () => getStudentQuizzes(userData?.id, quizzes?.map(quiz => quiz.id)),
+        enabled: !!quizzes
+    })
+
+    const materialCount = (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
+    const materialFinished = (studentAssessment?.length ?? [].length) + (studentLesson?.length ?? [].length) + (studentQuizzes?.length ?? [].length)
+
+    const progress = materialCount !== 0 ? ((materialFinished/materialCount)*100).toFixed() : 0
+
+    //console.log(materialCount, materialFinished, progress)
+
+    // const coursePercentage = 
 
     const [programPage, setProgramPage] = useState('Components')
     //@ts-expect-error error
@@ -87,12 +204,10 @@ function ProgramCurrentCard(program: ProgramProps)
                                     fontWeight={900}
                                     fontFamily='Inter'
                                 >
-                                    {program.name}
+                                    {program?.name}
                                 </Typography>
-                                <SvgIcon sx={{ fontSize: 24 }}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
-                                        <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713ZM9.22844 15.0107C9.77849 14.7215 10.5263 14.7204 11.0784 15.0107L14.7783 16.9559L14.0717 12.836C13.9667 12.2235 14.1967 11.5119 14.6434 11.0765L17.6367 8.15877L13.5001 7.55768C12.8851 7.46832 12.2795 7.02965 12.0034 6.47029L10.1534 2.72187L8.30348 6.47029C8.02846 7.02755 7.4241 7.46799 6.80681 7.55768L2.67018 8.15877L5.66347 11.0765C6.10847 11.5103 6.3406 12.2211 6.23515 12.836L5.52853 16.9559L9.22844 15.0107Z" fill="#FF7E00"/>
-                                    </svg>
+                                <SvgIcon onClick={() => mutate()} sx={{ fontSize: 24, cursor: 'pointer' }}>
+                                    {icon}
                                 </SvgIcon>
                             </Stack>
                             <Stack
@@ -252,7 +367,7 @@ function ProgramCurrentCard(program: ProgramProps)
                                             position='relative'
                                         >
                                             <Box
-                                                width='10%' //grade
+                                                width={`${progress}%`} //grade
                                                 height='100%'
                                                 bgcolor='#6A9DBC'
                                                 position='relative'
@@ -267,7 +382,7 @@ function ProgramCurrentCard(program: ProgramProps)
                                                     mt='-3.5px'
                                                     position='relative'
                                                 >
-                                                    {/* grade */}<Typography sx={{ color: '#FF7E00' }} position='absolute' top='98%' left='-100%' fontSize={12} fontFamily='Inter' fontWeight={600} >10%</Typography>
+                                                    {/* grade */}<Typography sx={{ color: '#FF7E00' }} position='absolute' top='98%' left='-100%' fontSize={12} fontFamily='Inter' fontWeight={600} >{progress}%</Typography>
                                                 </Box>
                                             </Box>
                                         </Box>

@@ -15,13 +15,11 @@ export default function Programs()
     
     const [tab, setTab] = useState('Explore')
 
-    const { data: currentPrograms, isLoading } = useQuery({
+    const { isLoading } = useQuery({
         queryKey: ['currentPrograms', userData?.id],
         queryFn: () => getStudentCurrentPrograms(userData.id),
         enabled: !!userData?.id
     })
-
-    if(!isLoading) console.log(currentPrograms)
 
     return (
         <Box

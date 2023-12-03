@@ -1,25 +1,105 @@
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ExamQuestionOptions from "./ExamQuestionOptions";
-import ExamQuestionSelects from "./ExamQuestionSelects";
-import ExamQuestionPic from "./ExamQuestionPic";
+// import ExamQuestionSelects from "./ExamQuestionSelects";
+// import ExamQuestionPic from "./ExamQuestionPic";
+import { useParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Timestamp, doc, getDoc } from "firebase/firestore";
+import { db } from "../../../../firebase/firebaseConfig";
+import { AuthContext } from "../../../authentication/auth/AuthProvider";
+import { getExamSession } from "../../../helpers/getExamSession";
+import { setExamSessionTime } from "../../../helpers/setExamSessionTime";
 
 export default function Assessment() 
 {
-    const [index, setIndex] = useState(Number(localStorage.getItem('index')) || 0)
-    const [questions, setQuestions] = useState<number[]>([])
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+    const queryClient = useQueryClient()
+
+    const [timeDifference, setTimeDifference] = useState<number>()
+
+    const { data: examSession, isLoading } = useQuery({
+        queryKey: ['examSession'],
+        queryFn: () => getExamSession(userData.id)
+    })
+
+    const handleSetExamSessionTime = async () => {
+        //@ts-expect-error session
+        await setExamSessionTime(examSession[0]?.id ?? '')
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
+    }
+
+    const { mutate: mutateSession } = useMutation({
+        mutationFn: () => handleSetExamSessionTime()
+    })
+
+    //@ts-expect-error test
+    const startTime = (examSession[0]?.startTime)?.toDate()
+    //@ts-expect-error test
+    const endTime = (examSession[0]?.endTime)?.toDate()
+
+    // const [index, setIndex] = useState(Number(localStorage.getItem('index')) || 0)
+    // const [questions, setQuestions] = useState<number[]>([])
+    
+
+    const { id } = useParams()
+
+    const getAssessment = async (id: string) => {
+        const assessmentRef = doc(db, 'assessments', id)
+        const assessmentDoc = await getDoc(assessmentRef)
+
+        const assessmentData = {...assessmentDoc.data(), id: assessmentDoc.id}
+
+        return assessmentData
+    }
+
+    const { data: assessment } = useQuery({
+        queryKey: ['examSessionAssessment'],
+        queryFn: () => getAssessment(id ?? '')
+    })
+
+    console.log(assessment)
 
     useEffect(() => {
-        setQuestions([1, 2, 3, 4])
-    }, [])
+        const interval = setInterval(() => {
+            if(startTime && endTime)
+            {
+                const difference = endTime - Timestamp.now().toMillis()
+                if(difference > 0)
+                {
+                    setTimeDifference(difference)
+                }
+                else
+                {
+                    mutateSession()
+                }
+            }
+        }, 1000)
 
-    useEffect(() => {
-        localStorage.setItem('index', JSON.stringify(index))
-    }, [index])
+        return () => clearInterval(interval)
+        //eslint-disable-next-line
+    }, [startTime, endTime, timeDifference])
 
-    return (
+    // useEffect(() => {
+
+    // }, [])
+
+    // useEffect(() => {
+    //     setQuestions([1, 2, 3, 4])
+    // }, [])
+
+    // useEffect(() => {
+    //     localStorage.setItem('index', JSON.stringify(index))
+    // }, [index])
+
+    //@ts-expect-error errrrr
+    const displayedQuestions = assessment?.questions?.map((question, index) => <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />)
+
+    if(isLoading) return <></>
+    else return (
         <Box
             width='100%'
         >
@@ -49,7 +129,7 @@ export default function Assessment()
                     width='180px'
                 >
                     <Typography fontSize={16} fontFamily='Inter' fontWeight={500}>
-                        Timer
+                        {timeDifference ? Math.floor(timeDifference / (1000 * 60 * 60)).toString().length > 1 ? Math.floor(timeDifference / (1000 * 60 * 60)) : `0${timeDifference && Math.floor(timeDifference / (1000 * 60 * 60))}` : '00'}:{timeDifference ? Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)).toString().length > 1 ? Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)) : `0${timeDifference && Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))}` : '00'}:{timeDifference ? Math.floor((timeDifference % (1000 * 60)) / 1000).toString().length > 1 ? Math.floor((timeDifference % (1000 * 60)) / 1000) : `0${timeDifference && Math.floor((timeDifference % (1000 * 60)) / 1000)}` : '00'}
                     </Typography>
                 </Box>
             </Stack>
@@ -60,30 +140,32 @@ export default function Assessment()
                 alignItems='center'
             >
                 {
-                    index === 0 ?
-                    <ExamQuestionOptions 
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
-                    : index === 1 ?
-                    <ExamQuestionSelects
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
-                    : index === 2 ?
-                    <ExamQuestionPic
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
-                    :
-                    <ExamQuestionOptions 
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
+
+                    // <ExamQuestionOptions 
+                    //     number={questions[index]} 
+                    //     setIndex={setIndex}
+                    //     total={questions.length}
+                    // />
+                    // : index === 1 ?
+                    // <ExamQuestionSelects
+                    //     number={questions[index]} 
+                    //     setIndex={setIndex}
+                    //     total={questions.length}
+                    // />
+                    // : index === 2 ?
+                    // <ExamQuestionPic
+                    //     number={questions[index]} 
+                    //     setIndex={setIndex}
+                    //     total={questions.length}
+                    // />
+                    // :
+                    // <ExamQuestionOptions 
+                    //     number={questions[index]} 
+                    //     setIndex={setIndex}
+                    //     total={questions.length}
+                    // />
+                    //@ts-expect-error lastQuestion
+                    displayedQuestions?.length && displayedQuestions[Number(examSession[0]?.lastQuestion)]
                 }
             </Box>
         </Box>

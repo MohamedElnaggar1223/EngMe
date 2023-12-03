@@ -30,7 +30,6 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
     //@ts-expect-error created
     const quizzes = (queryClient.getQueryData(['quizzes', pageShowed])).filter(quiz => (course?.quizzes)?.includes(quiz.id))
 
-    console.log()
 
     // const getStudentAssessment = async () => {
     //     const studentAssessmentRef = collection(db, 'studentAssessment')

@@ -10,13 +10,21 @@ import { getQuizzesData } from "../../../helpers/getQuizzesData";
 import { getStudentAssessments } from "../../../helpers/getStudentAssessments";
 import { getStudentLessons } from "../../../helpers/getStudentLessons";
 import { getStudentQuizzes } from "../../../helpers/getStudentQuizzes";
+import { setStudentLesson } from "../../../helpers/setStudentLesson";
+import { setStudentAssessment } from "../../../helpers/setStudentAssessment";
 // eslint-disable-next-line react-refresh/only-export-components
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
+interface ComponentCard{
+    index: number,
+    course: CourseProps
+}
+
 // eslint-disable-next-line react-refresh/only-export-components
-function ComponentCard(course: CourseProps) 
+function ComponentCard({index, course}: ComponentCard) 
 {
     const queryClient = useQueryClient()
+    //console.log(course, index)
 
     //PREFETCHING FOR LATER
     // useEffect(() => {
@@ -40,52 +48,123 @@ function ComponentCard(course: CourseProps)
     const userData = queryClient.getQueryData(['userData'])
 
     const { data: assessments } = useQuery({
-        queryKey: ['assessments', course.programId],
+        queryKey: ['assessments', course.programId, course.id],
         queryFn: () => getAssessmentsData([course]),
         enabled: !!course,
         refetchOnMount: true
     })
 
     const { data: lessons } = useQuery({
-        queryKey: ['lessons', course.programId],
+        queryKey: ['lessons', course.programId, course.id],
         queryFn: () => getLessonsData([course]),
         enabled: !!course,
         refetchOnMount: true
     })
 
     const { data: quizzes } = useQuery({
-        queryKey: ['quizzes', course.programId],
+        queryKey: ['quizzes', course.programId, course.id],
         queryFn: () => getQuizzesData([course]),
         enabled: !!course,
         refetchOnMount: true
     })
 
-    //@ts-expect-error lesson
     const { data: studentLesson } = useQuery({
         //@ts-expect-error user
-        queryKey: ['studentLesson', userData?.id],
+        queryKey: ['studentLesson', userData?.id, course.id],
         //@ts-expect-error user
-        queryFn: () => getStudentLessons(userData?.id, lessons),
+        queryFn: () => getStudentLessons(userData?.id, lessons?.map(lesson => lesson.id)),
         enabled: !!lessons
     })
 
-    //@ts-expect-error lesson
     const { data: studentAssessment } = useQuery({
         //@ts-expect-error user
-        queryKey: ['studentAssessment', userData?.id],
+        queryKey: ['studentAssessment', userData?.id, course.id],
         //@ts-expect-error user
-        queryFn: () => getStudentAssessments(userData?.id, assessments),
+        queryFn: () => getStudentAssessments(userData?.id, assessments?.map(assessment => assessment.id)),
         enabled: !!assessments
     })
 
-    //@ts-expect-error lesson
+    //console.log(assessments?.map(assessment => assessment.id))
+    //console.log(studentAssessment)
+
     const { data: studentQuizzes } = useQuery({
         //@ts-expect-error user
-        queryKey: ['studentQuizzes', userData?.id],
+        queryKey: ['studentQuizzes', userData?.id, course.id],
         //@ts-expect-error user
-        queryFn: () => getStudentQuizzes(userData?.id, quizzes),
+        queryFn: () => getStudentQuizzes(userData?.id, quizzes?.map(quiz => quiz.id)),
         enabled: !!quizzes
     })
+
+    //@ts-expect-error lesson
+    const courseStudentLessons = studentLesson?.length ? studentLesson?.filter(lesson => lessons?.map(lesson => lesson.id)?.includes(lesson?.lessonId)) : []
+    //@ts-expect-error lesson
+    const courseStudentAssessment = studentAssessment?.length ? studentAssessment?.filter(assessment => assessments?.map(assessment => assessment.id)?.includes(assessment?.assessmentId)) : []
+    //console.log(studentAssessment)
+    //@ts-expect-error lesson
+    const courseStudentQuiz = studentQuizzes?.length ? studentQuizzes?.filter(quiz => quizzes?.map(quiz => quiz.id)?.includes(quiz?.assessmentId)) : []
+    
+    const courseCount = (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
+    const finishedCount = (courseStudentLessons.length ?? 0) + (courseStudentAssessment.length ?? 0) + (courseStudentQuiz.length ?? 0)
+
+    const icon = courseCount === finishedCount ?
+    (
+        <SvgIcon sx={{ background: '#00C342', borderRadius: '50%' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
+                <path d="M12.5 25C14.9723 25 17.389 24.2669 19.4446 22.8934C21.5002 21.5199 23.1024 19.5676 24.0485 17.2835C24.9946 14.9995 25.2421 12.4861 24.7598 10.0614C24.2775 7.63661 23.087 5.40933 21.3388 3.66117C19.5907 1.91301 17.3634 0.722505 14.9386 0.24019C12.5139 -0.242126 10.0005 0.0054161 7.71645 0.951511C5.43238 1.89761 3.48015 3.49976 2.10663 5.55538C0.733112 7.61099 0 10.0277 0 12.5C0 15.8152 1.31696 18.9946 3.66116 21.3388C6.00537 23.683 9.18479 25 12.5 25ZM6.01136 12.8295C6.22427 12.6179 6.51229 12.4991 6.8125 12.4991C7.11271 12.4991 7.40072 12.6179 7.61363 12.8295L10.2273 15.4432L16.8068 8.86364C17.0242 8.67747 17.3038 8.58019 17.5898 8.59124C17.8758 8.60229 18.1471 8.72085 18.3495 8.92323C18.5519 9.12561 18.6704 9.3969 18.6815 9.6829C18.6925 9.96889 18.5953 10.2485 18.4091 10.4659L11.0227 17.8523C10.8098 18.0639 10.5218 18.1827 10.2216 18.1827C9.92138 18.1827 9.63336 18.0639 9.42045 17.8523L6.01136 14.4432C5.90485 14.3375 5.82031 14.2119 5.76262 14.0734C5.70493 13.9349 5.67523 13.7864 5.67523 13.6364C5.67523 13.4864 5.70493 13.3378 5.76262 13.1993C5.82031 13.0609 5.90485 12.9352 6.01136 12.8295Z" fill="white"/>
+            </svg>
+        </SvgIcon>
+    )
+    :
+    (
+        <SvgIcon>
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
+                <path d="M12.5 25C14.9723 25 17.389 24.2669 19.4446 22.8934C21.5002 21.5199 23.1024 19.5676 24.0485 17.2835C24.9946 14.9995 25.2421 12.4861 24.7598 10.0614C24.2775 7.63661 23.087 5.40933 21.3388 3.66117C19.5907 1.91301 17.3634 0.722505 14.9386 0.24019C12.5139 -0.242126 10.0005 0.0054161 7.71645 0.951511C5.43238 1.89761 3.48015 3.49976 2.10663 5.55538C0.733112 7.61099 0 10.0277 0 12.5C0 15.8152 1.31696 18.9946 3.66116 21.3388C6.00537 23.683 9.18479 25 12.5 25ZM6.01136 12.8295C6.22427 12.6179 6.51229 12.4991 6.8125 12.4991C7.11271 12.4991 7.40072 12.6179 7.61363 12.8295L10.2273 15.4432L16.8068 8.86364C17.0242 8.67747 17.3038 8.58019 17.5898 8.59124C17.8758 8.60229 18.1471 8.72085 18.3495 8.92323C18.5519 9.12561 18.6704 9.3969 18.6815 9.6829C18.6925 9.96889 18.5953 10.2485 18.4091 10.4659L11.0227 17.8523C10.8098 18.0639 10.5218 18.1827 10.2216 18.1827C9.92138 18.1827 9.63336 18.0639 9.42045 17.8523L6.01136 14.4432C5.90485 14.3375 5.82031 14.2119 5.76262 14.0734C5.70493 13.9349 5.67523 13.7864 5.67523 13.6364C5.67523 13.4864 5.70493 13.3378 5.76262 13.1993C5.82031 13.0609 5.90485 12.9352 6.01136 12.8295Z" fill="white"/>
+            </svg>
+        </SvgIcon>
+    )
+
+    const handleStudentLesson = async (lessonId: string) => {
+        //@ts-expect-error userData
+        await setStudentLesson(userData?.id, lessonId)
+        queryClient.invalidateQueries({
+            //@ts-expect-error userData
+            queryKey: ['studentLesson', userData?.id, course.id]
+        })
+        queryClient.invalidateQueries({
+            //@ts-expect-error userData
+            queryKey: ['studentLesson', userData?.id]
+        })
+    }
+
+    const handleStudentAssessment = async (assessmentId: string) => {
+        //@ts-expect-error userData
+        await setStudentAssessment(userData?.id, assessmentId)
+        queryClient.invalidateQueries({
+            //@ts-expect-error userData
+            queryKey: ['studentAssessment', userData?.id, course.id]
+        })
+        queryClient.invalidateQueries({
+            //@ts-expect-error userData
+            queryKey: ['studentAssessment', userData?.id]
+        })
+        queryClient.invalidateQueries({
+            queryKey: ['examSession']
+        })
+        navigate(`/assessment/${assessmentId}`)
+    }
+
+    const handleStudentQuiz = async (quizId: string) => {
+        //@ts-expect-error userData
+        await setStudentQuiz(userData?.id, quizId)
+        queryClient.invalidateQueries({
+            //@ts-expect-error userData
+            queryKey: ['studentQuiz', userData?.id, course.id]
+        })
+        queryClient.invalidateQueries({
+            //@ts-expect-error userData
+            queryKey: ['studentQuiz', userData?.id]
+        })
+    }
 
     const displayedLessons = lessons?.map(lesson => (
             <Stack
@@ -93,9 +172,10 @@ function ComponentCard(course: CourseProps)
                 justifyContent='space-between'
                 flex={1}
                 height='50px'
-                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5,cursor: 'pointer' }}
                 alignItems='center'
                 bgcolor='#D0EBFC'
+                onClick={() => handleStudentLesson(lesson.id)}
             >
                 <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
                     <SvgIcon>
@@ -163,7 +243,7 @@ function ComponentCard(course: CourseProps)
             </Stack>
         )
     )
-
+                    //console.log(courseStudentAssessment)
     const displayedAssessments = assessments?.map(assessment => (
             <Stack
                 direction='row'
@@ -178,14 +258,43 @@ function ComponentCard(course: CourseProps)
                 <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment?.title}</Typography>
                 {/*//@ts-expect-error lesson*/}
                 <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment?.description}</Typography>
-                <Typography sx={{ color: '#FF7E00' }} fontFamily='Inter' fontSize={14} fontWeight={700}>80%</Typography>
+                {
+                    //@ts-expect-error assessment
+                    courseStudentAssessment?.find(doc => doc.assessmentId === assessment.id) ?
+                    <Typography sx={{ color: '#FF7E00' }} fontFamily='Inter' fontSize={14} fontWeight={700}>80%</Typography> :
+                    <Button
+                        sx={{
+                            width: '100px',
+                            height: '30px',
+                            background: '#fff',
+                            color: '#226E9F',
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            textTransform: 'none',
+                            fontWeight: 400,
+                            border: '1px solid #226E9F',
+                            borderRadius: '5px',
+                            '&:hover': {
+                                background: '#fff',
+                                opacity: 1
+                            }
+                        }}
+                        onClick={() => {
+                            // setPage('quiz')
+                            // navigate('/quiz')
+                            handleStudentAssessment(assessment.id)
+                        }}
+                        >
+                        Take
+                    </Button>
+                }
             </Stack>
         )
     )
 
     const navigate = useNavigate()
     return (
-        <Suspense>
+        
             <Accordion sx={{ width: '100%', flex: 1, '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon sx={{ paddingRight: 2, paddingLeft: 6, color: '#fff' }} />}
@@ -210,14 +319,10 @@ function ComponentCard(course: CourseProps)
                             direction='row'
                             gap={8}
                         >
-                            <SvgIcon sx={{ background: '#00C342', borderRadius: '50%' }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
-                                    <path d="M12.5 25C14.9723 25 17.389 24.2669 19.4446 22.8934C21.5002 21.5199 23.1024 19.5676 24.0485 17.2835C24.9946 14.9995 25.2421 12.4861 24.7598 10.0614C24.2775 7.63661 23.087 5.40933 21.3388 3.66117C19.5907 1.91301 17.3634 0.722505 14.9386 0.24019C12.5139 -0.242126 10.0005 0.0054161 7.71645 0.951511C5.43238 1.89761 3.48015 3.49976 2.10663 5.55538C0.733112 7.61099 0 10.0277 0 12.5C0 15.8152 1.31696 18.9946 3.66116 21.3388C6.00537 23.683 9.18479 25 12.5 25ZM6.01136 12.8295C6.22427 12.6179 6.51229 12.4991 6.8125 12.4991C7.11271 12.4991 7.40072 12.6179 7.61363 12.8295L10.2273 15.4432L16.8068 8.86364C17.0242 8.67747 17.3038 8.58019 17.5898 8.59124C17.8758 8.60229 18.1471 8.72085 18.3495 8.92323C18.5519 9.12561 18.6704 9.3969 18.6815 9.6829C18.6925 9.96889 18.5953 10.2485 18.4091 10.4659L11.0227 17.8523C10.8098 18.0639 10.5218 18.1827 10.2216 18.1827C9.92138 18.1827 9.63336 18.0639 9.42045 17.8523L6.01136 14.4432C5.90485 14.3375 5.82031 14.2119 5.76262 14.0734C5.70493 13.9349 5.67523 13.7864 5.67523 13.6364C5.67523 13.4864 5.70493 13.3378 5.76262 13.1993C5.82031 13.0609 5.90485 12.9352 6.01136 12.8295Z" fill="white"/>
-                                </svg>
-                            </SvgIcon>
-                            <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Course 1</Typography>
+                            {icon}
+                            <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Course {index + 1}</Typography>
                         </Stack>
-                        <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>2 Lessons</Typography>
+                        <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{lessons?.length} Lessons</Typography>
                         <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>5 Hours</Typography>
                     </Stack>
                 </AccordionSummary>
@@ -227,7 +332,6 @@ function ComponentCard(course: CourseProps)
                     {displayedAssessments}
                 </AccordionDetails>
             </Accordion>
-        </Suspense>
     )
 }
 

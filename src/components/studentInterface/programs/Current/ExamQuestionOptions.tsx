@@ -2,25 +2,73 @@ import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
-import { useState } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useContext, useState } from "react"
+import { AuthContext } from "../../../authentication/auth/AuthProvider"
+import { setLastQuestionExamSessionAssessment } from "../../../helpers/setLastQuestionExamSessionAssessment"
 
-interface ExamQuestionProps{
-    number: number,
-    setIndex: React.Dispatch<React.SetStateAction<number>>,
-    total: number
+interface Question{
+    options: string[],
+    question: string
 }
 
-export default function ExamQuestionOptions({ number, setIndex, total }: ExamQuestionProps)
+interface ExamQuestionProps{
+    question: Question,
+    index: number,
+    total: number,
+    assessmentId: string
+}
+
+export default function ExamQuestionOptions({ assessmentId, question, index, total }: ExamQuestionProps)
 {
+    const queryClient = useQueryClient()
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
     const [selectedOption, setSelectedOption] = useState(0)
 
-    function handleNext()
-    {
-        setSelectedOption(0)
-        setIndex(prev => prev + 1)
+    const handleSetLastQuestionExamSession = async () => {
+        await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
+        await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
-    
-    const end = number === total
+
+    const handleSubmitExamSession = async () => {
+
+    }
+
+    const { mutate: mutateLastQuestionSession } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['examSession'])
+
+            queryClient.setQueryData(['examSession'], (oldData: unknown) => {
+                //@ts-expect-error unknown
+                const oldDataArray = oldData[0]
+                return {...oldDataArray, lastQuestion: oldDataArray.lastQuestion + 1}
+            })
+
+            return () => queryClient.setQueryData(['examSession'], previousData)
+        },
+        mutationFn: () => handleSetLastQuestionExamSession()
+    })
+
+    const { mutate: mutateSubmitExamSession } = useMutation({
+        mutationFn: () => handleSubmitExamSession()
+    })
+
+    const displayedOptions = question.options.map((option, index) => (
+        <Box
+            boxShadow={selectedOption === index ? '0px 0px 0px 5px rgba(255,126,0,1)' :'0px 0px 0px 1px rgba(0,0,0,1)'}
+            borderRadius='10px'
+            sx={{
+                textIndent: '25px',
+                cursor: 'pointer'
+            }}
+            width='790px'
+            py={2}
+            onClick={() => setSelectedOption(index)}
+        >
+            <Typography>{option}</Typography>
+        </Box>
+    ))
 
     return (
         <Stack
@@ -39,65 +87,14 @@ export default function ExamQuestionOptions({ number, setIndex, total }: ExamQue
                 width='760px'
             >
                 <Typography></Typography>
-                <Typography>Q{number}: What color is an Orange</Typography>
-                <Typography sx={{ justifySelf: 'flex-end' }}>{number}/{total}</Typography>
+                <Typography>Q{index}: {question.question}</Typography>
+                <Typography sx={{ justifySelf: 'flex-end' }}>{index + 1}/{total}</Typography>
             </Stack>
             <Stack 
                 flex={1}
                 gap={4}
             >
-                <Box
-                    boxShadow={selectedOption === 1 ? '0px 0px 0px 5px rgba(255,126,0,1)' :'0px 0px 0px 1px rgba(0,0,0,1)'}
-                    borderRadius='10px'
-                    sx={{
-                        textIndent: '25px',
-                        cursor: 'pointer'
-                    }}
-                    width='790px'
-                    py={2}
-                    onClick={() => setSelectedOption(1)}
-                >
-                    <Typography>Orange</Typography>
-                </Box>
-                <Box
-                    boxShadow={selectedOption === 2 ? '0px 0px 0px 5px rgba(255,126,0,1)' :'0px 0px 0px 1px rgba(0,0,0,1)'}
-                    borderRadius='10px'
-                    sx={{
-                        textIndent: '25px',
-                        cursor: 'pointer'
-                    }}
-                    width='790px'
-                    py={2}
-                    onClick={() => setSelectedOption(2)}
-                >
-                    <Typography>Orange</Typography>
-                </Box>
-                <Box
-                    boxShadow={selectedOption === 3 ? '0px 0px 0px 5px rgba(255,126,0,1)' :'0px 0px 0px 1px rgba(0,0,0,1)'}
-                    borderRadius='10px'
-                    sx={{
-                        textIndent: '25px',
-                        cursor: 'pointer'
-                    }}
-                    width='790px'
-                    py={2}
-                    onClick={() => setSelectedOption(3)}
-                >
-                    <Typography>Orange</Typography>
-                </Box>
-                <Box
-                    boxShadow={selectedOption === 4 ? '0px 0px 0px 5px rgba(255,126,0,1)' :'0px 0px 0px 1px rgba(0,0,0,1)'}
-                    borderRadius='10px'
-                    sx={{
-                        textIndent: '25px',
-                        cursor: 'pointer'
-                    }}
-                    width='790px'
-                    py={2}
-                    onClick={() => setSelectedOption(4)}
-                >
-                    <Typography>Orange</Typography>
-                </Box>
+               {displayedOptions}
             </Stack>
             <Stack
                 direction='row'
@@ -121,13 +118,13 @@ export default function ExamQuestionOptions({ number, setIndex, total }: ExamQue
                         },
                         marginBottom: 3
                     }}
-                    onClick={handleNext}
-                    disabled={end}
+                    disabled={true}
+                    // disabled={end}
                 >
                     Skip
                 </Button>
                 {
-                    end ?
+                    index + 1 === total ?
                     <Button
                         sx={{
                             width: '180px',
@@ -146,6 +143,7 @@ export default function ExamQuestionOptions({ number, setIndex, total }: ExamQue
                             },
                             marginBottom: 3
                         }}
+                        onClick={() => mutateSubmitExamSession()}
                     >
                         Submit
                     </Button>
@@ -168,7 +166,7 @@ export default function ExamQuestionOptions({ number, setIndex, total }: ExamQue
                             },
                             marginBottom: 3
                         }}
-                        onClick={handleNext}
+                        onClick={() => mutateLastQuestionSession()}
                     >
                         Next
                     </Button>

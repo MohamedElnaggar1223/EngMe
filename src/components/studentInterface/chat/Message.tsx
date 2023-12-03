@@ -16,7 +16,6 @@ interface Message{
 // eslint-disable-next-line react-refresh/only-export-components
 function Message({ id, isSender, isLast, createdAt, message }: Message) 
 {
-    console.log(createdAt)
     const scrollRef = useRef<HTMLDivElement>(null)
 
     let date

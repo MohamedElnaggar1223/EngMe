@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { lazy, useState, Suspense, useContext, createContext } from "react";
+import { lazy, useState, Suspense, useContext, createContext, useEffect } from "react";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { collection, documentId, getDocs, query, where } from "firebase/firestore";
@@ -36,8 +36,13 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
         enabled: !!userData,
     })
 
-    const programFound = explorePrograms?.find(program => program.id === pageShowed) || pageShowed === 'home'
-    if(!programFound) setTab('Current')
+    useEffect(() => {
+        if(pageShowed !== 'home')
+        {
+            const programFound = explorePrograms?.find(program => program.id === pageShowed)
+            if(!programFound) setTab('Current')
+        }
+    }, [pageShowed])
 
     // useEffect(() => {
     //     refetch()
@@ -52,7 +57,6 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
         //@ts-expect-error array
         if(cPrograms?.length)
         {
-            console.log(cPrograms)
             //@ts-expect-error idd
             const q = query(programsRef, where(documentId(), 'not-in', cPrograms?.map(program => program.id)))
     

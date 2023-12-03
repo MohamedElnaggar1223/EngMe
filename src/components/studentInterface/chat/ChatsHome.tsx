@@ -91,8 +91,6 @@ export default function ChatsHome()
 
     // console.log(userChat)
 
-    console.log(userData?.friends ?? [])
-
     const displayedChats = userData?.friends?.map((user: string) => 
         <ChatCard id={user} />
     ) ?? []

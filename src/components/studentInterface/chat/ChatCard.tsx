@@ -23,7 +23,6 @@ export default function ChatCard({ id }: Props)
 
     async function getInitialFriendData(userRef: DocumentReference<DocumentData, DocumentData>)
     {
-        console.log('hi')
         const data = await getDoc(userRef)
         return data.exists() ? {...data.data(), id: data.id} : {}
     }

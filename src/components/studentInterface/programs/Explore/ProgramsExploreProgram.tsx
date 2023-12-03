@@ -61,7 +61,7 @@ export default function ProgramsExploreProgram()
     })
 
     const { data: teacherData } = useQuery({
-        queryKey: ['teacherData'],
+        queryKey: ['teacherData', program.id],
         queryFn: () => getTeacherDataFromProgram(program),
         refetchOnMount: false,
     })

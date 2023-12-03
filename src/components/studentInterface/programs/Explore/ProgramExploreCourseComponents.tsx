@@ -12,8 +12,6 @@ export default function ProgramExploreCourseComponents()
     const { pageShowed } = useContext(ProgramExploreContext)
     const coursesData = queryClient.getQueryData(['courses', pageShowed])
 
-    console.log(coursesData)
-
     //@ts-expect-error course
     const displayedCourses = coursesData?.map((course, index) => (
         <Suspense>

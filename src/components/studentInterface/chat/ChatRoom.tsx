@@ -26,7 +26,6 @@ interface Message{
 export default function ChatRoom({ user, friend }: Props)
 {  
     const queryClient = useQueryClient()
-    console.log(user, friend)
     //@ts-expect-error context
     const { chatDisplayed, setChatDisplayed, setChat } = useContext(ChatContext)
     const { unReadMessages } = useUnReadMessages()
@@ -83,7 +82,6 @@ export default function ChatRoom({ user, friend }: Props)
             const previousData = queryClient.getQueryData(['chatData', user.id, friend.id])
 
             queryClient.setQueryData(['chatData', user.id, friend.id], (oldData: []) => {
-                console.log(oldData)
                 return [...oldData, {...message, createdAt: new Date()}]
             })
 
