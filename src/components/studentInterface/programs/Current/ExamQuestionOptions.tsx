@@ -6,6 +6,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useContext, useState } from "react"
 import { AuthContext } from "../../../authentication/auth/AuthProvider"
 import { setLastQuestionExamSessionAssessment } from "../../../helpers/setLastQuestionExamSessionAssessment"
+import { setSubmitExamSessionAssessment } from "../../../helpers/setSubmitExamSessionAssessment"
+import { useNavigate } from "react-router-dom"
 
 interface Question{
     options: string[],
@@ -26,13 +28,18 @@ export default function ExamQuestionOptions({ assessmentId, question, index, tot
     const { userData } = useContext(AuthContext)
     const [selectedOption, setSelectedOption] = useState(0)
 
+    const navigate = useNavigate()
+
     const handleSetLastQuestionExamSession = async () => {
         await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
         await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
 
     const handleSubmitExamSession = async () => {
-
+        await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
+        await setSubmitExamSessionAssessment(userData.id, assessmentId)
+        await queryClient.invalidateQueries({queryKey: ['examSession']})
+        navigate('/')
     }
 
     const { mutate: mutateLastQuestionSession } = useMutation({

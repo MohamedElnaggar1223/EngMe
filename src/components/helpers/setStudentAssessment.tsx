@@ -17,7 +17,7 @@ export const setStudentAssessment = async (studentId: string, assessmentId: stri
     const newStudentAssessment = {
         studentId,
         assessmentId,
-        grade: 0
+        grade: 0,
     }
 
     const newStudentAssessmentSession = {
@@ -25,7 +25,8 @@ export const setStudentAssessment = async (studentId: string, assessmentId: stri
         type: 'assessment',
         assessmentId,
         startTime: Timestamp.now(),
-        endTime: Timestamp.fromDate(currentTime)
+        endTime: Timestamp.fromDate(currentTime),
+        lastQuestion: 0
     }
 
     await addDoc(studentAssessmentRef, newStudentAssessment)
