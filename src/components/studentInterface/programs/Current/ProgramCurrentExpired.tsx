@@ -4,7 +4,7 @@ import ProgramProps from "../../../../interfaces/ProgramProps";
 
 export default function ProgramCurrentExpired(program: ProgramProps) 
 {
-
+    console.log(program)
     return (
         <Box
             display='flex'

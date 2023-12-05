@@ -350,7 +350,9 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                 {/*//@ts-expect-error lesson*/}
                 <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{quiz?.duration}</Typography>
                 {
+                    //@ts-expect-error quiz
                     courseStudentQuiz?.find(doc => doc.quizId === quiz.id) ?
+                    //@ts-expect-error quiz
                     courseStudentQuiz?.slice().filter(doc => doc.quizId === quiz.id).length === 1 ?
                     <Button
                         sx={{

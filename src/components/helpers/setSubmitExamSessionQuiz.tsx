@@ -51,6 +51,7 @@ export const setSubmitExamSessionQuiz = async (studentId: string, quizId: string
       else answers[index] === Number(option)
     })
     console.log(results)
+    //@ts-expect-error res
     console.log(results.slice().filter(res => !!res).length)
     console.log(results.length)
     //@ts-expect-error anyerror

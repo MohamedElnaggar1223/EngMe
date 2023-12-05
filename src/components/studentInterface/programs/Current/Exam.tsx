@@ -2,17 +2,20 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useEffect, useState } from "react";
-import ExamQuestionOptions from "./ExamQuestionOptions";
-import ExamQuestionSelects from "./ExamQuestionSelects";
-import ExamQuestionPic from "./ExamQuestionPic";
+// import ExamQuestionOptions from "./ExamQuestionOptions";
+// import ExamQuestionSelects from "./ExamQuestionSelects";
+// import ExamQuestionPic from "./ExamQuestionPic";
 
 export default function Exam() 
 {
     const [index, setIndex] = useState(Number(localStorage.getItem('index')) || 0)
     const [questions, setQuestions] = useState<number[]>([])
 
+    console.log(questions)
+
     useEffect(() => {
         setQuestions([1, 2, 3, 4])
+        setIndex(0)
     }, [])
 
     useEffect(() => {
@@ -60,30 +63,30 @@ export default function Exam()
                 alignItems='center'
             >
                 {
-                    index === 0 ?
-                    <ExamQuestionOptions 
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
-                    : index === 1 ?
-                    <ExamQuestionSelects
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
-                    : index === 2 ?
-                    <ExamQuestionPic
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
-                    :
-                    <ExamQuestionOptions 
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
+                    // index === 0 ?
+                    // <ExamQuestionOptions 
+                    //     number={questions[index]} 
+                    //     setIndex={setIndex}
+                    //     total={questions.length}
+                    // />
+                    // : index === 1 ?
+                    // <ExamQuestionSelects
+                    //     number={questions[index]} 
+                    //     setIndex={setIndex}
+                    //     total={questions.length}
+                    // />
+                    // : index === 2 ?
+                    // <ExamQuestionPic
+                    //     number={questions[index]} 
+                    //     setIndex={setIndex}
+                    //     total={questions.length}
+                    // />
+                    // :
+                    // <ExamQuestionOptions 
+                    //     number={questions[index]} 
+                    //     setIndex={setIndex}
+                    //     total={questions.length}
+                    // />
                 }
             </Box>
         </Box>
