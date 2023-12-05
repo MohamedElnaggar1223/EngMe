@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import ExamQuestionOptions from "./ExamQuestionOptions";
 // import ExamQuestionSelects from "./ExamQuestionSelects";
 // import ExamQuestionPic from "./ExamQuestionPic";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Timestamp, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
@@ -19,6 +19,8 @@ export default function Assessment()
     const { userData } = useContext(AuthContext)
     const queryClient = useQueryClient()
 
+    const navigate = useNavigate()
+
     const [timeDifference, setTimeDifference] = useState<number>()
 
     const { data: examSession, isLoading } = useQuery({
@@ -29,10 +31,19 @@ export default function Assessment()
     const handleSetExamSessionTime = async () => {
         //@ts-expect-error session
         await setExamSessionTime(examSession[0]?.id ?? '')
-        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
+        //await queryClient.invalidateQueries({ queryKey: ['examSession'] })
     }
 
     const { mutate: mutateSession } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['examSession'])
+
+            queryClient.setQueryData(['examSession'], () => {
+                return []
+            })
+
+            return () => queryClient.setQueryData(['examSession'], previousData)
+        },
         mutationFn: () => handleSetExamSessionTime()
     })
 
@@ -75,6 +86,7 @@ export default function Assessment()
                 else
                 {
                     mutateSession()
+                    navigate('/')
                 }
             }
         }, 1000)

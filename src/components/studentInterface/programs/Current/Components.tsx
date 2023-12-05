@@ -31,7 +31,7 @@ export default function Components(program: ProgramProps)
     // if(queryClient.isFetching({ queryKey: ['courses', programId] })) return <></>
 	// const courses = queryClient.getQueryData(['courses', programId])
     console.log(studentCourses)
-	const displayedCourses = ((!isLoading && !studentCourseLoading) &&courses?.map((course, index) => {  
+	const displayedCourses = ((!isLoading && !studentCourseLoading) && courses?.map((course, index) => {  
         if(index === 0)
         {
             return (

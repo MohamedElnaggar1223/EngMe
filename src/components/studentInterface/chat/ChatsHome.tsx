@@ -104,9 +104,12 @@ export default function ChatsHome()
                 alignItems='center'
                 justifyContent='space-between'
                 flexDirection='row'
-                py={3}
+                py={chatDisplayed ? 3 : 0}
                 px={1}
                 bgcolor={chatDisplayed ? '#226E9F' : 'transparent'}
+                sx={{
+                    height: chatDisplayed ? 'auto' : '0px',
+                }}
             >
                 {
                     chatDisplayed &&

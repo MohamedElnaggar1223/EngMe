@@ -7,6 +7,7 @@ export default function Grades() {
         display='flex'
         gap={4}
         flexWrap='wrap'
+        justifyContent='space-between'
     >
         <GradeCard />
         <GradeCard />

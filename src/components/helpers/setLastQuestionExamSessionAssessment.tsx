@@ -15,10 +15,24 @@ export const setLastQuestionExamSessionAssessment = async (studentId: string, as
 
         const examSessionRefDoc = doc(db, 'examSession', oldExamSessionData.docs[0].id)
         const studentAssessmentRefDoc = doc(db, 'studentAssessment', oldStudentAssessmentData.docs[0].id)
-
+        
         await updateDoc(examSessionRefDoc, {...oldExamSessionData.docs[0].data(), lastQuestion: index + 1})
-        const newAnswer = oldStudentAssessmentData.docs[0].data().answers?.length > 0 ? [...oldStudentAssessmentData.docs[0].data().answers, answer] : [answer]
-        await updateDoc(studentAssessmentRefDoc, {...oldStudentAssessmentData.docs[0].data(), answers: newAnswer})
+        if(Array.isArray(answer))
+        {
+            const newAnswerObject = answer.reduce((obj, value, index) => {
+                obj[index] = value;
+                return obj;
+            }, {})
+
+            const newAnswer = oldStudentAssessmentData.docs[0].data().answers?.length > 0 ? [...oldStudentAssessmentData.docs[0].data().answers, newAnswerObject] : [newAnswerObject]
+            await updateDoc(studentAssessmentRefDoc, {...oldStudentAssessmentData.docs[0].data(), answers: newAnswer})
+        }
+        else
+        {
+            const newAnswer = oldStudentAssessmentData.docs[0].data().answers?.length > 0 ? [...oldStudentAssessmentData.docs[0].data().answers, answer] : [answer]
+            await updateDoc(studentAssessmentRefDoc, {...oldStudentAssessmentData.docs[0].data(), answers: newAnswer})
+        }
+
     }
     catch(e)
     {

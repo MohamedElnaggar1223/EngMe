@@ -1,23 +1,51 @@
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import ExamQuestionOptions from "./ExamQuestionOptions";
+import { useQuery } from "@tanstack/react-query";
+import { doc, getDoc } from "firebase/firestore";
+import { useParams } from "react-router-dom";
+import { db } from "../../../../firebase/firebaseConfig";
+import { getExamSession } from "../../../helpers/getExamSession";
+import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import ExamQuestionSelects from "./ExamQuestionSelects";
-import ExamQuestionPic from "./ExamQuestionPic";
 
 export default function Quiz() 
 {
-    const [index, setIndex] = useState(Number(localStorage.getItem('index')) || 0)
-    const [questions, setQuestions] = useState<number[]>([])
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
 
-    useEffect(() => {
-        setQuestions([1, 2, 3, 4])
-    }, [])
+    const { data: examSession, isLoading } = useQuery({
+        queryKey: ['examSession'],
+        queryFn: () => getExamSession(userData.id)
+    })
 
-    useEffect(() => {
-        localStorage.setItem('index', JSON.stringify(index))
-    }, [index])
+    const { id } = useParams()
+
+    const getQuiz = async (id: string) => {
+        const quizRef = doc(db, 'quizzes', id)
+        const quizDoc = await getDoc(quizRef)
+
+        const quizData = {...quizDoc.data(), id: quizDoc.id}
+
+        return quizData
+    }
+
+    const { data: quiz } = useQuery({
+        queryKey: ['examSessionQuiz'],
+        queryFn: () => getQuiz(id ?? '')
+    })
+    //@ts-expect-error errrrr
+    const displayedQuestions = quiz?.questions?.map((question, index) => 
+        question.type === 'options' ?
+        //@ts-expect-error errrrr
+        <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+        //@ts-expect-error errrrr
+        <ExamQuestionSelects quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} />
+    )
+
+    if(isLoading) return <></>
 
     return (
         <Box
@@ -44,30 +72,8 @@ export default function Quiz()
                 alignItems='center'
             >
                 {
-                    index === 0 ?
-                    <ExamQuestionOptions 
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
-                    : index === 1 ?
-                    <ExamQuestionSelects
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
-                    : index === 2 ?
-                    <ExamQuestionPic
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
-                    :
-                    <ExamQuestionOptions 
-                        number={questions[index]} 
-                        setIndex={setIndex}
-                        total={questions.length}
-                    />
+                    //@ts-expect-error lastQuestion
+                    displayedQuestions?.length && displayedQuestions[Number(examSession[0]?.lastQuestion)]
                 }
             </Box>
         </Box>

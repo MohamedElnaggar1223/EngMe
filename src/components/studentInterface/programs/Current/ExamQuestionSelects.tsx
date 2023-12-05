@@ -3,31 +3,119 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import Button from "@mui/material/Button"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AuthContext } from "../../../authentication/auth/AuthProvider";
+import { useNavigate } from "react-router-dom";
+import { setLastQuestionExamSessionAssessment } from "../../../helpers/setLastQuestionExamSessionAssessment";
+import { setLastQuestionExamSessionQuiz } from "../../../helpers/setLastQuestionExamSessionQuiz";
+import { setSubmitExamSessionAssessment } from "../../../helpers/setSubmitExamSessionAssessment";
+import { setSubmitExamSessionQuiz } from "../../../helpers/setSubmitExamSessionQuiz";
 
-interface ExamQuestionProps{
-    number: number,
-    setIndex: React.Dispatch<React.SetStateAction<number>>,
-    total: number
+interface Question{
+    firstOptions: string[],
+    secondOptions: string[],
+    thirdOptions: string[],
+    fourthOptions: string[],
+    firstLabel: string,
+    secondLabel: string,
+    thirdLabel: string,
+    fourthLabel: string,
+    question: string
 }
 
-export default function ExamQuestionSelects({ number, setIndex, total }: ExamQuestionProps)
+interface ExamQuestionProps{
+    question: Question,
+    index: number,
+    total: number,
+    assessmentId?: string,
+    quizId?: string
+}
+
+export default function ExamQuestionSelects({ quizId, assessmentId, question, index, total }: ExamQuestionProps)
 {
+    const queryClient = useQueryClient()
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)   
     const [firstSelectOption, setFirstSelectOption] = useState('')
     const [secondSelectOption, setSecondSelectOption] = useState('')
     const [thirdSelectOption, setThirdSelectOption] = useState('')
     const [fourthSelectOption, setFourthSelectOption] = useState('')
 
-    function handleNext()
-    {
-        setFirstSelectOption('')
-        setSecondSelectOption('')
-        setThirdSelectOption('')
-        setFourthSelectOption('')
-        setIndex(prev => prev + 1)
+    const navigate = useNavigate()
+
+    const handleSetLastQuestionExamSession = async () => {
+        if(assessmentId)
+        {
+            await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
+        }
+        else if(quizId)
+        {
+            await setLastQuestionExamSessionQuiz(userData.id, quizId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
+        }
+        await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
+
+    const handleSubmitExamSession = async () => {
+        if(assessmentId)
+        {
+            await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
+            await setSubmitExamSessionAssessment(userData.id, assessmentId)
+        }
+        else if(quizId)
+        {
+            await setLastQuestionExamSessionQuiz(userData.id, quizId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
+            await setSubmitExamSessionQuiz(userData.id, quizId)
+        }
+        await queryClient.invalidateQueries({queryKey: ['examSession']})
+        navigate('/')
+    }
+
+    const { mutate: mutateLastQuestionSession } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['examSession'])
+
+            queryClient.setQueryData(['examSession'], (oldData: unknown) => {
+                //@ts-expect-error unknown
+                const oldDataArray = oldData[0]
+                return {...oldDataArray, lastQuestion: oldDataArray.lastQuestion + 1}
+            })
+
+            return () => queryClient.setQueryData(['examSession'], previousData)
+        },
+        mutationFn: () => handleSetLastQuestionExamSession()
+    })
+
+    const { mutate: mutateSubmitExamSession } = useMutation({
+        mutationFn: () => handleSubmitExamSession()
+    })
+
+    // function handleNext()
+    // {
+    //     setFirstSelectOption('')
+    //     setSecondSelectOption('')
+    //     setThirdSelectOption('')
+    //     setFourthSelectOption('')
+    //     setIndex(prev => prev + 1)
+    // }
     
-    const end = number === total
+    // const end = number === total
+
+    const displayedFirstOptions = question.firstOptions.map((option, index) => (
+        <MenuItem key={index} value={index}>{option}</MenuItem>
+    ))
+
+    const displayedSecondOptions = question.secondOptions.map((option, index) => (
+        <MenuItem key={index} value={index}>{option}</MenuItem>
+    ))
+
+    const displayedThirdOptions = question.thirdOptions.map((option, index) => (
+        <MenuItem key={index} value={index}>{option}</MenuItem>
+    ))
+
+    const displayedFourthOptions = question.fourthOptions.map((option, index) => (
+        <MenuItem key={index} value={index}>{option}</MenuItem>
+    ))
 
     return (
         <Stack
@@ -46,8 +134,8 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                 width='760px'
             >
                 <Typography></Typography>
-                <Typography fontFamily='Inter'>Q{number}: What color is an Orange</Typography>
-                <Typography fontFamily='Inter' sx={{ justifySelf: 'flex-end' }}>{number}/{total}</Typography>
+                <Typography fontFamily='Inter'>Q{index + 1}: What color is an {question.firstLabel}</Typography>
+                <Typography fontFamily='Inter' sx={{ justifySelf: 'flex-end' }}>{index + 1}/{total}</Typography>
             </Stack>
             <Stack 
                 flex={1}
@@ -62,7 +150,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                         gap={2}
                     >
                         <InputLabel sx={{ fontWeight: 500, color: '#000', fontFamily: 'Inter' }} htmlFor="firstSelect">
-                            Orange
+                            {question.firstLabel}
                         </InputLabel>
                         <Select
                             sx={{
@@ -90,10 +178,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                             value={firstSelectOption}
                             onChange={(e) => setFirstSelectOption(e.target.value)}
                         >
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
+                            {displayedFirstOptions}
                         </Select>
                     </Stack>
                     <Stack
@@ -101,7 +186,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                         gap={2}
                     >
                         <InputLabel sx={{ fontWeight: 500, color: '#000', fontFamily: 'Inter' }} htmlFor="secondSelect">
-                            Orange
+                            {question.secondLabel}
                         </InputLabel>
                         <Select
                             sx={{
@@ -128,10 +213,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                             value={secondSelectOption}
                             onChange={(e) => setSecondSelectOption(e.target.value)}
                         >
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
+                            {displayedSecondOptions}
                         </Select>
                     </Stack>
                 </Stack>
@@ -144,7 +226,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                         gap={2}
                     >
                         <InputLabel sx={{ fontWeight: 500, color: '#000', fontFamily: 'Inter' }} htmlFor="thirdSelect">
-                            Orange
+                            {question.thirdLabel}
                         </InputLabel>
                         <Select
                             sx={{
@@ -171,10 +253,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                             value={thirdSelectOption}
                             onChange={(e) => setThirdSelectOption(e.target.value)}
                         >
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
+                            {displayedThirdOptions}
                         </Select>
                     </Stack>
                     <Stack
@@ -182,7 +261,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                         gap={2}
                     >
                         <InputLabel sx={{ fontWeight: 500, color: '#000', fontFamily: 'Inter' }} htmlFor="fourthSelect">
-                            Orange
+                            {question.fourthLabel}
                         </InputLabel>
                         <Select
                             sx={{
@@ -209,10 +288,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                             value={fourthSelectOption}
                             onChange={(e) => setFourthSelectOption(e.target.value)}
                         >
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
-                            <MenuItem value='Intermediate SCL'>Intermediate SCL</MenuItem>
+                            {displayedFourthOptions}
                         </Select>
                     </Stack>
                 </Stack>
@@ -239,13 +315,13 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                         },
                         marginBottom: 3
                     }}
-                    onClick={handleNext}
-                    disabled={end}
+                    // onClick={handleNext}
+                    disabled={true}
                 >
                     Skip
                 </Button>
                 {
-                    end ?
+                    index + 1 === total ?
                     <Button
                         sx={{
                             width: '180px',
@@ -264,6 +340,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                             },
                             marginBottom: 3
                         }}
+                        onClick={() => mutateSubmitExamSession()}
                     >
                         Submit
                     </Button>
@@ -286,7 +363,7 @@ export default function ExamQuestionSelects({ number, setIndex, total }: ExamQue
                             },
                             marginBottom: 3
                         }}
-                        onClick={handleNext}
+                        onClick={() => mutateLastQuestionSession()}
                     >
                         Next
                     </Button>

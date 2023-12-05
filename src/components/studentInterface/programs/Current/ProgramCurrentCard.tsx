@@ -2,7 +2,7 @@ import { Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, Accor
 import { Box, Stack } from '@mui/system'
 import ReactApexChart from "react-apexcharts";
 import star from '../../../../assets/Star 4.png'
-import { memo, useContext, useState } from 'react';
+import { memo, useContext, useMemo, useState } from 'react';
 import Components from './Components';
 import FinalExams from './FinalExams';
 import Discussions from './Discussions';
@@ -140,7 +140,84 @@ function ProgramCurrentCard(program: ProgramProps)
     })
 
     const materialCount = (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
-    const materialFinished = (studentAssessment?.length ?? [].length) + (studentLesson?.length ?? [].length) + (studentQuizzes?.length ?? [].length)
+    const materialFinished = useMemo(() => {
+        const newStudentAssessment = studentAssessment?.slice().reduce((result, currentAssessment) => {
+            //@ts-expect-error reduction
+            const { assessmentId, createdAt } = currentAssessment
+
+            //@ts-expect-error reduction
+            const index = result.findIndex(obj => obj.assessmentId === assessmentId)
+
+            if(index === -1)
+            {
+                //@ts-expect-error reduction
+                result.push(currentAssessment)
+            }
+            else
+            {
+                //@ts-expect-error reduction
+                const existingDate = result[index].createdAt;
+
+                if (new Date(createdAt) > new Date(existingDate)) 
+                {
+                    //@ts-expect-error reduction
+                    result[index] = currentAssessment;
+                }
+            }
+
+            return result
+        }, [])
+
+        // const newStudentLesson = studentLesson?.slice().reduce((result, currentLesson) => {
+        //     const { lessonId, createdAt } = currentLesson
+
+        //     const index = result.findIndex(obj => obj.lessonId === lessonId)
+
+        //     if(index === -1)
+        //     {
+        //         result.push(currentLesson)
+        //     }
+        //     else
+        //     {
+        //         const existingDate = result[index].createdAt;
+
+        //         if (new Date(createdAt) > new Date(existingDate)) 
+        //         {
+        //             result[index] = currentLesson;
+        //         }
+        //     }
+
+        //     return result
+        // }, [])
+
+        const newStudentQuiz = studentQuizzes?.slice().reduce((result, currentQuiz) => {
+            //@ts-expect-error reduction
+            const { quizId, createdAt } = currentQuiz
+
+            //@ts-expect-error reduction
+            const index = result.findIndex(obj => obj.quizId === quizId)
+
+            if(index === -1)
+            {
+                //@ts-expect-error reduction
+                result.push(currentQuiz)
+            }
+            else
+            {
+                //@ts-expect-error reduction
+                const existingDate = result[index].createdAt;
+
+                if (new Date(createdAt) > new Date(existingDate)) 
+                {
+                    //@ts-expect-error reduction
+                    result[index] = currentQuiz;
+                }
+            }
+
+            return result
+        }, [])
+        return (newStudentAssessment?.length ?? [].length) + (studentLesson?.length ?? [].length) + (newStudentQuiz?.length ?? [].length)
+    }, [studentAssessment, studentLesson, studentQuizzes])
 
     const progress = materialCount !== 0 ? ((materialFinished/materialCount)*100).toFixed() : 0
 

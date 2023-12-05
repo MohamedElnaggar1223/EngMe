@@ -1,4 +1,3 @@
-import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
@@ -8,6 +7,9 @@ import { AuthContext } from "../../../authentication/auth/AuthProvider"
 import { setLastQuestionExamSessionAssessment } from "../../../helpers/setLastQuestionExamSessionAssessment"
 import { setSubmitExamSessionAssessment } from "../../../helpers/setSubmitExamSessionAssessment"
 import { useNavigate } from "react-router-dom"
+import { setLastQuestionExamSessionQuiz } from "../../../helpers/setLastQuestionExamSessionQuiz"
+import { setSubmitExamSessionQuiz } from "../../../helpers/setSubmitExamSessionQuiz"
+import Box from "@mui/material/Box"
 
 interface Question{
     options: string[],
@@ -18,10 +20,11 @@ interface ExamQuestionProps{
     question: Question,
     index: number,
     total: number,
-    assessmentId: string
+    assessmentId?: string,
+    quizId?: string
 }
 
-export default function ExamQuestionOptions({ assessmentId, question, index, total }: ExamQuestionProps)
+export default function ExamQuestionOptions({ quizId, assessmentId, question, index, total }: ExamQuestionProps)
 {
     const queryClient = useQueryClient()
     //@ts-expect-error context
@@ -31,13 +34,28 @@ export default function ExamQuestionOptions({ assessmentId, question, index, tot
     const navigate = useNavigate()
 
     const handleSetLastQuestionExamSession = async () => {
-        await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
+        if(assessmentId)
+        {
+            await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
+        }
+        else if(quizId)
+        {
+            await setLastQuestionExamSessionQuiz(userData.id, quizId, index, selectedOption)
+        }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
 
     const handleSubmitExamSession = async () => {
-        await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
-        await setSubmitExamSessionAssessment(userData.id, assessmentId)
+        if(assessmentId)
+        {
+            await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
+            await setSubmitExamSessionAssessment(userData.id, assessmentId)
+        }
+        else if(quizId)
+        {
+            await setLastQuestionExamSessionQuiz(userData.id, quizId, index, selectedOption)
+            await setSubmitExamSessionQuiz(userData.id, quizId)
+        }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
         navigate('/')
     }

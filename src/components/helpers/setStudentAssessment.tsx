@@ -18,6 +18,7 @@ export const setStudentAssessment = async (studentId: string, assessmentId: stri
         studentId,
         assessmentId,
         grade: 0,
+        createdAt: Timestamp.now()
     }
 
     const newStudentAssessmentSession = {

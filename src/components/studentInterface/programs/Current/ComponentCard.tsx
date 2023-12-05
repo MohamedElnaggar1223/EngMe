@@ -13,6 +13,7 @@ import { getStudentQuizzes } from "../../../helpers/getStudentQuizzes";
 import { setStudentLesson } from "../../../helpers/setStudentLesson";
 import { setStudentAssessment } from "../../../helpers/setStudentAssessment";
 import { setStudentCourseStatus } from "../../../helpers/setStudentCourseStatus";
+import { setStudentQuiz } from "../../../helpers/setStudentQuiz";
 // eslint-disable-next-line react-refresh/only-export-components
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
@@ -89,7 +90,6 @@ function ComponentCard({index, course, disabled}: ComponentCard)
 
     //console.log(assessments?.map(assessment => assessment.id))
     //console.log(studentAssessment)
-
     const { data: studentQuizzes } = useQuery({
         //@ts-expect-error user
         queryKey: ['studentQuizzes', userData?.id, course.id],
@@ -97,9 +97,10 @@ function ComponentCard({index, course, disabled}: ComponentCard)
         queryFn: () => getStudentQuizzes(userData?.id, quizzes?.map(quiz => quiz.id)),
         enabled: !!quizzes
     })
+    console.log(studentQuizzes)
 
     //@ts-expect-error lesson
-    const courseStudentLessons = studentLesson?.length ? studentLesson?.filter(lesson => lessons?.map(lesson => lesson.id)?.includes(lesson?.lessonId)) : []
+    const courseStudentLessons = useMemo(() => studentLesson?.length ? studentLesson?.filter(lesson => lessons?.map(lesson => lesson.id)?.includes(lesson?.lessonId)) : [], [studentLesson, lessons])
     const courseStudentAssessment = useMemo(() => 
         studentAssessment?.length ? 
         //@ts-expect-error lesson
@@ -108,10 +109,87 @@ function ComponentCard({index, course, disabled}: ComponentCard)
     console.log(courseStudentAssessment)
     //console.log(studentAssessment)
     //@ts-expect-error lesson
-    const courseStudentQuiz = studentQuizzes?.length ? studentQuizzes?.filter(quiz => quizzes?.map(quiz => quiz.id)?.includes(quiz?.assessmentId)) : []
+    const courseStudentQuiz = useMemo(() => studentQuizzes?.length ? studentQuizzes?.filter(quiz => quizzes?.map(quiz => quiz.id)?.includes(quiz?.quizId)) : [], [studentQuizzes, quizzes])
     
     const courseCount = (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
-    const finishedCount = (courseStudentLessons.length ?? 0) + (courseStudentAssessment.length ?? 0) + (courseStudentQuiz.length ?? 0)
+    const finishedCount = useMemo(() => {
+        const newStudentAssessment = courseStudentAssessment?.slice().reduce((result, currentAssessment) => {
+            //@ts-expect-error reduction
+            const { assessmentId, createdAt } = currentAssessment
+
+            //@ts-expect-error reduction
+            const index = result.findIndex(obj => obj.assessmentId === assessmentId)
+
+            if(index === -1)
+            {
+                //@ts-expect-error reduction
+                result.push(currentAssessment)
+            }
+            else
+            {
+                //@ts-expect-error reduction
+                const existingDate = result[index].createdAt;
+
+                if (new Date(createdAt) > new Date(existingDate)) 
+                {
+                    //@ts-expect-error reduction
+                    result[index] = currentAssessment;
+                }
+            }
+
+            return result
+        }, [])
+
+        // const newStudentLesson = studentLesson?.slice().reduce((result, currentLesson) => {
+        //     const { lessonId, createdAt } = currentLesson
+
+        //     const index = result.findIndex(obj => obj.lessonId === lessonId)
+
+        //     if(index === -1)
+        //     {
+        //         result.push(currentLesson)
+        //     }
+        //     else
+        //     {
+        //         const existingDate = result[index].createdAt;
+
+        //         if (new Date(createdAt) > new Date(existingDate)) 
+        //         {
+        //             result[index] = currentLesson;
+        //         }
+        //     }
+
+        //     return result
+        // }, [])
+
+        const newStudentQuiz = courseStudentQuiz?.slice().reduce((result, currentQuiz) => {
+            //@ts-expect-error reduction
+            const { quizId, createdAt } = currentQuiz
+
+            //@ts-expect-error reduction
+            const index = result.findIndex(obj => obj.quizId === quizId)
+
+            if(index === -1)
+            {
+                //@ts-expect-error reduction
+                result.push(currentQuiz)
+            }
+            else
+            {
+                //@ts-expect-error reduction
+                const existingDate = result[index].createdAt;
+
+                if (new Date(createdAt) > new Date(existingDate)) 
+                {
+                    //@ts-expect-error reduction
+                    result[index] = currentQuiz;
+                }
+            }
+
+            return result
+        }, [])
+        return (newStudentAssessment?.length ?? [].length) + (courseStudentLessons?.length ?? [].length) + (newStudentQuiz?.length ?? [].length)
+    }, [courseStudentAssessment, courseStudentLessons, courseStudentQuiz])
 
     const icon = courseCount === finishedCount ?
     (
@@ -139,7 +217,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                 {
                     //@ts-expect-error idgrade
                     await setStudentCourseStatus(userData?.id, course.id)
-                    //update query of smth??
+                    await queryClient.refetchQueries({ queryKey: ['studentCourse'] }) 
                 }
             }
         }
@@ -163,13 +241,13 @@ function ComponentCard({index, course, disabled}: ComponentCard)
         })
     }
 
-    const { mutate } = useMutation({
+    const { mutate: mutateLesson } = useMutation({
         onSuccess: async () => {
             await queryClient.refetchQueries({ queryKey: ['studentCourse'] })
         },
-        mutationFn: (assessmentId: string) => handleStudentAssessment(assessmentId)
+        mutationFn: (lessonId: string) => handleStudentLesson(lessonId)
     })
-
+    
     const handleStudentAssessment = async (assessmentId: string) => {
         //@ts-expect-error userData
         await setStudentAssessment(userData?.id, assessmentId)
@@ -187,7 +265,14 @@ function ComponentCard({index, course, disabled}: ComponentCard)
         // queryClient.refetchQueries({ queryKey: ['studentCourse', course.programId] })
         navigate(`/assessment/${assessmentId}`)
     }
-
+    
+    const { mutate } = useMutation({
+        onSuccess: async () => {
+            await queryClient.refetchQueries({ queryKey: ['studentCourse'] })
+        },
+        mutationFn: (assessmentId: string) => handleStudentAssessment(assessmentId)
+    })
+    
     const handleStudentQuiz = async (quizId: string) => {
         //@ts-expect-error userData
         await setStudentQuiz(userData?.id, quizId)
@@ -205,6 +290,15 @@ function ComponentCard({index, course, disabled}: ComponentCard)
         navigate(`/quiz/${quizId}`)
     }
 
+    const { mutate: mutateQuiz } = useMutation({
+        onSuccess: async () => {
+            await queryClient.refetchQueries({ queryKey: ['studentCourse'] })
+        },
+        mutationFn: (quizId: string) => handleStudentQuiz(quizId)
+    })
+
+    console.log(courseStudentQuiz)
+
     const displayedLessons = lessons?.map(lesson => (
             <Stack
                 direction='row'
@@ -214,7 +308,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                 sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5, cursor: !disabled ? 'pointer' : 'default' }}
                 alignItems='center'
                 bgcolor='#D0EBFC'
-                onClick={!disabled ? () => handleStudentLesson(lesson.id) : () => {}}
+                onClick={!disabled ? () => mutateLesson(lesson.id) : () => {}}
             >
                 <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
                     <SvgIcon>
@@ -255,31 +349,67 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                 </Typography>
                 {/*//@ts-expect-error lesson*/}
                 <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{quiz?.duration}</Typography>
-                <Button
-                    sx={{
-                        width: '100px',
-                        height: '30px',
-                        background: '#fff',
-                        color: '#226E9F',
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        textTransform: 'none',
-                        fontWeight: 400,
-                        border: '1px solid #226E9F',
-                        borderRadius: '5px',
-                        '&:hover': {
+                {
+                    courseStudentQuiz?.find(doc => doc.quizId === quiz.id) ?
+                    courseStudentQuiz?.slice().filter(doc => doc.quizId === quiz.id).length === 1 ?
+                    <Button
+                        sx={{
+                            width: '100px',
+                            height: '30px',
                             background: '#fff',
-                            opacity: 1
+                            color: '#226E9F',
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            textTransform: 'none',
+                            fontWeight: 400,
+                            border: '1px solid #226E9F',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                            '&:hover': {
+                                background: '#fff',
+                                opacity: 1,
+                                cursor: 'pointer'
+                            }
+                        }}
+                        onClick={!disabled ? () => {
+                                //setPage('quiz')
+                                mutateQuiz(quiz.id)
+                            } : () => {}
                         }
-                    }}
-                    onClick={!disabled ? () => {
-                            //setPage('quiz')
-                            handleStudentQuiz(quiz.id)
-                        } : () => {}
-                    }
-                    >
-                    Retake
-                </Button>
+                        >
+                        Retake
+                    </Button>
+                    :
+                    <Typography></Typography>
+                    :
+                    <Button
+                        sx={{
+                            width: '100px',
+                            height: '30px',
+                            background: '#fff',
+                            color: '#226E9F',
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            textTransform: 'none',
+                            fontWeight: 400,
+                            border: '1px solid #226E9F',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                            '&:hover': {
+                                background: '#fff',
+                                opacity: 1,
+                                cursor: 'pointer'
+                            }
+                        }}
+                        onClick={!disabled ? () => {
+                                //setPage('quiz')
+                                mutateQuiz(quiz.id)
+                            } : () => {}
+                        }
+                        >
+                        Take
+                    </Button>
+                }
             </Stack>
         )
     )
@@ -302,7 +432,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                     //@ts-expect-error assessment
                     courseStudentAssessment?.find(doc => doc.assessmentId === assessment.id) ?
                     //@ts-expect-error assessment
-                    <Typography sx={{ color: '#FF7E00' }} fontFamily='Inter' fontSize={14} fontWeight={700}>{courseStudentAssessment?.find(doc => doc.assessmentId === assessment.id)?.grade}%</Typography> :
+                    <Typography onClick={() => mutate(assessment.id)} sx={{ color: '#FF7E00', cursor: 'pointer' }} fontFamily='Inter' fontSize={14} fontWeight={700}>{courseStudentAssessment?.slice().filter(doc => doc.assessmentId === assessment.id)[0]?.grade}%</Typography> :
                     <Button
                         sx={{
                             width: '100px',

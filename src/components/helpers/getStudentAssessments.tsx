@@ -9,5 +9,15 @@ export const getStudentAssessments = async (studentId: string, assessments: stri
 
     const studentAssessmentArray = studentAssessmentData.docs.map(doc => ({...doc.data(), id: doc.id}))
 
-    return studentAssessmentArray
+    const orderedCoursesArray = studentAssessmentArray.slice().sort((a, b) => {
+        //@ts-expect-error createdAt
+        const dateA = a.createdAt.toDate();
+        //@ts-expect-error createdAt
+        const dateB = b.createdAt.toDate();
+      
+        // Compare the dates for sorting
+        return dateB - dateA;
+      })
+
+    return orderedCoursesArray
 }

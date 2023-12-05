@@ -8,21 +8,48 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
     const assessmentDoc = doc(db, 'assessments', assessmentId)
 
     const queryExamSession = query(examSessionRef, and(where('studentId', '==', studentId), where('assessmentId', '==', assessmentId)), limit(1))
-    const queryStudentAssessment = query(studentAssessmentRef, and(where('studentId', '==', studentId), where('assessmentId', '==', assessmentId)), limit(1))
+    const queryStudentAssessment = query(studentAssessmentRef, and(where('studentId', '==', studentId), where('assessmentId', '==', assessmentId)))
     const assessmentData = await getDoc(assessmentDoc)
     const studentAssessmentDocs = await getDocs(queryStudentAssessment)
     const examSessionData = await getDocs(queryExamSession)
 
+    const orderedAssessmentsArray = studentAssessmentDocs.docs.slice().sort((a, b) => {
+        //@ts-expect-error createdAt
+        const dateA = a.createdAt.toDate();
+        //@ts-expect-error createdAt
+        const dateB = b.createdAt.toDate();
+      
+        // Compare the dates for sorting
+        return dateA - dateB;
+      })
+
     //@ts-expect-error anyerr
-    const correctOptions = assessmentData?.data()?.questions.map(question => question.correctOption)
-    const answers = studentAssessmentDocs.docs[0]?.data()?.answers
-    //@ts-expect-error anyerror
-    const results = correctOptions.map((option, index) => answers[index] === Number(option))
+    const correctOptions = assessmentData?.data()?.questions.map(question => {
+        if(question.type === 'dropdowns')
+        {
+          const correctOptions = [question.firstCorrect, question.secondCorrect, question.thirdCorrect, question.fourthCorrect]
+          return correctOptions
+        }
+        else
+        {
+          return question.correctOption
+        }
+      })
+      const answers = orderedAssessmentsArray[0]?.data()?.answers
+      //@ts-expect-error anyerror
+      const results = correctOptions.map((option, index) => {
+        if(typeof answers[index] === 'object')
+        {
+          const objectAnswers = Object.values(answers[index]).map((answer, indexOfAnswer) => Number(option[indexOfAnswer]) === Number(answer))
+          return objectAnswers.every(Boolean)
+        }
+        else answers[index] === Number(option)
+      })
     //@ts-expect-error anyerror
     const grade = (((results.slice().filter(res => !!res)).length / results.length) * 100).toFixed(2)
     
-    const studentAssessmentDoc = doc(db, 'studentAssessment', studentAssessmentDocs.docs[0]?.id)
+    const studentAssessmentDoc = doc(db, 'studentAssessment', orderedAssessmentsArray[0]?.id)
 
-    await updateDoc(studentAssessmentDoc, {...studentAssessmentDocs.docs[0].data(), grade})
+    await updateDoc(studentAssessmentDoc, {...orderedAssessmentsArray[0].data(), grade})
     await setExamSessionTime(examSessionData.docs[0].id)
 }
