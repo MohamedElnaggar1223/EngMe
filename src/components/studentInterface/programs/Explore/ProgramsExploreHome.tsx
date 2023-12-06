@@ -1,4 +1,4 @@
-import { lazy, Suspense, useContext } from "react";
+import { lazy, Suspense, useContext, useState } from "react";
 import { Stack, Typography, Box, Input, SvgIcon, FormGroup, FormHelperText, FormControlLabel, Checkbox, Button } from "@mui/material";
 const ProgramExploreCard = lazy(() => import("./ProgramExploreCard"))
 import ProgramsExploreHomeProps from "../../../../interfaces/ProgramsExploreHomeProps";
@@ -19,8 +19,17 @@ export default function ProgramsExploreHome(
 {
     //@ts-expect-error context
     const { setPageShowed } = useContext(ProgramExploreContext)
+    const [search, setSearch] = useState('')
+    const displayedPrograms = search ? 
     //@ts-expect-error anyerr
-    const displayedPrograms = explorePrograms?.map(program => (
+    explorePrograms?.slice().filter(program => (program.name).toLowerCase() >= search.toLowerCase()).map(program => (
+        <Suspense key={program.id}>
+            <ProgramExploreCard setPageShowed={setPageShowed} program={program} />
+        </Suspense>
+    )) ?? []
+    :
+    //@ts-expect-error anyerr
+    explorePrograms?.map(program => (
         <Suspense key={program.id}>
             <ProgramExploreCard setPageShowed={setPageShowed} program={program} />
         </Suspense>
@@ -60,6 +69,8 @@ export default function ProgramsExploreHome(
                             fontSize: 20
                         }}
                         disableUnderline
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                     />
                     <SvgIcon onClick={() => setFilters(prev => !prev)} sx={{ transition: '0.35s', cursor: 'pointer', zIndex: 6, transform: filters ? 'rotate(-90deg)' : '' }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="27" viewBox="0 0 30 27" fill="none">

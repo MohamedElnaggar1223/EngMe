@@ -10,5 +10,10 @@ export default interface ProgramsExploreHomeProps{
     handleFilters: (type: string, e: React.ChangeEvent<HTMLInputElement>) => void,
     handleRemoveFilter: (filter: string, item: string) => void,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    explorePrograms: any
+    explorePrograms: any,
+    getExplorePrograms: () => Promise<{
+        id: string;
+    }[]>,
+    setSearch: React.Dispatch<React.SetStateAction<string>>,
+    search: string
 }
