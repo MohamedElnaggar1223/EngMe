@@ -49,14 +49,21 @@ export const setSubmitExamSessionFinalExam = async (studentId: string, finalExam
     if(Number(grade) > 85)
     {
         const studentProgramCertificateRef = collection(db, 'studentProgramCertificate')
+        const queryStudentProgramCertificate = query(studentProgramCertificateRef, and(where('studentId', '==', studentId), where('programId', '==', finalExamData.data()?.programId)))
 
-        const newStudentProgramCertificate = {
-            studentId,
-            programId: finalExamData.data()?.programId,
-            status: 'pending'
+        const studentProgramCertificateData = await getDocs(queryStudentProgramCertificate)
+
+        if(studentProgramCertificateData.docs.length === 0)
+        {
+            const newStudentProgramCertificate = {
+                studentId,
+                programId: finalExamData.data()?.programId,
+                status: 'pending'
+            }
+    
+            await addDoc(studentProgramCertificateRef, newStudentProgramCertificate)
         }
 
-        await addDoc(studentProgramCertificateRef, newStudentProgramCertificate)
     } 
     
     const studentFinalExamDoc = doc(db, 'studentFinalExam', orderedFinalExamsArray[0]?.id)

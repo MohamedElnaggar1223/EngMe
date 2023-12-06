@@ -20,6 +20,7 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 	//@ts-expect-error context
 	const { userData } = useContext(AuthContext)
 	const [questions, setQuestions] = useState('')
+	const [selectQuestions, setSelectQuestions] = useState('All Questions')
 
 	const { data: finalExams, isLoading: isFinalExamsLoading } = useQuery({
 		queryKey: ['finalExams', program.id],
@@ -61,14 +62,14 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 			const questionsDisplay = foundExam?.questions?.map((question, index) => (
 				question.type === 'dropdowns' ?
 				//@ts-expect-error question
-				<QuestionDropDowns index={index} question={question} answer={foundStudentExam?.answers[index]} />
+				<QuestionDropDowns selectQuestions={selectQuestions} index={index} question={question} answer={foundStudentExam?.answers[index]} />
 				:
 				//@ts-expect-error question
-				<Question index={index} question={question} answer={foundStudentExam?.answers[index]} />
+				<Question selectQuestions={selectQuestions} index={index} question={question} answer={foundStudentExam?.answers[index]} />
 			))
 			return questionsDisplay
 		}
-	}, [finalExams, studentFinalExams, questions])  
+	}, [finalExams, studentFinalExams, questions, selectQuestions])  
 
 	if(isFinalExamsLoading || isStudentFinalExamsLoading) return <></>
 	return (
@@ -119,9 +120,13 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 								inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
 								variant='standard'
 								disableUnderline
-								defaultValue='All Questions'
+								// defaultValue='All Questions'
+								value={selectQuestions}
+								onChange={(e) => setSelectQuestions(e.target.value)}
 							>
 								<MenuItem value='All Questions'>All Questions</MenuItem>
+								<MenuItem value='Correct Questions'>Correct Questions</MenuItem>
+								<MenuItem value='Wrong Questions'>Wrong Questions</MenuItem>
 							</Select>
 						</Stack>
 							{displayedQuestions}

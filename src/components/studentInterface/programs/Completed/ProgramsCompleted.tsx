@@ -1,10 +1,27 @@
 import { Box } from "@mui/material";
-import { Suspense, lazy } from "react";
-const ProgramCompletedCard = lazy(() => import("./ProgramsCompletedCard"))
+import { useQuery } from "@tanstack/react-query";
+import { Suspense, lazy, useContext } from "react";
+import { AuthContext } from "../../../authentication/auth/AuthProvider";
+import { getStudentCompletedPrograms } from "../../../helpers/getStudentCompletedPrograms";
+const ProgramCurrentCard = lazy(() => import("../Current/ProgramCurrentCard"))
 
 
 export default function ProgramsCompleted() 
 {
+	//@ts-expect-error context
+	const { userData } = useContext(AuthContext)
+
+	const { data: completedPrograms } = useQuery({
+		queryKey: ['completedPrograms', userData.id],
+		queryFn: () => getStudentCompletedPrograms(userData.id)
+	})
+	
+	const displayedPrograms = completedPrograms?.map(program => (
+			<Suspense>
+				<ProgramCurrentCard completed={true} program={program} />
+			</Suspense>
+	))
+
 	return (
 		<Box
 			px={4}
@@ -15,21 +32,7 @@ export default function ProgramsCompleted()
 			flexDirection='column'
 			gap={6}
 		>
-			<Suspense>
-				<ProgramCompletedCard />
-			</Suspense>
-			<Suspense>
-				<ProgramCompletedCard />
-			</Suspense>
-			<Suspense>
-				<ProgramCompletedCard />
-			</Suspense>
-			<Suspense>
-				<ProgramCompletedCard />
-			</Suspense>
-			<Suspense>
-				<ProgramCompletedCard />
-			</Suspense>
+			{displayedPrograms}
 		</Box>
 	)
 }

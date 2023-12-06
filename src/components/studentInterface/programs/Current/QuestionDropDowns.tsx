@@ -5,10 +5,11 @@ import { Suspense } from "react"
 interface QuestionDropDowns {
     question: unknown,
     answer: unknown,
-    index: number
+    index: number,
+    selectQuestions: string
 }
 
-export default function QuestionDropDowns({question, answer, index}: QuestionDropDowns) 
+export default function QuestionDropDowns({selectQuestions, question, answer, index}: QuestionDropDowns) 
 {
     //@ts-expect-error firstCorrect
     const isRight = (Object.values(answer).map((answer, index) => {
@@ -101,7 +102,9 @@ export default function QuestionDropDowns({question, answer, index}: QuestionDro
         </Stack>
     ))
 
-    return (
+    if(selectQuestions === 'Correct Questions' && !isRight) return <></>
+    else if(selectQuestions === 'Wrong Questions' && isRight) return <></>
+    else return (
         <Suspense>
         <Accordion sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
                 <AccordionSummary

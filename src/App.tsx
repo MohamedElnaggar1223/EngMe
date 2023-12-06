@@ -19,7 +19,7 @@ const Assessment = lazy(() => import("./components/studentInterface/programs/Cur
 const queryClient = new QueryClient()
 
 function App() {
-
+	
 	return (
 		<QueryClientProvider client={queryClient}>
 			<AuthProvider>

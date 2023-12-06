@@ -1,8 +1,8 @@
-import { Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
+import { Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, AccordionDetails, Input } from '@mui/material'
 import { Box, Stack } from '@mui/system'
 import ReactApexChart from "react-apexcharts";
 import star from '../../../../assets/Star 4.png'
-import { memo, useContext, useMemo, useState, lazy, Suspense } from 'react';
+import { memo, useContext, useMemo, useState, lazy, Suspense, createContext, useEffect } from 'react';
 // eslint-disable-next-line react-refresh/only-export-components
 const Components = lazy(() => import('./Components'))
 // eslint-disable-next-line react-refresh/only-export-components
@@ -26,13 +26,63 @@ import { getStudentLessons } from '../../../helpers/getStudentLessons';
 import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes';
 import { getProgramFinalExams } from '../../../helpers/getProgramFinalExams';
 import { getStudentProgramFinalExams } from '../../../helpers/getStudentProgramFinalExams';
+import { getStudentCompletedProgram } from '../../../helpers/getStudentCompletedProgram';
+import { getStudentProgramComment } from '../../../helpers/getStudentProgramComment';
+import { StarOutline, StarRate } from '@mui/icons-material';
+import { setStudentProgramComment } from '../../../helpers/setStudentProgramComment';
+
+interface ProgramCurrentCard{
+    program: ProgramProps,
+    completed?: boolean
+}
+
+//@ts-expect-error context
+// eslint-disable-next-line react-refresh/only-export-components
+export const ProgramCurrentCardContext = createContext()
 
 // eslint-disable-next-line react-refresh/only-export-components
-function ProgramCurrentCard(program: ProgramProps) 
+function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
 {   
     const queryClient = useQueryClient()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
+
+    const [expand, setExpand] = useState(false)
+    const [selectedStars, setSelectedStars] = useState(0)
+    const [submitFeedback, setSubmitFeedback] = useState(false)
+    const [feedback, setFeedback] = useState('')
+    const [disappear, setDisappear] = useState(false)
+
+    useEffect(() => {
+        if(submitFeedback) {
+            setDisappear(true)
+            setTimeout(() => setDisappear(false), 1500)
+        }
+    }, [submitFeedback])
+
+    function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)
+    {
+        if(e.target instanceof HTMLInputElement ||  e.target instanceof HTMLButtonElement || e.target instanceof HTMLParagraphElement || e.target instanceof SVGElement)
+        {
+            return
+        }
+        else
+        {
+            setExpand(prev => !prev)
+        }
+    }
+
+    const handleFeedbackChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const inputText = event.target.value;
+        const words = inputText.split(/\s+/); // Split by whitespace to count words
+        const limitedWords = words.slice(0, 50).join(' ');
+        setFeedback(limitedWords);
+    };
+
+    async function handleSubmitFeedback(){
+        setSubmitFeedback(true)
+        await setStudentProgramComment(userData.id, program.id, feedback, selectedStars)
+    }
 
     const icon = userData.favoritePrograms.length && userData.favoritePrograms.includes(program.id) ? 
     (
@@ -155,18 +205,55 @@ function ProgramCurrentCard(program: ProgramProps)
 		queryFn: () => getStudentProgramFinalExams(userData.id, Object.values(program?.finalExams ?? ['']))
 	})
 
+    const { data: completedProgram } = useQuery({
+		queryKey: ['completedPrograms', userData.id, program.id],
+		queryFn: () => getStudentCompletedProgram(userData.id, program.id),
+        enabled: !!completed
+	})
+
+    const { data: studentProgramComment } = useQuery({
+        queryKey: ['studentProgramComment', userData.id, program.id],
+        queryFn: () => getStudentProgramComment(userData.id, program.id),
+        enabled: !!completed
+    })
+
+    const { mutate: mutateFeedback } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['studentProgramComment', userData.id, program.id])
+        
+            queryClient.setQueryData(['studentProgramComment', userData.id, program.id], (oldData: []) => {
+                return [...oldData, {studentId: userData.id, programId: program.id, comment: feedback, rating: selectedStars }]
+            })
+            
+            return () => queryClient.setQueryData(['studentProgramComment', userData.id, program.id], previousData)
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['currentPrograms', userData?.id]})
+        },
+        mutationFn: () => handleSubmitFeedback()
+    })
+
+    const gaveRating = useMemo(() => {
+        //@ts-expect-error rating
+        const ratingArray = studentProgramComment?.slice().filter(comment => typeof comment?.rating  === 'number')
+        if(ratingArray?.length) return true
+        return false
+    }, [studentProgramComment])
+
     const heighestPercentage = useMemo(() => {
-        //@ts-expect-error finals
-        const sortedVersions = Object.keys(program?.finalExams).sort((a, b) => Number(a.split(" ")[1]) - Number(b.split(" ")[1]))
-        const foundStudentExams = sortedVersions.map((version: string) => {
-            //@ts-expect-error program
-            const versionExam = finalExams?.find(exam => exam.id === program?.finalExams[version])
-            //@ts-expect-error program
-            return studentFinalExams?.find(studentFinalExam => (finalExams?.map(exam => exam.id))?.includes(studentFinalExam.finalExamId) && versionExam?.id === studentFinalExam.finalExamId)
-        })
-        //@ts-expect-error finals
-        foundStudentExams.sort((a, b) => Number(b?.grade) - Number(a?.grade))
-        return foundStudentExams[0]
+        if(program?.finalExams)
+        {
+            const sortedVersions = Object.keys(program?.finalExams)?.sort((a, b) => Number(a.split(" ")[1]) - Number(b.split(" ")[1]))
+            const foundStudentExams = sortedVersions.map((version: string) => {
+                //@ts-expect-error program
+                const versionExam = finalExams?.find(exam => exam.id === program?.finalExams[version])
+                //@ts-expect-error program
+                return studentFinalExams?.find(studentFinalExam => (finalExams?.map(exam => exam.id))?.includes(studentFinalExam.finalExamId) && versionExam?.id === studentFinalExam.finalExamId)
+            })
+            //@ts-expect-error finals
+            foundStudentExams.sort((a, b) => Number(b?.grade) - Number(a?.grade))
+            return foundStudentExams[0]
+        }
     }
     , [finalExams, studentFinalExams, program])
 
@@ -261,7 +348,7 @@ function ProgramCurrentCard(program: ProgramProps)
     const displayedPrereqs = prereqs?.map(prereq => <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>) 
 
     return (
-        <Accordion sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
+        <Accordion expanded={expand} sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
                 style: { 
                     borderRadius: '20px',
@@ -283,6 +370,7 @@ function ProgramCurrentCard(program: ProgramProps)
                 <Box
                     maxWidth='100%'
                     flex={1}
+                    onClick={(e) => handleExpand(e)}
                 >
                     <Box
                         p={3}
@@ -465,41 +553,44 @@ function ProgramCurrentCard(program: ProgramProps)
                                             <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 45 }} sx={{ color: '#fff' }}>{Number(heighestPercentage?.grade) !== 100 ? Number(heighestPercentage?.grade).toFixed(1) : Number(heighestPercentage?.grade).toFixed(0)}%</Typography>
                                         </Box>
                                     }
-                                    <Stack
-                                        direction='column'
-                                        alignItems='flex-start'
-                                        width='510px'
-                                        gap={1}
-                                    >
-                                        <Typography fontSize={10} fontWeight={500} fontFamily='Inter'>Progress Bar</Typography>
-                                        <Box
-                                            border='1px solid #6A9DBC'
-                                            height='15px'
-                                            width='80%'
-                                            bgcolor='#D0EBFC'
-                                            position='relative'
+                                    {
+                                        !completed &&
+                                        <Stack
+                                            direction='column'
+                                            alignItems='flex-start'
+                                            width='510px'
+                                            gap={1}
                                         >
+                                            <Typography fontSize={10} fontWeight={500} fontFamily='Inter'>Progress Bar</Typography>
                                             <Box
-                                                width={`${progress}%`} //grade
-                                                height='100%'
-                                                bgcolor='#6A9DBC'
+                                                border='1px solid #6A9DBC'
+                                                height='15px'
+                                                width='80%'
+                                                bgcolor='#D0EBFC'
                                                 position='relative'
-                                                display='flex'
-                                                justifyContent='flex-end'
-                                                alignSelf='center'
                                             >
                                                 <Box
-                                                    height='22px'
-                                                    width='5px'
-                                                    bgcolor='#FF7E00'
-                                                    mt='-3.5px'
+                                                    width={`${progress}%`} //grade
+                                                    height='100%'
+                                                    bgcolor='#6A9DBC'
                                                     position='relative'
+                                                    display='flex'
+                                                    justifyContent='flex-end'
+                                                    alignSelf='center'
                                                 >
-                                                    {/* grade */}<Typography sx={{ color: '#FF7E00' }} position='absolute' top='98%' left='-100%' fontSize={12} fontFamily='Inter' fontWeight={600} >{progress}%</Typography>
+                                                    <Box
+                                                        height='22px'
+                                                        width='5px'
+                                                        bgcolor='#FF7E00'
+                                                        mt='-3.5px'
+                                                        position='relative'
+                                                    >
+                                                        {/* grade */}<Typography sx={{ color: '#FF7E00' }} position='absolute' top='98%' left='-100%' fontSize={12} fontFamily='Inter' fontWeight={600} >{progress}%</Typography>
+                                                    </Box>
                                                 </Box>
                                             </Box>
-                                        </Box>
-                                    </Stack>
+                                        </Stack>
+                                    }
                                 </Stack>
                             </Stack>
 
@@ -576,9 +667,220 @@ function ProgramCurrentCard(program: ProgramProps)
                                     <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>Completion Certificate</Typography>
                                 </Box>
                                 </Stack>
+                                {
+                                    //@ts-expect-error status
+                                    completed && completedProgram?.status === 'pending' &&
+                                    <Button
+                                        sx={{
+                                            marginLeft: 'auto',
+                                            marginRight: 24,
+                                            marginTop: -10,
+                                            width: '300px',
+                                            height: '50px',
+                                            background: '#fff',
+                                            color: '#226E9F',
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            textTransform: 'none',
+                                            fontWeight: 700,
+                                            border: '1px solid #226E9F',
+                                            borderRadius: '15px',
+                                            '&:hover': {
+                                                background: '#fff',
+                                                opacity: 1
+                                            }
+                                        }}
+                                        // onClick={() => console.log('ts')}
+                                    >
+                                        Request Certificate
+                                    </Button>
+                                }
                             </Stack>
 
                         </Box>
+                        {
+                            disappear &&
+                            <Box
+                                display='flex'
+                                alignItems='center'
+                                justifyContent='center'
+                                py={10}
+                                flex={1}
+                                bgcolor='#FFFBF8'
+                            >
+                                <Typography sx={{ color: '#226E9F' }} fontSize={14} fontWeight={700} fontFamily='Inter'>Thank you! Your feedback has been submitted.</Typography>
+                            </Box>
+                        }
+                        {
+                        // !comp;
+                        // ?
+                        //     <></>
+                        // :
+                        //     <Box
+                        //         display='flex'
+                        //         alignItems='center'
+                        //         justifyContent='center'
+                        //         py={10}
+                        //         flex={1}
+                        //         bgcolor='#FFFBF8'
+                        //     >
+                        //         <Typography sx={{ color: '#226E9F' }} fontSize={14} fontWeight={700} fontFamily='Inter'>Thank you! Your feedback has been submitted.</Typography>
+                        //     </Box>
+                        // :
+                            completed &&
+                            !gaveRating && 
+                            <Box
+                                bgcolor='#FFFBF8'
+                                flex={1}
+                                px={4}
+                                py={1}
+                                sx={{
+                                    borderBottomLeftRadius: '20px',
+                                    borderBottomRightRadius: '20px',
+                                }}
+                            >
+                                <Typography
+                                    fontFamily='Inter'
+                                    fontSize={14}
+                                    fontWeight={600}
+                                    sx={{
+                                        color: '#226E9F'
+                                    }}
+                                    mt={1}
+                                >
+                                    Let us know about your experience!
+                                </Typography>
+                                <Stack
+                                    gap={6}
+                                    direction='row'
+                                    mt={3.5}
+                                    alignItems='center'
+                                >
+                                    <Typography 
+                                        fontFamily='Inter'
+                                        fontSize={12}
+                                        fontWeight={500}
+                                    >
+                                        Program Rating
+                                    </Typography>
+                                    <Stack
+                                        direction='row'
+                                        gap={0.2}
+                                    >
+                                        {
+                                            selectedStars >= 1 
+                                            ? 
+                                            <StarRate onClick={() => selectedStars === 1 ? setSelectedStars(0) : setSelectedStars(1)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutline onClick={() => setSelectedStars(1)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                        {
+                                            selectedStars >= 2 
+                                            ? 
+                                            <StarRate onClick={() => selectedStars === 2 ? setSelectedStars(0) : setSelectedStars(2)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutline onClick={() => setSelectedStars(2)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                        {
+                                            selectedStars >= 3 
+                                            ? 
+                                            <StarRate onClick={() => selectedStars === 3 ? setSelectedStars(0) : setSelectedStars(3)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutline onClick={() => setSelectedStars(3)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                        {
+                                            selectedStars >= 4
+                                            ? 
+                                            <StarRate onClick={() => selectedStars === 4 ? setSelectedStars(0) : setSelectedStars(4)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutline onClick={() => setSelectedStars(4)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                        {
+                                            selectedStars >= 5 
+                                            ? 
+                                            <StarRate onClick={() => selectedStars === 5 ? setSelectedStars(0) : setSelectedStars(5)} style={{ color: '#FF9F06', fontSize: 20 }} /> 
+                                            : 
+                                            <StarOutline onClick={() => setSelectedStars(5)} style={{ color: '#FF9F06', fontSize: 20 }} />
+                                        }
+                                    </Stack>
+                                </Stack>
+                                <Stack
+                                    direction='row'
+                                >
+                                    <Input 
+                                        color='primary' 
+                                        disableUnderline
+                                        value={feedback}
+                                        sx={{
+                                            border: '1px solid #226E9F',
+                                            background: '#fff',
+                                            borderRadius: '5px',
+                                            paddingX: 2.5,
+                                            paddingY: 1.5,
+                                            flex: 1,
+                                            paddingBottom: 5,
+                                            marginY: 0.5,
+                                            fontSize: 12
+                                        }}
+                                        placeholder='50 words max'
+                                        onChange={(e) => handleFeedbackChange(e)}
+                                    />
+                                    <Stack
+                                        direction='row'
+                                        gap={2}
+                                        mr={2}
+                                        ml={14}
+                                        alignItems='center'
+                                    >
+                                        <Button
+                                            sx={{
+                                                width: '140px',
+                                                height: '40px',
+                                                background: '#fff',
+                                                color: '#000',
+                                                fontFamily: 'Inter',
+                                                fontSize: 14,
+                                                textTransform: 'none',
+                                                fontWeight: 400,
+                                                border: '1px solid #9D9D9D',
+                                                borderRadius: '8px',
+                                                '&:hover': {
+                                                    background: '#fff',
+                                                    opacity: 1
+                                                }
+                                            }}
+                                            onClick={() => {
+                                                setFeedback('')
+                                                setSelectedStars(0)
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            sx={{
+                                                width: '140px',
+                                                height: '40px',
+                                                background: '#9D9D9D',
+                                                color: '#fff',
+                                                fontFamily: 'Inter',
+                                                fontSize: 14,
+                                                textTransform: 'none',
+                                                fontWeight: 400,
+                                                border: '1px solid #9D9D9D',
+                                                borderRadius: '8px',
+                                                '&:hover': {
+                                                    background: '#9D9D9D',
+                                                    opacity: 1
+                                                }
+                                            }}
+                                            onClick={() => mutateFeedback()}
+                                        >
+                                            Confirm
+                                        </Button>
+                                    </Stack>
+                                </Stack>
+                            </Box>
+                        }
                     </Box>
                 </Box>
             </AccordionSummary>
@@ -680,27 +982,31 @@ function ProgramCurrentCard(program: ProgramProps)
                         >
                             Discussions
                         </Button>
-                    </Stack>
+                    </Stack> 
                     {
-                        // !coursesLoading && !assessmentsLoading && !quizzesLoading && !lessonsLoading && !studentAssessmentLoading && !studentLessonLoading && !studentQuizzesLoading &&
-                        programPage === 'Components' ?
-                        <Suspense>
-                            <Components {...program} /> 
-                        </Suspense>
-                        :
-                        programPage === 'Exams' ?
-                        <Suspense>
-                            <FinalExams progress={Number(progress)} program={program} />
-                        </Suspense>
-                        :
-                        programPage === 'Grades' ?
-                        <Suspense>
-                            <Grades {...program} />
-                        </Suspense>
-                        :
-                        <Suspense>
-                            <Discussions {...program} />
-                        </Suspense>
+                        <ProgramCurrentCardContext.Provider value={{ completed }}>
+                            {
+                                // !coursesLoading && !assessmentsLoading && !quizzesLoading && !lessonsLoading && !studentAssessmentLoading && !studentLessonLoading && !studentQuizzesLoading &&
+                                programPage === 'Components' ?
+                                <Suspense>
+                                    <Components {...program} /> 
+                                </Suspense>
+                                :
+                                programPage === 'Exams' ?
+                                <Suspense>
+                                    <FinalExams progress={Number(progress)} program={program} />
+                                </Suspense>
+                                :
+                                programPage === 'Grades' ?
+                                <Suspense>
+                                    <Grades {...program} />
+                                </Suspense>
+                                :
+                                <Suspense>
+                                    <Discussions {...program} />
+                                </Suspense>
+                            }
+                        </ProgramCurrentCardContext.Provider>
                     }
                 </Box>
             </AccordionDetails>

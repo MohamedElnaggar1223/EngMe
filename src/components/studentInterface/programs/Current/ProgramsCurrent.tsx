@@ -22,7 +22,7 @@ export default function ProgramsCurrent()
 		:
 		(
 			<Suspense>
-				<ProgramCurrentCard {...program} />
+				<ProgramCurrentCard program={program} />
 			</Suspense>
 		)
 		return programDisplay

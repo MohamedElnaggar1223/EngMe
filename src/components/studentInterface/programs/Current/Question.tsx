@@ -5,10 +5,11 @@ import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetai
 interface Question{
     question: unknown,
     answer: unknown,
-    index: number
+    index: number,
+    selectQuestions: string
 }
 
-export default function Question({ question, answer, index }: Question) 
+export default function Question({selectQuestions, question, answer, index }: Question) 
 {
     //@ts-expect-error question
     const icon = Number(question?.correctOption) === answer ?
@@ -43,7 +44,11 @@ export default function Question({ question, answer, index }: Question)
         </Stack>
     ))
 
-    return (
+    //@ts-expect-error correct
+    if(selectQuestions === 'Correct Questions' && Number(question?.correctOption) !== answer) return <></>
+    //@ts-expect-error correct
+    else if(selectQuestions === 'Wrong Questions' && Number(question?.correctOption) === answer) return <></>
+    else return (
         <Suspense>
         <Accordion sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
                 <AccordionSummary

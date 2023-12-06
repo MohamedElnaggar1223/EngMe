@@ -1,4 +1,4 @@
-import { lazy, memo, useEffect, useMemo } from "react";
+import { lazy, memo, useContext, useEffect, useMemo } from "react";
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails, Button } from "@mui/material";
 // import { PageContext } from "../../../Layout";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,7 @@ import { setStudentLesson } from "../../../helpers/setStudentLesson";
 import { setStudentAssessment } from "../../../helpers/setStudentAssessment";
 import { setStudentCourseStatus } from "../../../helpers/setStudentCourseStatus";
 import { setStudentQuiz } from "../../../helpers/setStudentQuiz";
+import { ProgramCurrentCardContext } from "./ProgramCurrentCard";
 // eslint-disable-next-line react-refresh/only-export-components
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
@@ -27,6 +28,8 @@ interface ComponentCard{
 function ComponentCard({index, course, disabled}: ComponentCard) 
 {
     const queryClient = useQueryClient()
+    //@ts-expect-error context
+    const { completed } = useContext(ProgramCurrentCardContext)
     //console.log(disabled)
     ////console.log(course, index)
 
@@ -306,10 +309,10 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                 justifyContent='space-between'
                 flex={1}
                 height='50px'
-                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5, cursor: !disabled ? 'pointer' : 'default' }}
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5, cursor: !disabled ? !completed ? 'pointer' : 'default' : 'default' }}
                 alignItems='center'
                 bgcolor='#D0EBFC'
-                onClick={!disabled ? () => mutateLesson(lesson.id) : () => {}}
+                onClick={!disabled ? !completed ? () => mutateLesson(lesson.id) : () => {} : () => {}}
             >
                 <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
                     <SvgIcon>
@@ -371,13 +374,13 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                             '&:hover': {
                                 background: '#fff',
                                 opacity: 1,
-                                cursor: 'pointer'
+                                cursor: !completed ? 'pointer' : 'default'
                             }
                         }}
-                        onClick={!disabled ? () => {
+                        onClick={!disabled ? !completed ? () => {
                                 //setPage('quiz')
                                 mutateQuiz(quiz.id)
-                            } : () => {}
+                            } : () => {} : () => {}
                         }
                         >
                         Retake
@@ -401,13 +404,13 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                             '&:hover': {
                                 background: '#fff',
                                 opacity: 1,
-                                cursor: 'pointer'
+                                cursor: !completed ? 'pointer' : 'default'
                             }
                         }}
-                        onClick={!disabled ? () => {
+                        onClick={!disabled ? !completed ? () => {
                                 //setPage('quiz')
                                 mutateQuiz(quiz.id)
-                            } : () => {}
+                            } : () => {} : () => {}
                         }
                         >
                         Take
@@ -435,7 +438,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                     //@ts-expect-error assessment
                     courseStudentAssessment?.find(doc => doc.assessmentId === assessment.id) ?
                     //@ts-expect-error assessment
-                    <Typography onClick={() => mutate(assessment.id)} sx={{ color: '#FF7E00', cursor: 'pointer' }} fontFamily='Inter' fontSize={14} fontWeight={700}>{courseStudentAssessment?.slice().filter(doc => doc.assessmentId === assessment.id)[0]?.grade}%</Typography> :
+                    <Typography onClick={() => !completed ? mutate(assessment.id) : () => {}} sx={{ color: '#FF7E00', cursor: !completed ? 'pointer' : 'default' }} fontFamily='Inter' fontSize={14} fontWeight={700}>{courseStudentAssessment?.slice().filter(doc => doc.assessmentId === assessment.id)[0]?.grade}%</Typography> :
                     <Button
                         sx={{
                             width: '100px',
@@ -453,11 +456,11 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                                 opacity: 1
                             }
                         }}
-                        onClick={!disabled ? () => {
+                        onClick={!disabled ? !completed ? () => {
                                 // setPage('quiz')
                                 // navigate('/quiz')
                                 mutate(assessment.id)
-                            } : () => {} 
+                            } : () => {} : () => {}
                         }
                         >
                         Take
