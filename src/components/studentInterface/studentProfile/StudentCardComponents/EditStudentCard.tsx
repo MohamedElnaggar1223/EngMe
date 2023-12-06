@@ -1,5 +1,5 @@
 // import { Stack, Box, Button, Input, Select, MenuItem } from '@mui/material'
-import { Suspense, lazy, memo, useEffect, useState } from 'react';
+import { Suspense, lazy, memo, useEffect, useState, useContext } from 'react';
 const Stack = lazy(() => import('@mui/material/Stack'))
 const Box = lazy(() => import('@mui/material/Box'))
 const Button = lazy(() => import('@mui/material/Button'))
@@ -10,8 +10,10 @@ import StudentCardEditProps from '../../../../interfaces/StudentCardEditProps'
 // import { Country, City }  from 'country-state-city'
 //eslint-disable-next-line
 const ExpandMore = lazy(() => import("@mui/icons-material/ExpandMore"))
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {Country, City} from 'country-state-city'
+import { AuthContext } from '../../../authentication/auth/AuthProvider';
+import { setStudentData } from '../../../helpers/setStudentData';
 
 //eslint-disable-next-line
 function EditStudentCard(
@@ -28,6 +30,9 @@ setMajor,
 setName,
 setEdit }: StudentCardEditProps) 
 {
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
     const [countries, setCountries] = useState<string[]>([])
     const [cities, setCities] = useState<string[]>([])
 
@@ -49,7 +54,8 @@ setEdit }: StudentCardEditProps)
     const { data: citiesData, isSuccess: CitySuccess } = useQuery({
         queryFn: () => getCitiesOfCountry(country),
         queryKey: ['cities'],
-        refetchOnMount: false
+        refetchOnMount: false,
+        enabled: !!countriesData
     })
 
     const handleImageChange = (file: File) => {
@@ -76,7 +82,13 @@ setEdit }: StudentCardEditProps)
             setCities(citiesData ?? [''])
         }
     }, [country, isSuccess, countriesData, citiesData, CitySuccess])
-    
+
+    const { mutate } = useMutation({
+        onMutate: () => {
+            setEdit(false)
+        },
+        mutationFn: () => setStudentData(userData.id, { name, image })
+    })
 
     return (
         <Suspense>
@@ -292,6 +304,7 @@ setEdit }: StudentCardEditProps)
                                     opacity: 1
                                 }
                             }}
+                            onClick={() => mutate()}
                         >
                             Confirm
                         </Button>

@@ -38,7 +38,7 @@ export default function StudentConsultations()
                     // labelId="demo-select-small-label"
                     // id="demo-select-small"
                     sx={{
-                        width: '160px !important',
+                        width: '190px !important',
                         height: '38px !important',
                         boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
                         borderRadius: '7.5px !important',
@@ -53,7 +53,8 @@ export default function StudentConsultations()
                         
                     }}
                     defaultValue={days[new Date().getDay()]}
-                    IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%' }} />}
+                    IconComponent={() => <ExpandMore sx={{ borderLeft: '1.5px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', zIndex: 1, position: 'absolute', left: '80%' }} />}
+                    inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
                     variant='standard'
                     disableUnderline
                     color='primary'

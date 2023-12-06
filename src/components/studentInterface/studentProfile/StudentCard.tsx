@@ -1,17 +1,25 @@
 import { Box } from "@mui/material";
-import profile from '../../../assets/studentprofile.jfif'
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useContext, useLayoutEffect, useState } from "react";
+import { AuthContext } from "../../authentication/auth/AuthProvider";
 const DefaultStudentCard = lazy(() => import("./StudentCardComponents/DefaultStudentCard"));
 const EditStudentCard = lazy(() => import("./StudentCardComponents/EditStudentCard"))
 
 export default function StudentCard() 
 {
-    const [name, setName] = useState('Lama Amr Mohamady')
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const [name, setName] = useState(userData?.name)
     const [major, setMajor] = useState('Software Engineer')
     const [city, setCity] = useState('Cairo')
     const [country, setCountry] = useState('Egypt')
-    const [image, setImage] = useState(profile)
+    const [image, setImage] = useState(userData?.image)
     const [edit, setEdit] = useState(false)
+
+    useLayoutEffect(() => {
+        setName(userData?.name)
+        setImage(userData?.image)
+    }, [userData])
 
     return (
         <Box
@@ -57,7 +65,7 @@ export default function StudentCard()
                         city={city} 
                         country={country} 
                         image={image} 
-                        setEdit={setEdit} 
+                        setEdit={setEdit}
                     />
                 </Suspense>
             }

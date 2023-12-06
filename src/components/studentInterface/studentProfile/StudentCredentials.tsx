@@ -1,9 +1,49 @@
+import { useContext } from 'react'
 import { Avatar, Box, Stack, Typography } from '@mui/material'
-import avatar from '../../../assets/Ellipse 9.png'
-import avatar2 from '../../../assets/Ellipse 10.png'
+import { useQuery } from '@tanstack/react-query'
+import { getStudentProgramCertificate } from '../../helpers/getStudentProgramCertificate'
+import { AuthContext } from '../../authentication/auth/AuthProvider'
+import { getProgramsData } from '../../helpers/getProgramsData'
 
 export default function StudentCertificates() 
 {
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const { data: studentProgramCertificate } = useQuery({
+        queryKey: ['studentProgramCertificate', userData?.id],
+        queryFn: () => getStudentProgramCertificate(userData?.id)
+    })
+
+    const { data: programsCertificate } = useQuery({
+        queryKey: ['programsCertificate', userData?.id],
+        //@ts-expect-error filter
+        queryFn: () => getProgramsData(studentProgramCertificate?.slice().filter(program => program.status === 'accepted').map(studentProgram => studentProgram.programId)),
+        enabled: !!studentProgramCertificate
+    })
+
+    const displayedCerts = programsCertificate?.map(program => (
+        <Stack
+            alignItems='center'
+            width='fit-content'
+            gap={1.5}
+        >
+            {/*//@ts-expect-error image*/}
+            <Avatar src={program?.image} sx={{ width: '82px', height: '82px' }} />
+            <Typography
+                fontSize={18}
+                fontFamily='Inter'
+                fontWeight={800}
+                sx={{
+                    color: '#226E9F'
+                }}
+            >
+                {/*//@ts-expect-error image*/}
+                {program?.name}
+            </Typography>
+        </Stack>
+    ))
+
     return (
         <Box
             mx={14}
@@ -34,40 +74,7 @@ export default function StudentCertificates()
                 flexDirection='row'
                 flexWrap='wrap'
             >
-                <Stack
-                    alignItems='center'
-                    width='fit-content'
-                    gap={1.5}
-                >
-                    <Avatar src={avatar} sx={{ width: '82px', height: '82px' }} />
-                    <Typography
-                        fontSize={18}
-                        fontFamily='Inter'
-                        fontWeight={800}
-                        sx={{
-                            color: '#226E9F'
-                        }}
-                    >
-                        PHD from university of bla
-                    </Typography>
-                </Stack>
-                <Stack
-                    alignItems='center'
-                    width='fit-content'
-                    gap={1.5}
-                >
-                    <Avatar src={avatar2} sx={{ width: '82px', height: '82px' }} />
-                    <Typography
-                        fontSize={18}
-                        fontFamily='Inter'
-                        fontWeight={800}
-                        sx={{
-                            color: '#226E9F'
-                        }}
-                    >
-                        Flutter http+ Certificate
-                    </Typography>
-                </Stack>
+                {displayedCerts}
             </Box>
         </Box>
     )

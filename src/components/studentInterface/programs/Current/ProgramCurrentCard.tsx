@@ -30,6 +30,7 @@ import { getStudentCompletedProgram } from '../../../helpers/getStudentCompleted
 import { getStudentProgramComment } from '../../../helpers/getStudentProgramComment';
 import { StarOutline, StarRate } from '@mui/icons-material';
 import { setStudentProgramComment } from '../../../helpers/setStudentProgramComment';
+import { setStudentProgramCertificate } from '../../../helpers/setStudentProgramCertificate';
 
 interface ProgramCurrentCard{
     program: ProgramProps,
@@ -210,6 +211,21 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
 		queryFn: () => getStudentCompletedProgram(userData.id, program.id),
         enabled: !!completed
 	})
+
+    const { mutate: mutateCertificate } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['completedPrograms', userData.id, program.id])
+
+            queryClient.setQueryData(['completedPrograms', userData.id, program.id], (oldData: unknown) => {
+                //@ts-expect-error object
+                return {...oldData, status: 'accepted'}
+            })
+
+            return () => queryClient.setQueryData(['completedPrograms', userData.id, program.id], previousData)
+        },
+        //@ts-expect-error idprogram
+        mutationFn: () => setStudentProgramCertificate(completedProgram?.id)
+    })
 
     const { data: studentProgramComment } = useQuery({
         queryKey: ['studentProgramComment', userData.id, program.id],
@@ -691,6 +707,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                             }
                                         }}
                                         // onClick={() => console.log('ts')}
+                                        onClick={() => mutateCertificate()}
                                     >
                                         Request Certificate
                                     </Button>

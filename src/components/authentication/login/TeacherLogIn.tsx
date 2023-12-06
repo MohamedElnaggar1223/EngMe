@@ -1,16 +1,12 @@
 import FormControl from "@mui/material/FormControl";
-import { auth, db } from '../../../firebase/firebaseConfig'
-import { createUserWithEmailAndPassword } from "firebase/auth"
 import { Box, Button, Select, Stack, TextField, Typography } from "@mui/material";
 import { MuiTelInput } from 'mui-tel-input'
 import { useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
-import { doc, setDoc } from "firebase/firestore";
-import { Link } from "react-router-dom";
 
-export default function StudentSignUp() 
+export default function TeacherLogIn() 
 {
-    const[number, setNumber] = useState('+20')
+    const[number, setNumber] = useState('')
     const[firstname, setFirstname] = useState('')
     const[lastname, setLastname] = useState('')
     const[email, setEmail] = useState('')
@@ -25,38 +21,10 @@ export default function StudentSignUp()
         e.preventDefault()
         if(canSave)
         {
-            createUserWithEmailAndPassword(auth, email, password)
-            .then(async (user) => {
-                const uid = user.user.uid
-
-                const userRef = doc(db, 'students', uid)
-                await setDoc(userRef, {
-                    favoritePrograms: [],
-                    friends: [],
-                    name: `${firstname} ${lastname}`,
-                    email,
-                    number,
-                    image: '',
-                    Country: 'Egypt'
-                })
-            })
-            .catch(e => console.error(e))
-            setEmail('')
-            setPassword('')
-            setConfirmPassword('')
-            setFirstname('')
-            setLastname('')
-            setNumber('')
+            // createUserWithEmailAndPassword(auth, email, password)
+            // .then((userCredentials) => console.log(userCredentials))
+            // .catch(e => console.error(e))
         }
-    }
-
-    function handleNumber(e: string)
-    {
-        if(e === '+20 0' && number === '+20')
-        { 
-            return
-        }
-        else setNumber(e)
     }
 
     useEffect(() => {
@@ -71,7 +39,6 @@ export default function StudentSignUp()
         <Box
             display='flex'
             flexDirection='column'
-            flex={1}
         >
             <Stack flex={1} mb={4} textAlign='center'>
                 <Typography fontSize={20} fontFamily='Inter' fontWeight={700}>Sign Up</Typography>
@@ -82,7 +49,6 @@ export default function StudentSignUp()
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '30px',
-                    flex: 1
                 }}
                 onSubmit={signUp}
             >
@@ -156,7 +122,7 @@ export default function StudentSignUp()
                 <FormControl>
                     <MuiTelInput 
                         value={number} 
-                        onChange={handleNumber} 
+                        onChange={(e) => setNumber(e)} 
                         placeholder='Phone Number'
                         inputProps={{
                             style: {
@@ -253,34 +219,26 @@ export default function StudentSignUp()
                         }}
                     />
                 </FormControl>
-                <Box
-                    flex={1}
-                    display='flex'
-                    flexDirection='column'
-                >
-                    <Button
-                        sx={{
-                            flex: 1,
+                <Button
+                    sx={{
+                        flex: 1,
+                        background: '#226E9F',
+                        color: '#fff',
+                        fontFamily: 'Inter',
+                        fontSize: 18,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        border: '1px solid #226E9F',
+                        borderRadius: '6px',
+                        '&:hover': {
                             background: '#226E9F',
-                            color: '#fff',
-                            fontFamily: 'Inter',
-                            fontSize: 18,
-                            textTransform: 'none',
-                            fontWeight: 500,
-                            border: '1px solid #226E9F',
-                            borderRadius: '6px',
-                            '&:hover': {
-                                background: '#226E9F',
-                                opacity: 1
-                            },
-                            paddingY: 1.5
-                        }}
-                        type="submit"
-                        >
-                        Sign Up
-                    </Button>
-                    <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Already have an account? <Link style={{ color: '#FF7E00', textDecoration: 'none' }} to='/login'>Login</Link></Typography>
-                </Box>
+                            opacity: 1
+                        },
+                        paddingY: 1.5
+                    }}
+                >
+                    Sign Up
+                </Button>
             </form>
         </Box>
     )

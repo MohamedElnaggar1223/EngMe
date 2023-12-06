@@ -1,18 +1,49 @@
 import { Stack, Typography, SvgIcon } from '@mui/material'
 import StudentCardProps from '../../../../interfaces/StudentCardProps'
-import { memo } from 'react'
+import { memo, useContext, useMemo } from 'react'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
+import placeholder from '../../../../assets/images.jpg'
+import { useQuery } from '@tanstack/react-query'
+import { getStudentCurrentPrograms } from '../../../helpers/getStudentCurrentPrograms'
+import { AuthContext } from '../../../authentication/auth/AuthProvider'
+import { getStudentRecommendationLetters } from '../../../helpers/getStudentRecommendationLetters'
+import { getStudentProgramCertificate } from '../../../helpers/getStudentProgramCertificate'
 
 //eslint-disable-next-line
 function DefaultStudentCard({ name, major, city, country, image, setEdit }: StudentCardProps) 
 {
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const { data: currentPrograms } = useQuery({
+        queryKey: ['currentPrograms', userData?.id],
+        queryFn: () => getStudentCurrentPrograms(userData?.id),
+        enabled: !!userData?.id
+    })
+
+    const { data: recommendationLetters } = useQuery({
+        queryKey: ['recommendationLetters', userData?.id],
+        queryFn: () => getStudentRecommendationLetters(userData?.id),
+        enabled: !!userData?.id
+    })
+
+    const { data: studentProgramCertificate } = useQuery({
+        queryKey: ['studentProgramCertificate', userData?.id],
+        queryFn: () => getStudentProgramCertificate(userData?.id)
+    })
+
+    const certificatesCount = useMemo(() => {
+        //@ts-expect-error status
+        return studentProgramCertificate?.slice().filter(program => program.status === 'accepted').length
+    }, [studentProgramCertificate])
+    
     return (
         <>
             <Stack
-                    direction='row'
-                    alignItems='center'
-                    gap={{xs: 3, sm: 3, lg: 8}}
-                >
+                direction='row'
+                alignItems='center'
+                gap={{xs: 3, sm: 3, lg: 8}}
+            >
                     <LazyLoadImage 
                         style={{ 
                             borderRadius: '50%',
@@ -22,7 +53,7 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                             marginBottom: '-100px',
                             marginLeft: '-50px'
                         }} 
-                        src={image} width='250px' height='250px' alt='profile' 
+                        src={image === '' ? placeholder : image} width='250px' height='250px' alt='profile' 
                     />
                     <Stack
                         direction='column'
@@ -73,8 +104,8 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                         py={1}
                         width={{ xs: '100px', sm: '120px', lg: '180px' }}
                     >
-                        <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>7</Typography>
-                        <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Programs</Typography>
+                        <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{currentPrograms?.length}</Typography>
+                        <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Program(s)</Typography>
                     </Stack>
                     <Stack
                         direction='column'
@@ -85,8 +116,8 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                         py={1}
                         width={{ xs: '100px', sm: '120px', lg: '180px' }}
                     >
-                        <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>1</Typography>
-                        <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Recommendation Letter</Typography>
+                        <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{recommendationLetters?.length}</Typography>
+                        <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Recommendation Letter(s)</Typography>
                     </Stack>
                     <Stack
                         direction='column'
@@ -97,7 +128,7 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                         py={1}
                         width={{ xs: '100px', sm: '120px', lg: '180px' }}
                     >
-                        <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>4</Typography>
+                        <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{certificatesCount}</Typography>
                         <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Certificates</Typography>
                     </Stack>
                 </Stack>
