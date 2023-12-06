@@ -3,6 +3,7 @@ import { Stack, Typography, Box, Input, SvgIcon, FormGroup, FormHelperText, Form
 const ProgramExploreCard = lazy(() => import("./ProgramExploreCard"))
 import ProgramsExploreHomeProps from "../../../../interfaces/ProgramsExploreHomeProps";
 import { ProgramExploreContext } from "./ProgramsExplore";
+import { StarRate } from "@mui/icons-material";
 
 export default function ProgramsExploreHome(
 {
@@ -20,20 +21,26 @@ export default function ProgramsExploreHome(
     //@ts-expect-error context
     const { setPageShowed } = useContext(ProgramExploreContext)
     const [search, setSearch] = useState('')
-    const displayedPrograms = search ? 
-    //@ts-expect-error anyerr
-    explorePrograms?.slice().filter(program => (program.name).toLowerCase() >= search.toLowerCase()).map(program => (
+
+    let filteredPrograms = explorePrograms
+    //@ts-expect-error program
+    if(search) filteredPrograms = filteredPrograms?.slice().filter(program => (program.name).toLowerCase().includes(search.toLowerCase()))
+    if(applyFilters)
+    {
+        //@ts-expect-error program
+        if(selectedFilters.Level.length) filteredPrograms = filteredPrograms?.slice().filter(program => [selectedFilters.Level.includes(program.level)].every(Boolean))
+        //@ts-expect-error program
+        if(selectedFilters.Language.length) filteredPrograms = filteredPrograms?.slice().filter(program => [selectedFilters.Language.includes(program.language)].every(Boolean))
+        //@ts-expect-error program
+        if(selectedFilters.Rating.length) filteredPrograms = filteredPrograms?.slice().filter(program => [selectedFilters.Rating.includes((program.averageRating).toString())].every(Boolean))
+    }
+
+    //@ts-expect-error program
+    const displayedPrograms = filteredPrograms?.map(program => (
         <Suspense key={program.id}>
             <ProgramExploreCard setPageShowed={setPageShowed} program={program} />
         </Suspense>
-    )) ?? []
-    :
-    //@ts-expect-error anyerr
-    explorePrograms?.map(program => (
-        <Suspense key={program.id}>
-            <ProgramExploreCard setPageShowed={setPageShowed} program={program} />
-        </Suspense>
-    )) ?? []
+    ))
 
     return (
         <>
@@ -127,13 +134,13 @@ export default function ProgramsExploreHome(
                                 gap={2}
                                 my={1}
                             >
-                                <FormControlLabel control={<Checkbox checked={selectedFilters.Language.includes('Arabic')} value='Arabic' onChange={(e) => handleFilters('Language', e)} defaultChecked />} label="Arabic" />
-                                <FormControlLabel control={<Checkbox checked={selectedFilters.Language.includes('English')} value='English' onChange={(e) => handleFilters('Language', e)} />} label="English" />
-                                <FormControlLabel control={<Checkbox checked={selectedFilters.Language.includes('French')} value='French' onChange={(e) => handleFilters('Language', e)} />} label="French" />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Language?.includes('Arabic')} value='Arabic' onChange={(e) => handleFilters('Language', e)} defaultChecked />} label="Arabic" />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Language?.includes('English')} value='English' onChange={(e) => handleFilters('Language', e)} />} label="English" />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Language?.includes('French')} value='French' onChange={(e) => handleFilters('Language', e)} />} label="French" />
                             </Stack>
                         </FormGroup>
                         <FormGroup>
-                            <FormHelperText sx={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 600, color: '#000', letterSpacing: 0 }}>Language</FormHelperText>
+                            <FormHelperText sx={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 600, color: '#000', letterSpacing: 0 }}>Level</FormHelperText>
                             <Stack
                                 direction='row'
                                 width='250px'
@@ -141,13 +148,13 @@ export default function ProgramsExploreHome(
                                 gap={2}
                                 my={1}
                             >
-                                <FormControlLabel control={<Checkbox checked={selectedFilters.Major.includes('Software Eng.')} value='Software Eng.' onChange={(e) => handleFilters('Major', e)} defaultChecked />} label="Software Eng." />
-                                <FormControlLabel control={<Checkbox checked={selectedFilters.Major.includes('Civil Eng.')} value='Civil Eng.' onChange={(e) => handleFilters('Major', e)} />} label="Civil Eng." />
-                                <FormControlLabel control={<Checkbox checked={selectedFilters.Major.includes('Law')} value='Law' onChange={(e) => handleFilters('Major', e)} />} label="Law" />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Level?.includes('Beginner')} value='Beginner' onChange={(e) => handleFilters('Level', e)} defaultChecked />} label="Beginner" />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Level?.includes('Intermediate')} value='Intermediate' onChange={(e) => handleFilters('Level', e)} />} label="Intermediate" />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Level?.includes('Expert')} value='Expert' onChange={(e) => handleFilters('Level', e)} />} label="Expert" />
                             </Stack>
                         </FormGroup>
                         <FormGroup>
-                            <FormHelperText sx={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 600, color: '#000', letterSpacing: 0 }}>Language</FormHelperText>
+                            <FormHelperText sx={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 600, color: '#000', letterSpacing: 0 }}>Rating</FormHelperText>
                             <Stack
                                 direction='row'
                                 width='250px'
@@ -155,37 +162,11 @@ export default function ProgramsExploreHome(
                                 gap={2}
                                 my={1}
                             >
-                                <FormControlLabel control={<Checkbox defaultChecked />} label="Arabic" />
-                                <FormControlLabel control={<Checkbox />} label="English" />
-                                <FormControlLabel control={<Checkbox />} label="French" />
-                            </Stack>
-                        </FormGroup>
-                        <FormGroup>
-                            <FormHelperText sx={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 600, color: '#000', letterSpacing: 0 }}>Language</FormHelperText>
-                            <Stack
-                                direction='row'
-                                width='250px'
-                                flexWrap='wrap'
-                                gap={2}
-                                my={1}
-                            >
-                                <FormControlLabel control={<Checkbox defaultChecked />} label="Arabic" />
-                                <FormControlLabel control={<Checkbox />} label="English" />
-                                <FormControlLabel control={<Checkbox />} label="French" />
-                            </Stack>
-                        </FormGroup>
-                        <FormGroup>
-                            <FormHelperText sx={{ fontSize: 16, fontFamily: 'Inter', fontWeight: 600, color: '#000', letterSpacing: 0 }}>Language</FormHelperText>
-                            <Stack
-                                direction='row'
-                                width='250px'
-                                flexWrap='wrap'
-                                gap={2}
-                                my={1}
-                            >
-                                <FormControlLabel control={<Checkbox defaultChecked />} label="Arabic" />
-                                <FormControlLabel control={<Checkbox />} label="English" />
-                                <FormControlLabel control={<Checkbox />} label="French" />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Rating?.includes('1')}  value='1' onChange={(e) => handleFilters('Rating', e)} />} label={<StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} />} />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Rating?.includes('2')}  value='2' onChange={(e) => handleFilters('Rating', e)} />} label={<><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /> <StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /></>} />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Rating?.includes('3')}  value='3' onChange={(e) => handleFilters('Rating', e)} />} label={<><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /></>} />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Rating?.includes('4')} value='4' onChange={(e) => handleFilters('Rating', e)} />} label={<><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /></>} />
+                                <FormControlLabel control={<Checkbox checked={selectedFilters.Rating?.includes('5')} value='5' onChange={(e) => handleFilters('Rating', e)} />} label={<><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /><StarRate sx={{ color: '#FF9F06', alignSelf: 'center', mt: 0.5 }} /></>} />
                             </Stack>
                         </FormGroup>
                         <Stack
@@ -212,7 +193,7 @@ export default function ProgramsExploreHome(
                                         opacity: 1
                                     }
                                 }}
-                                onClick={() => setSelectedFilters({ Language: [], Major: [] })}
+                                onClick={() => setSelectedFilters({ Language: [], Level: [], Rating: [] })}
                             >
                                 Reset
                             </Button>
@@ -262,7 +243,39 @@ export default function ProgramsExploreHome(
                         borderRadius='20px'
                         position='relative'
                     >
-                        <Typography fontFamily='Inter'>{item}</Typography>
+                        <Typography fontFamily='Inter'>
+                            {
+                                item === '1' ?
+                                <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} /> :
+                                item === '2' ?
+                                <>
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                </> :
+                                item === '3' ?
+                                <>
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                </>:
+                                item === '4' ?
+                                <>
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                </> :
+                                item === '5' ?
+                                <>
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                    <StarRate sx={{ color: '#FF9F06', alignSelf: 'center' }} />
+                                </> :
+                                item
+                            }
+                        </Typography>
                         <Box
                             position='absolute'
                             display='flex'
@@ -293,7 +306,7 @@ export default function ProgramsExploreHome(
                 flexWrap='wrap'
                 p={0.5}
                 mt={8}
-                justifyContent={{xs: 'center', sm: 'center', lg: 'space-between'}}
+                justifyContent={{xs: 'center', sm: 'center', lg: 'flex-start'}}
             >
                 {displayedPrograms}
             </Stack>

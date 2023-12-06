@@ -24,7 +24,8 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedFilters, setSelectedFilters] = useState<any>({
         Language: [],
-        Major: [],
+        Level: [],
+        Rating: []
     })
     //filters cant be applied until confirm is clicked, note for queries too
     const [applyFilters, setApplyFilters] = useState(false)

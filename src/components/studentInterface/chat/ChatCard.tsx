@@ -7,6 +7,7 @@ import { db } from "../../../firebase/firebaseConfig";
 // import UserProps from "../../../interfaces/UserProps";
 import { AuthContext } from "../../authentication/auth/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
+import { getLastMessage } from "../../helpers/getLastMessage";
 
 interface Props{
     id: string
@@ -32,6 +33,18 @@ export default function ChatCard({ id }: Props)
         queryFn: () => getInitialFriendData(userRef),
     })
 
+    const { data: lastMessage, refetch: refetchLastMessage } = useQuery({
+        queryKey: ['lastMessageChat', id],
+        queryFn: () => getLastMessage(userData.id, id)
+    })
+
+    //@ts-expect-error read
+    const hour = lastMessage?.createdAt.toDate().getHours() >= 12 ?  lastMessage?.createdAt.toDate().getHours() % 12 : lastMessage?.createdAt.toDate().getHours()
+    //@ts-expect-error read
+    const pmOram = lastMessage?.createdAt.toDate().getHours() >= 12 ? 'PM' : 'AM'
+    //@ts-expect-error read
+    const minutes = lastMessage?.createdAt.toDate().getMinutes().toString().padStart(2, '0')
+
     useEffect(() => {
 
         const unsub = onSnapshot(userRef, (querySnapshot) => {
@@ -39,6 +52,7 @@ export default function ChatCard({ id }: Props)
             if(querySnapshot.exists)
             {
                 refetch()
+                refetchLastMessage()
             }
         })
 
@@ -50,11 +64,15 @@ export default function ChatCard({ id }: Props)
 
     if(!userData || !chatUserData) return <></>
 
+    console.log(lastMessage, id, userData.id)
+
     return (
         <Box
             display='flex'
             flexDirection='row'
-            px={1}
+            width='97.5%'
+            justifyContent='space-between'
+            px={2.5}
             py={3}
             gap={3}
             sx={{
@@ -77,13 +95,14 @@ export default function ChatCard({ id }: Props)
                     gap={1}
                 >
                     {/*//@ts-expect-error erraa*/}
-                    <Typography noWrap sx={{ color: '#000' }} fontFamily='Inter' fontSize={14} fontWeight={600}>{chatUserData?.name}: {chatUserData?.email.slice(0, 5)}... </Typography>
+                    <Typography noWrap sx={{ color: '#000' }} fontFamily='Inter' fontSize={14} fontWeight={600}>{chatUserData?.name}</Typography>
                     <Stack
                         direction='row'
                         justifyContent='space-between'
                         gap={1}
                     >
-                        <Typography noWrap fontFamily='Inter' fontSize={12} fontWeight={700}>You have to submit the paper first thing in the...</Typography>
+                        {/*//@ts-expect-error message */}
+                        <Typography noWrap fontFamily='Inter' fontSize={12} fontWeight={700}>{lastMessage?.message.slice(0, 30)}{lastMessage?.message.length > 30 ? '...' : ''}</Typography>
                     </Stack>
                 </Stack>
             </Stack>
@@ -91,12 +110,16 @@ export default function ChatCard({ id }: Props)
                 alignItems='center'
                 justifyContent='center'
             >
-                <SvgIcon sx={{ marginTop: 1, fontSize: 10 }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
-                        <circle cx="6.5" cy="6.5" r="6.5" fill="#226E9F"/>
-                    </svg>
-                </SvgIcon>
-                <Typography sx={{ marginTop: 'auto' }} fontSize={12} fontWeight={500} fontFamily='Inter'>3:45PM</Typography>
+                {
+                    //@ts-expect-error read
+                    lastMessage?.receiver === userData.id && lastMessage?.read === false &&
+                    <SvgIcon sx={{ marginTop: 1, fontSize: 10 }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
+                            <circle cx="6.5" cy="6.5" r="6.5" fill="#226E9F"/>
+                        </svg>
+                    </SvgIcon>
+                }
+                <Typography sx={{ marginTop: 'auto' }} fontSize={12} fontWeight={500} fontFamily='Inter'>{hour}{hour && ':'}{minutes}{hour && pmOram}</Typography>
             </Stack>
         </Box>
     )
