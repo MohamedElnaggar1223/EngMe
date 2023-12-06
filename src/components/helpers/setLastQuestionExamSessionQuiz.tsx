@@ -13,8 +13,16 @@ export const setLastQuestionExamSessionQuiz = async (studentId: string, quizId: 
         const oldExamSessionData = await getDocs(queryExamSession)
         const oldStudentQuizData = await getDocs(queryStudentQuiz)
 
+        const orderedOldStudentQuizData = oldStudentQuizData.docs.slice().sort((a, b) => {
+            const dateA = a.data().createdAt.toDate();
+            const dateB = b.data().createdAt.toDate();
+          
+            // Compare the dates for sorting
+            return dateB - dateA;
+          })
+
         const examSessionRefDoc = doc(db, 'examSession', oldExamSessionData.docs[0].id)
-        const studentQuizRefDoc = doc(db, 'studentQuiz', oldStudentQuizData.docs[0].id)
+        const studentQuizRefDoc = doc(db, 'studentQuiz', orderedOldStudentQuizData[0].id)
 
         await updateDoc(examSessionRefDoc, {...oldExamSessionData.docs[0].data(), lastQuestion: index + 1})
         if(Array.isArray(answer))
@@ -24,13 +32,13 @@ export const setLastQuestionExamSessionQuiz = async (studentId: string, quizId: 
                 return obj;
             }, {})
 
-            const newAnswer = oldStudentQuizData.docs[0].data().answers?.length > 0 ? [...oldStudentQuizData.docs[0].data().answers, newAnswerObject] : [newAnswerObject]
-            await updateDoc(studentQuizRefDoc, {...oldStudentQuizData.docs[0].data(), answers: newAnswer})
+            const newAnswer = orderedOldStudentQuizData[0].data().answers?.length > 0 ? [...orderedOldStudentQuizData[0].data().answers, newAnswerObject] : [newAnswerObject]
+            await updateDoc(studentQuizRefDoc, {...orderedOldStudentQuizData[0].data(), answers: newAnswer})
         }
         else
         {
-            const newAnswer = oldStudentQuizData.docs[0].data().answers?.length > 0 ? [...oldStudentQuizData.docs[0].data().answers, answer] : [answer]
-            await updateDoc(studentQuizRefDoc, {...oldStudentQuizData.docs[0].data(), answers: newAnswer})
+            const newAnswer = orderedOldStudentQuizData[0].data().answers?.length > 0 ? [...orderedOldStudentQuizData[0].data().answers, answer] : [answer]
+            await updateDoc(studentQuizRefDoc, {...orderedOldStudentQuizData[0].data(), answers: newAnswer})
         }
     }
     catch(e)

@@ -14,13 +14,11 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
     const examSessionData = await getDocs(queryExamSession)
 
     const orderedAssessmentsArray = studentAssessmentDocs.docs.slice().sort((a, b) => {
-        //@ts-expect-error createdAt
-        const dateA = a.createdAt.toDate();
-        //@ts-expect-error createdAt
-        const dateB = b.createdAt.toDate();
+        const dateA = a.data().createdAt.toDate();
+        const dateB = b.data().createdAt.toDate();
       
         // Compare the dates for sorting
-        return dateA - dateB;
+        return dateB - dateA;
       })
 
     //@ts-expect-error anyerr
@@ -43,7 +41,7 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
           const objectAnswers = Object.values(answers[index]).map((answer, indexOfAnswer) => Number(option[indexOfAnswer]) === Number(answer))
           return objectAnswers.every(Boolean)
         }
-        else answers[index] === Number(option)
+        else return answers[index] === Number(option)
       })
     //@ts-expect-error anyerror
     const grade = (((results.slice().filter(res => !!res)).length / results.length) * 100).toFixed(2)

@@ -1,10 +1,10 @@
 import { createContext, useEffect, useLayoutEffect, useState } from 'react'
-import { auth, db } from '../../../firebase/firebaseConfig'
-import { doc, getDoc } from 'firebase/firestore'
+import { auth } from '../../../firebase/firebaseConfig'
 import { User, onAuthStateChanged } from 'firebase/auth'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getExamSession } from '../../helpers/getExamSession'
 import { useNavigate } from 'react-router-dom'
+import { getUserData } from '../../helpers/getUserData'
 
 //@ts-expect-error context
 export const AuthContext = createContext()
@@ -61,47 +61,10 @@ export default function AuthProvider({ children })
             else
             {
                 //@ts-expect-error tserror
-                navigate(`/exam/${examSession[0].examId}`)
+                navigate(`/exam/${examSession[0].finalExamId}`)
             }
         }
     }, [examSession, navigate])
-
-    // const []
-    async function getUserData(uid: string)
-    {
-        try
-        {
-            const userRef = doc(db, 'students', uid ?? '')
-            const userSnapshot = await getDoc(userRef)
-    
-            if(userSnapshot.exists())
-            {
-                const userData = {...userSnapshot.data(), id: userSnapshot.id, role: 'student'}
-                return userData
-            }
-            else
-            {
-                const userRef = doc(db, 'teachers', uid ?? '')
-                const userSnapshot = await getDoc(userRef)
-        
-                if(userSnapshot.exists())
-                {
-                    const userData = {...userSnapshot.data(), id: userSnapshot.id, role: 'teacher'}
-                    return userData
-                }
-                else
-                {
-                    return null
-                }
-            }
-        }
-        catch(e)
-        {
-            console.error(e)
-            return null
-        }
-    }
-
 
     useLayoutEffect(() => {
         const listen = onAuthStateChanged(auth, async (authUser) => {

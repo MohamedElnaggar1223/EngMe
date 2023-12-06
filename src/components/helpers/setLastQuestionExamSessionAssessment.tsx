@@ -12,9 +12,18 @@ export const setLastQuestionExamSessionAssessment = async (studentId: string, as
 
         const oldExamSessionData = await getDocs(queryExamSession)
         const oldStudentAssessmentData = await getDocs(queryStudentAssessment)
+        console.log(oldStudentAssessmentData.docs.map(doc => doc.data()))
+
+        const orderedOldStudentAssessmentData = oldStudentAssessmentData.docs.slice().sort((a, b) => {
+            const dateA = a.data().createdAt.toDate();
+            const dateB = b.data().createdAt.toDate();
+            // Compare the dates for sorting
+            return dateB - dateA;
+        })
+        console.log(orderedOldStudentAssessmentData)
 
         const examSessionRefDoc = doc(db, 'examSession', oldExamSessionData.docs[0].id)
-        const studentAssessmentRefDoc = doc(db, 'studentAssessment', oldStudentAssessmentData.docs[0].id)
+        const studentAssessmentRefDoc = doc(db, 'studentAssessment', orderedOldStudentAssessmentData[0].id)
         
         await updateDoc(examSessionRefDoc, {...oldExamSessionData.docs[0].data(), lastQuestion: index + 1})
         if(Array.isArray(answer))
@@ -24,13 +33,13 @@ export const setLastQuestionExamSessionAssessment = async (studentId: string, as
                 return obj;
             }, {})
 
-            const newAnswer = oldStudentAssessmentData.docs[0].data().answers?.length > 0 ? [...oldStudentAssessmentData.docs[0].data().answers, newAnswerObject] : [newAnswerObject]
-            await updateDoc(studentAssessmentRefDoc, {...oldStudentAssessmentData.docs[0].data(), answers: newAnswer})
+            const newAnswer = orderedOldStudentAssessmentData[0].data().answers?.length > 0 ? [...orderedOldStudentAssessmentData[0].data().answers, newAnswerObject] : [newAnswerObject]
+            await updateDoc(studentAssessmentRefDoc, {...orderedOldStudentAssessmentData[0].data(), answers: newAnswer})
         }
         else
         {
-            const newAnswer = oldStudentAssessmentData.docs[0].data().answers?.length > 0 ? [...oldStudentAssessmentData.docs[0].data().answers, answer] : [answer]
-            await updateDoc(studentAssessmentRefDoc, {...oldStudentAssessmentData.docs[0].data(), answers: newAnswer})
+            const newAnswer = orderedOldStudentAssessmentData[0].data().answers?.length > 0 ? [...orderedOldStudentAssessmentData[0].data().answers, answer] : [answer]
+            await updateDoc(studentAssessmentRefDoc, {...orderedOldStudentAssessmentData[0].data(), answers: newAnswer})
         }
 
     }

@@ -305,7 +305,7 @@ export default function ProgramsExploreProgram()
                     >
                         <Typography fontSize={18} fontFamily='Inter' fontWeight={600}>Prerequisites:</Typography>
                             {displayedPrereqs}
-                        </Stack>
+                    </Stack>
                     <Box
                         px={6}
                         pl={10}
@@ -545,7 +545,7 @@ export default function ProgramsExploreProgram()
                     <ProgramExploreCourseComponents /> :
                 <></>:
                 <Suspense>
-                    <ProgramExploreCourseComments />
+                    <ProgramExploreCourseComments NoAdd={true} program={program} />
                 </Suspense>
             }
         </Box>

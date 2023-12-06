@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom"
 import { setLastQuestionExamSessionQuiz } from "../../../helpers/setLastQuestionExamSessionQuiz"
 import { setSubmitExamSessionQuiz } from "../../../helpers/setSubmitExamSessionQuiz"
 import Box from "@mui/material/Box"
+import { setLastQuestionExamSessionFinalExam } from "../../../helpers/setLastQuestionExamSessionFinalExam"
+import { setSubmitExamSessionFinalExam } from "../../../helpers/setSubmitExamSessionFinalExam"
 
 interface Question{
     options: string[],
@@ -21,10 +23,11 @@ interface ExamQuestionProps{
     index: number,
     total: number,
     assessmentId?: string,
-    quizId?: string
+    quizId?: string,
+    finalExamId?: string
 }
 
-export default function ExamQuestionOptions({ quizId, assessmentId, question, index, total }: ExamQuestionProps)
+export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId, question, index, total }: ExamQuestionProps)
 {
     const queryClient = useQueryClient()
     //@ts-expect-error context
@@ -42,6 +45,10 @@ export default function ExamQuestionOptions({ quizId, assessmentId, question, in
         {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, selectedOption)
         }
+        else if(finalExamId)
+        {
+            await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, selectedOption)
+        }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
 
@@ -56,26 +63,34 @@ export default function ExamQuestionOptions({ quizId, assessmentId, question, in
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, selectedOption)
             await setSubmitExamSessionQuiz(userData.id, quizId)
         }
+        else if(finalExamId)
+        {
+            await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, selectedOption)
+            await setSubmitExamSessionFinalExam(userData.id, finalExamId)
+        }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
         navigate('/')
     }
 
     const { mutate: mutateLastQuestionSession } = useMutation({
         onMutate: () => {
-            const previousData = queryClient.getQueryData(['examSession'])
+            // const previousData = queryClient.getQueryData(['examSession'])
 
-            queryClient.setQueryData(['examSession'], (oldData: unknown) => {
-                //@ts-expect-error unknown
-                const oldDataArray = oldData[0]
-                return {...oldDataArray, lastQuestion: oldDataArray.lastQuestion + 1}
-            })
+            // queryClient.setQueryData(['examSession'], (oldData: unknown) => {
+            //     //@ts-expect-error unknown
+            //     const oldDataArray = oldData[0]
+            //     return {...oldDataArray, lastQuestion: oldDataArray.lastQuestion + 1}
+            // })
 
-            return () => queryClient.setQueryData(['examSession'], previousData)
+            // return () => queryClient.setQueryData(['examSession'], previousData)
         },
         mutationFn: () => handleSetLastQuestionExamSession()
     })
 
     const { mutate: mutateSubmitExamSession } = useMutation({
+        onSuccess: async () => {
+            await queryClient.setQueryData(['examSession'], [])
+        },
         mutationFn: () => handleSubmitExamSession()
     })
 
@@ -112,7 +127,7 @@ export default function ExamQuestionOptions({ quizId, assessmentId, question, in
                 width='760px'
             >
                 <Typography></Typography>
-                <Typography>Q{index}: {question.question}</Typography>
+                <Typography>Q{index + 1}: {question.question}</Typography>
                 <Typography sx={{ justifySelf: 'flex-end' }}>{index + 1}/{total}</Typography>
             </Stack>
             <Stack 

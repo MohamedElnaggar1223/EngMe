@@ -2,29 +2,52 @@ import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
 import star from '../../../../assets/Star 4.png'
 import { memo, useContext } from "react";
 import ReactApexChart from "react-apexcharts";
-import { QuestionsContext } from "./FinalExams";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AuthContext } from "../../../authentication/auth/AuthProvider";
+import ProgramProps from "../../../../interfaces/ProgramProps";
+import { setStudentFinalExam } from "../../../helpers/setStudentFinalExam";
 // import { PageContext } from "../../../Layout";
 
+interface FinalExamObject{
+    id: string,
+    questions: [],
+    duration: string
+}
+
 interface FinalExamCardProps{
+    version: string,
     disabled?: boolean,
-    showQuestions?: boolean,
+    setQuestions?: React.Dispatch<React.SetStateAction<string>>,
+    finalExam: FinalExamObject,
+    questions?: string,
+    program: ProgramProps,
+    foundExam?: unknown
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-function FinalExamCard({ disabled, showQuestions }: FinalExamCardProps) 
+function FinalExamCard({ program, version, disabled, setQuestions, finalExam, questions, foundExam }: FinalExamCardProps)
 {
+    const queryClient = useQueryClient()
     //@ts-expect-error context
-    const { questions, setQuestions } = useContext(QuestionsContext)
-    // const { setPage } = useContext(PageContext)
-
+    const { userData } = useContext(AuthContext)
     const navigate = useNavigate()
 
-    function handleExam()
-    {
-        // setPage('exam')
-        navigate('/exam')
+    const handleStudentFinalExam = async (finalExamId: string) => {
+        console.log('test')
+        console.log(finalExamId)
+        await setStudentFinalExam(userData.id, finalExamId)
+        navigate(`/exam/${finalExamId}`)
     }
+
+    const { mutate } = useMutation({
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['finalExams', program.id]
+            })
+        },
+        mutationFn: (finalExamId: string) => handleStudentFinalExam(finalExamId) 
+    })
 
     return (
         <Box
@@ -48,10 +71,11 @@ function FinalExamCard({ disabled, showQuestions }: FinalExamCardProps)
                     borderTopLeftRadius: '15px',
                 }}
             >
-                <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>Version 1</Typography>
-                {!showQuestions && <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>1.5 Hours</Typography>}
+                <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>{version}</Typography>
+                {/*//@ts-expect-error grade */}
+                {!foundExam?.grade && <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>{(Number(finalExam.duration.split(' ')[0]) / 60).toFixed(1)} Hours</Typography>}
                 {
-                    showQuestions &&
+                    setQuestions &&
                     <Box
                         sx={{ position: 'absolute' }}
                         left='80%'
@@ -67,12 +91,14 @@ function FinalExamCard({ disabled, showQuestions }: FinalExamCardProps)
                                 dataLabels: { enabled: false },
                                 // fill: { image: { src: star, height: 100, width: 100 } }
                             }}
-                            series={[3, 97]}
+                            //@ts-expect-error grade
+                            series={[100 - Number(foundExam?.grade), Number(foundExam?.grade)]}
                             type="donut"
                             width="120px"
                         />
-                        <img src={star} width='40px' height='40px' style={{ position: 'absolute', top: 18, left: 40.5 }} />
-                        <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 50 }} sx={{ color: '#fff' }}>97%</Typography>
+                        <img src={star} width='40px' height='40px' style={{ position: 'absolute', top: 18, left: 40.8 }} />
+                        {/*//@ts-expect-error grade*/}
+                        <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 45 }} sx={{ color: '#fff' }}>{Number(foundExam?.grade) !== 100 ? Number(foundExam?.grade).toFixed(1) : Number(foundExam?.grade).toFixed(0)}%</Typography>
                     </Box>
                 }
             </Stack>
@@ -117,10 +143,10 @@ function FinalExamCard({ disabled, showQuestions }: FinalExamCardProps)
                         },
                         marginBottom: 3
                     }}
-                    //@ts-expect-error as context
-                    onClick={() => showQuestions ? setQuestions(prev => !prev) : !disabled && handleExam()}
+                    disabled={disabled}
+                    onClick={() => setQuestions ? setQuestions(prev => prev !== '' ? prev === finalExam.id ? '' : finalExam.id : finalExam.id) : disabled ? {} : mutate(finalExam.id)}
                 >
-                    {showQuestions ? questions ? 'Hide Questions' : 'Show Questions' : 'Take Exam' }
+                    {setQuestions ? questions === finalExam.id ? 'Hide Questions' : 'Show Questions' : 'Take Exam' }
                 </Button>
             </Box>
         </Box>

@@ -606,10 +606,10 @@ export default function ProgramsCompletedCard()
                         programPage === 'Components' ?
                         <Components {...program} /> :
                         programPage === 'Exams' ?
-                        <FinalExams /> :
+                        <FinalExams program={program} progress={0} /> :
                         programPage === 'Grades' ?
-                        <Grades /> :
-                        <Discussions />
+                        <Grades {...program} /> :
+                        <Discussions {...program} />
                     }
                 </Box>
             </AccordionDetails>

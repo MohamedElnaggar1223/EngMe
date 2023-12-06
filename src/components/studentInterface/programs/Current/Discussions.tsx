@@ -1,7 +1,8 @@
+import ProgramProps from "../../../../interfaces/ProgramProps";
 import ProgramExploreCourseComments from "../Explore/ProgramComments/ProgramExploreCourseComments";
 
-export default function Discussions() {
+export default function Discussions(program: ProgramProps) {
   return (
-    <ProgramExploreCourseComments NoAdd={true} />
+    <ProgramExploreCourseComments program={program} />
   )
 }

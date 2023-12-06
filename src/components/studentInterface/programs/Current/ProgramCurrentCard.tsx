@@ -2,11 +2,15 @@ import { Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, Accor
 import { Box, Stack } from '@mui/system'
 import ReactApexChart from "react-apexcharts";
 import star from '../../../../assets/Star 4.png'
-import { memo, useContext, useMemo, useState } from 'react';
-import Components from './Components';
-import FinalExams from './FinalExams';
-import Discussions from './Discussions';
-import Grades from './Grades';
+import { memo, useContext, useMemo, useState, lazy, Suspense } from 'react';
+// eslint-disable-next-line react-refresh/only-export-components
+const Components = lazy(() => import('./Components'))
+// eslint-disable-next-line react-refresh/only-export-components
+const FinalExams = lazy(() => import('./FinalExams'))
+// eslint-disable-next-line react-refresh/only-export-components
+const Discussions = lazy(() => import('./Discussions'))
+// eslint-disable-next-line react-refresh/only-export-components
+const Grades = lazy(() => import('./Grades'))
 import ProgramProps from '../../../../interfaces/ProgramProps';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram';
@@ -20,6 +24,8 @@ import { getQuizzesData } from '../../../helpers/getQuizzesData';
 import { getStudentAssessments } from '../../../helpers/getStudentAssessments';
 import { getStudentLessons } from '../../../helpers/getStudentLessons';
 import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes';
+import { getProgramFinalExams } from '../../../helpers/getProgramFinalExams';
+import { getStudentProgramFinalExams } from '../../../helpers/getStudentProgramFinalExams';
 
 // eslint-disable-next-line react-refresh/only-export-components
 function ProgramCurrentCard(program: ProgramProps) 
@@ -101,14 +107,14 @@ function ProgramCurrentCard(program: ProgramProps)
         enabled: !!courses,
         refetchOnMount: true
     })
-    console.log(program.id, program.courses)
+    //console.log(program.id, program.courses)
     const { data: lessons } = useQuery({
         queryKey: ['lessons', program.id, 'currentCard'],
         queryFn: () => getLessonsData(courses),
         enabled: !!courses,
         refetchOnMount: true
     })
-    console.log(lessons)
+    //console.log(lessons)
     const { data: quizzes } = useQuery({
         queryKey: ['quizzes', program.id, 'currentCard'],
         queryFn: () => getQuizzesData(courses),
@@ -117,27 +123,52 @@ function ProgramCurrentCard(program: ProgramProps)
     })
 
     const { data: studentLesson } = useQuery({
-        queryKey: ['studentLesson', userData?.id, 'currentCard'],
+        queryKey: ['studentLesson', userData?.id, 'currentCard', program.id],
         //@ts-expect-error lesson
         queryFn: () => getStudentLessons(userData?.id, lessons?.map(lesson => lesson.id)),
         enabled: !!lessons
     })
 
-    //console.log(lessons)
+    ////console.log(lessons)
 
     const { data: studentAssessment } = useQuery({
-        queryKey: ['studentAssessment', userData?.id, 'currentCard'],
+        queryKey: ['studentAssessment', userData?.id, 'currentCard', program.id],
         //@ts-expect-error lesson
         queryFn: () => getStudentAssessments(userData?.id, assessments?.map(assessment => assessment.id)),
         enabled: !!assessments
     })
 
     const { data: studentQuizzes } = useQuery({
-        queryKey: ['studentQuizzes', userData?.id, 'currentCard'],
+        queryKey: ['studentQuizzes', userData?.id, 'currentCard', program.id],
         //@ts-expect-error lesson
         queryFn: () => getStudentQuizzes(userData?.id, quizzes?.map(quiz => quiz.id)),
         enabled: !!quizzes
     })
+
+    const { data: finalExams } = useQuery({
+		queryKey: ['finalExams', program.id],
+		queryFn: () => getProgramFinalExams(program.id)
+	})
+
+	const { data: studentFinalExams } = useQuery({
+		queryKey: ['finalExams', program.id, userData.id],
+		queryFn: () => getStudentProgramFinalExams(userData.id, Object.values(program?.finalExams ?? ['']))
+	})
+
+    const heighestPercentage = useMemo(() => {
+        //@ts-expect-error finals
+        const sortedVersions = Object.keys(program?.finalExams).sort((a, b) => Number(a.split(" ")[1]) - Number(b.split(" ")[1]))
+        const foundStudentExams = sortedVersions.map((version: string) => {
+            //@ts-expect-error program
+            const versionExam = finalExams?.find(exam => exam.id === program?.finalExams[version])
+            //@ts-expect-error program
+            return studentFinalExams?.find(studentFinalExam => (finalExams?.map(exam => exam.id))?.includes(studentFinalExam.finalExamId) && versionExam?.id === studentFinalExam.finalExamId)
+        })
+        //@ts-expect-error finals
+        foundStudentExams.sort((a, b) => Number(b?.grade) - Number(a?.grade))
+        return foundStudentExams[0]
+    }
+    , [finalExams, studentFinalExams, program])
 
     const materialCount = (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
     const materialFinished = useMemo(() => {
@@ -221,7 +252,7 @@ function ProgramCurrentCard(program: ProgramProps)
 
     const progress = materialCount !== 0 ? ((materialFinished/materialCount)*100).toFixed() : 0
 
-    //console.log(materialCount, materialFinished, progress)
+    ////console.log(materialCount, materialFinished, progress)
 
     // const coursePercentage = 
 
@@ -410,25 +441,30 @@ function ProgramCurrentCard(program: ProgramProps)
                                     direction='column'
                                     position='relative'
                                 >
-                                    <Box
-                                        sx={{ position: 'relative' }}
-                                        alignSelf='flex-end'
-                                    >
-                                        <ReactApexChart
-                                            options={{
-                                                chart: { type: "donut" },
-                                                colors: ['#fff', '#FF9F06'],
-                                                legend: { show: false },
-                                                dataLabels: { enabled: false },
-                                                // fill: { image: { src: star, height: 100, width: 100 } }
-                                            }}
-                                            series={[20, 83]}
-                                            type="donut"
-                                            width="120px"
-                                        />
-                                        <img src={star} width='40px' height='40px' style={{ position: 'absolute', top: 18, left: 40.5 }} />
-                                        <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 50 }} sx={{ color: '#fff' }}>83%</Typography>
-                                    </Box>
+                                    {
+                                        heighestPercentage &&
+                                        <Box
+                                            sx={{ position: 'relative' }}
+                                            alignSelf='flex-end'
+                                        >
+                                            <ReactApexChart
+                                                options={{
+                                                    chart: { type: "donut" },
+                                                    colors: ['#fff', '#FF9F06'],
+                                                    legend: { show: false },
+                                                    dataLabels: { enabled: false },
+                                                    // fill: { image: { src: star, height: 100, width: 100 } }
+                                                }}
+                                                //@ts-expect-error grade
+                                                series={[100 - Number(heighestPercentage.grade), Number(heighestPercentage.grade)]}
+                                                type="donut"
+                                                width="120px"
+                                            />
+                                            <img src={star} width='40px' height='40px' style={{ position: 'absolute', top: 18, left: 40.5 }} />
+                                            {/*//@ts-expect-error grade*/}
+                                            <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 45 }} sx={{ color: '#fff' }}>{Number(heighestPercentage?.grade) !== 100 ? Number(heighestPercentage?.grade).toFixed(1) : Number(heighestPercentage?.grade).toFixed(0)}%</Typography>
+                                        </Box>
+                                    }
                                     <Stack
                                         direction='column'
                                         alignItems='flex-start'
@@ -648,12 +684,23 @@ function ProgramCurrentCard(program: ProgramProps)
                     {
                         // !coursesLoading && !assessmentsLoading && !quizzesLoading && !lessonsLoading && !studentAssessmentLoading && !studentLessonLoading && !studentQuizzesLoading &&
                         programPage === 'Components' ?
-                        <Components {...program} /> :
+                        <Suspense>
+                            <Components {...program} /> 
+                        </Suspense>
+                        :
                         programPage === 'Exams' ?
-                        <FinalExams /> :
+                        <Suspense>
+                            <FinalExams progress={Number(progress)} program={program} />
+                        </Suspense>
+                        :
                         programPage === 'Grades' ?
-                        <Grades /> :
-                        <Discussions />
+                        <Suspense>
+                            <Grades {...program} />
+                        </Suspense>
+                        :
+                        <Suspense>
+                            <Discussions {...program} />
+                        </Suspense>
                     }
                 </Box>
             </AccordionDetails>

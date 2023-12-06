@@ -72,7 +72,7 @@ export default function Assessment()
         queryFn: () => getAssessment(id ?? '')
     })
 
-    console.log(assessment)
+    // console.log(assessment)
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -108,7 +108,13 @@ export default function Assessment()
     // }, [index])
 
     //@ts-expect-error errrrr
-    const displayedQuestions = assessment?.questions?.map((question, index) => <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />)
+    const displayedQuestions = assessment?.questions?.map((question, index) => 
+        question.type === 'options' ?
+        //@ts-expect-error errrrr
+        <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+        //@ts-expect-error errrrr
+        <ExamQuestionSelects assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />
+    )
 
     if(isLoading) return <></>
     else return (

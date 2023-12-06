@@ -34,7 +34,8 @@ export default function StudentSignUp()
                     friends: [],
                     name: `${firstname} ${lastname}`,
                     email,
-                    number
+                    number,
+                    image: ''
                 })
             })
             .catch(e => console.error(e))

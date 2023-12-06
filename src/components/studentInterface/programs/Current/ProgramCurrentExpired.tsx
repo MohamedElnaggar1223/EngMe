@@ -1,10 +1,75 @@
 import { Box, Stack, SvgIcon, Typography, Avatar, Button } from "@mui/material";
-import avatar from '../../../../assets/Ellipse 3.png'
 import ProgramProps from "../../../../interfaces/ProgramProps";
+import { useQuery } from "@tanstack/react-query";
+import { getAssessmentsData } from "../../../helpers/getAssessmentsData";
+import { getCoursesData } from "../../../helpers/getCoursesData";
+import { getLessonsData } from "../../../helpers/getLessonsData";
+import { getQuizzesData } from "../../../helpers/getQuizzesData";
+import { getStudentCount } from "../../../helpers/getStudentCount";
+// import { getStudentRequest } from "../../../helpers/getStudentRequest";
+import { getTeacherDataFromProgram } from "../../../helpers/getTeacherDataFromProgram";
 
 export default function ProgramCurrentExpired(program: ProgramProps) 
 {
-    console.log(program)
+    const { data: prereqsData } = useQuery({
+        queryKey: ['preReqData', program?.id ?? ''],
+        //@ts-expect-error err program
+        queryFn: () => getProgramsData(program?.prerequisites),
+        refetchOnMount: false,
+        enabled: !!program.prerequisites
+    })
+
+    const { data: teacherData } = useQuery({
+        queryKey: ['teacherData', program.id],
+        queryFn: () => getTeacherDataFromProgram(program),
+        refetchOnMount: false,
+    })
+
+    const { data: studentCount } = useQuery({
+        queryKey: ['studentCount', program?.id ?? ''],
+        queryFn: () => getStudentCount(program?.id),
+        refetchOnMount: true,
+        
+    })
+
+    const { data: courses } = useQuery({
+        queryKey: ['courses', program?.id ?? ''],
+        queryFn: () => getCoursesData(program),
+        refetchOnMount: true,
+        enabled: !!program.id
+    })
+
+    const { data: assessments } = useQuery({
+        queryKey: ['assessments', program?.id ?? ''],
+        queryFn: () => getAssessmentsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    const { data: lessons } = useQuery({
+        queryKey: ['lessons', program?.id ?? ''],
+        queryFn: () => getLessonsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    const { data: quizzes } = useQuery({
+        queryKey: ['quizzes', program?.id ?? ''],
+        queryFn: () => getQuizzesData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    // const { data: studentRequest } = useQuery({
+    //     queryKey: ['studentRequest', program?.id ?? ''],
+    //     queryFn: () => getStudentRequest(userData?.id, program.id),
+    //     enabled: !!program.id
+    // })
+
+    const materialCount = (courses?.length ?? [].length) + (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
+
+    //@ts-expect-error prereq
+    const displayedPrereqs = prereqsData?.map(preqreq => <Typography sx={{ textDecoration: 'underline', cursor: 'pointer' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{preqreq.name}</Typography>)
     return (
         <Box
             display='flex'
@@ -45,7 +110,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                 fontWeight={900}
                                 fontFamily='Inter'
                             >
-                                Data Engineering with AWS
+                                {program?.name}
                             </Typography>
 
                             <SvgIcon sx={{ fontSize: 24 }}>
@@ -77,7 +142,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                     fontWeight={700}
                                     sx={{ color: '#004643' }}
                                 >
-                                    4.3
+                                    {program.averageRating}
                                 </Typography>
                                 <Typography
                                     fontFamily='Inter'
@@ -85,7 +150,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                     fontWeight={400}
                                     // ml={0.5}
                                 >
-                                    {'(1290)'}
+                                    ({program.totalFeedbacks})
                                 </Typography>
                             </Stack>
                         </Stack>
@@ -99,9 +164,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                         fontWeight={400}
                         fontFamily='Inter'
                     >
-                        Learn to design data models, build data 
-                        warehouses and data lakes, automate data 
-                        pipelines, and work with massive datasets.
+                        {program.description}
                     </Typography>
                 </Stack>
             </Box>
@@ -117,10 +180,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                     bgcolor='#F8F8F8'
                 >
                     <Typography fontSize={18} fontFamily='Inter' fontWeight={600}>Prerequisites:</Typography>
-                    <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate Python</Typography>
-                    <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
-                    <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
-                    <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
+                    {displayedPrereqs}
                 </Stack>
                 <Box
                     px={6}
@@ -143,19 +203,22 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                             alignItems='center'
                             // mr={7}
                         >
-                            <Avatar src={avatar} sx={{ width: '70px', height: '70px' }} />
+                            {/*//@ts-expect-error error*/}
+                            <Avatar src={teacherData?.image} sx={{ width: '70px', height: '70px' }} />
                             <Stack
                                 direction='column'
                                 justifyContent='center'
                                 gap={0.5}
                             >
-                                <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>Dr. Ahmed El Adl | Professor in Human Biology</Typography>
+                                {/*//@ts-expect-error error*/}
+                                <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
                                 <Stack
                                     direction='row'
                                     justifyContent='space-between'
                                     gap={1}
                                 >
-                                    <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>The German University in Cairo</Typography>
+                                    {/*//@ts-expect-error error*/}
+                                    <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>{teacherData?.university}</Typography>
                                     <Stack
                                         direction='row'
                                         alignItems='center'
@@ -166,7 +229,8 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                                 <path d="M5.98199 1.22337C6.11981 0.806014 6.71018 0.806015 6.84799 1.22337L7.9764 4.64051C8.03809 4.82733 8.21265 4.95352 8.4094 4.95352H12.0451C12.4886 4.95352 12.6711 5.52254 12.3103 5.78048L9.38171 7.87408C9.2193 7.99018 9.1513 8.19844 9.2139 8.38802L10.3355 11.7846C10.4738 12.2034 9.99612 12.555 9.63731 12.2985L6.68018 10.1845C6.52157 10.0711 6.30841 10.0711 6.1498 10.1845L3.19268 12.2985C2.83387 12.555 2.35618 12.2034 2.49448 11.7846L3.61609 8.38802C3.67869 8.19844 3.61069 7.99018 3.44828 7.87408L0.519688 5.78048C0.158882 5.52254 0.341356 4.95352 0.784878 4.95352H4.42058C4.61733 4.95352 4.79189 4.82733 4.85359 4.64051L5.98199 1.22337Z" fill="#FF9F06"/>
                                             </svg>
                                         </SvgIcon>
-                                        <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>4.3</Typography>
+                                        {/*//@ts-expect-error error*/}
+                                        <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>{teacherData?.averageRating}</Typography>
                                     </Stack>
                                 </Stack>
                             </Stack>
@@ -180,16 +244,16 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                 gap={6}
                             >
                                 <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
-                                    <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>3</Typography>
-                                    <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Final Exams</Typography>
+                                    <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{Object.keys(program?.finalExams ?? []).length}</Typography>
+                                    <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Final Exam(s)</Typography>
                                 </Box>
                                 <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
-                                    <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>53</Typography>
-                                    <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Students</Typography>
+                                    <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{studentCount}</Typography>
+                                    <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Student(s)</Typography>
                                 </Box>
                                 <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
-                                    <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>20+</Typography>
-                                    <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Materials</Typography>
+                                    <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{materialCount > 1 ? `${materialCount - 1}+` : materialCount}</Typography>
+                                    <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Material(s)</Typography>
                                 </Box>
                             </Stack>
                         </Stack>

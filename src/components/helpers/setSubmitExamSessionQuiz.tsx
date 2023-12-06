@@ -14,13 +14,11 @@ export const setSubmitExamSessionQuiz = async (studentId: string, quizId: string
     const examSessionData = await getDocs(queryExamSession)
 
     const orderedQuizzesArray = studentQuizDocs.docs.slice().sort((a, b) => {
-        //@ts-expect-error createdAt
-        const dateA = a.createdAt.toDate();
-        //@ts-expect-error createdAt
-        const dateB = b.createdAt.toDate();
-      
-        // Compare the dates for sorting
-        return dateA - dateB;
+      const dateA = a.data().createdAt.toDate();
+      const dateB = b.data().createdAt.toDate();
+    
+      // Compare the dates for sorting
+      return dateB - dateA;
       })
 
     //@ts-expect-error anyerr
@@ -32,6 +30,7 @@ export const setSubmitExamSessionQuiz = async (studentId: string, quizId: string
       }
       else
       {
+        console.log(question.correctOption)
         return question.correctOption
       }
     })
@@ -48,14 +47,16 @@ export const setSubmitExamSessionQuiz = async (studentId: string, quizId: string
         console.log(objectAnswers.every(Boolean))
         return objectAnswers.every(Boolean)
       }
-      else answers[index] === Number(option)
+      else return answers[index] === Number(option)
     })
     console.log(results)
     //@ts-expect-error res
     console.log(results.slice().filter(res => !!res).length)
     console.log(results.length)
     //@ts-expect-error anyerror
-    const grade = (((results.slice().filter(res => !!res)).length / results.length) * 100).toFixed(2)
+    const grade = (results.slice().filter(res => !!res)).length
+    // const grade = (((results.slice().filter(res => !!res)).length / results.length) * 100).toFixed(2)
+
     
     const studentQuizDoc = doc(db, 'studentQuiz', orderedQuizzesArray[0]?.id)
 

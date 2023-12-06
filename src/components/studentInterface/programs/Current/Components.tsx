@@ -27,10 +27,10 @@ export default function Components(program: ProgramProps)
         refetchOnMount: true,
         enabled: !!program.id
     })
-    //console.log(courses)
+    ////console.log(courses)
     // if(queryClient.isFetching({ queryKey: ['courses', programId] })) return <></>
 	// const courses = queryClient.getQueryData(['courses', programId])
-    console.log(studentCourses)
+    //console.log(studentCourses)
 	const displayedCourses = ((!isLoading && !studentCourseLoading) && courses?.map((course, index) => {  
         if(index === 0)
         {

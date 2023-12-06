@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material'
-import { lazy, useState, useContext } from 'react'
+import { lazy, useState, useContext, Suspense } from 'react'
 const ProgramsCompleted = lazy(() => import('./Completed/ProgramsCompleted'))
 const ProgramsCurrent = lazy(() => import('./Current/ProgramsCurrent'))
 const ProgramsExplore = lazy(() => import('./Explore/ProgramsExplore'))
@@ -112,13 +112,26 @@ export default function Programs()
             </Stack>
             {
                 !isLoading &&
-                (tab === 'Explore' ?
-                <ProgramsExplore setTab={setTab} /> :
-                tab === 'Current' ?
-                <ProgramsCurrent /> :
-                tab === 'Completed' ?
-                <ProgramsCompleted /> :
-                <ProgramsFavorites />)
+                (
+                    tab === 'Explore' ?
+                    <Suspense>
+                        <ProgramsExplore setTab={setTab} />
+                    </Suspense> 
+                    :
+                    tab === 'Current' ?
+                    <Suspense>
+                        <ProgramsCurrent />
+                    </Suspense> 
+                    :
+                    tab === 'Completed' ?
+                    <Suspense>
+                        <ProgramsCompleted />
+                    </Suspense> 
+                    :
+                    <Suspense>
+                        <ProgramsFavorites />
+                    </Suspense>
+                )
             }
         </Box>
     )

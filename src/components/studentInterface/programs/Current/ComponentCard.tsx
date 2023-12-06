@@ -27,8 +27,8 @@ interface ComponentCard{
 function ComponentCard({index, course, disabled}: ComponentCard) 
 {
     const queryClient = useQueryClient()
-    console.log(disabled)
-    //console.log(course, index)
+    //console.log(disabled)
+    ////console.log(course, index)
 
     //PREFETCHING FOR LATER
     // useEffect(() => {
@@ -88,8 +88,8 @@ function ComponentCard({index, course, disabled}: ComponentCard)
         enabled: !!assessments
     })
 
-    //console.log(assessments?.map(assessment => assessment.id))
-    //console.log(studentAssessment)
+    ////console.log(assessments?.map(assessment => assessment.id))
+    ////console.log(studentAssessment)
     const { data: studentQuizzes } = useQuery({
         //@ts-expect-error user
         queryKey: ['studentQuizzes', userData?.id, course.id],
@@ -97,7 +97,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
         queryFn: () => getStudentQuizzes(userData?.id, quizzes?.map(quiz => quiz.id)),
         enabled: !!quizzes
     })
-    console.log(studentQuizzes)
+    //console.log(studentQuizzes)
 
     //@ts-expect-error lesson
     const courseStudentLessons = useMemo(() => studentLesson?.length ? studentLesson?.filter(lesson => lessons?.map(lesson => lesson.id)?.includes(lesson?.lessonId)) : [], [studentLesson, lessons])
@@ -106,8 +106,8 @@ function ComponentCard({index, course, disabled}: ComponentCard)
         //@ts-expect-error lesson
         studentAssessment?.filter(assessment => assessments?.map(assessment => assessment.id)?.includes(assessment?.assessmentId)) : []
     , [studentAssessment, assessments])
-    console.log(courseStudentAssessment)
-    //console.log(studentAssessment)
+    //console.log(courseStudentAssessment)
+    ////console.log(studentAssessment)
     //@ts-expect-error lesson
     const courseStudentQuiz = useMemo(() => studentQuizzes?.length ? studentQuizzes?.filter(quiz => quizzes?.map(quiz => quiz.id)?.includes(quiz?.quizId)) : [], [studentQuizzes, quizzes])
     
@@ -223,6 +223,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
         }
 
         handleCourseStatus()
+        //eslint-disable-next-line
     }, [courseCount, finishedCount, courseStudentAssessment, course.id, userData])
 
     const handleStudentLesson = async (lessonId: string) => {
@@ -297,7 +298,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
         mutationFn: (quizId: string) => handleStudentQuiz(quizId)
     })
 
-    console.log(courseStudentQuiz)
+    //console.log(courseStudentQuiz)
 
     const displayedLessons = lessons?.map(lesson => (
             <Stack
@@ -415,7 +416,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
             </Stack>
         )
     )
-                    //console.log(courseStudentAssessment)
+                    ////console.log(courseStudentAssessment)
     const displayedAssessments = assessments?.map(assessment => (
             <Stack
                 direction='row'

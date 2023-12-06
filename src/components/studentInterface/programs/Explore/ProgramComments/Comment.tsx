@@ -1,8 +1,21 @@
 import { Avatar, Stack, Typography } from '@mui/material'
-import avatar from '../../../../../assets/profile1.png'
+import CommentProps from '../../../../../interfaces/CommentProps'
+import { useQuery } from '@tanstack/react-query'
+import { getUserData } from '../../../../helpers/getUserData'
+import { memo } from 'react'
+import { Timestamp } from 'firebase/firestore'
 
-export default function Comment() 
+// eslint-disable-next-line react-refresh/only-export-components
+function Comment(comment: CommentProps) 
 {
+    const {data: student} = useQuery({
+        queryKey: ['studentComments', comment.id, comment.studentId],
+        queryFn: () => getUserData(comment.studentId)
+    })
+
+    const hoursAgo = (Timestamp.now().toDate().getTime() - comment.createdAt.toDate().getTime()) / (1000 * 60 * 60)
+    const minutesAgo = (Timestamp.now().toDate().getTime() - comment.createdAt.toDate().getTime()) / (1000 * 60)
+
     return (
         <Stack
             direction='row'
@@ -21,8 +34,10 @@ export default function Comment()
                 width='fit-content'
                 gap={1.5}
                 my={2}
+                alignSelf='center'
             >
-                <Avatar src={avatar} sx={{ width: '82px', height: '82px' }} />
+                {/*//@ts-expect-error name*/}
+                <Avatar src={student?.image} sx={{ width: '82px', height: '82px' }} />
                 <Typography
                     fontSize={18}
                     fontFamily='Inter'
@@ -33,13 +48,15 @@ export default function Comment()
                         textAlign: 'center'
                     }}
                 >
-                    Eyad Raslan
+                    {/*//@ts-expect-error name*/}
+                    {student?.name}
                 </Typography>
             </Stack>
             <Stack
                 direction='column'
                 justifyContent='center'
                 position='relative'
+                flex={1}
             >
                 <Typography
                     fontSize={14}
@@ -47,18 +64,20 @@ export default function Comment()
                     fontFamily='Inter'
                     display='flex'
                     flexShrink={1}
+                    alignSelf='flex-start'
                     width={{ xs: '70%', sm: '50%', lg: '90%' }}
                     sx={{
                         color: '#000',
                         alignSelf: 'center'
                     }}
                 >
-                    Good communication with her students and is very helpful and friendly. 
-                    Can easily converse with her and ask for useful feedback at any point in time 
-                    and would always receive advice that is helpful to the end goal of our proposal.
+                    {comment.comment}
                 </Typography>
-                <Typography fontSize={12} sx={{ alignSelf: 'flex-end', opacity: 0.6, position: 'absolute', left: '82%', top: '80%' }}>22 Hours ago</Typography>
+                <Typography fontSize={12} sx={{ alignSelf: 'flex-end', opacity: 0.6, position: 'absolute', left: '82%', top: '80%' }}>{hoursAgo > 1 ? `${hoursAgo.toFixed(0)} Hours Ago` : `${minutesAgo.toFixed(0)} Minutes Ago`}</Typography>
             </Stack>
         </Stack>
     )
 }
+
+const memoizedComment = memo(Comment)
+export default memoizedComment

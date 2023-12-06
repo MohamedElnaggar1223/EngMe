@@ -11,6 +11,8 @@ import { setLastQuestionExamSessionAssessment } from "../../../helpers/setLastQu
 import { setLastQuestionExamSessionQuiz } from "../../../helpers/setLastQuestionExamSessionQuiz";
 import { setSubmitExamSessionAssessment } from "../../../helpers/setSubmitExamSessionAssessment";
 import { setSubmitExamSessionQuiz } from "../../../helpers/setSubmitExamSessionQuiz";
+import { setLastQuestionExamSessionFinalExam } from "../../../helpers/setLastQuestionExamSessionFinalExam";
+import { setSubmitExamSessionFinalExam } from "../../../helpers/setSubmitExamSessionFinalExam";
 
 interface Question{
     firstOptions: string[],
@@ -29,10 +31,11 @@ interface ExamQuestionProps{
     index: number,
     total: number,
     assessmentId?: string,
-    quizId?: string
+    quizId?: string,
+    finalExamId?: string
 }
 
-export default function ExamQuestionSelects({ quizId, assessmentId, question, index, total }: ExamQuestionProps)
+export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, index, total }: ExamQuestionProps)
 {
     const queryClient = useQueryClient()
     //@ts-expect-error context
@@ -53,6 +56,10 @@ export default function ExamQuestionSelects({ quizId, assessmentId, question, in
         {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
         }
+        else if (finalExamId)
+        {
+            await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
+        }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
 
@@ -67,21 +74,41 @@ export default function ExamQuestionSelects({ quizId, assessmentId, question, in
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
             await setSubmitExamSessionQuiz(userData.id, quizId)
         }
+        else if(finalExamId)
+        {
+            await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
+            await setSubmitExamSessionFinalExam(userData.id, finalExamId)
+        }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
         navigate('/')
     }
 
     const { mutate: mutateLastQuestionSession } = useMutation({
         onMutate: () => {
-            const previousData = queryClient.getQueryData(['examSession'])
-
-            queryClient.setQueryData(['examSession'], (oldData: unknown) => {
-                //@ts-expect-error unknown
-                const oldDataArray = oldData[0]
-                return {...oldDataArray, lastQuestion: oldDataArray.lastQuestion + 1}
-            })
-
-            return () => queryClient.setQueryData(['examSession'], previousData)
+            // if(quizId)
+            // {
+            //     const previousData = queryClient.getQueryData(['examSession', quizId])
+    
+            //     queryClient.setQueryData(['examSession', quizId], (oldData: unknown) => {
+            //         //@ts-expect-error unknown
+            //         const oldDataArray = oldData[0]
+            //         return {...oldDataArray, lastQuestion: oldDataArray.lastQuestion + 1}
+            //     })
+    
+            //     return () => queryClient.setQueryData(['examSession', quizId], previousData)
+            // }
+            // else if(assessmentId)
+            // {
+            //     const previousData = queryClient.getQueryData(['examSession', assessmentId])
+    
+            //     queryClient.setQueryData(['examSession', assessmentId], (oldData: unknown) => {
+            //         //@ts-expect-error unknown
+            //         const oldDataArray = oldData[0]
+            //         return {...oldDataArray, lastQuestion: oldDataArray.lastQuestion + 1}
+            //     })
+    
+            //     return () => queryClient.setQueryData(['examSession', assessmentId], previousData)
+            // }
         },
         mutationFn: () => handleSetLastQuestionExamSession()
     })
