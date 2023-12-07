@@ -1,9 +1,25 @@
-import { Avatar, Box, Stack, Typography } from '@mui/material'
-import avatar from '../../../assets/profile1.png'
-import avatar2 from '../../../assets/profile2.png'
+import { Box, Typography } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
+import { getTeacherTestimonials } from '../../helpers/getTeacherTestimonials'
+import TeacherTestimonialCard from './TeacherTestimonialCard'
 
 export default function TeacherTestimonials() 
 {
+    const { id } = useParams()
+
+    const { data: teacherTestimonials } = useQuery({
+        queryKey: ['teacherTestimonials', id],
+        //@ts-expect-error teacherId
+        queryFn: () => getTeacherTestimonials(id),
+        enabled: !!id
+    })
+
+    const displayedTestimonials = teacherTestimonials?.map(testimonial => (
+        //@ts-expect-error card
+        <TeacherTestimonialCard {...testimonial} />
+    ))
+
     return (
         <Box
             mx={14}
@@ -51,112 +67,20 @@ export default function TeacherTestimonials()
                 // flexWrap='wrap'
                 // width={{ xs: '70%', sm: '50%', lg: '20%' }}
             >
-                <Stack
-                    direction='row'
-                    alignItems='center'
-                    gap={4}
-                >
-                    <Stack
-                        alignItems='center'
-                        width='fit-content'
-                        gap={1.5}
-                    >
-                        <Avatar src={avatar} sx={{ width: '82px', height: '82px' }} />
-                        <Typography
-                            fontSize={18}
-                            fontFamily='Inter'
-                            fontWeight={800}
-                            sx={{
-                                color: '#226E9F',
-                                textAlign: 'center'
-                            }}
-                        >
-                            Eyad Raslan
-                        </Typography>
-                    </Stack>
-                    <Typography
-                        fontSize={14}
-                        fontWeight={500}
-                        fontFamily='Inter'
-                        display='flex'
-                        flexShrink={1}
-                        width={{ xs: '70%', sm: '50%', lg: '70%' }}
-                    >
-                        Good communication with her students and is very helpful and friendly. 
-                        Can easily converse with her and ask for useful feedback at any point in time 
-                        and would always receive advice that is helpful to the end goal of our proposal.
-                    </Typography>
-                </Stack>
-                <Stack
-                    direction='row'
-                    alignItems='center'
-                    gap={4}
-                >
-                    <Stack
-                        alignItems='center'
-                        width='fit-content'
-                        gap={1.5}
-                    >
-                        <Avatar src={avatar2} sx={{ width: '82px', height: '82px' }} />
-                        <Typography
-                            fontSize={18}
-                            fontFamily='Inter'
-                            fontWeight={800}
-                            sx={{
-                                color: '#226E9F',
-                                textAlign: 'center'
-                            }}
-                        >
-                            Ammar Sameh
-                        </Typography>
-                    </Stack>
-                    <Typography
-                        fontSize={14}
-                        fontWeight={500}
-                        fontFamily='Inter'
-                        display='flex'
-                        flexShrink={1}
-                        width={{ xs: '70%', sm: '50%', lg: '70%' }}
-                    >
-                        You are a very thoughtful teacher who puts a lot of thought into how she 
-                        presents the material. Your classes were engaging ,useful, and you were very 
-                        patient with everyone in class always encouraging your students to try.</Typography>
-                </Stack>
-                {/* <Stack
-                    direction='row'
-                    alignItems='center'
-                    gap={4}
-                >
-                    <Stack
-                        alignItems='center'
-                        width='fit-content'
-                        gap={1.5}
-                    >
-                        <Avatar src={avatar2} sx={{ width: '82px', height: '82px' }} />
-                        <Typography
-                            fontSize={18}
-                            fontFamily='Inter'
-                            fontWeight={800}
-                            sx={{
-                                color: '#226E9F'
-                            }}
-                        >
-                            Ammar Sameh
-                        </Typography>
-                    </Stack>
-                    <Typography
-                        fontSize={14}
-                        fontWeight={500}
-                        fontFamily='Inter'
-                        display='flex'
-                        flexShrink={1}
-                        flexWrap='wrap'
-                        width={{ xs: '70%', sm: '50%', lg: '20%' }}
-                    >
-                        You are a very thoughtful teacher who puts a lot of thought into how she 
-                        presents the material. Your classes were engaging ,useful, and you were very 
-                        patient with everyone in class always encouraging your students to try.</Typography>
-                </Stack> */}
+                {
+                    displayedTestimonials && displayedTestimonials?.length > 1 ?
+                    <>
+                        {displayedTestimonials[0]}
+                        {displayedTestimonials[1]}
+                    </>
+                    :
+                    displayedTestimonials && displayedTestimonials?.length > 0 ?
+                    <>
+                        {displayedTestimonials[0]}
+                    </>
+                    :
+                    <Typography fontSize={16} fontWeight={500} fontFamily='Inter' textAlign='center' alignSelf='center' sx={{ p: 8 }}>No testimonials yet.</Typography>
+                }
             </Box>
         </Box>
     )

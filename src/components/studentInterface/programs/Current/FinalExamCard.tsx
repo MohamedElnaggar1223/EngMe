@@ -64,7 +64,6 @@ function FinalExamCard({ program, version, disabled, setQuestions, finalExam, qu
                 px={2.5}
                 py={2}
                 bgcolor={disabled ? '#F8F8F8' : '#FFFBF8'}
-                zIndex={1}
                 position='relative'
                 sx={{
                     borderTopRightRadius: '15px',
@@ -81,7 +80,6 @@ function FinalExamCard({ program, version, disabled, setQuestions, finalExam, qu
                         left='80%'
                         alignSelf='flex-end'
                         top='-50%'
-                        zIndex={5}
                     >
                         <ReactApexChart
                             options={{
@@ -105,7 +103,6 @@ function FinalExamCard({ program, version, disabled, setQuestions, finalExam, qu
             <Box
                 bgcolor={disabled ? '#E8E8E8' : '#FEF4EB'}
                 px={6}
-                zIndex={1}
                 sx={{
                     borderBottomRightRadius: '15px',
                     borderBottomLeftRadius: '15px',

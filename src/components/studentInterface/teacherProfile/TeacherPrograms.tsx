@@ -1,10 +1,30 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Typography, Stack } from '@mui/material'
-import { Suspense, lazy } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Suspense, lazy, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { getTeacherPrograms } from '../../helpers/getTeacherPrograms'
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'))
 const TeacherProgramCard = lazy(() => import('./TeacherProgramCard'))
 
 export default function TeacherPrograms() 
 {
+    const [open, setOpen] = useState(false)
+    
+    const { id } = useParams()
+
+    const { data: teacherPrograms } = useQuery({
+        queryKey: ['teacherPrograms', id],
+        //@ts-expect-error teacherId
+        queryFn: () => getTeacherPrograms(id),
+        enabled: open
+    })
+
+    const displayedPrograms = teacherPrograms?.map(program => 
+        <Suspense>
+            <TeacherProgramCard {...program} />
+        </Suspense>
+    )
+
     return (
         <Box
             mx={14}
@@ -21,6 +41,8 @@ export default function TeacherPrograms()
                         boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)',
                         borderTop: 0
                     }}
+                    expanded={open}
+                    onClick={() => setOpen(prev => !prev)}
                 >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon sx={{ fontSize: '32px' }} />}
@@ -48,11 +70,12 @@ export default function TeacherPrograms()
                             justifyContent={{xs: 'center', sm: 'center', lg: 'space-between'}}
                         >
                             
-                            <TeacherProgramCard />
-                            <TeacherProgramCard />
-                            <TeacherProgramCard />
-                            <TeacherProgramCard />
-                            <TeacherProgramCard />
+                            {
+                                displayedPrograms?.length ?
+                                displayedPrograms 
+                                :
+                                <Typography fontSize={16} fontWeight={500} fontFamily='Inter' textAlign='center' alignSelf='center' sx={{ p: 8 }}>No programs yet.</Typography>
+                            }
                         </Stack>
                     </AccordionDetails>
                 </Accordion>

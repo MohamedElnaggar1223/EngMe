@@ -1,9 +1,28 @@
-import { Avatar, Box, Stack, Typography } from '@mui/material'
-import avatar from '../../../assets/Ellipse 9.png'
-import avatar2 from '../../../assets/Ellipse 10.png'
+import { Suspense, lazy } from 'react'
+import { Box, Typography } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
+import { getTeacherCredentials } from '../../helpers/getTeacherCredentials'
+const CredentialCard = lazy(() => import('./CredentialCard'))
 
 export default function TeacherCredentials() 
 {
+    const { id } = useParams()
+
+    const { data: teacherCredentials } = useQuery({
+        queryKey: ['teacherCredentials', id],
+        //@ts-expect-error teacherId
+        queryFn: () => getTeacherCredentials(id),
+        enabled: !!id
+    })
+
+    const displayedCredentials = teacherCredentials?.map(credential => 
+        <Suspense>
+            {/*//@ts-expect-error credential*/}
+            <CredentialCard {...credential} />
+        </Suspense>
+    )
+
     return (
         <Box
             mx={14}
@@ -34,40 +53,12 @@ export default function TeacherCredentials()
                 flexDirection='row'
                 flexWrap='wrap'
             >
-                <Stack
-                    alignItems='center'
-                    width='fit-content'
-                    gap={1.5}
-                >
-                    <Avatar src={avatar} sx={{ width: '82px', height: '82px' }} />
-                    <Typography
-                        fontSize={18}
-                        fontFamily='Inter'
-                        fontWeight={800}
-                        sx={{
-                            color: '#226E9F'
-                        }}
-                    >
-                        PHD from university of bla
-                    </Typography>
-                </Stack>
-                <Stack
-                    alignItems='center'
-                    width='fit-content'
-                    gap={1.5}
-                >
-                    <Avatar src={avatar2} sx={{ width: '82px', height: '82px' }} />
-                    <Typography
-                        fontSize={18}
-                        fontFamily='Inter'
-                        fontWeight={800}
-                        sx={{
-                            color: '#226E9F'
-                        }}
-                    >
-                        Flutter http+ Certificate
-                    </Typography>
-                </Stack>
+                {
+                    displayedCredentials?.length ?
+                    displayedCredentials
+                    :
+                    <Typography fontSize={16} fontWeight={500} fontFamily='Inter' textAlign='center' alignSelf='center' sx={{ p: 8 }}>No certificates yet.</Typography>
+                }
             </Box>
         </Box>
     )

@@ -53,7 +53,7 @@ export default function ProgramExploreCard({ setPageShowed, program }: ProgramEx
         })
     }
 
-    const icon = userData.favoritePrograms.length && userData.favoritePrograms.includes(program.id) ? 
+    const icon = userData?.favoritePrograms?.length && userData?.favoritePrograms?.includes(program.id) ? 
     (
         <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
             <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713Z" fill="#FF7E00"/>

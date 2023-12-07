@@ -9,7 +9,7 @@ import { Timestamp } from 'firebase/firestore'
 function Comment(comment: CommentProps) 
 {
     const {data: student} = useQuery({
-        queryKey: ['studentComments', comment.id, comment.studentId],
+        queryKey: ['studentData', comment.studentId],
         queryFn: () => getUserData(comment.studentId)
     })
 
