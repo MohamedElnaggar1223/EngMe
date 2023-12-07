@@ -1,9 +1,28 @@
-import { Box, Stack, Typography } from '@mui/material'
-import { Suspense, lazy } from 'react'
-const Avatar = lazy(() => import('./AvatarLazyLoad'))
+import { Box, Typography } from '@mui/material'
+import { Suspense, lazy, useContext } from 'react'
+import { getStudentRecommendationLetters } from '../../helpers/getStudentRecommendationLetters'
+import { useQuery } from '@tanstack/react-query'
+import { AuthContext } from '../../authentication/auth/AuthProvider'
+const LetterCard = lazy(() => import('./LetterCard'))
  
 export default function StudentLetters() 
 {
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const { data: recommendationLetters } = useQuery({
+        queryKey: ['recommendationLetters', userData?.id],
+        queryFn: () => getStudentRecommendationLetters(userData?.id),
+        enabled: !!userData?.id
+    })
+
+    const displayedLetters = recommendationLetters?.map(letter => (
+        <Suspense>
+            {/*//@ts-expect-error teacherId*/}
+            <LetterCard teacherId={letter.teacherId} />
+        </Suspense>
+    ))
+
     return (
         <Box
             mx={14}
@@ -34,26 +53,14 @@ export default function StudentLetters()
                 gap={8}
                 flexDirection='row'
                 flexWrap='wrap'
+                justifyContent={!displayedLetters?.length ? 'center' : ''}
             >
-                <Stack
-                    alignItems='center'
-                    width='fit-content'
-                    gap={1.5}
-                >
-                    <Suspense>
-                        <Avatar />
-                    </Suspense>
-                    <Typography
-                        fontSize={18}
-                        fontFamily='Inter'
-                        fontWeight={800}
-                        sx={{
-                            color: '#226E9F'
-                        }}
-                    >
-                        Dr.Mayada Abdelrahman
-                    </Typography>
-                </Stack>
+                {
+                    displayedLetters?.length ?
+                    displayedLetters
+                    :
+                    <Typography fontSize={16} fontWeight={500} fontFamily='Inter' textAlign='center' alignSelf='center' sx={{ p: 8 }}>No letters yet.</Typography>
+                }
             </Box>
         </Box>
     )

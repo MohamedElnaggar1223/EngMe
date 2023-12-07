@@ -1,15 +1,253 @@
-import { Accordion, AccordionSummary, Box, Stack, Typography, SvgIcon, AccordionDetails, Avatar, Collapse } from '@mui/material'
-import avatar from '../../../../assets/Ellipse 3.png'
+import { Accordion, AccordionSummary, Box, Stack, Typography, SvgIcon, AccordionDetails, Avatar } from '@mui/material'
 import ReactApexChart from 'react-apexcharts'
-import { useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import star from '../../../../assets/Star 4.png'
+import ProgramProps from '../../../../interfaces/ProgramProps'
+import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFavorite'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { AuthContext } from '../../../authentication/auth/AuthProvider'
+import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram'
+import { getAssessmentsData } from '../../../helpers/getAssessmentsData'
+import { getCoursesData } from '../../../helpers/getCoursesData'
+import { getLessonsData } from '../../../helpers/getLessonsData'
+import { getQuizzesData } from '../../../helpers/getQuizzesData'
+import { getProgramFinalExams } from '../../../helpers/getProgramFinalExams'
+import { getStudentProgramFinalExams } from '../../../helpers/getStudentProgramFinalExams'
+import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes'
+import { getStudentAssessments } from '../../../helpers/getStudentAssessments'
+import { getStudentLessons } from '../../../helpers/getStudentLessons'
 
-export default function CurrentCourseCard() 
+export default function CurrentCourseCard(program: ProgramProps) 
 {
+    const queryClient = useQueryClient()
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
     const [open, setOpen] = useState(false)
 
+    function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)
+    {
+        if(e.target instanceof HTMLInputElement ||  e.target instanceof HTMLButtonElement || e.target instanceof HTMLParagraphElement || e.target instanceof SVGElement)
+        {
+            return
+        }
+        else
+        {
+            setOpen(prev => !prev)
+        }
+    }
+
+    const handleStudentFavoriteProgram = async () => {
+        await setStudentProgramFavorite(userData.id, program.id)
+        queryClient.invalidateQueries({
+            queryKey: ['userData'],
+        })
+    }
+
+    const { mutate } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['userData'])
+
+            queryClient.setQueryData(['userData'], (oldData: unknown) => {
+                //@ts-expect-error ddddataold
+                const oldFavs = oldData.favoritePrograms
+                let newFavs
+                if(oldFavs.length)
+                {
+                    //@ts-expect-error favs
+                    newFavs = oldFavs.includes(program.id) ? oldFavs.slice().filter(fav => fav !== program.id) : [...oldFavs, program.id]
+                }
+                else
+                {
+                    newFavs = [program.id]
+                }
+
+                //@ts-expect-error ddddataold
+                return {...oldData, favoritePrograms: newFavs}
+            })
+
+            return () => queryClient.setQueryData(['userData'], previousData)
+        },
+        mutationFn: () => handleStudentFavoriteProgram()
+    })
+
+    const { data: teacherData } = useQuery({
+        queryKey: ['teacherData', program.id],
+        queryFn: () => getTeacherDataFromProgram(program),
+        refetchOnMount: false,
+        enabled: open
+    })
+
+    const {data: prereqs } = useQuery({
+        queryKey: ['preReqData', program.id],
+        //@ts-expect-error erro
+        queryFn: () => getProgramsData(program.prerequisites),
+        enabled: !!open
+    })
+
+    const { data: courses } = useQuery({
+        queryKey: ['courses', program?.id, 'currentCard'],
+        queryFn: () => getCoursesData(program),
+        refetchOnMount: true,
+        enabled: !!open
+    })
+
+    const { data: assessments } = useQuery({
+        queryKey: ['assessments', program.id, 'currentCard'],
+        queryFn: () => getAssessmentsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+    //console.log(program.id, program.courses)
+    const { data: lessons } = useQuery({
+        queryKey: ['lessons', program.id, 'currentCard'],
+        queryFn: () => getLessonsData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+    //console.log(lessons)
+    const { data: quizzes } = useQuery({
+        queryKey: ['quizzes', program.id, 'currentCard'],
+        queryFn: () => getQuizzesData(courses),
+        enabled: !!courses,
+        refetchOnMount: true
+    })
+
+    const { data: studentLesson } = useQuery({
+        queryKey: ['studentLesson', userData?.id, 'currentCard', program.id],
+        //@ts-expect-error lesson
+        queryFn: () => getStudentLessons(userData?.id, lessons?.map(lesson => lesson.id)),
+        enabled: !!lessons
+    })
+
+    ////console.log(lessons)
+
+    const { data: studentAssessment } = useQuery({
+        queryKey: ['studentAssessment', userData?.id, 'currentCard', program.id],
+        //@ts-expect-error lesson
+        queryFn: () => getStudentAssessments(userData?.id, assessments?.map(assessment => assessment.id)),
+        enabled: !!assessments
+    })
+
+    const { data: studentQuizzes } = useQuery({
+        queryKey: ['studentQuizzes', userData?.id, 'currentCard', program.id],
+        //@ts-expect-error lesson
+        queryFn: () => getStudentQuizzes(userData?.id, quizzes?.map(quiz => quiz.id)),
+        enabled: !!quizzes
+    })
+
+    const { data: finalExams } = useQuery({
+		queryKey: ['finalExams', program.id],
+		queryFn: () => getProgramFinalExams(program.id),
+        enabled: open
+	})
+
+	const { data: studentFinalExams } = useQuery({
+		queryKey: ['finalExams', program.id, userData.id],
+		queryFn: () => getStudentProgramFinalExams(userData.id, Object.values(program?.finalExams ?? [''])),
+        enabled: open
+	})
+
+    const heighestPercentage = useMemo(() => {
+        if(program?.finalExams)
+        {
+            const sortedVersions = Object.keys(program?.finalExams)?.sort((a, b) => Number(a.split(" ")[1]) - Number(b.split(" ")[1]))
+            const foundStudentExams = sortedVersions.map((version: string) => {
+                //@ts-expect-error program
+                const versionExam = finalExams?.find(exam => exam.id === program?.finalExams[version])
+                //@ts-expect-error program
+                return studentFinalExams?.find(studentFinalExam => (finalExams?.map(exam => exam.id))?.includes(studentFinalExam.finalExamId) && versionExam?.id === studentFinalExam.finalExamId)
+            })
+            //@ts-expect-error finals
+            foundStudentExams.sort((a, b) => Number(b?.grade) - Number(a?.grade))
+            return foundStudentExams[0]
+        }
+    }
+    , [finalExams, studentFinalExams, program])
+
+    console.log(studentAssessment, assessments)
+
+    const materialCount = useMemo(() => {if(open) return(assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)}, [assessments, lessons, quizzes, open])
+    const materialFinished = useMemo(() => {
+        if(open)
+        {
+                const newStudentAssessment = studentAssessment?.slice().reduce((result, currentAssessment) => {
+                    //@ts-expect-error reduction
+                    const { assessmentId, createdAt } = currentAssessment
+        
+                    //@ts-expect-error reduction
+                    const index = result.findIndex(obj => obj.assessmentId === assessmentId)
+        
+                    if(index === -1)
+                    {
+                        //@ts-expect-error reduction
+                        result.push(currentAssessment)
+                    }
+                    else
+                    {
+                        //@ts-expect-error reduction
+                        const existingDate = result[index].createdAt;
+        
+                        if (new Date(createdAt) > new Date(existingDate)) 
+                        {
+                            //@ts-expect-error reduction
+                            result[index] = currentAssessment;
+                        }
+                    }
+        
+                    return result
+                }, [])
+               
+                const newStudentQuiz = studentQuizzes?.slice().reduce((result, currentQuiz) => {
+                    //@ts-expect-error reduction
+                    const { quizId, createdAt } = currentQuiz
+        
+                    //@ts-expect-error reduction
+                    const index = result.findIndex(obj => obj.quizId === quizId)
+        
+                    if(index === -1)
+                    {
+                        //@ts-expect-error reduction
+                        result.push(currentQuiz)
+                    }
+                    else
+                    {
+                        //@ts-expect-error reduction
+                        const existingDate = result[index].createdAt;
+        
+                        if (new Date(createdAt) > new Date(existingDate)) 
+                        {
+                            //@ts-expect-error reduction
+                            result[index] = currentQuiz;
+                        }
+                    }
+        
+                    return result
+                }, [])
+                return (newStudentAssessment?.length ?? 0) + (studentLesson?.length ?? 0) + (newStudentQuiz?.length ?? 0)
+            }
+        }, [studentAssessment, studentLesson, studentQuizzes, open])
+
+        //@ts-expect-error reduction
+    const progress = useMemo(() => materialCount !== 0 ? ((materialFinished/materialCount)*100).toFixed() : 0, [materialCount, materialFinished])
+
+    //@ts-expect-error prereq
+    const displayedPrereqs = prereqs?.map(prereq => <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>) 
+    
+    const icon = userData.favoritePrograms.length && userData.favoritePrograms.includes(program.id) ? 
+    (
+        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+            <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713Z" fill="#FF7E00"/>
+        </svg>
+        
+    ) :
+    (
+        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+            <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713ZM9.22844 15.0107C9.77849 14.7215 10.5263 14.7204 11.0784 15.0107L14.7783 16.9559L14.0717 12.836C13.9667 12.2235 14.1967 11.5119 14.6434 11.0765L17.6367 8.15877L13.5001 7.55768C12.8851 7.46832 12.2795 7.02965 12.0034 6.47029L10.1534 2.72187L8.30348 6.47029C8.02846 7.02755 7.4241 7.46799 6.80681 7.55768L2.67018 8.15877L5.66347 11.0765C6.10847 11.5103 6.3406 12.2211 6.23515 12.836L5.52853 16.9559L9.22844 15.0107Z" fill="#FF7E00"/>
+        </svg>
+    )
+    
     return (
-        <Accordion onClick={() => setOpen(prev => !prev)} TransitionProps={{ unmountOnExit: true }} sx={{ '.css-97ovai': { }, marginY: 4, border: '0px', boxShadow: 'none', background: '#FFFBF8', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, '.css-1bh1d34-MuiPaper-root-MuiAccordion-root': { borderRadius: '20px' } }}>
+        <Accordion expanded={open} TransitionProps={{ unmountOnExit: true }} sx={{ '.css-97ovai': { }, marginY: 4, border: '0px', boxShadow: 'none', background: '#FFFBF8', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, '.css-1bh1d34-MuiPaper-root-MuiAccordion-root': { borderRadius: '20px' } }}>
                     <AccordionSummary
                         // expandIcon={<ExpandMoreIcon sx={{ color: '#FFFBF8' }} />}
                         sx={{
@@ -27,6 +265,7 @@ export default function CurrentCourseCard()
                             bgcolor='#FFFBF8'
                             m={0}
                             width='100%'
+                            onClick={(e) => handleExpand(e)}
                         >
                             <Stack
                                 direction='column'
@@ -44,12 +283,10 @@ export default function CurrentCourseCard()
                                         fontWeight={900}
                                         fontFamily='Inter'
                                     >
-                                        Data Engineering with AWS
+                                        {program?.name}
                                     </Typography>
-                                    <SvgIcon sx={{ fontSize: 24 }}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
-                                            <path d="M6.14963 19.1713C4.44636 20.0668 2.90407 18.9476 3.22957 17.0498L3.99423 12.5915L0.755079 9.43408C-0.622893 8.09089 -0.0350361 6.27823 1.87044 6.00135L6.34684 5.35089L8.34874 1.2946C9.20037 -0.431002 11.106 -0.432061 11.9581 1.2946L13.96 5.35089L18.4364 6.00135C20.3407 6.27806 20.9306 8.09007 19.5518 9.43408L16.3126 12.5915L17.0773 17.0498C17.4026 18.9464 15.8616 20.0673 14.1572 19.1713L10.1534 17.0664L6.14963 19.1713ZM9.22844 15.0107C9.77849 14.7215 10.5263 14.7204 11.0784 15.0107L14.7783 16.9559L14.0717 12.836C13.9667 12.2235 14.1967 11.5119 14.6434 11.0765L17.6367 8.15877L13.5001 7.55768C12.8851 7.46832 12.2795 7.02965 12.0034 6.47029L10.1534 2.72187L8.30348 6.47029C8.02846 7.02755 7.4241 7.46799 6.80681 7.55768L2.67018 8.15877L5.66347 11.0765C6.10847 11.5103 6.3406 12.2211 6.23515 12.836L5.52853 16.9559L9.22844 15.0107Z" fill="#FF7E00"/>
-                                        </svg>
+                                    <SvgIcon onClick={() => mutate()} sx={{ fontSize: 24 }}>
+                                        {icon}
                                     </SvgIcon>
                                 </Stack>
                                 <Stack
@@ -57,7 +294,7 @@ export default function CurrentCourseCard()
                                     justifyContent='space-between'
                                     alignItems='center'
                                 >
-                                    <Typography fontSize={16} fontWeight={400} fontFamily='Inter'>Nanodegree Program</Typography>
+                                    <Typography fontSize={16} fontWeight={400} fontFamily='Inter'>{program.category}</Typography>
                                     <Stack
                                         direction='row'
                                         gap={1}
@@ -75,7 +312,7 @@ export default function CurrentCourseCard()
                                             fontWeight={700}
                                             sx={{ color: '#004643' }}
                                         >
-                                            4.3
+                                            {program.averageRating}
                                         </Typography>
                                         <Typography
                                             fontFamily='Inter'
@@ -83,7 +320,7 @@ export default function CurrentCourseCard()
                                             fontWeight={400}
                                             ml={0.5}
                                         >
-                                            {'(1290)'}
+                                            ({program.totalFeedbacks})
                                         </Typography>
                                     </Stack>
                                 </Stack>
@@ -96,9 +333,7 @@ export default function CurrentCourseCard()
                                     fontWeight={400}
                                     fontFamily='Inter'
                                 >
-                                    Learn to design data models, build data 
-                                    warehouses and data lakes, automate data 
-                                    pipelines, and work with massive datasets.
+                                    {program.description}
                                 </Typography>
                             </Stack>
                         </Box>
@@ -115,10 +350,7 @@ export default function CurrentCourseCard()
                                 pb={2}
                             >
                                 <Typography fontSize={18} fontFamily='Inter' fontWeight={600}>Prerequisites:</Typography>
-                                <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate Python</Typography>
-                                <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
-                                <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
-                                <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>Intermediate SQL</Typography>
+                                {displayedPrereqs}
                             </Stack>
                             <Box
                                 px={6}
@@ -141,19 +373,22 @@ export default function CurrentCourseCard()
                                         alignItems='center'
                                         // mr={7}
                                     >
-                                        <Avatar src={avatar} sx={{ width: '70px', height: '70px' }} />
+                                        {/*//@ts-expect-error reduction */}
+                                        <Avatar src={teacherData?.image} sx={{ width: '70px', height: '70px' }} />
                                         <Stack
                                             direction='column'
                                             justifyContent='center'
                                             gap={0.5}
                                         >
-                                            <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>Dr. Ahmed El Adl | Professor in Human Biology</Typography>
+                                            {/*//@ts-expect-error reduction */}
+                                            <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
                                             <Stack
                                                 direction='row'
                                                 justifyContent='space-between'
                                                 gap={1}
                                             >
-                                                <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>The German University in Cairo</Typography>
+                                                {/*//@ts-expect-error reduction */}
+                                                <Typography fontFamily='Inter' fontSize={12} fontWeight={500}>{teacherData?.university}</Typography>
                                                 <Stack
                                                     direction='row'
                                                     alignItems='center'
@@ -164,7 +399,8 @@ export default function CurrentCourseCard()
                                                             <path d="M5.98199 1.22337C6.11981 0.806014 6.71018 0.806015 6.84799 1.22337L7.9764 4.64051C8.03809 4.82733 8.21265 4.95352 8.4094 4.95352H12.0451C12.4886 4.95352 12.6711 5.52254 12.3103 5.78048L9.38171 7.87408C9.2193 7.99018 9.1513 8.19844 9.2139 8.38802L10.3355 11.7846C10.4738 12.2034 9.99612 12.555 9.63731 12.2985L6.68018 10.1845C6.52157 10.0711 6.30841 10.0711 6.1498 10.1845L3.19268 12.2985C2.83387 12.555 2.35618 12.2034 2.49448 11.7846L3.61609 8.38802C3.67869 8.19844 3.61069 7.99018 3.44828 7.87408L0.519688 5.78048C0.158882 5.52254 0.341356 4.95352 0.784878 4.95352H4.42058C4.61733 4.95352 4.79189 4.82733 4.85359 4.64051L5.98199 1.22337Z" fill="#FF9F06"/>
                                                         </svg>
                                                     </SvgIcon>
-                                                    <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>4.3</Typography>
+                                                    {/*//@ts-expect-error reduction */}
+                                                    <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>{teacherData?.averageRating}</Typography>
                                                 </Stack>
                                             </Stack>
                                         </Stack>
@@ -172,25 +408,30 @@ export default function CurrentCourseCard()
                                     <Stack
                                         direction='column'
                                     >
-                                        <Box
-                                            sx={{ position: 'relative' }}
-                                            alignSelf='flex-end'
-                                        >
-                                            <ReactApexChart
-                                                options={{
-                                                    chart: { type: "donut" },
-                                                    colors: ['#fff', '#FF9F06'],
-                                                    legend: { show: false },
-                                                    dataLabels: { enabled: false },
-                                                    // fill: { image: { src: star, height: 100, width: 100 } }
-                                                }}
-                                                series={[20, 83]}
-                                                type="donut"
-                                                width="120px"
-                                            />
-                                            <img src={star} width='40px' height='40px' style={{ position: 'absolute', top: 18, left: 40.5 }} />
-                                            <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 50 }} sx={{ color: '#fff' }}>83%</Typography>
-                                        </Box>
+                                        {
+                                            heighestPercentage &&
+                                            <Box
+                                                sx={{ position: 'relative' }}
+                                                alignSelf='flex-end'
+                                            >
+                                                <ReactApexChart
+                                                    options={{
+                                                        chart: { type: "donut" },
+                                                        colors: ['#fff', '#FF9F06'],
+                                                        legend: { show: false },
+                                                        dataLabels: { enabled: false },
+                                                        // fill: { image: { src: star, height: 100, width: 100 } }
+                                                    }}
+                                                    //@ts-expect-error grade
+                                                    series={[100 - Number(heighestPercentage.grade), Number(heighestPercentage.grade)]}
+                                                    type="donut"
+                                                    width="120px"
+                                                />
+                                                <img src={star} width='40px' height='40px' style={{ position: 'absolute', top: 18, left: 40.5 }} />
+                                                {/*//@ts-expect-error grade*/}
+                                                <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 45 }} sx={{ color: '#fff' }}>{Number(heighestPercentage?.grade) !== 100 ? Number(heighestPercentage?.grade).toFixed(1) : Number(heighestPercentage?.grade).toFixed(0)}%</Typography>
+                                            </Box>
+                                        }
                                         <Stack
                                             direction='column'
                                             alignItems='flex-start'
@@ -205,9 +446,8 @@ export default function CurrentCourseCard()
                                                 bgcolor='#D0EBFC'
                                                 position='relative'
                                             >
-                                                <Collapse orientation='horizontal' in={open} unmountOnExit>
                                                 <Box
-                                                    width='10%' //grade
+                                                    width={`${progress}%`} //grade
                                                     height='100%'
                                                     bgcolor='#6A9DBC'
                                                     position='relative'
@@ -222,10 +462,9 @@ export default function CurrentCourseCard()
                                                         mt='-3.5px'
                                                         position='relative'
                                                     >
-                                                        {/* grade */}<Typography sx={{ color: '#FF7E00' }} position='absolute' top='98%' left='-100%' fontSize={12} fontFamily='Inter' fontWeight={600} >10%</Typography>
+                                                        {/* grade */}<Typography sx={{ color: '#FF7E00' }} position='absolute' top='98%' left='-100%' fontSize={12} fontFamily='Inter' fontWeight={600} >{progress}%</Typography>
                                                     </Box>
                                                 </Box>
-                                                </Collapse>
                                             </Box>
                                         </Stack>
                                     </Stack>
@@ -248,7 +487,7 @@ export default function CurrentCourseCard()
                                             px={1.5}
                                             py={0.5}
                                         >
-                                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>2 months</Typography>
+                                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program.duration}</Typography>
                                         </Box>
                                         <Box
                                             bgcolor='#D0EBFC'

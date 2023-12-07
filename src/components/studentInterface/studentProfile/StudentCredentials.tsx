@@ -1,9 +1,10 @@
-import { useContext } from 'react'
-import { Avatar, Box, Stack, Typography } from '@mui/material'
+import { Suspense, lazy, useContext } from 'react'
+import { Box, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { getStudentProgramCertificate } from '../../helpers/getStudentProgramCertificate'
 import { AuthContext } from '../../authentication/auth/AuthProvider'
 import { getProgramsData } from '../../helpers/getProgramsData'
+const CredentialCard = lazy(() => import('./CredentialCard'))
 
 export default function StudentCertificates() 
 {
@@ -23,25 +24,9 @@ export default function StudentCertificates()
     })
 
     const displayedCerts = programsCertificate?.map(program => (
-        <Stack
-            alignItems='center'
-            width='fit-content'
-            gap={1.5}
-        >
-            {/*//@ts-expect-error image*/}
-            <Avatar src={program?.image} sx={{ width: '82px', height: '82px' }} />
-            <Typography
-                fontSize={18}
-                fontFamily='Inter'
-                fontWeight={800}
-                sx={{
-                    color: '#226E9F'
-                }}
-            >
-                {/*//@ts-expect-error image*/}
-                {program?.name}
-            </Typography>
-        </Stack>
+        <Suspense>
+            <CredentialCard {...program}/>
+        </Suspense>
     ))
 
     return (
@@ -73,8 +58,14 @@ export default function StudentCertificates()
                 gap={8}
                 flexDirection='row'
                 flexWrap='wrap'
+                justifyContent={!displayedCerts?.length ? 'center' : ''}
             >
-                {displayedCerts}
+                {
+                    displayedCerts?.length ?
+                    displayedCerts
+                    :
+                    <Typography fontSize={16} fontWeight={500} fontFamily='Inter' textAlign='center' alignSelf='center' sx={{ p: 8 }}>No certificates yet.</Typography>
+                }
             </Box>
         </Box>
     )

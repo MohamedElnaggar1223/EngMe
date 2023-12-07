@@ -256,7 +256,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
         return false
     }, [studentProgramComment])
 
-    const heighestPercentage = useMemo(() => {
+    const highestPercentage = useMemo(() => {
         if(program?.finalExams)
         {
             const sortedVersions = Object.keys(program?.finalExams)?.sort((a, b) => Number(a.split(" ")[1]) - Number(b.split(" ")[1]))
@@ -546,7 +546,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                     position='relative'
                                 >
                                     {
-                                        heighestPercentage &&
+                                        highestPercentage &&
                                         <Box
                                             sx={{ position: 'relative' }}
                                             alignSelf='flex-end'
@@ -560,13 +560,13 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                                     // fill: { image: { src: star, height: 100, width: 100 } }
                                                 }}
                                                 //@ts-expect-error grade
-                                                series={[100 - Number(heighestPercentage.grade), Number(heighestPercentage.grade)]}
+                                                series={[100 - Number(highestPercentage.grade), Number(highestPercentage.grade)]}
                                                 type="donut"
                                                 width="120px"
                                             />
                                             <img src={star} width='40px' height='40px' style={{ position: 'absolute', top: 18, left: 40.5 }} />
                                             {/*//@ts-expect-error grade*/}
-                                            <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 45 }} sx={{ color: '#fff' }}>{Number(heighestPercentage?.grade) !== 100 ? Number(heighestPercentage?.grade).toFixed(1) : Number(heighestPercentage?.grade).toFixed(0)}%</Typography>
+                                            <Typography fontSize={12} style={{ position: 'absolute', top: 30, left: 45 }} sx={{ color: '#fff' }}>{Number(highestPercentage?.grade) !== 100 ? Number(highestPercentage?.grade).toFixed(1) : Number(highestPercentage?.grade).toFixed(0)}%</Typography>
                                         </Box>
                                     }
                                     {
