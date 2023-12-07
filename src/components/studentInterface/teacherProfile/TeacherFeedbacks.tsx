@@ -1,7 +1,10 @@
 import { Box, Stack, SvgIcon, Typography } from '@mui/material'
+import { useParams } from 'react-router-dom'
 
 export default function TeacherFeedbacks() 
 {
+    const { id } = useParams()
+    
     return (
         <Box
             display='flex'

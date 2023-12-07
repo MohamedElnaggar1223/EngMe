@@ -54,6 +54,16 @@ function App() {
 										</StudentPrivateRoute>
 									} />
 								</Route>
+
+								<Route path='teacherprofile/:id'>
+									<Route index element={
+										<StudentPrivateRoute>
+											<Suspense>
+												<TeacherProfile />
+											</Suspense>
+										</StudentPrivateRoute>
+									} />
+								</Route>
 								
 							<Route path='login'>
 								<Route index element={<Login />} />

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { getUserData } from '../../helpers/getUserData'
 import { Avatar, Stack, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 
 interface LetterProps{
     teacherId: string
@@ -12,6 +13,8 @@ export default function LetterCard({teacherId}: LetterProps)
         queryKey: ['teacherLetterData', teacherId],
         queryFn: () => getUserData(teacherId)
     })
+
+    const navigate = useNavigate()
     
     return (
         <Stack
@@ -26,8 +29,10 @@ export default function LetterCard({teacherId}: LetterProps)
                 fontFamily='Inter'
                 fontWeight={800}
                 sx={{
-                    color: '#226E9F'
+                    color: '#226E9F',
+                    cursor: 'pointer'
                 }}
+                onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)}
             >
                 {/*//@ts-expect-error teacher */}
                 {teacherData?.name}

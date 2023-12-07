@@ -31,6 +31,7 @@ import { getStudentProgramComment } from '../../../helpers/getStudentProgramComm
 import { StarOutline, StarRate } from '@mui/icons-material';
 import { setStudentProgramComment } from '../../../helpers/setStudentProgramComment';
 import { setStudentProgramCertificate } from '../../../helpers/setStudentProgramCertificate';
+import { useNavigate } from 'react-router-dom';
 
 interface ProgramCurrentCard{
     program: ProgramProps,
@@ -47,6 +48,8 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     const queryClient = useQueryClient()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
+
+    const navigate = useNavigate()
 
     const [expand, setExpand] = useState(false)
     const [selectedStars, setSelectedStars] = useState(0)
@@ -510,14 +513,14 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                     // mr={7}
                                 >
                                     {/*//@ts-expect-error add */}
-                                    <Avatar src={teacherData?.image ?? ''} sx={{ width: '70px', height: '70px' }} />
+                                    <Avatar onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} src={teacherData?.image ?? ''} sx={{ width: '70px', height: '70px', cursor: 'pointer' }} />
                                     <Stack
                                         direction='column'
                                         justifyContent='center'
                                         gap={0.5}
                                     >
                                         {/*//@ts-expect-error add */}
-                                        <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
+                                        <Typography onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} sx={{ color: '#000', cursor: 'pointer' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
                                         <Stack
                                             direction='row'
                                             justifyContent='space-between'

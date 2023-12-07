@@ -19,11 +19,14 @@ import { setStudentRequestProgram } from '../../../helpers/setStudentRequestProg
 import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFavorite'
 // import { getStudentCompletedPrograms } from '../../../helpers/getStudentCompletedPrograms'
 import { getProgramsData } from '../../../helpers/getProgramsData'
+import { useNavigate } from 'react-router-dom'
 
 export default function ProgramsExploreProgram() 
 {
     //PAGE SHOWED MAKE IT FOR EXPLORE, CURRENT, COMPLETED, CHECKS WHICH PROGRAM IT BELONGS TO BEFORE NAVIGATING
     const queryClient = useQueryClient()
+
+    const navigate = useNavigate()
     //@ts-expect-error context
     const { setPageShowed, pageShowed } = useContext(ProgramExploreContext)
     //@ts-expect-error context
@@ -327,14 +330,14 @@ export default function ProgramsExploreProgram()
                                 // mr={7}
                             >
                                 {/*//@ts-expect-error error*/}
-                                <Avatar src={teacherData?.image} sx={{ width: '70px', height: '70px' }} />
+                                <Avatar onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} src={teacherData?.image} sx={{ width: '70px', height: '70px', cursor: 'pointer' }} />
                                 <Stack
                                     direction='column'
                                     justifyContent='center'
                                     gap={0.5}
                                 >
                                     {/*//@ts-expect-error error*/}
-                                    <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
+                                    <Typography onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} sx={{ color: '#000', cursor: 'pointer' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
                                     <Stack
                                         direction='row'
                                         justifyContent='space-between'

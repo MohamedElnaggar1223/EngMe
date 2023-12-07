@@ -16,6 +16,7 @@ import { getStudentProgramFinalExams } from '../../../helpers/getStudentProgramF
 import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes'
 import { getStudentAssessments } from '../../../helpers/getStudentAssessments'
 import { getStudentLessons } from '../../../helpers/getStudentLessons'
+import { useNavigate } from 'react-router-dom'
 
 export default function CurrentCourseCard(program: ProgramProps) 
 {
@@ -23,6 +24,8 @@ export default function CurrentCourseCard(program: ProgramProps)
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
     const [open, setOpen] = useState(false)
+
+    const navigate = useNavigate()
 
     function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)
     {
@@ -374,14 +377,14 @@ export default function CurrentCourseCard(program: ProgramProps)
                                         // mr={7}
                                     >
                                         {/*//@ts-expect-error reduction */}
-                                        <Avatar src={teacherData?.image} sx={{ width: '70px', height: '70px' }} />
+                                        <Avatar onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} src={teacherData?.image} sx={{ width: '70px', height: '70px', cursor: 'pointer' }} />
                                         <Stack
                                             direction='column'
                                             justifyContent='center'
                                             gap={0.5}
                                         >
                                             {/*//@ts-expect-error reduction */}
-                                            <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
+                                            <Typography onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} sx={{ color: '#000', cursor: 'pointer' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
                                             <Stack
                                                 direction='row'
                                                 justifyContent='space-between'

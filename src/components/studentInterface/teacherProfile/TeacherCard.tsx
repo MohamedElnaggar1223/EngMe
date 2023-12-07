@@ -1,8 +1,97 @@
 import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
-import profile from '../../../assets/teacherprofile-min.png'
+import { getUserData } from "../../helpers/getUserData";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { getStudentInTeacherPrograms } from "../../helpers/getStudentInTeacherPrograms";
+import { getTeacherFollowers } from "../../helpers/getTeacherFollowers";
+import { useContext } from "react";
+import { AuthContext } from "../../authentication/auth/AuthProvider";
+import { setStudentFollowTeacher } from "../../helpers/setStudentFollowTeacher";
+import { getStudentConsultation } from "../../helpers/getStudentConsultation";
+import { setStudentBookConsultation } from "../../helpers/setStudentBookConsultation";
 
 export default function TeacherCard() 
 {
+    const { id } = useParams()
+
+    console.log(id)
+
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const queryClient = useQueryClient()
+
+    const { data: teacherData } = useQuery({
+        queryKey: ['teacherLetterData', id],
+        queryFn: () => getUserData(id ?? ''),
+        enabled: !!id && !!userData
+    })
+
+    const { data: teacheStudents } = useQuery({
+        queryKey: ['teacherStudentsPrograms', id],
+        //@ts-expect-error programs
+        queryFn: () => getStudentInTeacherPrograms(teacherData?.programs),
+        enabled: !!id && !!userData && !!teacherData
+    })
+
+    const { data: teacherFollowers } = useQuery({
+        queryKey: ['teacherFollowers', id],
+        //@ts-expect-error teacherId
+        queryFn: () => getTeacherFollowers(id),
+        enabled: !!id && !!userData
+    })
+
+    const { data: studentConsultations } = useQuery({
+        queryKey: ['studentConsultations', userData?.id],
+        queryFn: () => getStudentConsultation(userData?.id),
+        enabled: !!userData?.id && !!id
+    })
+
+    const { mutate: mutateFollow } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['teacherFollowers', id])
+
+            queryClient.setQueryData(['teacherFollowers', id], (oldData: unknown) => {
+                //@ts-expect-error oldData
+                return [...oldData, { teacherId: id, studentId: userData?.id }]
+            })
+
+            return () => queryClient.setQueryData(['teacherFollowers', id], previousData)
+        },
+        //@ts-expect-error teacherId
+        mutationFn: () => setStudentFollowTeacher(id, userData?.id)
+    })
+
+    const { mutate: mutateunFollow } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['teacherFollowers', id])
+
+            queryClient.setQueryData(['teacherFollowers', id], (oldData: unknown) => {
+                //@ts-expect-error oldData
+                const newData = oldData.slice().filter(doc => doc.teacherId !== id && doc.studentId !== userData?.id)
+                return newData
+            })
+
+            return () => queryClient.setQueryData(['teacherFollowers', id], previousData)
+        },
+        mutationFn: () => setStudentFollowTeacher(id ?? '', userData?.id)
+    })
+
+    const { mutate: mutateBookConsultation } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['studentConsultations', userData?.id])
+
+            queryClient.setQueryData(['studentConsultations', userData?.id], (oldData: unknown) => {
+                //@ts-expect-error oldData
+                return [...oldData, { teacherId: id, studentId: userData?.id }]
+            })
+
+            return () => queryClient.setQueryData(['studentConsultations', userData?.id], previousData)
+        },
+        //@ts-expect-error idteacher
+        mutationFn: () => setStudentBookConsultation(userData?.id, id)
+    })
+
     return (
         <Box
             mx={14}
@@ -59,7 +148,8 @@ export default function TeacherCard()
                         marginBottom: '-100px',
                         marginLeft: '-50px'
                     }} 
-                    src={profile} width='250px' height='250px' alt='profile' 
+                    //@ts-expect-error image
+                    src={teacherData?.image} width='250px' height='250px' alt='profile' 
                 />
                 <Stack
                     direction='column'
@@ -72,13 +162,15 @@ export default function TeacherCard()
                         fontSize={16} 
                         sx={{ color: '#000' }}
                     >
-                        Dr.Mayada Abdelrahman
+                        {/*//@ts-expect-error title */}
+                        {teacherData?.name}
                     </Typography>
                     <Typography
                         fontSize={14}
                         fontWeight={400}
                     >
-                        Software Engineer | Cairo, Egypt
+                        {/*//@ts-expect-error title */}
+                        {teacherData?.title} | Cairo, Egypt
                     </Typography>
                 </Stack>
             </Stack>
@@ -98,8 +190,9 @@ export default function TeacherCard()
                     py={0.1}
                     px={0.5}
                 >
-                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>7</Typography>
-                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Programs</Typography>
+                    {/*//@ts-expect-error program */}
+                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{teacherData?.programs?.length}</Typography>
+                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Program(s)</Typography>
                 </Stack>
                 <Stack
                     direction='column'
@@ -110,8 +203,8 @@ export default function TeacherCard()
                     py={0.1}
                     px={0.5}
                 >
-                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>312</Typography>
-                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Students</Typography>
+                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{teacheStudents}</Typography>
+                    <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Student(s)</Typography>
                 </Stack>
                 <Stack
                     direction='column'
@@ -122,36 +215,77 @@ export default function TeacherCard()
                     py={0.1}
                     px={0.5}
                 >
-                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>91</Typography>
+                    <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{teacherFollowers?.length}</Typography>
                     <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Followers</Typography>
                 </Stack>
-                <Button
-                    sx={{
-                        width: {xs: '120px', sm: '120px', lg: '180px'},
-                        padding: 1.5,
-                        borderRadius: '10px',
-                        background: 'linear-gradient(98deg, #6A9DBC 0%, #226E9F 97.94%)',
-                        color: '#fff',
-                        fontSize: 18,
-                        fontWeight: 600,
-                        paddingRight: {xs: 2, sm: 2, lg: 12},
-                        paddingLeft: {xs: 2, sm: 2, lg: 12}
-                    }}
-                >
-                    Follow
-                </Button>
-                <Button
-                    sx={{
-                        width: {xs: '110px', sm: '110px', lg: '145px'},
-                        height: '56px',
-                        color: '#226E9F',
-                        border: '1.5px solid #226E9F',
-                        borderRadius: '10px',
-                        background: '#fff'
-                    }}
-                >
-                    Book a Consultancy
-                </Button>
+                {
+                    //@ts-expect-error student
+                    teacherFollowers?.find(following => following.studentId === userData?.id) ?
+                    <Button
+                        sx={{
+                            width: {xs: '120px', sm: '120px', lg: '180px'},
+                            padding: 1.5,
+                            borderRadius: '10px',
+                            background: 'linear-gradient(98deg, #6A9DBC 0%, #226E9F 97.94%)',
+                            color: '#fff',
+                            fontSize: 18,
+                            fontWeight: 600,
+                            paddingRight: {xs: 2, sm: 2, lg: 12},
+                            paddingLeft: {xs: 2, sm: 2, lg: 12}
+                        }}
+                        onClick={() => mutateunFollow()}
+                    >
+                        unFollow
+                    </Button>
+                    :
+                    <Button
+                        sx={{
+                            width: {xs: '120px', sm: '120px', lg: '180px'},
+                            padding: 1.5,
+                            borderRadius: '10px',
+                            background: 'linear-gradient(98deg, #6A9DBC 0%, #226E9F 97.94%)',
+                            color: '#fff',
+                            fontSize: 18,
+                            fontWeight: 600,
+                            paddingRight: {xs: 2, sm: 2, lg: 12},
+                            paddingLeft: {xs: 2, sm: 2, lg: 12}
+                        }}
+                        onClick={() => mutateFollow()}
+                    >
+                        Follow
+                    </Button>
+                }
+                {
+                    //@ts-expect-error teacherId
+                    studentConsultations?.find(cons => cons.teacherId === id) ?
+                    <Button
+                        sx={{
+                            width: {xs: '110px', sm: '110px', lg: '145px'},
+                            height: '56px',
+                            color: '#226E9F',
+                            border: '1.5px solid #226E9F',
+                            borderRadius: '10px',
+                            background: '#fff'
+                        }}
+                        disabled
+                    >
+                        Requested
+                    </Button>
+                    :
+                    <Button
+                        sx={{
+                            width: {xs: '110px', sm: '110px', lg: '145px'},
+                            height: '56px',
+                            color: '#226E9F',
+                            border: '1.5px solid #226E9F',
+                            borderRadius: '10px',
+                            background: '#fff'
+                        }}
+                        onClick={() => mutateBookConsultation()}
+                    >
+                        Book a Consultancy
+                    </Button>
+                }
             </Stack>
         </Box>
     )

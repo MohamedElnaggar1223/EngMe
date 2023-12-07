@@ -8,9 +8,12 @@ import { getQuizzesData } from "../../../helpers/getQuizzesData";
 import { getStudentCount } from "../../../helpers/getStudentCount";
 // import { getStudentRequest } from "../../../helpers/getStudentRequest";
 import { getTeacherDataFromProgram } from "../../../helpers/getTeacherDataFromProgram";
+import { useNavigate } from "react-router-dom";
 
 export default function ProgramCurrentExpired(program: ProgramProps) 
 {
+    const navigate = useNavigate()
+
     const { data: prereqsData } = useQuery({
         queryKey: ['preReqData', program?.id ?? ''],
         //@ts-expect-error err program
@@ -204,14 +207,14 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                             // mr={7}
                         >
                             {/*//@ts-expect-error error*/}
-                            <Avatar src={teacherData?.image} sx={{ width: '70px', height: '70px' }} />
+                            <Avatar onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} src={teacherData?.image} sx={{ width: '70px', height: '70px', cursor: 'pointer' }} />
                             <Stack
                                 direction='column'
                                 justifyContent='center'
                                 gap={0.5}
                             >
                                 {/*//@ts-expect-error error*/}
-                                <Typography sx={{ color: '#000' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
+                                <Typography onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} sx={{ color: '#000', cursor: 'pointer' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherData?.name} | {teacherData?.title}</Typography>
                                 <Stack
                                     direction='row'
                                     justifyContent='space-between'

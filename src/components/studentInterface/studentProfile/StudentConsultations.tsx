@@ -6,6 +6,7 @@ import { AuthContext } from '../../authentication/auth/AuthProvider'
 import { getStudentConsultation } from '../../helpers/getStudentConsultation'
 import { Timestamp } from 'firebase/firestore'
 import { getTeachersData } from '../../helpers/getTeachersData'
+import { useNavigate } from 'react-router-dom'
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
@@ -15,6 +16,8 @@ export default function StudentConsultations()
     const { userData } = useContext(AuthContext)
 
     const [day, setDay] = useState(days[Timestamp.now().toDate().getDay()])
+
+    const navigate = useNavigate()
     
     const upComingDay = useMemo(() => {
         const currentDate = Timestamp.now().toDate()
@@ -67,14 +70,14 @@ export default function StudentConsultations()
                     mr={7}
                 >
                     {/*//@ts-expect-error type*/}
-                    <Avatar src={teacherDetails?.image} sx={{ width: '41px', height: '41px', border: '1px solid #226E9F' }} />
+                    <Avatar onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} src={teacherDetails?.image} sx={{ width: '41px', height: '41px', border: '1px solid #226E9F', cursor: 'pointer' }} />
                     <Stack
                         direction='column'
                         justifyContent='center'
                         gap={0.5}
                     >
                         {/*//@ts-expect-error type*/}
-                        <Typography sx={{ color: '#226E9F' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherDetails?.name}</Typography>
+                        <Typography onClick={() => navigate(`/teacherprofile/${teacherData?.id}`)} sx={{ color: '#226E9F', cursor: 'pointer' }} fontFamily='Inter' fontSize={12} fontWeight={600}>{teacherDetails?.name}</Typography>
                         {/*//@ts-expect-error type*/}
                         <Typography fontFamily='Inter' fontSize={10} fontWeight={400}>{teacherDetails?.title} | Cairo, Egypt</Typography>
                     </Stack>
