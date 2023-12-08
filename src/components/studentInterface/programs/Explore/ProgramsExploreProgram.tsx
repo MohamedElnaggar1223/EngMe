@@ -1,6 +1,5 @@
 import { Suspense, lazy, useContext, useState } from 'react'
-import { Typography, SvgIcon, Avatar, Button } from '@mui/material'
-import { Box, Stack } from '@mui/system'
+import { Box, Stack, Typography, SvgIcon, Avatar, Button } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AuthContext } from '../../../authentication/auth/AuthProvider'
 import ProgramProps from '../../../../interfaces/ProgramProps'

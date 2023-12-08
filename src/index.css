@@ -33,3 +33,12 @@
 .css-48d81r-MuiPaper-root-MuiAccordion-root:first-of-type{
   border-radius: 20px !important;
 }
+
+.css-48d81r-MuiPaper-root-MuiAccordion-root:last-of-type{
+  border-radius: 20px !important;
+  border: 0px;
+}
+
+.css-48d81r-MuiPaper-root-MuiAccordion-root{
+  box-shadow: none !important;
+}

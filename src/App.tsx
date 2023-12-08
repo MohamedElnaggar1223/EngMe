@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import AuthProvider from "./components/authentication/auth/AuthProvider"
 import PrivateRoute from "./components/authentication/auth/PrivateRoute"
 import PrefetchPrograms from "./components/authentication/auth/PrefetchPrograms"
+import TeacherLayout from "./components/TeacherLayout"
 const TeacherInterfaceTeacherProfile = lazy(() => import("./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"))
 const TeacherProgramsPage = lazy(() => import("./components/teacherInterface/programs/TeacherProgramsPage"))
 const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
@@ -31,7 +32,7 @@ function App() {
 							<PrivateRoute>
 								{{
 									student: <Layout />,
-									teacher: <Layout />
+									teacher: <TeacherLayout />
 								}}
 							</PrivateRoute>
 						}>
