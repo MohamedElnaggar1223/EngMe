@@ -12,7 +12,7 @@ import AuthProvider from "./components/authentication/auth/AuthProvider"
 import PrivateRoute from "./components/authentication/auth/PrivateRoute"
 import PrefetchPrograms from "./components/authentication/auth/PrefetchPrograms"
 const TeacherInterfaceTeacherProfile = lazy(() => import("./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"))
-// import TeacherProgramsPage from "./components/teacherInterface/programs/TeacherProgramsPage"
+const TeacherProgramsPage = lazy(() => import("./components/teacherInterface/programs/TeacherProgramsPage"))
 const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
 const KnowledgeBank = lazy(() => import("./components/studentInterface/knowledgebank/KnowledgeBank"))
 const Quiz = lazy(() => import("./components/studentInterface/programs/Current/Quiz"))
@@ -66,9 +66,9 @@ function App() {
 												student: <Suspense>
 															<Programs />
 														</Suspense>,
-												// teacher: <Suspense>
-												// 			<TeacherProgramsPage />
-												// 		</Suspense>
+												teacher: <Suspense>
+															<TeacherProgramsPage />
+														</Suspense>
 											}}
 										</PrivateRoute>
 									} />
