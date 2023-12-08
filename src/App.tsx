@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom"
 import { Suspense, lazy } from "react"
 const TeacherProfile = lazy(() => import("./components/studentInterface/teacherProfile/TeacherProfile"))
 import Layout from "./components/Layout"
-import StudentProfile from "./components/studentInterface/studentProfile/StudentProfile"
+const StudentProfile = lazy(() => import("./components/studentInterface/studentProfile/StudentProfile"))
 const Programs = lazy(() => import("./components/studentInterface/programs/Programs"))
 import Login from "./components/authentication/login/Login"
 const Signup = lazy(() => import("./components/authentication/signup/Signup"))
@@ -11,7 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import AuthProvider from "./components/authentication/auth/AuthProvider"
 import PrivateRoute from "./components/authentication/auth/PrivateRoute"
 import PrefetchPrograms from "./components/authentication/auth/PrefetchPrograms"
-import TeacherInterfaceTeacherProfile from "./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"
+const TeacherInterfaceTeacherProfile = lazy(() => import("./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"))
 // import TeacherProgramsPage from "./components/teacherInterface/programs/TeacherProgramsPage"
 const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
 const KnowledgeBank = lazy(() => import("./components/studentInterface/knowledgebank/KnowledgeBank"))
