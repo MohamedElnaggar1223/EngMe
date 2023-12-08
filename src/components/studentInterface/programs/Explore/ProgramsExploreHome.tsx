@@ -22,7 +22,8 @@ export default function ProgramsExploreHome(
     const { setPageShowed } = useContext(ProgramExploreContext)
     const [search, setSearch] = useState('')
 
-    let filteredPrograms = explorePrograms
+    //@ts-expect-error program
+    let filteredPrograms = explorePrograms.slice().filter(program => !program.paused)
     //@ts-expect-error program
     if(search) filteredPrograms = filteredPrograms?.slice().filter(program => (program.name).toLowerCase().includes(search.toLowerCase()))
     if(applyFilters)

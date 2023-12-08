@@ -16,6 +16,7 @@ export default interface ProgramProps{
     teacherId?: string,
     totalFeedbacks?: number,
     averageRating?: number,
-    prerequisites?: string[]
+    prerequisites?: string[],
+    paused?: boolean
 }
 

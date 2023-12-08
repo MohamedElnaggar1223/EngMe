@@ -1,26 +1,39 @@
-import { auth } from '../../../firebase/firebaseConfig'
+import { auth, db } from '../../../firebase/firebaseConfig'
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { Box, Button, FormControl, Stack, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export default function StudentLogIn() 
 {
     const[email, setEmail] = useState('')
-
     const[password, setPassword] = useState('')
+
+    const [error, setError] = useState('')
 
     const [canSave, setCanSave] = useState(false)
 
-    const logIn = (e: React.FormEvent<HTMLFormElement>) => {
+    const logIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if(canSave)
         {
-            signInWithEmailAndPassword(auth, email, password)
-            .then()
-            .catch(e => console.error(e))
-            setEmail('')
-            setPassword('')
+            const userRef = collection(db, 'users')
+            const queryUser = query(userRef, where('userId', '==', email))
+            const userDoc = await getDocs(queryUser)
+
+            if(userDoc.docs.length && userDoc.docs[0]?.data().role === 'student')
+            {
+                signInWithEmailAndPassword(auth, email, password)
+                .then()
+                .catch(e => console.error(e))
+                setEmail('')
+                setPassword('')
+            }
+            else
+            {
+                setError('Email Not Found!')
+            }
         }
     }
 
@@ -60,6 +73,7 @@ export default function StudentLogIn()
                 }}
                 onSubmit={logIn}
             >
+                {error && <Typography textAlign='center' fontWeight={500} fontFamily='Inter' sx={{ color: '#ff0000' }}>{error}</Typography>}
                 <FormControl sx={{ flex: 1 }}>
                     <TextField 
                         fullWidth

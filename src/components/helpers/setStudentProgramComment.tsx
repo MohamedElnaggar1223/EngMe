@@ -29,7 +29,7 @@ export const setStudentProgramComment = async (studentId: string, programId: str
         programId,
         createdAt: Timestamp.now(),
         comment,
-        rating
+        rating: rating ?? null
     }
 
     await addDoc(programCommentsRef, newComment)

@@ -3,10 +3,13 @@ import { Box, Button, Select, Stack, TextField, Typography } from "@mui/material
 import { MuiTelInput } from 'mui-tel-input'
 import { useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../../../firebase/firebaseConfig";
 
 export default function StudentSignUp() 
 {
-    const[number, setNumber] = useState('')
+    const[number, setNumber] = useState('+20')
     const[firstname, setFirstname] = useState('')
     const[lastname, setLastname] = useState('')
     const[email, setEmail] = useState('')
@@ -21,10 +24,60 @@ export default function StudentSignUp()
         e.preventDefault()
         if(canSave)
         {
-            // createUserWithEmailAndPassword(auth, email, password)
-            // .then((userCredentials) => console.log(userCredentials))
-            // .catch(e => console.error(e))
+            createUserWithEmailAndPassword(auth, email, password)
+            .then(async (user) => {
+                const uid = user.user.uid
+
+                
+                const teacherRef = doc(db, 'teachers', uid)
+                await setDoc(teacherRef, {
+                    friends: [],
+                    name: `${firstname} ${lastname}`,
+                    email,
+                    image: '',
+                    programs: [],
+                    title: 'Professor in Human Biology',
+                    university: 'The German University in Cairo',
+                    averageRating: 0,
+                    profileViews: 0
+                })
+
+                const scheduleRef = collection(db, 'teacherSchedule')
+                await addDoc(scheduleRef, {
+                    numberOfDays: 6,
+                    slots: [
+                        {
+                            day: 'Sunday',
+                            endTime: '2 PM',
+                            startTime: '1 PM'
+                        }
+                    ],
+                    teacherId: uid
+                })
+                
+                const userRef = collection(db, 'users')
+                await addDoc(userRef, {
+                    userId: email,
+                    role: 'teacher'
+                })
+            })
+            .catch(e => console.error(e))
+            setEmail('')
+            setPassword('')
+            setConfirmPassword('')
+            setFirstname('')
+            setLastname('')
+            setNumber('')
         }
+    }
+
+    function handleNumber(e: string)
+    {
+        if(e === '+20 0' && number === '+20')
+        { 
+            return
+        }
+        else setNumber(e)
     }
 
     useEffect(() => {
@@ -122,7 +175,7 @@ export default function StudentSignUp()
                 <FormControl>
                     <MuiTelInput 
                         value={number} 
-                        onChange={(e) => setNumber(e)} 
+                        onChange={handleNumber} 
                         placeholder='Phone Number'
                         inputProps={{
                             style: {
@@ -236,6 +289,7 @@ export default function StudentSignUp()
                         },
                         paddingY: 1.5
                     }}
+                    type="submit"
                 >
                     Sign Up
                 </Button>

@@ -24,9 +24,9 @@ export default function AddComment(program: ProgramProps)
 
             return () => queryClient.setQueryData(['programComments', program.id], previousData)
         },
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ['programComments', program.id]})
-        },
+        // onSuccess: async () => {
+        //     await queryClient.invalidateQueries({queryKey: ['programComments', program.id]})
+        // },
         mutationFn: (comment: string) => setStudentProgramComment(userData.id, program.id, comment)
     })
 

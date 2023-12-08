@@ -5,23 +5,23 @@ import Signup from '../signup/Signup'
 import Login from '../login/Login'
 
 //@ts-expect-error children
-export default function StudentPrivateRoute({ children }) 
+export default function PrivateRoute({ children }) 
 {
     //@ts-expect-error context
-    const { user } = useContext(AuthContext)
+    const { user, userData } = useContext(AuthContext)
 
     const navigate = useNavigate()
     const { pathname } = useLocation()
 
     useEffect(() => {
-        console.log(user)
-        if(!user) {
+        console.log(userData)
+        if(!user || !userData) {
             pathname === '/signup' ? navigate('/signup') : navigate(`/login`)
         }
         else pathname === '/signup' || pathname === '/login' ? navigate('/') : navigate(`${pathname}`)
-    }, [user, navigate, pathname])
+    }, [user, userData, navigate, pathname])
 
-    if(!user) {
+    if(!user || !userData){
         if(pathname === '/signup') 
         return <Signup />
         else return <Login />
@@ -29,7 +29,7 @@ export default function StudentPrivateRoute({ children })
     else
     return (
         <>
-            {children}
+            {userData?.role === 'student' ? children.student : children.teacher}
         </>
     )
 }

@@ -1,6 +1,6 @@
 import { createContext, useEffect, useLayoutEffect, useState } from 'react'
 import { auth } from '../../../firebase/firebaseConfig'
-import { User, onAuthStateChanged } from 'firebase/auth'
+import { User, onAuthStateChanged, signOut } from 'firebase/auth'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getExamSession } from '../../helpers/getExamSession'
 import { useNavigate } from 'react-router-dom'
@@ -14,9 +14,10 @@ export default function AuthProvider({ children })
 {   
     const queryClient = useQueryClient()
     const [user, setUser] = useState<User | null>(null)
-    const { data: userData, refetch } = useQuery({
+    const { data: userData, isSuccess } = useQuery({
         queryKey: ['userData'],
-        queryFn: () => getUserData(user?.uid ?? '')
+        queryFn: () => getUserData(user?.uid ?? ''),
+        enabled: !!user
     })
 
     const navigate = useNavigate()
@@ -29,9 +30,17 @@ export default function AuthProvider({ children })
 
     console.log(userData)
 
+    // useEffect(() => {
+    //     refetch()
+    // }, [user, refetch])
+
     useEffect(() => {
-        refetch()
-    }, [user, refetch])
+        if(isSuccess)
+        {
+            if(userData === null) signOut(auth)
+        }
+    //eslint-disable-next-line
+    }, [isSuccess])
 
     useLayoutEffect(() => {
 

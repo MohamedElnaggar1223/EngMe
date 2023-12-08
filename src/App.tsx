@@ -9,8 +9,10 @@ const Signup = lazy(() => import("./components/authentication/signup/Signup"))
 const Exam = lazy(() => import("./components/studentInterface/programs/Current/Exam"))
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import AuthProvider from "./components/authentication/auth/AuthProvider"
-import StudentPrivateRoute from "./components/authentication/auth/StudentPrivateRoute"
+import PrivateRoute from "./components/authentication/auth/PrivateRoute"
 import PrefetchPrograms from "./components/authentication/auth/PrefetchPrograms"
+import TeacherInterfaceTeacherProfile from "./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"
+// import TeacherProgramsPage from "./components/teacherInterface/programs/TeacherProgramsPage"
 const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
 const KnowledgeBank = lazy(() => import("./components/studentInterface/knowledgebank/KnowledgeBank"))
 const Quiz = lazy(() => import("./components/studentInterface/programs/Current/Quiz"))
@@ -26,42 +28,62 @@ function App() {
 				<Routes>
 					<Route element={<PrefetchPrograms />}>
 						<Route path='/' element={
-							<StudentPrivateRoute>
-								<Layout />
-							</StudentPrivateRoute>
+							<PrivateRoute>
+								{{
+									student: <Layout />,
+									teacher: <Layout />
+								}}
+							</PrivateRoute>
 						}>
 								<Route index element={
-									<StudentPrivateRoute>
-										<StudentProfile />
-									</StudentPrivateRoute>
+									<PrivateRoute>
+										{{
+											student: <Suspense>
+														<StudentProfile />
+													</Suspense>,
+											teacher: <Suspense>
+														<TeacherInterfaceTeacherProfile />
+													</Suspense>
+										}}
+									</PrivateRoute>
 								} />
 								<Route path='teacherprofile'>
 									<Route index element={
-										<StudentPrivateRoute>
-											<Suspense>
-												<TeacherProfile />
-											</Suspense>
-										</StudentPrivateRoute>
+										<PrivateRoute>
+												{{
+													student: <Suspense>
+																<TeacherProfile />
+															</Suspense>
+												}}
+										</PrivateRoute>
 									} />
 								</Route>
 								
 								<Route path='programs'>
 									<Route index element={
-										<StudentPrivateRoute>
-											<Suspense>
-												<Programs />
-											</Suspense>
-										</StudentPrivateRoute>
+										<PrivateRoute>
+											{{
+												student: <Suspense>
+															<Programs />
+														</Suspense>,
+												// teacher: <Suspense>
+												// 			<TeacherProgramsPage />
+												// 		</Suspense>
+											}}
+										</PrivateRoute>
 									} />
 								</Route>
 
 								<Route path='teacherprofile/:id'>
 									<Route index element={
-										<StudentPrivateRoute>
-											<Suspense>
-												<TeacherProfile />
-											</Suspense>
-										</StudentPrivateRoute>
+										<PrivateRoute>
+											{{
+												student:
+													<Suspense>
+														<TeacherProfile />
+													</Suspense>
+											}}
+										</PrivateRoute>
 									} />
 								</Route>
 								
@@ -77,47 +99,62 @@ function App() {
 							</Route>
 								<Route path='exam/:id'>
 									<Route index element={
-										<StudentPrivateRoute>
-											<Suspense>
-												<Exam />
-											</Suspense>
-										</StudentPrivateRoute>
+										<PrivateRoute>
+											{{
+												student:
+													<Suspense>
+														<Exam />
+													</Suspense>
+											}}
+										</PrivateRoute>
 									} />
 								</Route>
 								<Route path='quiz/:id'>
 									<Route index element={
-										<StudentPrivateRoute>
-											<Suspense>
-												<Quiz />
-											</Suspense>
-										</StudentPrivateRoute>
+										<PrivateRoute>
+											{{
+												student:
+													<Suspense>
+														<Quiz />
+													</Suspense>
+											}}
+										</PrivateRoute>
 									} />
 								</Route>
 								<Route path='assessment/:id'>
 									<Route index element={
-										<StudentPrivateRoute>
-											<Suspense>
-												<Assessment />
-											</Suspense>
-										</StudentPrivateRoute>
+										<PrivateRoute>
+											{{
+												student: 
+													<Suspense>
+														<Assessment />
+													</Suspense>
+											}}
+										</PrivateRoute>
 									} />
 								</Route>
 								<Route path='knowledgebank'>
 									<Route index element={
-										<StudentPrivateRoute>
-											<Suspense>
-												<KnowledgeBank />
-											</Suspense>
-										</StudentPrivateRoute>
+										<PrivateRoute>
+											{{
+												student:
+													<Suspense>
+														<KnowledgeBank />
+													</Suspense>
+											}}
+										</PrivateRoute>
 									} />
 								</Route>
 								<Route path='exambank'>
 									<Route index element={
-										<StudentPrivateRoute>
-											<Suspense>
-												<ExamBank />
-											</Suspense>
-										</StudentPrivateRoute>
+										<PrivateRoute>
+											{{
+												student: 
+													<Suspense>
+														<ExamBank />
+													</Suspense>
+											}}
+										</PrivateRoute>
 									} />
 								</Route>
 						</Route>

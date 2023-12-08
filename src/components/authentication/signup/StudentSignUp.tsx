@@ -5,7 +5,7 @@ import { Box, Button, Select, Stack, TextField, Typography } from "@mui/material
 import { MuiTelInput } from 'mui-tel-input'
 import { useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { Link } from "react-router-dom";
 
 export default function StudentSignUp() 
@@ -29,8 +29,8 @@ export default function StudentSignUp()
             .then(async (user) => {
                 const uid = user.user.uid
 
-                const userRef = doc(db, 'students', uid)
-                await setDoc(userRef, {
+                const studentRef = doc(db, 'students', uid)
+                await setDoc(studentRef, {
                     favoritePrograms: [],
                     friends: [],
                     name: `${firstname} ${lastname}`,
@@ -38,6 +38,12 @@ export default function StudentSignUp()
                     number,
                     image: '',
                     Country: 'Egypt'
+                })
+
+                const userRef = collection(db, 'users')
+                await addDoc(userRef, {
+                    userId: email,
+                    role: 'student'
                 })
             })
             .catch(e => console.error(e))

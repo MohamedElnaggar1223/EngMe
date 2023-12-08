@@ -1,10 +1,11 @@
 import { Box } from '@mui/material'
 import { Suspense, lazy } from 'react'
+const TeacherConsultations = lazy(() => import('./TeacherConsultations'))
 const TeacherCard = lazy(() => import('./TeacherCard'))
 const TeacherCredentials = lazy(() => import('./TeacherCredentials'))
 const TeacherPrograms = lazy(() => import('./TeacherPrograms'))
 const TeacherFeedbacks = lazy(() => import('./TeacherFeedbacks'))
-const TeacherTestimonials = lazy(() => import('./TeacherTestimonials'))
+const TeacherAnalytics = lazy(() => import('./TeacherAnalytics'))
 
 export default function TeacherProfile() 
 {
@@ -23,6 +24,10 @@ export default function TeacherProfile()
             </Suspense>
 
             <Suspense>
+                <TeacherConsultations />
+            </Suspense>
+
+            <Suspense>
                 <TeacherPrograms />
             </Suspense>
 
@@ -31,7 +36,7 @@ export default function TeacherProfile()
             </Suspense>
             
             <Suspense>
-                <TeacherTestimonials />
+                <TeacherAnalytics />
             </Suspense>
         </Box>
     )
