@@ -17,6 +17,7 @@ export default interface ProgramProps{
     totalFeedbacks?: number,
     averageRating?: number,
     prerequisites?: string[],
-    paused?: boolean
+    paused?: boolean,
+    expiry?: string
 }
 

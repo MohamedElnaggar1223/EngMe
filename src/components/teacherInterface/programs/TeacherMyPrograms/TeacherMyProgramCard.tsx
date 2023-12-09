@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, SvgIcon, Button, Accordion, AccordionSummary, AccordionDetails, FormControl, FormHelperText, TextField, TextareaAutosize, Input, InputLabel, Select, MenuItem, Switch, styled, createTheme } from '@mui/material'
+import { Box, Stack, Typography, SvgIcon, Button, Accordion, AccordionSummary, AccordionDetails, FormControl, FormHelperText, TextField, TextareaAutosize, Input, InputLabel, Select, MenuItem, Switch, SwitchProps, styled } from '@mui/material'
 import { memo, useState, lazy, Suspense } from 'react';
 // eslint-disable-next-line react-refresh/only-export-components
 // const Components = lazy(() => import('./Components'))
@@ -14,6 +14,7 @@ import { getProgramsData } from '../../../helpers/getProgramsData';
 import { ExpandMore } from '@mui/icons-material';
 // eslint-disable-next-line react-refresh/only-export-components
 const Components = lazy(() => import('./Components'))
+import ClearIcon from '@mui/icons-material/Clear';
 
 // eslint-disable-next-line react-refresh/only-export-components
 function TeacherMyProgramCard(program: ProgramProps) 
@@ -42,41 +43,76 @@ function TeacherMyProgramCard(program: ProgramProps)
         enabled: !!program.prerequisites
     })
 
-    //@ts-expect-error prereq
-    const displayedPrereqs = prereqs?.map(prereq => <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>) 
-
-    const CustomSwitch = styled(Switch)(({ theme }) => ({
-        '& .MuiSwitch-thumb': {
-          backgroundColor: '#ffffff', // White color for the head
-        },
-        '& .MuiSwitch-switchBase.Mui-checked': {
-          color: '#ff0000', // Green color for the body when checked
-          '& .MuiSwitch-thumb': {
-            backgroundColor: '#ffffff', // White color for the head when checked
+    const displayedPrereqs = prereqs?.map(prereq => 
+        edit ? 
+        <Stack
+            position='relative'
+            alignItems='flex-end'
+            justifyContent='flex-end'
+            gap={6}
+            // height='100%'
+            pb={1.2}
+        >
+            {edit && <ClearIcon sx={{ bgcolor: '#D9D9D9', borderRadius: '50%', fontSize: 16, position: 'absolute', top: '30%', left: '100%', cursor: 'pointer' }} />}
+            {/*//@ts-expect-error prereq*/}
+            <Typography noWrap sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>
+        </Stack>
+        :
+        //@ts-expect-error prereq
+        <Typography noWrap sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>
+    ) 
+    
+    const IOSSwitch = styled((props: SwitchProps) => (
+        <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+      ))(({ theme }) => ({
+        width: 42,
+        height: 26,
+        padding: 0,
+        '& .MuiSwitch-switchBase': {
+          padding: 0,
+          margin: 2,
+          transitionDuration: '300ms',
+          '&.Mui-checked': {
+            transform: 'translateX(16px)',
+            color: '#fff',
+            '& + .MuiSwitch-track': {
+              backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
+              opacity: 1,
+              border: 0,
+            },
+            '&.Mui-disabled + .MuiSwitch-track': {
+              opacity: 0.5,
+            },
           },
+          '&.Mui-focusVisible .MuiSwitch-thumb': {
+            color: '#33cf4d',
+            border: '6px solid #fff',
+          },
+          '&.Mui-disabled .MuiSwitch-thumb': {
+            color:
+              theme.palette.mode === 'light'
+                ? theme.palette.grey[100]
+                : theme.palette.grey[600],
+          },
+          '&.Mui-disabled + .MuiSwitch-track': {
+            opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
+          },
+        },
+        '& .MuiSwitch-thumb': {
+          boxSizing: 'border-box',
+          width: 22,
+          height: 22,
+        },
+        '& .MuiSwitch-track': {
+          borderRadius: 26 / 2,
+          backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
+          opacity: 1,
+          transition: theme.transitions.create(['background-color'], {
+            duration: 500,
+          }),
         },
       }));
 
-    const theme = createTheme({
-    components: {
-        MuiSwitch: {
-        styleOverrides: {
-            thumb: {
-            backgroundColor: '#ffffff', // White color for the head
-            },
-            switchBase: {
-            '&.Mui-checked': {
-                color: '#1DC9A0', // Green color for the body when checked
-                '& .MuiSwitch-thumb': {
-                backgroundColor: '#ffffff', // White color for the head when checked
-                },
-            },
-            },
-        },
-        },
-    },
-    });
-    
     return (
         <Accordion expanded={expand} sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
@@ -240,7 +276,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                                     px={1.5}
                                     py={0.5}
                                 >
-                                    <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program.duration}</Typography>
+                                    <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program.expiry}</Typography>
                                 </Box>
                                 <Box
                                     bgcolor='#D0EBFC'
@@ -300,7 +336,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                         <Box
                             bgcolor='#FFFBF8'
                             px={1}
-                            pb={2.5}
+                            pb={6}
                             pt={6}
                         >
                             <Stack
@@ -390,14 +426,15 @@ function TeacherMyProgramCard(program: ProgramProps)
                                     gap={1.5}
                                     flex={1}
                                 >
-                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='ProgramType'>Program's Type</InputLabel>
+                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Expiry'>Expiry</InputLabel>
                                     <Input 
                                         color='primary' 
                                         disableUnderline
-                                        aria-labelledby='ProgramType'
+                                        aria-labelledby='Expiry'
                                         sx={{
                                             border: '1px solid rgba(0, 0, 0, 0.20)',
                                             width: '100%',
+                                            minWidth: '420px',
                                             background: '#fff',
                                             borderRadius: '5px',
                                             paddingX: 1,
@@ -411,14 +448,15 @@ function TeacherMyProgramCard(program: ProgramProps)
                                     gap={1.5}
                                     flex={1}
                                 >
-                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='ProgramType'>Program's Type</InputLabel>
+                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Duration'>Duration</InputLabel>
                                     <Input 
                                         color='primary' 
                                         disableUnderline
-                                        aria-labelledby='ProgramType'
+                                        aria-labelledby='Duration'
                                         sx={{
                                             border: '1px solid rgba(0, 0, 0, 0.20)',
                                             width: '100%',
+                                            minWidth: '420px',
                                             background: '#fff',
                                             borderRadius: '5px',
                                             paddingX: 1,
@@ -472,7 +510,43 @@ function TeacherMyProgramCard(program: ProgramProps)
                                     pl={-8}
                                 >
                                     <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }}>New Students</InputLabel>
-                                    <CustomSwitch />
+                                    <IOSSwitch />
+                                </Stack>
+                            </Stack>
+                            <Stack
+                                direction='row'
+                                gap={3}
+                                mt={8}
+                            >
+                                <Stack
+                                    gap={1.5}
+                                    // flex={1}
+                                    direction='column'
+                                    width='fit-content'
+                                >
+                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Prereqs'>Prerequisites</InputLabel>
+                                    <Input 
+                                        color='primary' 
+                                        disableUnderline
+                                        aria-labelledby='Prereqs'
+                                        sx={{
+                                            border: '1px solid rgba(0, 0, 0, 0.20)',
+                                            width: '420px',
+                                            background: '#fff',
+                                            borderRadius: '5px',
+                                            paddingX: 1,
+                                            paddingY: 0.5,
+                                            bgcolor: '#F8F8F8'
+                                        }}
+                                    />
+                                </Stack>
+                                <Stack
+                                    direction='row'
+                                    gap={6}
+                                    justifyContent='flex-start'
+                                    flex={1}
+                                >
+                                    {displayedPrereqs}
                                 </Stack>
                             </Stack>
                         </Box>
