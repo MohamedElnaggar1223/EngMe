@@ -42,3 +42,7 @@
 .css-48d81r-MuiPaper-root-MuiAccordion-root{
   box-shadow: none !important;
 }
+
+textarea:focus-visible{
+  outline: 0 !important;
+}
