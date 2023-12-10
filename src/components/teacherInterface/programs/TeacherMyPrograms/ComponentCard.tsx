@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails } from "@mui/material";
 // import { PageContext } from "../../../Layout";
 import CourseProps from "../../../../interfaces/CourseProps";
@@ -8,6 +8,9 @@ import { getLessonsData } from "../../../helpers/getLessonsData";
 import { getQuizzesData } from "../../../helpers/getQuizzesData";
 // import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { ExpandMore } from "@mui/icons-material";
+import ComponentCardEditLesson from "../ComponentCardEdit/ComponentCardEditLesson";
+import ComponentCardEditQuiz from "../ComponentCardEdit/ComponentCardEditQuiz";
+import ComponentCardEditAssessment from "../ComponentCardEdit/ComponentCardEditAssessment";
 
 interface ComponentCard{
     index: number,
@@ -20,6 +23,7 @@ function ComponentCard({index, course}: ComponentCard)
     // const queryClient = useQueryClient()
     ////@ts-expect-error context
     // const { userData } = useContext(AuthContext)
+    const [edited, setEdited] = useState('')
 
     const { data: assessments } = useQuery({
         queryKey: ['assessments', course.programId, course.id],
@@ -48,15 +52,17 @@ function ComponentCard({index, course}: ComponentCard)
                 justifyContent='space-between'
                 flex={1}
                 height='50px'
-                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5, cursor: 'pointer' }}
+                sx={{ borderBottom: edited === lesson.id ? '' : '1px solid rgba(0, 0, 0, 0.1)', paddingLeft: 8, paddingY: 0.5, paddingRight: 4 }}
                 alignItems='center'
                 bgcolor='#D0EBFC'
+                border={edited === lesson.id ? '2px solid rgba(34,110,159,1)' : ''}
             >
                 <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
-                    <SvgIcon>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M20.2759 0H16.1379H7.86207H3.72414C1.67172 0 0 1.67172 0 3.72414V6.62069V17.3793V20.2759C0 22.3283 1.67172 24 3.72414 24H7.86207H16.1379H20.2759C22.3283 24 24 22.3283 24 20.2759V17.3793V6.62069V3.72414C24 1.67172 22.3283 0 20.2759 0ZM8.27586 0.827586H15.7241V6.2069H8.27586V0.827586ZM0.827586 3.72414C0.827586 2.1269 2.1269 0.827586 3.72414 0.827586H7.44828V6.2069H0.827586V3.72414ZM7.44828 23.1724H3.72414C2.1269 23.1724 0.827586 21.8731 0.827586 20.2759V17.7931H7.44828V23.1724ZM15.7241 23.1724H8.27586V17.7931H15.7241V23.1724ZM23.1724 20.2759C23.1724 21.8731 21.8731 23.1724 20.2759 23.1724H16.5517V17.7931H23.1724V20.2759ZM23.1724 16.9655H0.827586V7.03448H23.1724V16.9655ZM23.1724 6.2069H16.5517V0.827586H20.2759C21.8731 0.827586 23.1724 2.1269 23.1724 3.72414V6.2069Z" fill="#226E9F"/>
-                            <path d="M8.94209 15.5255C9.15726 15.6579 9.39726 15.72 9.63726 15.72C9.84829 15.72 10.0552 15.6703 10.2497 15.571L15.0455 13.0924C15.4635 12.8772 15.7242 12.4593 15.7242 12C15.7242 11.5407 15.4635 11.1227 15.0455 10.9076L10.2497 8.42896C9.83174 8.21378 9.34347 8.23033 8.94209 8.47447C8.52416 8.72689 8.27588 9.17378 8.27588 9.67034V14.3296C8.27588 14.8262 8.52416 15.2731 8.94209 15.5255ZM9.10347 9.67034C9.10347 9.46758 9.20278 9.28137 9.37243 9.18206C9.45519 9.1324 9.54622 9.10758 9.63726 9.10758C9.71588 9.10758 9.7945 9.12827 9.87312 9.16551L14.669 11.6441C14.8759 11.7476 14.8966 11.9296 14.8966 12C14.8966 12.0703 14.8759 12.2524 14.6648 12.36L9.86898 14.8386C9.7076 14.9214 9.52553 14.9172 9.37243 14.8221C9.20691 14.7186 9.10347 14.5365 9.10347 14.3338V9.67034Z" fill="#226E9F"/>
+                    <SvgIcon onClick={() => setEdited(lesson.id)} sx={{ cursor: 'pointer' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="27" height="25" viewBox="0 0 27 25" fill="none">
+                            <rect width="27" height="25" rx="5" fill="#D0EBFC"/>
+                            <path d="M22.1835 11.238C21.7321 11.238 21.366 11.604 21.366 12.0554V19.5213C21.366 20.5377 20.5395 21.3651 19.5223 21.3651H6.47956C5.46231 21.3651 4.63579 20.5377 4.63579 19.5213V6.47866C4.63579 5.46231 5.46231 4.63488 6.47956 4.63488H14.0354C14.4868 4.63488 14.8529 4.26885 14.8529 3.81744C14.8529 3.36603 14.4868 3 14.0354 3H6.47956C4.56131 3 3 4.5604 3 6.47866V19.5213C3 21.4396 4.56131 23 6.47956 23H19.5223C21.4405 23 23.0018 21.4396 23.0018 19.5213V12.0554C23.0018 11.604 22.6349 11.238 22.1835 11.238Z" fill="#226E9F"/>
+                            <path d="M17.4441 3.82134L10.1716 11.0938C9.61938 11.6451 9.35145 12.4281 9.44681 13.2019L9.42774 15.7487C9.42683 15.9676 9.51312 16.1783 9.66752 16.3327C9.82102 16.4862 10.029 16.5725 10.2461 16.5725C10.2479 16.5725 10.2506 16.5725 10.2524 16.5725L12.7992 16.5534C13.5694 16.6488 14.3551 16.3817 14.9064 15.8295L22.1798 8.55704C22.633 8.10381 22.8864 7.50345 22.8937 6.86676C22.9019 6.2237 22.6566 5.61971 22.2052 5.16921L20.8319 3.79682C19.9037 2.86857 18.3841 2.88129 17.4441 3.82134ZM21.2579 6.84677C21.2561 7.05386 21.1716 7.25004 21.0217 7.39991L13.7484 14.6724C13.5458 14.874 13.2615 14.9721 12.9736 14.9267C12.9318 14.9203 12.891 14.9176 12.8492 14.9176C12.8474 14.9176 12.8446 14.9176 12.8428 14.9176L11.0681 14.9312L11.0817 13.1556C11.0817 13.112 11.0781 13.0693 11.0717 13.0257C11.0281 12.7423 11.1235 12.4517 11.326 12.25L18.5985 4.97756C18.9037 4.67511 19.3851 4.6624 19.6757 4.95122L21.049 6.32361C21.1861 6.46167 21.2606 6.64696 21.2579 6.84677Z" fill="#226E9F"/>
                         </svg>
                     </SvgIcon>
                     {/*//@ts-expect-error lesson*/}
@@ -64,8 +70,22 @@ function ComponentCard({index, course}: ComponentCard)
                 </Typography>
                 {/*//@ts-expect-error lesson*/}
                 <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.description}</Typography>
-                {/*//@ts-expect-error lesson*/}
-                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration.split(" ")[0]}:{lesson?.duration.split(" ")[2]}:00</Typography>
+                <Stack
+                    direction='row'
+                    alignItems='center'
+                    gap={1}
+                    width='150px'
+                >
+                    {/*//@ts-expect-error lesson*/}
+                    <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration.split(" ")[0]}:{lesson?.duration.split(" ")[2]}:00</Typography>
+                    <SvgIcon  sx={{ fontSize: 18, marginLeft: 'auto' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11" fill="none">
+                            <line y1="0.5" x2="11" y2="0.5" stroke="#226E9F"/>
+                            <line y1="5.5" x2="11" y2="5.5" stroke="#226E9F"/>
+                            <line y1="10.5" x2="11" y2="10.5" stroke="#226E9F"/>
+                        </svg>
+                    </SvgIcon>
+                </Stack>
             </Stack>
         )
     )
@@ -76,9 +96,10 @@ function ComponentCard({index, course}: ComponentCard)
             justifyContent='space-between'
             flex={1}
             height='50px'
-            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+            sx={{ borderBottom: edited === quiz.id ? '' : '1px solid rgba(0, 0, 0, 0.1)', paddingLeft: 8, paddingY: 0.5, paddingRight: 4 }}
             alignItems='center'
             bgcolor='#D0EBFC'
+            border={edited === quiz.id ? '2px solid #226E9F' : ''}
         >
 
                 <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
@@ -89,8 +110,22 @@ function ComponentCard({index, course}: ComponentCard)
                 </SvgIcon>
                 Quiz {index + 1}
             </Typography>
-            {/*//@ts-expect-error lesson*/}
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{quiz?.duration}</Typography>
+            <Stack
+                direction='row'
+                alignItems='center'
+                gap={1}
+                width='150px'
+            >
+                {/*//@ts-expect-error lesson*/}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{quiz?.duration}</Typography>
+                <SvgIcon  sx={{ fontSize: 18, marginLeft: 'auto' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11" fill="none">
+                        <line y1="0.5" x2="11" y2="0.5" stroke="#226E9F"/>
+                        <line y1="5.5" x2="11" y2="5.5" stroke="#226E9F"/>
+                        <line y1="10.5" x2="11" y2="10.5" stroke="#226E9F"/>
+                    </svg>
+                </SvgIcon>
+            </Stack>
         </Stack>
         )
     )
@@ -101,15 +136,39 @@ function ComponentCard({index, course}: ComponentCard)
             justifyContent='space-between'
             flex={1}
             height='50px'
-            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+            sx={{ borderBottom: edited === assessment.id ? '' : '1px solid rgba(0, 0, 0, 0.1)', paddingLeft: 8, paddingY: 0.5, paddingRight: 4 }}
             alignItems='center'
             bgcolor='#FEF4EB'
+            border={edited === assessment.id ? '2px solid #FF9F06' : ''}
         >
-            {/*//@ts-expect-error lesson*/}
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment?.title}</Typography>
+            <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
+                <SvgIcon onClick={() => setEdited(assessment.id)} sx={{ cursor: 'pointer' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="27" height="25" viewBox="0 0 27 25" fill="none">
+                        <rect width="27" height="25" rx="5" fill="white"/>
+                        <path d="M22.1835 11.238C21.7321 11.238 21.366 11.604 21.366 12.0554V19.5213C21.366 20.5377 20.5395 21.3651 19.5223 21.3651H6.47956C5.46231 21.3651 4.63579 20.5377 4.63579 19.5213V6.47866C4.63579 5.46231 5.46231 4.63488 6.47956 4.63488H14.0354C14.4868 4.63488 14.8529 4.26885 14.8529 3.81744C14.8529 3.36603 14.4868 3 14.0354 3H6.47956C4.56131 3 3 4.5604 3 6.47866V19.5213C3 21.4396 4.56131 23 6.47956 23H19.5223C21.4405 23 23.0018 21.4396 23.0018 19.5213V12.0554C23.0018 11.604 22.6349 11.238 22.1835 11.238Z" fill="#FF9F06"/>
+                        <path d="M17.4441 3.82134L10.1716 11.0938C9.61938 11.6451 9.35145 12.4281 9.44681 13.2019L9.42774 15.7487C9.42683 15.9676 9.51312 16.1783 9.66752 16.3327C9.82102 16.4862 10.029 16.5725 10.2461 16.5725C10.2479 16.5725 10.2506 16.5725 10.2524 16.5725L12.7992 16.5534C13.5694 16.6488 14.3551 16.3817 14.9064 15.8295L22.1798 8.55704C22.633 8.10381 22.8864 7.50345 22.8937 6.86676C22.9019 6.2237 22.6566 5.61971 22.2052 5.16921L20.8319 3.79682C19.9037 2.86857 18.3841 2.88129 17.4441 3.82134ZM21.2579 6.84677C21.2561 7.05386 21.1716 7.25004 21.0217 7.39991L13.7484 14.6724C13.5458 14.874 13.2615 14.9721 12.9736 14.9267C12.9318 14.9203 12.891 14.9176 12.8492 14.9176C12.8474 14.9176 12.8446 14.9176 12.8428 14.9176L11.0681 14.9312L11.0817 13.1556C11.0817 13.112 11.0781 13.0693 11.0717 13.0257C11.0281 12.7423 11.1235 12.4517 11.326 12.25L18.5985 4.97756C18.9037 4.67511 19.3851 4.6624 19.6757 4.95122L21.049 6.32361C21.1861 6.46167 21.2606 6.64696 21.2579 6.84677Z" fill="#FF9F06"/>
+                    </svg>
+                </SvgIcon>
+                {/*//@ts-expect-error lesson*/}
+                {assessment?.title}
+            </Typography>
             {/*//@ts-expect-error lesson*/}
             <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment?.description}</Typography>
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}></Typography>
+            <Stack
+                direction='row'
+                alignItems='center'
+                gap={1}
+                width='150px'
+            >
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}></Typography>
+                <SvgIcon  sx={{ fontSize: 18, marginLeft: 'auto' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11" fill="none">
+                        <line y1="0.5" x2="11" y2="0.5" stroke="#226E9F"/>
+                        <line y1="5.5" x2="11" y2="5.5" stroke="#226E9F"/>
+                        <line y1="10.5" x2="11" y2="10.5" stroke="#226E9F"/>
+                    </svg>
+                </SvgIcon>
+            </Stack>
         </Stack>
         )
     )
@@ -157,6 +216,16 @@ function ComponentCard({index, course}: ComponentCard)
                 {displayedLessons}
                 {displayedQuizzes}
                 {displayedAssessments}
+                {
+                    edited !== '' &&
+                    (
+                        lessons?.find(lesson => lesson.id === edited) ?
+                        <ComponentCardEditLesson course={course} setEdited={setEdited} lesson={lessons?.find(lesson => lesson.id === edited)} /> :
+                        quizzes?.find(quiz => quiz.id === edited) ?
+                        <ComponentCardEditQuiz course={course} setEdited={setEdited} quiz={quizzes?.find(quiz => quiz.id === edited)} /> :
+                        <ComponentCardEditAssessment course={course} setEdited={setEdited} assessment={assessments?.find(assessment => assessment.id === edited)} />
+                    )
+                }
             </AccordionDetails>
         </Accordion>
 )

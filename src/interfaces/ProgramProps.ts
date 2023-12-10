@@ -18,6 +18,7 @@ export default interface ProgramProps{
     averageRating?: number,
     prerequisites?: string[],
     paused?: boolean,
-    expiry?: string
+    expiry?: string,
+    level?: string
 }
 

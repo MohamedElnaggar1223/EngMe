@@ -14,15 +14,8 @@ export const getLessonsData = async (courses) => {
         const lessonsDocs = await getDocs(queryRef)
         const lessonsArray = lessonsDocs.docs.map(doc => ({...doc.data(), id: doc.id})) ?? []
 
-        const orderedLessonsArray = lessonsArray.slice().sort((a, b) => {
-            //@ts-expect-error createdAt
-            const dateA = a.createdAt.toDate();
-            //@ts-expect-error createdAt
-            const dateB = b.createdAt.toDate();
-          
-            // Compare the dates for sorting
-            return dateA - dateB;
-          })
+        //@ts-expect-error order
+        const orderedLessonsArray = lessonsArray.slice().sort((a, b) => a.order - b.order)
 
         return orderedLessonsArray
     }

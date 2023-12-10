@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, SvgIcon, Button, Accordion, AccordionSummary, AccordionDetails, FormControl, FormHelperText, TextField, TextareaAutosize, Input, InputLabel, Select, MenuItem, Switch, SwitchProps, styled } from '@mui/material'
+import { Box, Stack, Typography, SvgIcon, Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
 import { memo, useState, lazy, Suspense } from 'react';
 // eslint-disable-next-line react-refresh/only-export-components
 // const Components = lazy(() => import('./Components'))
@@ -11,10 +11,9 @@ import { memo, useState, lazy, Suspense } from 'react';
 import ProgramProps from '../../../../interfaces/ProgramProps';
 import { useQuery } from '@tanstack/react-query';
 import { getProgramsData } from '../../../helpers/getProgramsData';
-import { ExpandMore } from '@mui/icons-material';
 // eslint-disable-next-line react-refresh/only-export-components
 const Components = lazy(() => import('./Components'))
-import ClearIcon from '@mui/icons-material/Clear';
+import TeacherEditMyProgramCard from './TeacherEditMyProgramCard';
 
 // eslint-disable-next-line react-refresh/only-export-components
 function TeacherMyProgramCard(program: ProgramProps) 
@@ -25,7 +24,6 @@ function TeacherMyProgramCard(program: ProgramProps)
 
     function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)
     {
-        console.log(e.target)
         if(e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLInputElement ||  e.target instanceof HTMLButtonElement || e.target instanceof HTMLParagraphElement || e.target instanceof SVGElement)
         {
             return
@@ -36,6 +34,7 @@ function TeacherMyProgramCard(program: ProgramProps)
         }
     }
 
+    
     const {data: prereqs } = useQuery({
         queryKey: ['preReqData', program.id],
         //@ts-expect-error erro
@@ -44,74 +43,9 @@ function TeacherMyProgramCard(program: ProgramProps)
     })
 
     const displayedPrereqs = prereqs?.map(prereq => 
-        edit ? 
-        <Stack
-            position='relative'
-            alignItems='flex-end'
-            justifyContent='flex-end'
-            gap={6}
-            // height='100%'
-            pb={1.2}
-        >
-            {edit && <ClearIcon sx={{ bgcolor: '#D9D9D9', borderRadius: '50%', fontSize: 16, position: 'absolute', top: '30%', left: '100%', cursor: 'pointer' }} />}
-            {/*//@ts-expect-error prereq*/}
-            <Typography noWrap sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>
-        </Stack>
-        :
         //@ts-expect-error prereq
         <Typography noWrap sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>
     ) 
-    
-    const IOSSwitch = styled((props: SwitchProps) => (
-        <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-      ))(({ theme }) => ({
-        width: 42,
-        height: 26,
-        padding: 0,
-        '& .MuiSwitch-switchBase': {
-          padding: 0,
-          margin: 2,
-          transitionDuration: '300ms',
-          '&.Mui-checked': {
-            transform: 'translateX(16px)',
-            color: '#fff',
-            '& + .MuiSwitch-track': {
-              backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
-              opacity: 1,
-              border: 0,
-            },
-            '&.Mui-disabled + .MuiSwitch-track': {
-              opacity: 0.5,
-            },
-          },
-          '&.Mui-focusVisible .MuiSwitch-thumb': {
-            color: '#33cf4d',
-            border: '6px solid #fff',
-          },
-          '&.Mui-disabled .MuiSwitch-thumb': {
-            color:
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[600],
-          },
-          '&.Mui-disabled + .MuiSwitch-track': {
-            opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
-          },
-        },
-        '& .MuiSwitch-thumb': {
-          boxSizing: 'border-box',
-          width: 22,
-          height: 22,
-        },
-        '& .MuiSwitch-track': {
-          borderRadius: 26 / 2,
-          backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
-          opacity: 1,
-          transition: theme.transitions.create(['background-color'], {
-            duration: 500,
-          }),
-        },
-      }));
 
     return (
         <Accordion expanded={expand} sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
@@ -333,223 +267,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                     </Box>
                     {
                         edit &&
-                        <Box
-                            bgcolor='#FFFBF8'
-                            px={1}
-                            pb={6}
-                            pt={6}
-                        >
-                            <Stack
-                                direction='row'
-                                flex={1}
-                                gap={12}
-                            >
-                                <Stack
-                                    direction='column'
-                                    gap={8}
-                                >
-                                    <Stack
-                                        gap={1.5}
-                                    >
-                                        <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='ProgramName'>Program's Name</InputLabel>
-                                        <Input 
-                                            color='primary' 
-                                            disableUnderline
-                                            aria-labelledby='ProgramName'
-                                            sx={{
-                                                border: '1px solid rgba(0, 0, 0, 0.20)',
-                                                width: '420px',
-                                                background: '#fff',
-                                                borderRadius: '5px',
-                                                paddingX: 1,
-                                                paddingY: 0.5,
-                                                flex: 1,
-                                                bgcolor: '#F8F8F8'
-                                            }}
-                                        />
-                                    </Stack>
-                                    <Stack
-                                        gap={1.5}
-                                    >
-                                        <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='ProgramType'>Program's Type</InputLabel>
-                                        <Input 
-                                            color='primary' 
-                                            disableUnderline
-                                            aria-labelledby='ProgramType'
-                                            sx={{
-                                                border: '1px solid rgba(0, 0, 0, 0.20)',
-                                                width: '420px',
-                                                background: '#fff',
-                                                borderRadius: '5px',
-                                                paddingX: 1,
-                                                paddingY: 0.5,
-                                                flex: 1,
-                                                bgcolor: '#F8F8F8'
-                                            }}
-                                        />
-                                    </Stack>
-                                </Stack>
-                                <Stack
-                                    gap={1.5}
-                                    flex={1}
-                                >
-                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='ProgramType'>Program's Type</InputLabel>
-                                    <TextareaAutosize
-                                        color='primary'
-                                        aria-labelledby='ProgramType'
-                                        minRows={2} // Set the minimum number of rows you want
-                                        style={{
-                                            border: '1px solid rgba(0, 0, 0, 0.20)',
-                                            width: '95%',
-                                            background: '#fff',
-                                            borderRadius: '5px',
-                                            paddingTop: 10,
-                                            paddingBottom: 10,
-                                            paddingRight: 10,
-                                            paddingLeft: 10,
-                                            flex: 1,
-                                            backgroundColor: '#F8F8F8',
-                                            overflowWrap: 'break-word',
-                                            height: '100% !important',
-                                            fontSize: '16px',
-                                            fontFamily: 'Inter',
-                                        }}
-                                    />
-                                </Stack>
-                            </Stack>
-                            <Stack
-                                direction='row'
-                                gap={3}
-                                mt={8}
-                            >
-                                <Stack
-                                    gap={1.5}
-                                    flex={1}
-                                >
-                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Expiry'>Expiry</InputLabel>
-                                    <Input 
-                                        color='primary' 
-                                        disableUnderline
-                                        aria-labelledby='Expiry'
-                                        sx={{
-                                            border: '1px solid rgba(0, 0, 0, 0.20)',
-                                            width: '100%',
-                                            minWidth: '420px',
-                                            background: '#fff',
-                                            borderRadius: '5px',
-                                            paddingX: 1,
-                                            paddingY: 0.5,
-                                            flex: 1,
-                                            bgcolor: '#F8F8F8'
-                                        }}
-                                    />
-                                </Stack>
-                                <Stack
-                                    gap={1.5}
-                                    flex={1}
-                                >
-                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Duration'>Duration</InputLabel>
-                                    <Input 
-                                        color='primary' 
-                                        disableUnderline
-                                        aria-labelledby='Duration'
-                                        sx={{
-                                            border: '1px solid rgba(0, 0, 0, 0.20)',
-                                            width: '100%',
-                                            minWidth: '420px',
-                                            background: '#fff',
-                                            borderRadius: '5px',
-                                            paddingX: 1,
-                                            paddingY: 0.5,
-                                            flex: 1,
-                                            bgcolor: '#F8F8F8'
-                                        }}
-                                    />
-                                </Stack>
-                                <Stack
-                                    gap={1.5}
-                                    flex={1}
-                                >
-                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id="Level">Level</InputLabel>
-                                    <Select
-                                        // labelId="demo-select-small-label"
-                                        // id="demo-select-small"
-                                        sx={{
-                                            width: '180px !important',
-                                            flex: 1,
-                                            boxShadow: '0px 0px 0px 1px rgba(0, 0, 0, 0.20)',
-                                            borderRadius: '4px !important',
-                                            outline: 'none !important',
-                                            boxSizing: 'border-box !important',
-                                            background: '#F8F8F8',
-                                            paddingX: 1,
-                                            '&:hover': {
-                                                boxShadow: '0px 0px 0px 1px rgba(0, 0, 0, 0.20)',
-                                                background: '#F8F8F8',
-                                            }, fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000',
-                                            textAlign: 'left'
-                                        }}
-                                        // value={day}
-                                        IconComponent={() => <ExpandMore sx={{ borderLeft: '1.5px solid rgba(0, 0, 0, 0.20)', color: '#000', paddingLeft: 1, height: '100%', zIndex: 1, position: 'absolute', left: '75%' }} />}
-                                        inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
-                                        variant='standard'
-                                        disableUnderline
-                                        color='primary'
-                                        labelId="Level"
-                                    >
-                                        <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='Beginner'>Beginner</MenuItem>
-                                        <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='Intermediate'>Intermediate</MenuItem>
-                                        <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='Expert'>Expert</MenuItem>
-                                    </Select>
-                                </Stack>
-                                <Stack
-                                    gap={1.5}
-                                    width='150px'
-                                    alignItems='center'
-                                    justifyContent='center'
-                                    pl={-8}
-                                >
-                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }}>New Students</InputLabel>
-                                    <IOSSwitch />
-                                </Stack>
-                            </Stack>
-                            <Stack
-                                direction='row'
-                                gap={3}
-                                mt={8}
-                            >
-                                <Stack
-                                    gap={1.5}
-                                    // flex={1}
-                                    direction='column'
-                                    width='fit-content'
-                                >
-                                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Prereqs'>Prerequisites</InputLabel>
-                                    <Input 
-                                        color='primary' 
-                                        disableUnderline
-                                        aria-labelledby='Prereqs'
-                                        sx={{
-                                            border: '1px solid rgba(0, 0, 0, 0.20)',
-                                            width: '420px',
-                                            background: '#fff',
-                                            borderRadius: '5px',
-                                            paddingX: 1,
-                                            paddingY: 0.5,
-                                            bgcolor: '#F8F8F8'
-                                        }}
-                                    />
-                                </Stack>
-                                <Stack
-                                    direction='row'
-                                    gap={6}
-                                    justifyContent='flex-start'
-                                    flex={1}
-                                >
-                                    {displayedPrereqs}
-                                </Stack>
-                            </Stack>
-                        </Box>
+                        <TeacherEditMyProgramCard program={program} setEdit={setEdit} />
                     }
                 </Box>
             </AccordionSummary>
