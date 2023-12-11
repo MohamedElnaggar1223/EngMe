@@ -4,12 +4,12 @@ import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel } from "@mui
 import { setLessonData } from "../../../helpers/setLessonData"
 
 //@ts-expect-error anytype
-export default function ComponentCardEditLesson({ course, setEdited, lesson }) 
+export default function ComponentCardEditLesson({ course, setEdited, lesson, order, setAdded }) 
 {
     const queryClient = useQueryClient()
 
-    const [title, setTitle] = useState(lesson.title)
-    const [description, setDescription] = useState(lesson.description)
+    const [title, setTitle] = useState(lesson?.title ?? '')
+    const [description, setDescription] = useState(lesson?.description ?? '')
 
     const { mutate } = useMutation({
         onMutate: () => {
@@ -17,15 +17,15 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson })
 
             queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
                 //@ts-expect-error lesson
-                const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson.id)
-                const newArray = [...filteredArray, {...lesson, title, description}]
+                const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson?.id)
+                const newArray = [...filteredArray, lesson ? {...lesson, title, description} : { title, description, duration: '1 Hour 55 Minutes' }]
 
                 return newArray
             })
 
             return () => queryClient.setQueryData(['lessons', course.programId, course.id], previousData)
         },
-        mutationFn: () => setLessonData(title, description, lesson)
+        mutationFn: () => setLessonData(title, description, lesson, course, (order + 1))
     })
 
     return (
@@ -126,6 +126,10 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson })
                             justifyContent: 'flex-start',
                             gap: 1,
                             width: '160px',
+                        }}
+                        onClick={() => {
+                            setEdited('')
+                            setAdded('quiz')
                         }}
                     >
                         <SvgIcon sx={{ fontSize: 38, fontWeight: 400 }}>
@@ -230,7 +234,10 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson })
                                 opacity: 1
                             },
                         }}
-                        onClick={() => setEdited('')}
+                        onClick={() => {
+                            setEdited('')
+                            setAdded('')
+                        }}
                     >
                         Cancel
                     </Button>
@@ -252,8 +259,9 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson })
                             },
                         }}
                         onClick={() => {
-                            setEdited('')
                             mutate()
+                            setEdited('')
+                            setAdded('')
                         }}
                     >
                         Confirm

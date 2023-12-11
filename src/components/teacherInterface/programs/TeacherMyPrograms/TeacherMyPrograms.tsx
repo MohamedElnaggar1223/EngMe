@@ -1,6 +1,8 @@
 import { Stack, Button, SvgIcon, Typography, Box } from '@mui/material'
 import ProgramProps from '../../../../interfaces/ProgramProps'
 import TeacherMyProgramCard from './TeacherMyProgramCard'
+import { useState } from 'react'
+import TeacherEditMyProgramCard from './TeacherEditMyProgramCard'
 
 interface TeacherMyProgramsProps{
     programs: ProgramProps[]
@@ -8,18 +10,22 @@ interface TeacherMyProgramsProps{
 
 export default function TeacherMyPrograms({ programs }: TeacherMyProgramsProps) 
 {
+    const [add, setAdd] = useState(false)
+
     const displayedPrograms = programs.map(program => <TeacherMyProgramCard key={program.id} {...program} />)
 
     return (
         <Box
             display='flex'
             flexDirection='column'
+            gap={8}
+            mb={8}
         >
             <Stack
                 flex={1}
                 alignItems='flex-end'
                 justifyContent='center'
-                my={6}
+                mt={6}
             >
                 <Button
                     sx={{
@@ -43,6 +49,7 @@ export default function TeacherMyPrograms({ programs }: TeacherMyProgramsProps)
                         justifyContent: 'space-between',
                         gap: 2
                     }}
+                    onClick={() => setAdd(true)}
                 >
                     <SvgIcon sx={{ fontSize: 20, fontWeight: 400 }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
@@ -52,6 +59,10 @@ export default function TeacherMyPrograms({ programs }: TeacherMyProgramsProps)
                     <Typography fontFamily='Inter' fontSize={14}>Add a New Program</Typography>
                 </Button>
             </Stack>
+            {
+                add &&
+                <TeacherEditMyProgramCard setEdit={setAdd} program={undefined} />
+            }
             {displayedPrograms}
         </Box>
     )

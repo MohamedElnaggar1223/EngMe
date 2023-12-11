@@ -13,6 +13,10 @@ import { useQuery } from '@tanstack/react-query';
 import { getProgramsData } from '../../../helpers/getProgramsData';
 // eslint-disable-next-line react-refresh/only-export-components
 const Components = lazy(() => import('./Components'))
+// eslint-disable-next-line react-refresh/only-export-components
+const FinalExams = lazy(() => import('./FinalExams'))
+// eslint-disable-next-line react-refresh/only-export-components
+const Discussions = lazy(() => import('./Discussions'))
 import TeacherEditMyProgramCard from './TeacherEditMyProgramCard';
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -331,27 +335,6 @@ function TeacherMyProgramCard(program: ProgramProps)
                             sx={{
                                 width: '200px',
                                 height: '40px',
-                                background: programPage === 'Grades' ? '#D0EBFC' : '#fff',
-                                color: '#000',
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                textTransform: 'none',
-                                fontWeight: 400,
-                                border: '1px solid #226E9F',
-                                borderRadius: '15px',
-                                '&:hover': {
-                                    background: '#fff',
-                                    opacity: 1
-                                }
-                            }}
-                            onClick={() => setProgramPage('Grades')}
-                        >
-                            Grades
-                        </Button>
-                        <Button
-                            sx={{
-                                width: '200px',
-                                height: '40px',
                                 background: programPage === 'Discussions' ? '#D0EBFC' : '#fff',
                                 color: '#000',
                                 fontFamily: 'Inter',
@@ -394,10 +377,22 @@ function TeacherMyProgramCard(program: ProgramProps)
                         //         </Suspense>
                         //     }
                         // </ProgramCurrentCardContext.Provider>
-                        programPage === 'Components' &&
+                        programPage === 'Components' ?
                         <Suspense>
                             <Components {...program} /> 
                         </Suspense>
+                        :
+                        programPage === 'Discussions' ?
+                        <Suspense>
+                            <Discussions {...program} />
+                        </Suspense>
+                        :
+                        programPage === 'Exams' ?
+                        <Suspense>
+                            <FinalExams {...program} />
+                        </Suspense>
+                        :
+                        <></>
                     }
                 </Box>
             </AccordionDetails>

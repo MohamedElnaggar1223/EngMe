@@ -19,7 +19,7 @@ export default function ChatCard({ id }: Props)
     const { setChat } = useContext(ChatContext)
     //@ts-expect-error dad
     const { userData } = useContext(AuthContext)
-    const userRef = doc(db, 'students', id)
+    const userRef = doc(db, userData.role === 'teacher' ? 'students' : 'teachers', id)
     // const [chatUserData, setChatUserData] = useState()
 
     async function getInitialFriendData(userRef: DocumentReference<DocumentData, DocumentData>)

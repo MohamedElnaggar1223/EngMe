@@ -1,9 +1,10 @@
 import { doc, updateDoc, collection, addDoc, query, where, getDocs, arrayUnion } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 import ProgramProps from "../../interfaces/ProgramProps"
+import { setCourseData } from "./setCourseData"
 
-export const setProgramData = async(teacherId: string, name: string, description: string, category: string, level: string, duration: string, expiry: string, paused: boolean, prereqName: string, program?: ProgramProps) => {
-    if(program?.id)
+export const setProgramData = async(teacherId: string, name: string, description: string, category: string, level: string, duration: string, expiry: string, paused: boolean, prereqName: string, program?: ProgramProps, image?: string) => {
+    if(program)
     {
         const programDoc = doc(db, 'programs', program.id)
 
@@ -36,7 +37,24 @@ export const setProgramData = async(teacherId: string, name: string, description
     }
     else
     {
+        console.log('test')
         const programsRef = collection(db, 'programs')
+
+        console.log({
+            name,
+            description,
+            category,
+            level,
+            duration,
+            expiry,
+            paused,
+            averageRating: 5,
+            totalFeedbacks: 0,
+            courses: [],
+            teacherId,
+            prerequisites: [],
+            image: image ?? ''
+        })
         
         let newProgram = {
             name,
@@ -49,9 +67,14 @@ export const setProgramData = async(teacherId: string, name: string, description
             averageRating: 5,
             totalFeedbacks: 0,
             courses: [],
-            image: '',
             teacherId,
-            prerequisites: ['']
+            prerequisites: [],
+            image: image ?? '',
+            finalExams: {
+                'Version 1': '',
+                'Version 2': '',
+                'Version 3': ''
+            }
         }
 
         if(prereqName.length > 0)
@@ -61,12 +84,15 @@ export const setProgramData = async(teacherId: string, name: string, description
             {
                 newProgram = {
                     ...newProgram,
+                    //@ts-expect-error never
                     prerequisites: [prereqAdded]
                 }
             }
         }
 
         const addedProgram = await addDoc(programsRef, newProgram)
+
+        await setCourseData(addedProgram)
         
         const teacherDoc = doc(db, 'teachers', teacherId)
 

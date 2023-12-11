@@ -72,22 +72,26 @@ export default function Programs()
 
                         </Box>
                     </Stack>
-                    <Stack
-                        alignItems='center'
-                        onClick={() => setTab('Paused')}
-                        sx={{ cursor: 'pointer' }}
-                    >
-                        <Typography>Paused Programs</Typography>
-                        <Box
-                            position='relative'
-                            border='0px'
-                            height='6px'
-                            bgcolor={tab === 'Paused' ? '#FF9F06' : '#fff'}
-                            width={{xs: '80px', sm: '120px', lg: '180px'}}
+                    {
+                        //@ts-expect-error paused
+                        teacherPrograms?.find(program => program.paused) && 
+                        <Stack
+                            alignItems='center'
+                            onClick={() => setTab('Paused')}
+                            sx={{ cursor: 'pointer' }}
                         >
+                            <Typography>Paused Programs</Typography>
+                            <Box
+                                position='relative'
+                                border='0px'
+                                height='6px'
+                                bgcolor={tab === 'Paused' ? '#FF9F06' : '#fff'}
+                                width={{xs: '80px', sm: '120px', lg: '180px'}}
+                            >
 
-                        </Box>
-                    </Stack>
+                            </Box>
+                        </Stack>
+                    }
                 </Stack>
                 <Box
                     position='relative'
@@ -119,11 +123,22 @@ export default function Programs()
                 //         <ProgramsFavorites />
                 //     </Suspense>
                 // )
-                !isLoading && tab === 'Programs' &&
-                <Suspense>
-                    {/*//@ts-expect-error programs */}
-                    <TeacherMyPrograms programs={teacherPrograms} />
-                </Suspense>
+                !isLoading && 
+                (
+                    tab === 'Programs' ?
+                    <Suspense>
+                        {/*//@ts-expect-error programs */}
+                        <TeacherMyPrograms programs={teacherPrograms?.slice().filter(program => !program.paused)} />
+                    </Suspense>
+                    :
+                    tab === 'Paused' ?
+                    <Suspense>
+                        {/*//@ts-expect-error programs */}
+                        <TeacherMyPrograms programs={teacherPrograms?.slice().filter(program => program.paused)} />
+                    </Suspense>
+                    :
+                    <></>
+                )
             }
         </Box>
     )

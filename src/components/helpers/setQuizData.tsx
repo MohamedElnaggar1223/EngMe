@@ -1,26 +1,27 @@
 import { doc, updateDoc, collection, Timestamp, addDoc, arrayUnion } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 
-export const setAssessmentData = async(questions: unknown, assessment?: unknown, course?: unknown, order?: number) => {
-    if(assessment)
+export const setQuizData = async(questions: unknown, quiz?: unknown, course?: unknown, order?: number) => {
+    if(quiz)
     {
         //@ts-expect-error course
-        const assessmentDoc = doc(db, 'assessments', assessment.id)
+        const quizDoc = doc(db, 'quizzes', quiz.id)
 
-        const updatedAssessment = {
+        const updatedQuiz = {
             questions
         }
 
-        await updateDoc(assessmentDoc, updatedAssessment)
+        await updateDoc(quizDoc, updatedQuiz)
     }
     else
     {
+        console.log(course)
         if(course)
         {
-            const assessmentsRef = collection(db, 'assessments')
+            const quizzesRef = collection(db, 'quizzes')
 
-            const newAssessment = {
-                title: 'Assessment',
+            const newQuiz = {
+                title: 'Quiz',
                 order,
                 questions,
                 duration: '30 Minutes',
@@ -29,7 +30,7 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
                 courseId: course.id
             }
 
-            const addedAssessment = await addDoc(assessmentsRef, newAssessment)
+            const addedQuiz = await addDoc(quizzesRef, newQuiz)
 
             //@ts-expect-error course
             const courseDoc = doc(db, 'courses', course.id)
@@ -37,7 +38,7 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
             //@ts-expect-error duration
             const durationAdded = ((30 / 60) + Number(course?.duration?.split(' ')[0])).toFixed(0)
 
-            await updateDoc(courseDoc, { assessments: arrayUnion(addedAssessment.id), duration: `${durationAdded} Hours` })
+            await updateDoc(courseDoc, { quizzes: arrayUnion(addedQuiz.id), duration: `${durationAdded} Hours` })
         }
     }
 }

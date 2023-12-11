@@ -2,6 +2,7 @@ import { doc, updateDoc, collection, Timestamp, addDoc, arrayUnion } from "fireb
 import { db } from "../../firebase/firebaseConfig"
 
 export const setLessonData = async(title: string, description: string, lesson?: unknown, course?: unknown, order?: number) => {
+    console.log(title, description, lesson, course)
     if(lesson)
     {
         //@ts-expect-error course
@@ -16,8 +17,10 @@ export const setLessonData = async(title: string, description: string, lesson?: 
     }
     else
     {
+        console.log(course)
         if(course)
         {
+            console.log('hello')
             const lessonsRef = collection(db, 'lessons')
 
             const newLesson = {
@@ -35,7 +38,10 @@ export const setLessonData = async(title: string, description: string, lesson?: 
             //@ts-expect-error course
             const courseDoc = doc(db, 'courses', course.id)
 
-            await updateDoc(courseDoc, { lessons: arrayUnion(addedLesson) })
+            //@ts-expect-error duration
+            const durationAdded = ((115 / 60) + Number(course?.duration?.split(' ')[0])).toFixed(0)
+
+            await updateDoc(courseDoc, { lessons: arrayUnion(addedLesson.id), duration: `${durationAdded} Hours` })
         }
     }
 }
