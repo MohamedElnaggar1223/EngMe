@@ -10,7 +10,7 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
 
     const [title, setTitle] = useState(lesson?.title ?? '')
     const [description, setDescription] = useState(lesson?.description ?? '')
-    const [file, setFile] = useState({name: lesson?.content?.content} ?? null);
+    const [file, setFile] = useState({name: lesson?.content?.content});
     const [fileType, setFileType] = useState(lesson?.content?.type === 'Videos/' ? 'video/mp4' : lesson?.content?.type === 'Pdfs/' ? 'pdf' : null);
 
     const { mutate } = useMutation({

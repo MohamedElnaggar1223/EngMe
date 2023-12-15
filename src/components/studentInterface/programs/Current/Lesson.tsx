@@ -2,9 +2,6 @@ import { doc, getDoc } from "firebase/firestore"
 import { useParams } from "react-router-dom"
 import { db } from "../../../../firebase/firebaseConfig"
 import { useQuery } from "@tanstack/react-query"
-// import { pdfjs } from "react-pdf"
-// import { Worker, Viewer } from '@react-pdf-viewer/core'
-import '@react-pdf-viewer/core/lib/styles/index.css'
 import { getDownloadURL, getStorage, ref } from "firebase/storage"
 
 export default function Lesson() 
