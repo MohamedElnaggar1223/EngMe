@@ -1,16 +1,30 @@
 import { doc, updateDoc, collection, Timestamp, addDoc, arrayUnion } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
+import { getStorage, ref, uploadBytes } from "firebase/storage"
 
-export const setLessonData = async(title: string, description: string, lesson?: unknown, course?: unknown, order?: number) => {
+export const setLessonData = async(title: string, description: string, lesson?: unknown, course?: unknown, file?: unknown, fileType?: unknown, order?: number) => {
     console.log(title, description, lesson, course)
     if(lesson)
     {
         //@ts-expect-error course
         const lessonDoc = doc(db, 'lessons', lesson.id)
 
+        const storage = getStorage();
+        const storagePath = fileType === 'video/mp4' ? 'Videos/' : 'Pdfs/';
+        //@ts-expect-error file
+        const storageRef = ref(storage, storagePath + file.name);
+
+        //@ts-expect-error file
+        await uploadBytes(storageRef, file)
+
         const updatedLesson = {
             title,
-            description
+            description,
+            content: {
+                type: storagePath,
+                //@ts-expect-error file
+                content: file.name
+            }
         }
 
         await updateDoc(lessonDoc, updatedLesson)

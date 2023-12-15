@@ -12,6 +12,7 @@ import AuthProvider from "./components/authentication/auth/AuthProvider"
 import PrivateRoute from "./components/authentication/auth/PrivateRoute"
 import PrefetchPrograms from "./components/authentication/auth/PrefetchPrograms"
 import TeacherLayout from "./components/TeacherLayout"
+import Lesson from "./components/studentInterface/programs/Current/Lesson"
 const TeacherInterfaceTeacherProfile = lazy(() => import("./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"))
 const TeacherProgramsPage = lazy(() => import("./components/teacherInterface/programs/TeacherProgramsPage"))
 const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
@@ -129,6 +130,18 @@ function App() {
 												student: 
 													<Suspense>
 														<Assessment />
+													</Suspense>
+											}}
+										</PrivateRoute>
+									} />
+								</Route>
+								<Route path='lesson/:id'>
+									<Route index element={
+										<PrivateRoute>
+											{{
+												student: 
+													<Suspense>
+														<Lesson />
 													</Suspense>
 											}}
 										</PrivateRoute>

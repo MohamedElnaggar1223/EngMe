@@ -67,7 +67,7 @@ export default function TeacherPrograms()
                             gap={3}
                             flexWrap='wrap'
                             p={0.5}
-                            justifyContent={{xs: 'center', sm: 'center', lg: 'space-between'}}
+                            justifyContent={{xs: 'center', sm: 'center', lg: displayedPrograms?.length ? 'flex-start' : 'center'}}
                         >
                             
                             {

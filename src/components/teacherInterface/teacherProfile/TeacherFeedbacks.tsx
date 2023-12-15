@@ -55,7 +55,7 @@ export default function TeacherFeedbacks()
                 gap={3}
                 mx={15}
                 flexWrap='wrap'
-                justifyContent={{ xs: 'center', sm: 'center', lg: 'space-between' }}
+                justifyContent={{ xs: 'center', sm: 'center', lg: finalDisplayedComments?.length ? 'space-between' : 'center' }}
             >
                 {
                     finalDisplayedComments && finalDisplayedComments?.length > 1 ?

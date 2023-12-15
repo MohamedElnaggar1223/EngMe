@@ -20,7 +20,7 @@ export default function ProgramsFavorites() {
     return (
         <Stack
             direction='row'
-            justifyContent='space-between'
+            justifyContent='flex-start'
             my={8}
             gap={4}
             flexWrap='wrap'

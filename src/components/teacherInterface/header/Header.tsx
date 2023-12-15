@@ -1,23 +1,113 @@
-import { Box, Fade, Paper, Popper, Stack, SvgIcon, Typography } from "@mui/material";
+import { Avatar, Box, Button, Fade, IconButton, Input, InputAdornment, Paper, Popper, Stack, SvgIcon, Typography } from "@mui/material";
 import logo from '../../../assets/Ellipse 1.png'
-import { memo } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 // import { PageContext } from "../../Layout";
 import { useLocation, useNavigate } from "react-router-dom";
 import PopupState, { bindToggle, bindPopper } from "material-ui-popup-state";
 import LogoutIcon from '@mui/icons-material/Logout';
 import { signOut } from "firebase/auth";
-import { auth } from "../../../firebase/firebaseConfig";
+import { auth, db } from "../../../firebase/firebaseConfig";
+import { AuthContext } from "../../authentication/auth/AuthProvider";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getNotifications } from "../../helpers/getNotifications";
+import { Timestamp, collection, onSnapshot } from "firebase/firestore";
+import { setNotification } from "../../helpers/setNotification";
 
 // eslint-disable-next-line react-refresh/only-export-components
 function Header() 
 {
+    const queryClient = useQueryClient()
+
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+    
     const navigate = useNavigate()
     const { pathname } = useLocation()
+
+    const [pushNotification, setPushNotifictaion] = useState(false)
+    const [notification, setNotifictaionSent] = useState('')
+
+    const { data: notifications } = useQuery({
+        queryKey: ['notifications', userData?.id],
+        queryFn: () => getNotifications()
+    })
+
+    const { mutate: mutateNotification } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['notifications', userData?.id])
+
+            queryClient.setQueryData(['notifications', userData?.id], (oldData: unknown) => {
+                //@ts-expect-error oldData
+                return [...oldData, { notification, createdAt: Timestamp.now() }]
+            })
+
+            return () => queryClient.setQueryData(['notifications', userData?.id], previousData)
+        },
+        onSettled: () => setNotifictaionSent(''),
+        mutationFn: () => setNotification(notification)
+    })
+
+    const displayedNotifications = notifications?.map(notif => {
+        //@ts-expect-error notif
+        const hoursAgo = (Timestamp.now().toDate().getTime() - notif?.createdAt.toDate().getTime()) / (1000 * 60 * 60)
+        //@ts-expect-error notif
+        const minutesAgo = (Timestamp.now().toDate().getTime() - notif?.createdAt.toDate().getTime()) / (1000 * 60)
+        return (
+            <Stack
+                direction='column'
+                key={notif.id}
+                height='100px'
+                bgcolor='#D0EBFC'
+                flex={1}
+                p={2}
+                alignItems='center'
+                width='94.2%'
+            >
+                <Stack
+                    direction='row'
+                    gap={4}
+                    mr='auto'
+                >
+                    <Avatar src='' sx={{ width: '81px', height: '81px' }} />
+                    <Typography
+                        fontSize={14}
+                        fontWeight={600}
+                        fontFamily='Inter'
+                        display='flex'
+                        alignSelf='flex-start'
+                        sx={{
+                            color: '#000',
+                            alignSelf: 'center'
+                        }}
+                    >
+                        {/*//@ts-expect-error notif */}
+                        {notif?.notification}
+                    </Typography>
+                </Stack>
+                <Typography fontSize={12} sx={{ opacity: 0.6, ml: 'auto' }}>{hoursAgo > 1 ? `${hoursAgo.toFixed(0)} Hours Ago` : `${minutesAgo.toFixed(0)} Minutes Ago`}</Typography>
+            </Stack>
+        )
+    })
+
+    useEffect(() => {
+        const notificationsRef = collection(db, 'notifications')
+
+        const unsub = onSnapshot(notificationsRef, () => {
+            queryClient.invalidateQueries({ queryKey: ['notifications', userData?.id] })
+        })
+
+        return () => {
+            unsub()
+        }
+        //eslint-disable-next-line
+    }, [])
 
     async function handleSignOut()
     {
         await signOut(auth);
     }
+
+    const isAdmin = userData.email === 'admin@test.com'
 
     return (
         <Box
@@ -79,24 +169,119 @@ function Header()
                     pb={3}
                     position='relative'
                 >
-                    <SvgIcon sx={{ fontSize: 30, border: '1.5px solid', padding: 0.5, borderRadius: '6px', borderColor: '#6A9DBC' }}>
-                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M27.098 23.8687L21.201 19.6566C22.8858 17.5505 24.0091 14.8828 24.0091 12.0747C23.8687 5.33535 18.5333 0 11.9343 0C5.33535 0 0 5.33535 0 11.9343C0 18.5333 5.33535 23.8687 11.9343 23.8687C14.8828 23.8687 17.4101 22.8858 19.5162 21.0606L23.7283 26.9576C24.5707 28.2212 26.2555 28.3616 27.2384 27.2384C28.2212 26.1151 28.2212 24.7111 27.098 23.8687ZM11.9343 21.0606C6.8798 21.0606 2.80808 16.9889 2.80808 11.9343C2.80808 6.8798 6.8798 2.80808 11.9343 2.80808C16.9889 2.80808 21.0606 6.8798 21.0606 11.9343C21.0606 16.9889 16.9889 21.0606 11.9343 21.0606Z" fill="url(#paint0_linear_2_11900)"/>
-                            <defs>
-                            <linearGradient id="paint0_linear_2_11900" x1="2" y1="3" x2="29.5" y2="30.5" gradientUnits="userSpaceOnUse">
-                            <stop stopColor="#226E9F"/>
-                            <stop offset="0.94445" stopColor="#6A9DBC"/>
-                            </linearGradient>
-                            </defs>
-                        </svg>
-                    </SvgIcon>
-                    <SvgIcon sx={{ fontSize: 42 }}>
-                        <svg width="41" height="38" viewBox="0 0 41 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="1.08203" y="0.5" width="38.5833" height="37" rx="4.5" fill="white" stroke="#00C342"/>
-                            <path d="M29.7939 25.6028C29.7949 26.0918 29.6019 26.5611 29.2572 26.908C28.9126 27.2548 28.4444 27.4507 27.9555 27.4528H12.4202C11.9321 27.4512 11.4646 27.2562 11.1201 26.9105C10.7755 26.5648 10.582 26.0966 10.582 25.6086C10.582 25.1205 10.7755 24.6523 11.1201 24.3066C11.4646 23.9609 11.9321 23.7659 12.4202 23.7643H27.9555C28.4426 23.7658 28.9094 23.9599 29.2539 24.3044C29.5984 24.6489 29.7925 25.1157 29.7939 25.6028ZM27.2621 17.1961C26.0957 17.1989 24.9521 16.8732 23.9621 16.2564C22.9721 15.6395 22.1758 14.7565 21.6643 13.7082C21.1527 12.6599 20.9466 11.4888 21.0695 10.3289C21.1925 9.169 21.6394 8.06712 22.3593 7.14937C21.966 7.02793 21.5621 6.94391 21.153 6.89843V4.96822C21.1534 4.84122 21.1287 4.71538 21.0804 4.59793C21.0321 4.48048 20.961 4.37372 20.8714 4.28377C20.7817 4.19383 20.6752 4.12246 20.5579 4.07376C20.4406 4.02507 20.3149 4 20.1879 4C20.0609 4 19.9351 4.02507 19.8178 4.07376C19.7005 4.12246 19.594 4.19383 19.5043 4.28377C19.4147 4.37372 19.3436 4.48048 19.2953 4.59793C19.247 4.71538 19.2223 4.84122 19.2227 4.96822V6.91774C17.3739 7.15948 15.6754 8.06331 14.442 9.4617C13.2087 10.8601 12.5241 12.6582 12.5152 14.5228V21.8383H27.8605V17.1672C27.6578 17.1865 27.4647 17.1961 27.2621 17.1961ZM17.9102 29.3854C17.9115 29.9886 18.152 30.5667 18.579 30.9929C19.006 31.419 19.5846 31.6583 20.1879 31.6583C20.7911 31.6583 21.3697 31.419 21.7967 30.9929C22.2237 30.5667 22.4642 29.9886 22.4655 29.3854H17.9102Z" fill="#226E9F"/>
-                            <circle cx="27.582" cy="11" r="5" fill="#00C342"/>
-                        </svg>
-                    </SvgIcon>
+                    {
+                        isAdmin ?
+                        <Stack
+                            direction='row'
+                        >
+                            <form
+                                onSubmit={(e) =>{ 
+                                    e.preventDefault()
+                                    mutateNotification()
+                                }}
+                            >
+                                <Input
+                                    sx={{ 
+                                        flex: 1,
+                                        marginRight: 2,
+                                        fontSize: 20,
+                                        width: pushNotification ? '400px' : '0px',
+                                        transition: '0.5s',
+                                        bgcolor: '#fcfcfc',
+                                        borderRadius: '5px',
+                                        border: pushNotification ? '1px solid #6A9DBC' : ''
+                                    }}
+                                    disableUnderline
+                                    value={notification}
+                                    startAdornment={
+                                        pushNotification &&
+                                        <InputAdornment position="end">
+                                            <IconButton>
+                                                <SvgIcon>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="41" height="38" viewBox="0 0 41 38" fill="none">
+                                                        <rect x="0.5" y="0.5" width="40" height="37" rx="4.5" fill="white" stroke="url(#paint0_linear_2_5856)"/>
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M8.82183 15.9618L13.1996 19.037L27.7157 9.19398L8.82183 15.9618ZM18.8681 24.4418L18.0316 27.4855L20.1675 25.3547L18.8681 24.4418ZM16.8317 27.6048L13.8904 19.9767L27.2708 10.9048L18.1031 23.1355C18.0581 23.1953 18.0245 23.2639 18.0044 23.3372L16.8309 27.6051L16.8317 27.6048ZM21.1234 26.026L17.3422 29.7987C17.2789 29.8746 17.1983 29.9322 17.108 29.9659C17.0176 29.9997 16.9206 30.0086 16.8262 29.9916C16.7317 29.9747 16.6429 29.9326 16.5682 29.8693C16.4935 29.806 16.4354 29.7235 16.3994 29.6299L12.7385 20.1359L7.26103 16.2884C7.17151 16.2286 7.09986 16.1432 7.05437 16.0422C7.00888 15.9413 6.9914 15.8288 7.00395 15.7178C7.01651 15.6068 7.05858 15.5018 7.1253 15.4149C7.19203 15.3281 7.2807 15.2629 7.38105 15.2269L30.2598 7.03136C30.3546 6.99742 30.4563 6.99089 30.5543 7.01245C30.6523 7.03401 30.743 7.08288 30.817 7.15397C30.891 7.22506 30.9456 7.31577 30.9751 7.41667C31.0046 7.51756 31.0079 7.62495 30.9848 7.72767L26.2304 28.6131C26.2173 28.6943 26.1883 28.7716 26.145 28.8402C26.1045 28.9052 26.0521 28.9611 25.991 29.0047C25.9299 29.0483 25.8612 29.0787 25.7889 29.0942C25.7166 29.1098 25.6422 29.1101 25.5697 29.0952C25.4973 29.0802 25.4284 29.0504 25.367 29.0073L21.1234 26.0251V26.026ZM29.2895 10.117L25.3211 27.5511L19.3596 23.3643L29.2895 10.117Z" fill="url(#paint1_linear_2_5856)"/>
+                                                        <defs>
+                                                            <linearGradient id="paint0_linear_2_5856" x1="20.5" y1="0" x2="20.5" y2="38" gradientUnits="userSpaceOnUse">
+                                                            <stop stop-color="#226E9F"/>
+                                                            <stop offset="1" stop-color="#6A9DBC"/>
+                                                            </linearGradient>
+                                                            <linearGradient id="paint1_linear_2_5856" x1="19" y1="7" x2="19" y2="30" gradientUnits="userSpaceOnUse">
+                                                            <stop stop-color="#226E9F"/>
+                                                            <stop offset="1" stop-color="#6A9DBC"/>
+                                                            </linearGradient>
+                                                        </defs>
+                                                    </svg>
+                                                </SvgIcon>
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+
+                                    onChange={(e) => setNotifictaionSent(e.target.value)}
+                                />
+                            </form>
+                            <Button
+                                sx={{
+                                    background: 'linear-gradient(95deg, #226E9F 5.94%, #6A9DBC 95.69%)',
+                                    color: '#fff',
+                                    fontFamily: 'Inter',
+                                    fontSize: 14,
+                                    textTransform: 'none',
+                                    fontWeight: 400,
+                                    border: '1px solid linear-gradient(95deg, #226E9F 5.94%, #6A9DBC 95.69%)',
+                                    borderRadius: '10px',
+                                    '&:hover': {
+                                        background: 'linear-gradient(95deg, #226E9F 5.94%, #6A9DBC 95.69%)',
+                                        opacity: 1
+                                    },
+                                    paddingX: 1.5,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '160px',
+                                    alignSelf: 'flex-end',
+                                    height: '38px'
+                                }}
+                                onClick={() => setPushNotifictaion(prev => !prev)}
+                            >
+                                Push Notifictaion
+                            </Button>
+                        </Stack>
+                        :
+                        <SvgIcon sx={{ fontSize: 30, border: '1.5px solid', padding: 0.5, borderRadius: '6px', borderColor: '#6A9DBC' }}>
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M27.098 23.8687L21.201 19.6566C22.8858 17.5505 24.0091 14.8828 24.0091 12.0747C23.8687 5.33535 18.5333 0 11.9343 0C5.33535 0 0 5.33535 0 11.9343C0 18.5333 5.33535 23.8687 11.9343 23.8687C14.8828 23.8687 17.4101 22.8858 19.5162 21.0606L23.7283 26.9576C24.5707 28.2212 26.2555 28.3616 27.2384 27.2384C28.2212 26.1151 28.2212 24.7111 27.098 23.8687ZM11.9343 21.0606C6.8798 21.0606 2.80808 16.9889 2.80808 11.9343C2.80808 6.8798 6.8798 2.80808 11.9343 2.80808C16.9889 2.80808 21.0606 6.8798 21.0606 11.9343C21.0606 16.9889 16.9889 21.0606 11.9343 21.0606Z" fill="url(#paint0_linear_2_11900)"/>
+                                <defs>
+                                <linearGradient id="paint0_linear_2_11900" x1="2" y1="3" x2="29.5" y2="30.5" gradientUnits="userSpaceOnUse">
+                                <stop stopColor="#226E9F"/>
+                                <stop offset="0.94445" stopColor="#6A9DBC"/>
+                                </linearGradient>
+                                </defs>
+                            </svg>
+                        </SvgIcon>
+                    }
+                    <PopupState variant="popper" popupId="demo-popup-poppers">
+                    {(popupState) => (
+                        <div>
+                        <SvgIcon {...bindToggle(popupState)} sx={{ cursor: 'pointer', fontSize: 42 }}>
+                            <svg width="41" height="38" viewBox="0 0 41 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="1.08203" y="0.5" width="38.5833" height="37" rx="4.5" fill="white" stroke="#00C342"/>
+                                <path d="M29.7939 25.6028C29.7949 26.0918 29.6019 26.5611 29.2572 26.908C28.9126 27.2548 28.4444 27.4507 27.9555 27.4528H12.4202C11.9321 27.4512 11.4646 27.2562 11.1201 26.9105C10.7755 26.5648 10.582 26.0966 10.582 25.6086C10.582 25.1205 10.7755 24.6523 11.1201 24.3066C11.4646 23.9609 11.9321 23.7659 12.4202 23.7643H27.9555C28.4426 23.7658 28.9094 23.9599 29.2539 24.3044C29.5984 24.6489 29.7925 25.1157 29.7939 25.6028ZM27.2621 17.1961C26.0957 17.1989 24.9521 16.8732 23.9621 16.2564C22.9721 15.6395 22.1758 14.7565 21.6643 13.7082C21.1527 12.6599 20.9466 11.4888 21.0695 10.3289C21.1925 9.169 21.6394 8.06712 22.3593 7.14937C21.966 7.02793 21.5621 6.94391 21.153 6.89843V4.96822C21.1534 4.84122 21.1287 4.71538 21.0804 4.59793C21.0321 4.48048 20.961 4.37372 20.8714 4.28377C20.7817 4.19383 20.6752 4.12246 20.5579 4.07376C20.4406 4.02507 20.3149 4 20.1879 4C20.0609 4 19.9351 4.02507 19.8178 4.07376C19.7005 4.12246 19.594 4.19383 19.5043 4.28377C19.4147 4.37372 19.3436 4.48048 19.2953 4.59793C19.247 4.71538 19.2223 4.84122 19.2227 4.96822V6.91774C17.3739 7.15948 15.6754 8.06331 14.442 9.4617C13.2087 10.8601 12.5241 12.6582 12.5152 14.5228V21.8383H27.8605V17.1672C27.6578 17.1865 27.4647 17.1961 27.2621 17.1961ZM17.9102 29.3854C17.9115 29.9886 18.152 30.5667 18.579 30.9929C19.006 31.419 19.5846 31.6583 20.1879 31.6583C20.7911 31.6583 21.3697 31.419 21.7967 30.9929C22.2237 30.5667 22.4642 29.9886 22.4655 29.3854H17.9102Z" fill="#226E9F"/>
+                                <circle cx="27.582" cy="11" r="5" fill="#00C342"/>
+                            </svg>
+                        </SvgIcon>
+                        <Popper style={{ zIndex: 99999, display: 'flex', alignItems: 'center' }} {...bindPopper(popupState)} transition>
+                                {({ TransitionProps }) => (
+                                <Fade {...TransitionProps} timeout={150}>
+                                    <Paper sx={{ mr: 25, width: '550px', display: 'flex', alignItems: 'center', '&:hover': { bgcolor: '#fcfcfc' }, flexDirection: 'column', flex: 1 }}>
+                                        {displayedNotifications}
+                                    </Paper>
+                                </Fade>
+                                )}
+                            </Popper>
+                            </div>
+                        )}
+                    </PopupState>
                     <PopupState variant="popper" popupId="demo-popup-popper">
                     {(popupState) => (
                         <div>

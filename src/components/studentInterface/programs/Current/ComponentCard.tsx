@@ -312,7 +312,10 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                 sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5, cursor: !disabled ? !completed ? 'pointer' : 'default' : 'default' }}
                 alignItems='center'
                 bgcolor='#D0EBFC'
-                onClick={!disabled ? !completed ? () => mutateLesson(lesson.id) : () => {} : () => {}}
+                onClick={!disabled ? !completed ? () => {
+                    mutateLesson(lesson.id)
+                    navigate(`/lesson/${lesson.id}`)
+                } : () => {} : () => {}}
             >
                 <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
                     <SvgIcon>
