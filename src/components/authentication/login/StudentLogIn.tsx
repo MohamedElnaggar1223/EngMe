@@ -1,39 +1,88 @@
 import { auth, db } from '../../../firebase/firebaseConfig'
 import { signInWithEmailAndPassword } from "firebase/auth"
-import { Box, Button, FormControl, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Divider, FormControl, Stack, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { MuiTelInput } from 'mui-tel-input';
 
 export default function StudentLogIn() 
 {
     const[email, setEmail] = useState('')
     const[password, setPassword] = useState('')
+    const[number, setNumber] = useState('+20')
 
     const [error, setError] = useState('')
 
     const [canSave, setCanSave] = useState(false)
 
+    function handleNumber(e: string)
+    {
+        if(e === '+20 0' && number === '+20')
+        { 
+            return
+        }
+        else 
+        {
+            setNumber(e)
+            setEmail('')
+        }
+    }
+
     const logIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if(canSave)
         {
-            const userRef = collection(db, 'users')
-            const queryUser = query(userRef, where('userId', '==', email))
-            const userDoc = await getDocs(queryUser)
-
-            if(userDoc.docs.length && userDoc.docs[0]?.data().role === 'student')
+            if(email)
             {
-                signInWithEmailAndPassword(auth, email, password)
-                .then()
-                .catch(e => console.error(e))
-                setEmail('')
-                setPassword('')
+                const userRef = collection(db, 'users')
+                const queryUser = query(userRef, where('userId', '==', email))
+                const userDoc = await getDocs(queryUser)
+    
+                if(userDoc.docs.length && userDoc.docs[0]?.data().role === 'student')
+                {
+                    signInWithEmailAndPassword(auth, email, password)
+                    .then()
+                    .catch(() => {
+                        setError('Incorrect Password')
+                    })
+                    setEmail('')
+                    setPassword('')
+                }
+                else
+                {
+                    setError('Email Does Not Exist!')
+                }
+            }
+            else if(number)
+            {
+                const userRef = collection(db, 'users')
+                const queryUser = query(userRef, where('number', '==', number))
+                const userDoc = await getDocs(queryUser)
+    
+                if(userDoc.docs.length && userDoc.docs[0]?.data().role === 'student')
+                {
+                    signInWithEmailAndPassword(auth, email, password)
+                    .then()
+                    .catch(() => {
+                        setError('Incorrect Password')
+                    })
+                    setEmail('')
+                    setPassword('')
+                }
+                else
+                {
+                    setError('Mobile Number Does Not Exist!')
+                }
             }
             else
             {
-                setError('Email Not Found!')
+                setError('Please Enter Email or Number!')
             }
+        }
+        else
+        {
+            setError('Please Enter All Details!')
         }
     }
 
@@ -51,7 +100,7 @@ export default function StudentLogIn()
     // }, [password, confirmPassword])
 
     useEffect(() => {
-        setCanSave([email, password].every(Boolean))
+        setCanSave([password].every(Boolean))
     }, [email, password])
 
     return (
@@ -73,24 +122,49 @@ export default function StudentLogIn()
                 }}
                 onSubmit={logIn}
             >
-                {error && <Typography textAlign='center' fontWeight={500} fontFamily='Inter' sx={{ color: '#ff0000' }}>{error}</Typography>}
+                {error && <Alert severity="error">{error}</Alert>}
                 <FormControl sx={{ flex: 1 }}>
                     <TextField 
                         fullWidth
-                        required
-                        
                         color="info"
                         variant="outlined"
                         placeholder="Email"
                         type='email'
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                            handleNumber('+20')
+                            setEmail(e.target.value)
+                        }}
                         inputProps={{
                             style: {
                                 textAlign: 'left',
                                 textIndent: '80px',
                                 fontSize: 18,
                                 // border: '1px solid rgba(0, 0, 0, 1)',
+                                borderRadius: '5px'
+                            }
+                        }}
+                    />
+                </FormControl>
+                <div style={{ position: 'relative', margin: '20px 0' }}>
+                    <Divider style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%' }} />
+                    <Typography fontSize={22} fontWeight={500} fontFamily='Inter' variant="body2" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '0 10px' }}>
+                        Or
+                    </Typography>
+                </div>
+                <FormControl sx={{ flex: 1 }}>
+                    <MuiTelInput 
+                        value={number} 
+                        onChange={handleNumber} 
+                        placeholder='Phone Number'
+                        inputProps={{
+                            style: {
+                                textAlign: 'left',
+                                textIndent: '37px',
+                                fontSize: 18,
+                                borderLeft: '1px solid rgba(0, 0, 0, 0.1)',
+                                borderTopLeftRadius: '0px',
+                                borderBottomLeftRadius: '0px',
                                 borderRadius: '5px'
                             }
                         }}

@@ -1,11 +1,14 @@
 import FormControl from "@mui/material/FormControl";
-import { Box, Button, Select, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Select, Stack, TextField, Typography } from "@mui/material";
 import { MuiTelInput } from 'mui-tel-input'
 import { useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../../firebase/firebaseConfig";
+import { getUserByEmail } from "../../helpers/getUserByEmail";
+import { getUserByNumber } from "../../helpers/getUserByNumber";
+import { Link } from "react-router-dom";
 
 export default function StudentSignUp() 
 {
@@ -19,55 +22,79 @@ export default function StudentSignUp()
     const[confirmPassword, setConfirmPassword] = useState('')
     const[verifyPassword, setVerifyPassword] = useState(false)
     const [canSave, setCanSave] = useState(false)
+    const [error, setError] = useState('')
 
-    const signUp = (e: React.FormEvent<HTMLFormElement>) => {
+    const signUp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if(canSave)
         {
-            createUserWithEmailAndPassword(auth, email, password)
-            .then(async (user) => {
-                const uid = user.user.uid
+            const numberAlreadyInUse = await getUserByNumber(number)
 
-                
-                const teacherRef = doc(db, 'teachers', uid)
-                await setDoc(teacherRef, {
-                    friends: [],
-                    name: `${firstname} ${lastname}`,
-                    email,
-                    image: '',
-                    programs: [],
-                    title: 'Professor in Human Biology',
-                    university: 'The German University in Cairo',
-                    averageRating: 0,
-                    profileViews: 0
-                })
+            if(numberAlreadyInUse)
+            {
+                setError('Mobile Number Already In Use!')
+            }
+            else
+            {
+                const emailAlreadyInUse = await getUserByEmail(email)
 
-                const scheduleRef = collection(db, 'teacherSchedule')
-                await addDoc(scheduleRef, {
-                    numberOfDays: 6,
-                    slots: [
-                        {
-                            day: 'Sunday',
-                            endTime: '2 PM',
-                            startTime: '1 PM'
-                        }
-                    ],
-                    teacherId: uid
-                })
-                
-                const userRef = collection(db, 'users')
-                await addDoc(userRef, {
-                    userId: email,
-                    role: 'teacher'
-                })
-            })
-            .catch(e => console.error(e))
-            setEmail('')
-            setPassword('')
-            setConfirmPassword('')
-            setFirstname('')
-            setLastname('')
-            setNumber('')
+                if(emailAlreadyInUse)
+                {
+                    setError('Email is Already In Use!')
+                }
+                else
+                {
+                    createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (user) => {
+                        const uid = user.user.uid
+        
+                        
+                        const teacherRef = doc(db, 'teachers', uid)
+                        await setDoc(teacherRef, {
+                            friends: [],
+                            name: `${firstname} ${lastname}`,
+                            email,
+                            image: '',
+                            programs: [],
+                            title: 'Professor in Human Biology',
+                            university: 'The German University in Cairo',
+                            averageRating: 0,
+                            profileViews: 0
+                        })
+        
+                        const scheduleRef = collection(db, 'teacherSchedule')
+                        await addDoc(scheduleRef, {
+                            numberOfDays: 6,
+                            slots: [
+                                {
+                                    day: 'Sunday',
+                                    endTime: '2 PM',
+                                    startTime: '1 PM'
+                                }
+                            ],
+                            teacherId: uid
+                        })
+                        
+                        const userRef = collection(db, 'users')
+                        await addDoc(userRef, {
+                            userId: email,
+                            role: 'teacher',
+                            number
+                        })
+                    })
+                    .catch(e => console.error(e))
+                    setEmail('')
+                    setPassword('')
+                    setConfirmPassword('')
+                    setFirstname('')
+                    setLastname('')
+                    setNumber('')
+                }
+            }
+        }
+        else
+        {
+            setError('Please Enter All Details!')
         }
     }
 
@@ -96,6 +123,12 @@ export default function StudentSignUp()
             <Stack flex={1} mb={4} textAlign='center'>
                 <Typography fontSize={20} fontFamily='Inter' fontWeight={700}>Sign Up</Typography>
             </Stack>
+            {
+                error &&
+                <Stack flex={1} mb={4} textAlign='center'>
+                    <Alert severity="error">{error}</Alert>
+                </Stack>
+            }
             <form
                 style={{
                     width: '100%',
@@ -294,6 +327,7 @@ export default function StudentSignUp()
                     Sign Up
                 </Button>
             </form>
+            <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Already have an account? <Link style={{ color: '#FF7E00', textDecoration: 'none' }} to='/login'>Login</Link></Typography>
         </Box>
     )
 }

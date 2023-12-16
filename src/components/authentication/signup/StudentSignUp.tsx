@@ -1,12 +1,14 @@
 import FormControl from "@mui/material/FormControl";
 import { auth, db } from '../../../firebase/firebaseConfig'
 import { createUserWithEmailAndPassword } from "firebase/auth"
-import { Box, Button, Select, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Select, Stack, TextField, Typography } from "@mui/material";
 import { MuiTelInput } from 'mui-tel-input'
 import { useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { Link } from "react-router-dom";
+import { getUserByNumber } from "../../helpers/getUserByNumber";
+import { getUserByEmail } from "../../helpers/getUserByEmail";
 
 export default function StudentSignUp() 
 {
@@ -20,39 +22,63 @@ export default function StudentSignUp()
     const[confirmPassword, setConfirmPassword] = useState('')
     const[verifyPassword, setVerifyPassword] = useState(false)
     const [canSave, setCanSave] = useState(false)
+    const [error, setError] = useState('')
 
-    const signUp = (e: React.FormEvent<HTMLFormElement>) => {
+    const signUp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if(canSave)
         {
-            createUserWithEmailAndPassword(auth, email, password)
-            .then(async (user) => {
-                const uid = user.user.uid
+            const numberAlreadyInUse = await getUserByNumber(number)
 
-                const studentRef = doc(db, 'students', uid)
-                await setDoc(studentRef, {
-                    favoritePrograms: [],
-                    friends: [],
-                    name: `${firstname} ${lastname}`,
-                    email,
-                    number,
-                    image: '',
-                    Country: 'Egypt'
-                })
+            if(numberAlreadyInUse)
+            {
+                setError('Mobile Number Already In Use!')
+            }
+            else
+            {
+                const emailAlreadyInUse = await getUserByEmail(email)
 
-                const userRef = collection(db, 'users')
-                await addDoc(userRef, {
-                    userId: email,
-                    role: 'student'
-                })
-            })
-            .catch(e => console.error(e))
-            setEmail('')
-            setPassword('')
-            setConfirmPassword('')
-            setFirstname('')
-            setLastname('')
-            setNumber('')
+                if(emailAlreadyInUse)
+                {
+                    setError('Email is Already In Use!')
+                }
+                else
+                {
+                    createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (user) => {
+                            const uid = user.user.uid
+            
+                            const studentRef = doc(db, 'students', uid)
+                            await setDoc(studentRef, {
+                                favoritePrograms: [],
+                                friends: [],
+                                name: `${firstname} ${lastname}`,
+                                email,
+                                number,
+                                image: '',
+                                Country: 'Egypt'
+                            })
+            
+                            const userRef = collection(db, 'users')
+                            await addDoc(userRef, {
+                                userId: email,
+                                role: 'student',
+                                number
+                            })
+                    })
+                    .catch(e => console.error(e))
+                    setEmail('')
+                    setPassword('')
+                    setConfirmPassword('')
+                    setFirstname('')
+                    setLastname('')
+                    setNumber('')
+                }
+            }
+        }
+        else
+        {
+            setError('Please Enter All Details!')
         }
     }
 
@@ -82,13 +108,20 @@ export default function StudentSignUp()
             <Stack flex={1} mb={4} textAlign='center'>
                 <Typography fontSize={20} fontFamily='Inter' fontWeight={700}>Sign Up</Typography>
             </Stack>
+            {
+                error &&
+                <Stack flex={1} mb={4} textAlign='center'>
+                    <Alert severity="error">{error}</Alert>
+                </Stack>
+            }
             <form
                 style={{
                     width: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '30px',
-                    flex: 1
+                    flex: 1,
+                    marginBottom: 1,
                 }}
                 onSubmit={signUp}
             >
