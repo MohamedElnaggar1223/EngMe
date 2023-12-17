@@ -1,9 +1,10 @@
-import { collection, addDoc, Timestamp, query, where, getDocs } from "firebase/firestore"
-import { db } from "../../firebase/firebaseConfig"
+import { collection, addDoc, Timestamp, query, where, getDocs, updateDoc } from "firebase/firestore"
+import { auth, db } from "../../firebase/firebaseConfig"
+import axios from "axios";
 
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export const setStudentBookConsultation = async(studentId: string, teacherId: string) => {
+export const setStudentBookConsultation = async(studentId: string, teacherId: string, userData: unknown) => {
     const consultationSessionsRef = collection(db, 'consultationSessions')
     const teacherScheduleRef = collection(db, 'teacherSchedule')
 
@@ -99,6 +100,10 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
 
             endTime.setHours(endTime.getHours() + 1)
 
+            const formattedStartTime = startTime.toISOString();
+            const formattedEndTime = endTime.toISOString();
+
+            
             const newSession = {
                 teacherId,
                 studentId,
@@ -107,7 +112,69 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
                 status: 'accepted'
             }
 
-            await addDoc(consultationSessionsRef, newSession)
+            console.log(userData.accessToken)
+            
+            const addedSession = await addDoc(consultationSessionsRef, newSession)
+
+            // const calendarIDRequest = await axios.get(
+            //     `https://www.googleapis.com/calendar/v3/users/me/calendarList?key=${import.meta.env.VITE_GOOGLE_API_KEY}`,
+            //     {
+            //         withCredentials: false,
+            //         params: {
+            //             Authorization: `Bearer ${auth.currentUser?.getIdToken()}`,
+            //             setAuthorization: `Bearer ${auth.currentUser?.getIdToken()}`,
+            //             'Access-Control-Allow-Origin': 'http://localhost:5173',
+            //             setContentType: 'application/json',
+            //             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            //             'Access-Control-Allow-Headers': 'Content-Type',
+            //             "Content-Type": 'application/json',
+            //             Accept: 'application/json'
+            //         },
+            //         headers: {
+            //             Authorization: `Bearer ${auth.currentUser?.getIdToken()}`,
+            //             setAuthorization: `Bearer ${auth.currentUser?.getIdToken()}`,
+            //             'Access-Control-Allow-Origin': 'http://localhost:5173',
+            //             setContentType: 'application/json',
+            //             'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            //             'Access-Control-Allow-Headers': 'Content-Type',
+            //             "Content-Type": 'application/json',
+            //             Accept: 'application/json'
+            //         },
+            //     }
+            // );
+
+            // const calendarId = calendarIDRequest.data.items[0]?.id
+
+            const response = await axios.post(
+                'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+                {
+                    summary: 'Consultation Session',
+                    start: { dateTime: formattedStartTime },
+                    end: { dateTime: formattedEndTime },
+                    conferenceData: {
+                    createRequest: { requestId: addedSession.id, conferenceSolutionKey: { type: 'hangoutsMeet' } },
+                    },
+                },
+                {
+                    withCredentials: false,
+                    headers: {
+                        Authorization: `Bearer ${auth.currentUser?.getIdToken()}`,
+                        setAuthorization: `Bearer ${auth.currentUser?.getIdToken()}`,
+                        'Access-Control-Allow-Origin': '*',
+                        setContentType: 'application/json',
+                        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+                        "Content-Type": 'application/json',
+                        Accept: 'application/json'
+                    }
+                }
+            )
+
+            console.log(response.data.hangoutLink)
+            
+            console.log(response.data)
+
+            await updateDoc(addedSession, { meetLink: response.data.hangoutLink })
         }
     }
 

@@ -4,12 +4,16 @@ import { useQuery } from '@tanstack/react-query'
 import { AuthContext } from '../../authentication/auth/AuthProvider'
 import { getTeacherPrograms } from '../../helpers/getTeacherPrograms'
 import CircularProgress from '@mui/material/CircularProgress'
+import ExamBank from '../examBankAdmin/ExamBank'
+import KnowledgeBank from '../knowledgeBankAdmin/KnowledgeBank'
 const TeacherMyPrograms = lazy(() => import('./TeacherMyPrograms/TeacherMyPrograms'))
 
 export default function Programs() 
 {
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
+
+    const isAdmin = userData.email === 'admin@test.com'
     
     const [tab, setTab] = useState('Explore')
 
@@ -92,6 +96,44 @@ export default function Programs()
                             </Box>
                         </Stack>
                     }
+                    {
+                        isAdmin &&
+                        <Stack
+                            alignItems='center'
+                            onClick={() => setTab('Knowledge Bank')}
+                            sx={{ cursor: 'pointer' }}
+                        >
+                            <Typography>Knowledge Bank</Typography>
+                            <Box
+                                position='relative'
+                                border='0px'
+                                height='6px'
+                                bgcolor={tab === 'Knowledge Bank' ? '#FF9F06' : '#fff'}
+                                width={{xs: '80px', sm: '120px', lg: '180px'}}
+                            >
+
+                            </Box>
+                        </Stack>
+                    }
+                    {
+                        isAdmin &&
+                        <Stack
+                            alignItems='center'
+                            onClick={() => setTab('Exam Bank')}
+                            sx={{ cursor: 'pointer' }}
+                        >
+                            <Typography>Exam Bank</Typography>
+                            <Box
+                                position='relative'
+                                border='0px'
+                                height='6px'
+                                bgcolor={tab === 'Exam Bank' ? '#FF9F06' : '#fff'}
+                                width={{xs: '80px', sm: '120px', lg: '180px'}}
+                            >
+
+                            </Box>
+                        </Stack>
+                    }
                 </Stack>
                 <Box
                     position='relative'
@@ -135,6 +177,16 @@ export default function Programs()
                     <Suspense>
                         {/*//@ts-expect-error programs */}
                         <TeacherMyPrograms programs={teacherPrograms?.slice().filter(program => program.paused)} />
+                    </Suspense>
+                    :
+                    tab === 'Knowledge Bank' ?
+                    <Suspense>
+                        <KnowledgeBank />
+                    </Suspense>
+                    :
+                    tab === 'Exam Bank' ?
+                    <Suspense>
+                        <ExamBank />
                     </Suspense>
                     :
                     <></>

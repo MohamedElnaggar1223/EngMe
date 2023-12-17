@@ -38,18 +38,22 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 	const displayedFinalExams = program?.finalExams ? sortedVersions.map((version: string) => {
 		//@ts-expect-error program
 		const versionExam = finalExams?.find(exam => exam.id === program?.finalExams[version])
-		//@ts-expect-error program
-		const foundExam = studentFinalExams?.find(studentFinalExam => (finalExams?.map(exam => exam.id))?.includes(studentFinalExam.finalExamId) && versionExam?.id === studentFinalExam.finalExamId)
-		const card =
-		progress !== 100 ?
-		//@ts-expect-error finalExams
-		<FinalExamCard program={program} version={version} finalExam={versionExam} disabled={true} /> :
-		foundExam ?
-		//@ts-expect-error finalExams
-		<FinalExamCard program={program} version={version} finalExam={versionExam} setQuestions={setQuestions} questions={questions} foundExam={foundExam} /> :
-		//@ts-expect-error finalExams
-		<FinalExamCard program={program} version={version} finalExam={versionExam} />
-		return card
+		if(versionExam?.id && versionExam?.id.length > 0)
+		{
+			//@ts-expect-error program
+			const foundExam = studentFinalExams?.find(studentFinalExam => (finalExams?.map(exam => exam.id))?.includes(studentFinalExam.finalExamId) && versionExam?.id === studentFinalExam.finalExamId)
+			const card =
+			progress !== 100 ?
+			//@ts-expect-error finalExams
+			<FinalExamCard program={program} version={version} finalExam={versionExam} disabled={true} /> :
+			foundExam ?
+			//@ts-expect-error finalExams
+			<FinalExamCard program={program} version={version} finalExam={versionExam} setQuestions={setQuestions} questions={questions} foundExam={foundExam} /> :
+			//@ts-expect-error finalExams
+			<FinalExamCard program={program} version={version} finalExam={versionExam} />
+			return card
+		}
+		else return <></>
 	}) : []
 
 	const displayedQuestions = useMemo(() => {
@@ -74,13 +78,14 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 	if(isFinalExamsLoading || isStudentFinalExamsLoading) return <></>
 	return (
 		<>
-			<Box
-				display='flex'
-				flexDirection='row'
-				justifyContent='space-between'
+			<Stack
+				direction='row'
+                alignItems='center'
+                justifyContent='center'
+                gap={2}
 			>
 				{displayedFinalExams}
-			</Box>
+			</Stack>
 			{
 				
 				<Box

@@ -61,7 +61,7 @@ export default function TeacherLogIn()
     
                 if(userDoc.docs.length && userDoc.docs[0]?.data().role === 'teacher')
                 {
-                    signInWithEmailAndPassword(auth, email, password)
+                    signInWithEmailAndPassword(auth, userDoc.docs[0].data().userId, password)
                     .then()
                     .catch(() => {
                         setError('Incorrect Password')
@@ -99,8 +99,8 @@ export default function TeacherLogIn()
     // }, [password, confirmPassword])
 
     useEffect(() => {
-        setCanSave([email, password].every(Boolean))
-    }, [email, password])
+        setCanSave([password].every(Boolean))
+    }, [password])
 
     return (
         <Box

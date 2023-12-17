@@ -72,7 +72,7 @@ function FinalExamCard({ program, version, disabled, setQuestions, finalExam, qu
             >
                 <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>{version}</Typography>
                 {/*//@ts-expect-error grade */}
-                {!foundExam?.grade && <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>{(Number(finalExam.duration.split(' ')[0]) / 60).toFixed(1)} Hours</Typography>}
+                {!foundExam?.grade && <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>{(Number(finalExam?.duration?.split(' ')[0]) / 60).toFixed(1)} Hours</Typography>}
                 {
                     setQuestions &&
                     <Box
@@ -141,9 +141,9 @@ function FinalExamCard({ program, version, disabled, setQuestions, finalExam, qu
                         marginBottom: 3
                     }}
                     disabled={disabled}
-                    onClick={() => setQuestions ? setQuestions(prev => prev !== '' ? prev === finalExam.id ? '' : finalExam.id : finalExam.id) : disabled ? {} : mutate(finalExam.id)}
+                    onClick={() => setQuestions ? setQuestions(prev => prev !== '' ? prev === finalExam?.id ? '' : finalExam?.id : finalExam?.id) : disabled ? {} : mutate(finalExam?.id)}
                 >
-                    {setQuestions ? questions === finalExam.id ? 'Hide Questions' : 'Show Questions' : 'Take Exam' }
+                    {setQuestions ? questions === finalExam?.id ? 'Hide Questions' : 'Show Questions' : 'Take Exam' }
                 </Button>
             </Box>
         </Box>

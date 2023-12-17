@@ -1,12 +1,40 @@
 import { Box, Stack, Typography } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { lazy, useState } from "react";
+import { getExamBank } from "../../helpers/getExamBank";
 const ExamBankCard = lazy(() => import("./ExamBankCard"))
 const QuizBank = lazy(() => import("./QuizBank"))
 
-export default function ExamBank() 
+interface ExamBankProps{
+    admin?: boolean
+}
+
+export default function ExamBank({ admin }: ExamBankProps) 
 {
-    const [selected, setSelected] = useState(1)
+    const [selected, setSelected] = useState('')
     const [examClicked, setExamClicked] = useState(false)
+
+    const { data: examBankMajors } = useQuery({
+        queryKey: ['examBankMajors'],
+        queryFn: () => getExamBank()
+    })
+
+    const displayedMajors = examBankMajors?.map(major => (
+        <Box
+            px={8}
+            my={3.5}
+            py={2}
+            bgcolor={selected === major.id ? '#fff' : ''}
+            onClick={() => setSelected(major.id)}
+            sx={{
+                cursor: 'pointer'
+            }}
+            textAlign='center'
+        >
+            {/*//@ts-expect-error major */}
+            <Typography noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>{major?.major}</Typography>
+        </Box>
+    ))
 
     return (
         <Box
@@ -18,79 +46,18 @@ export default function ExamBank()
             <Box
                 bgcolor='#D0EBFC;'
             >
-                <Box
-                    px={8}
-                    pb={4.5}
-                    pt={6}
-                    textAlign='center'
-                >
-                    <Typography noWrap sx={{ color: '#226E9F' }} fontSize={18} fontFamily='Inter' fontWeight={700}>Exam Bank</Typography>
-                </Box>
-                <Box
-                    px={8}
-                    my={3.5}
-                    py={2}
-                    bgcolor={selected === 1 ? '#fff' : ''}
-                    onClick={() => setSelected(1)}
-                    sx={{
-                        cursor: 'pointer'
-                    }}
-                    textAlign='center'
-                >
-                    <Typography noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>Civil Engineering</Typography>
-                </Box>
-                <Box
-                    px={8}
-                    my={3.5}
-                    py={2}
-                    bgcolor={selected === 2 ? '#fff' : ''}
-                    onClick={() => setSelected(2)}
-                    sx={{
-                        cursor: 'pointer'
-                    }}
-                    textAlign='center'
-                >
-                    <Typography noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>Civil Engineering</Typography>
-                </Box>
-                <Box
-                    px={8}
-                    my={3.5}
-                    py={2}
-                    bgcolor={selected === 3 ? '#fff' : ''}
-                    onClick={() => setSelected(3)}
-                    sx={{
-                        cursor: 'pointer'
-                    }}
-                    textAlign='center'
-                >
-                    <Typography noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>Civil Engineering</Typography>
-                </Box>
-                <Box
-                    px={8}
-                    my={3.5}
-                    py={2}
-                    bgcolor={selected === 4 ? '#fff' : ''}
-                    onClick={() => setSelected(4)}
-                    sx={{
-                        cursor: 'pointer'
-                    }}
-                    textAlign='center'
-                >
-                    <Typography noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>Civil Engineering</Typography>
-                </Box>
-                <Box
-                    px={8}
-                    my={3.5}
-                    py={2}
-                    bgcolor={selected === 5 ? '#fff' : ''}
-                    onClick={() => setSelected(5)}
-                    sx={{
-                        cursor: 'pointer'
-                    }}
-                    textAlign='center'
-                >
-                    <Typography noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>Civil Engineering</Typography>
-                </Box>
+                {
+                    !admin &&
+                    <Box
+                        px={8}
+                        pb={4.5}
+                        pt={6}
+                        textAlign='center'
+                    >
+                        <Typography noWrap sx={{ color: '#226E9F' }} fontSize={18} fontFamily='Inter' fontWeight={700}>Exam Bank</Typography>
+                    </Box>
+                }
+                {displayedMajors}
             </Box>
             {
                examClicked 

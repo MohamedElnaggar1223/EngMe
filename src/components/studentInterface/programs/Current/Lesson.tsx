@@ -28,7 +28,7 @@ export default function Lesson()
     }
 
     const { data: lesson } = useQuery({
-        queryKey: ['lessonSession'],
+        queryKey: ['lessonSession', id],
         queryFn: () => getLesson(id ?? '')
     })
 

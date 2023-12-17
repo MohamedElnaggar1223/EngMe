@@ -16,7 +16,7 @@ export default function TeacherCard()
     const { id } = useParams()
 
     //@ts-expect-error context
-    const { userData } = useContext(AuthContext)
+    const { user, userData } = useContext(AuthContext)
 
     const queryClient = useQueryClient()
 
@@ -103,7 +103,7 @@ export default function TeacherCard()
             return () => queryClient.setQueryData(['studentConsultations', userData?.id], previousData)
         },
         //@ts-expect-error idteacher
-        mutationFn: () => setStudentBookConsultation(userData?.id, id)
+        mutationFn: () => setStudentBookConsultation(userData?.id, id, user)
     })
 
     return (

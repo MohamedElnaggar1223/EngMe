@@ -3,6 +3,7 @@ import { Box, Stack, Typography } from "@mui/material"
 import StudentLogIn from "./StudentLogIn"
 import TeacherLogIn from "./TeacherLogIn"
 import icon from '../../../assets/Ellipse 1.png'
+import CompanyRegister from "../signup/CompanyRegister"
 // import { PageContext } from '../../Layout'
 
 //eslint-disable-next-line
@@ -87,17 +88,18 @@ function Login()
                             alignItems='center'
                             gap={5}
                         >
-                            <Typography onClick={() => setSelectedPage('Student')} sx={{ paddingLeft: {xs: 3, sm: 3, lg: 8, xl: 16}, cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Student</Typography>
-                            <Typography onClick={() => setSelectedPage('Teacher')} sx={{ paddingRight: {xs: 3, sm: 3, lg: 8, xl: 16}, cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Teacher</Typography>
+                            <Typography onClick={() => setSelectedPage('Student')} sx={{ paddingLeft: {xs: 3, sm: 3, lg: 8, xl: 8}, cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Student</Typography>
+                            <Typography onClick={() => setSelectedPage('Teacher')} sx={{ cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Instructor</Typography>
+                            <Typography onClick={() => setSelectedPage('Company')} sx={{ paddingRight: {xs: 3, sm: 3, lg: 8, xl: 8}, cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Company</Typography>
                         </Stack>
                         <Box
-                            width='55%'
+                            width='35%'
                             position='absolute'
-                            bgcolor='#6A9DBC'
+                            bgcolor={selectedPage === 'Student' ? '#FF9F06' : '#6A9DBC'}
                             height='8px'
                             sx={{
                                 top: '63%',
-                                left: selectedPage === 'Student' ? '0%' : '45%',
+                                left: selectedPage === 'Student' ? '0%' : selectedPage === 'Teacher' ? '31.2%' : '65%',
                                 transition: '0.3s'
                             }}
                         >
@@ -106,8 +108,11 @@ function Login()
                         <Box
                             width='100%'
                             height='8px'
-                            bgcolor='#D0EBFC'
+                            bgcolor={selectedPage === 'Student' ? '#FEF4EB' : '#D0EBFC'}
                             mt={1}
+                            sx={{
+                                transition: '0.3s'
+                            }}
                         >
 
                         </Box>
@@ -115,7 +120,9 @@ function Login()
                     {
                         selectedPage === 'Student' ?
                         <StudentLogIn /> :
-                        <TeacherLogIn />
+                        selectedPage === 'Teacher' ?
+                        <TeacherLogIn /> :
+                        <CompanyRegister />
                     }
                 </Stack>
                 </Box>

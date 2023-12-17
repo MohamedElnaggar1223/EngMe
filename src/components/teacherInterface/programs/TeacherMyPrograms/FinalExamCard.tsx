@@ -1,10 +1,30 @@
 import { Box, Stack, Typography, SvgIcon, Button } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { setDeleteFinalExam } from "../../../helpers/setDeleteFinalExam";
+import { forwardRef, useState } from "react";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
+
+const Transition = forwardRef(function Transition(
+    props: TransitionProps & {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>,
+    ) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
 //@ts-expect-error anytype
 export default function FinalExamCard({program, version, finalExam, setEdited}) 
 {
     const queryClient = useQueryClient()
+    const [open, setOpen] = useState(false)
 
     const { mutate } = useMutation({
         onMutate: () => {
@@ -21,6 +41,14 @@ export default function FinalExamCard({program, version, finalExam, setEdited})
         mutationFn: () => setDeleteFinalExam(version, program, finalExam)
     })
 
+    const handleClickOpen = () => {
+        setOpen(true);
+      };
+    
+      const handleClose = () => {
+        setOpen(false);
+      };
+
     return (
         <Box
             display='flex'
@@ -29,6 +57,72 @@ export default function FinalExamCard({program, version, finalExam, setEdited})
             m={2}
             position='relative'
         >
+            <Dialog
+                open={open}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleClose}
+                aria-describedby="alert-dialog-slide-description"
+                PaperProps={{
+                    style: {
+                        borderRadius: '20px',
+                        overflow: 'hidden',
+                    }
+                }}
+            >
+                <DialogTitle sx={{ mx: 1, mt: 2, mb: 3 }}>Are you sure you want to delete {version} Final Exam?</DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-slide-description">
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly', mx: 4, mb: 4 }}>
+                <Button 
+                    sx={{
+                        width: '120px',
+                        height: '50px',
+                        background: '#fff',
+                        color: '#000',
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        textTransform: 'none',
+                        fontWeight: 400,
+                        border: '1px solid #000',
+                        borderRadius: '10px',
+                        '&:hover': {
+                            background: '#fff',
+                            opacity: 1
+                        }
+                    }}
+                    onClick={handleClose}
+                >
+                    No
+                </Button>
+                <Button 
+                    sx={{
+                        width: '120px',
+                        height: '50px',
+                        background: '#D30000',
+                        color: '#fff',
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        textTransform: 'none',
+                        fontWeight: 400,
+                        border: '0',
+                        borderRadius: '10px',
+                        '&:hover': {
+                            background: '#D30000',
+                            opacity: 1
+                        }
+                    }}
+                    onClick={() => {
+                        mutate()
+                        handleClose()
+                    }}
+                >
+                    Yes
+                </Button>
+                </DialogActions>
+            </Dialog>
             <Stack
                 direction='row'
                 alignItems='center'
@@ -89,7 +183,8 @@ export default function FinalExamCard({program, version, finalExam, setEdited})
                             },
                             marginBottom: 3
                         }}
-                        onClick={() => mutate()}
+                        // onClick={() => mutate()}
+                        onClick={() => handleClickOpen()}
                     >
                         {/* {setQuestions ? questions === finalExam.id ? 'Hide Questions' : 'Show Questions' : 'Take Exam' } */}
                         Delete Exam

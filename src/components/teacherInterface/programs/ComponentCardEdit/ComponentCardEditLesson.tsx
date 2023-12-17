@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel } from "@mui/material"
+import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel, Alert } from "@mui/material"
 import { setLessonData } from "../../../helpers/setLessonData"
 
 //@ts-expect-error anytype
@@ -12,6 +12,9 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
     const [description, setDescription] = useState(lesson?.description ?? '')
     const [file, setFile] = useState({name: lesson?.content?.content});
     const [fileType, setFileType] = useState(lesson?.content?.type === 'Videos/' ? 'video/mp4' : lesson?.content?.type === 'Pdfs/' ? 'pdf' : null);
+    const [error, setError] = useState('')
+
+    const canSave = [title, description].every(Boolean)
 
     const { mutate } = useMutation({
         onMutate: () => {
@@ -165,6 +168,10 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                     </Button>
                 </Stack>
             </Stack>
+            {
+                error &&
+                <Alert sx={{ mt: 4 }} severity="error">{error}</Alert>
+            }
             <Stack
                 direction='row'
                 gap={18}
@@ -327,9 +334,16 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                             },
                         }}
                         onClick={() => {
-                            mutate()
-                            setEdited('')
-                            setAdded('')
+                            if(canSave)
+                            {
+                                mutate()
+                                setEdited('')
+                                setAdded('')
+                            }
+                            else
+                            {
+                                setError('Please Enter All Details!')
+                            }
                         }}
                     >
                         Confirm

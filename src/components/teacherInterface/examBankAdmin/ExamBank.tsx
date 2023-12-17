@@ -1,24 +1,25 @@
 import { Box, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { getKnowledgeBank } from "../../helpers/getKnowledgeBank";
-import KnowledgeBankContent from "./KnowledgeBankContent";
+import { getExamBank } from "../../helpers/getExamBank";
+import ExamBankContent from "./ExamBankContent";
+// const ExamBankCard = lazy(() => import("./ExamBankCard"))
+// const QuizBank = lazy(() => import("./QuizBank"))
 
-export default function KnowledgeBank() 
+export default function ExamBank() 
 {
     const [selectedMajor, setSelectedMajor] = useState(null)
 
-    const { data: knowledgeBankMajors } = useQuery({
-        queryKey: ['knowledgeBankMajors'],
-        queryFn: () => getKnowledgeBank()
+    const { data: examBankMajors } = useQuery({
+        queryKey: ['examBankMajors'],
+        queryFn: () => getExamBank()
     })
 
-    const displayedMajors = knowledgeBankMajors?.map(major => (
+    const displayedMajors = examBankMajors?.map(major => (
         <Box
             px={8}
             my={3.5}
             py={2}
-            width='60%'
             //@ts-expect-error major
             bgcolor={selectedMajor?.id === major?.id ? '#fff' : ''}
             //@ts-expect-error major
@@ -33,12 +34,6 @@ export default function KnowledgeBank()
         </Box>
     ))
 
-    const displayedContent = selectedMajor ?
-    //@ts-expect-error major
-    <KnowledgeBankContent {...selectedMajor} />
-    :
-    <></>
-
     return (
         <Box
             width='100%'
@@ -48,19 +43,17 @@ export default function KnowledgeBank()
             minHeight='77.8vh'
         >
             <Box
-                bgcolor='#FEF4EB'
+                bgcolor='#D0EBFC;'
             >
-                <Box
-                    px={8}
-                    pb={4.5}
-                    pt={6}
-                    textAlign='center'
-                >
-                    <Typography noWrap sx={{ color: '#FF7E00' }} fontSize={18} fontFamily='Inter' fontWeight={700}>Knowledge Bank</Typography>
-                </Box>
                 {displayedMajors}
             </Box>
-            {displayedContent}
+            {
+                selectedMajor ?
+                //@ts-expect-error major
+                <ExamBankContent {...selectedMajor} />
+                :
+                <></>
+            }
         </Box>
     )
 }

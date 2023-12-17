@@ -62,7 +62,7 @@ export default function StudentLogIn()
     
                 if(userDoc.docs.length && userDoc.docs[0]?.data().role === 'student')
                 {
-                    signInWithEmailAndPassword(auth, email, password)
+                    signInWithEmailAndPassword(auth, userDoc.docs[0].data().userId, password)
                     .then()
                     .catch(() => {
                         setError('Incorrect Password')

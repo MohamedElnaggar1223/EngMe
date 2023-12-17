@@ -14,6 +14,7 @@ import PrefetchPrograms from "./components/authentication/auth/PrefetchPrograms"
 import TeacherLayout from "./components/TeacherLayout"
 import Lesson from "./components/studentInterface/programs/Current/Lesson"
 import { BrowserView, MobileView } from "react-device-detect"
+import KnowledgeBankPdf from "./components/studentInterface/knowledgebank/KnowledgeBankPdf"
 const TeacherInterfaceTeacherProfile = lazy(() => import("./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"))
 const TeacherProgramsPage = lazy(() => import("./components/teacherInterface/programs/TeacherProgramsPage"))
 const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
@@ -157,6 +158,16 @@ function App() {
 													student:
 														<Suspense>
 															<KnowledgeBank />
+														</Suspense>
+												}}
+											</PrivateRoute>
+										} />
+										<Route path=':id' element={
+											<PrivateRoute>
+												{{
+													student: 
+														<Suspense>
+															<KnowledgeBankPdf />
 														</Suspense>
 												}}
 											</PrivateRoute>

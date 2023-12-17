@@ -1,5 +1,5 @@
 import { useContext, useState } from "react"
-import { Typography, Stack, styled, SwitchProps, Switch, Box, Input, InputLabel, MenuItem, Select, TextareaAutosize, Button, SvgIcon, Avatar } from "@mui/material"
+import { Typography, Stack, styled, SwitchProps, Switch, Box, Input, InputLabel, MenuItem, Select, TextareaAutosize, Button, SvgIcon, Avatar, Alert } from "@mui/material"
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query"
 import ProgramProps from "../../../../interfaces/ProgramProps"
 import { setTeacherRemovePrereq } from "../../../helpers/setTeacherRemovePrereq"
@@ -29,6 +29,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
     const [image, setImage] = useState(program?.image ?? '')
     const [paused, setPaused] = useState(program?.paused ?? false)
     const [newPrereq, setNewPrePreq] = useState('')
+    const [error, setError] = useState('')
 
     const {data: prereqs } = useQuery({
         queryKey: ['preReqData', program?.id],
@@ -64,6 +65,8 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
             setImage(result),
         );
     };
+
+    const canSave = [programName, programDesc, programType, duration, expiry, level, image].every(Boolean)
 
     const { mutate: mutateEdit } = useMutation({
         onMutate: () => {
@@ -155,6 +158,10 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
             pb={8}
             pt={8}
         >
+            {
+                error &&
+                <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>
+            }
             <Stack
                 direction='row'
                 flex={1}
@@ -511,8 +518,11 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                             },
                         }}
                         onClick={() => {
-                            setEdit(prev => !prev)
-                            mutateEdit()
+                            (canSave && 
+                            setEdit(prev => !prev))
+                            canSave ?
+                            mutateEdit() :
+                            setError('Please Enter All Details!')
                         }}
                     >
                         Confirm
