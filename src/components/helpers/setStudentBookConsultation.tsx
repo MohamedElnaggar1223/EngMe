@@ -161,22 +161,30 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
 
             console.log(import.meta.env.VITE_GOOGLE_API_KEY, import.meta.env.VITE_GOOGLE_CLIENT_ID)
 
-            gapi.load('client', () => {
-                // gapi.client.setApiKey(import.meta.env.VITE_GOOGLE_API_KEY)
-                gapi.client.init({
-                    apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
-                    clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
-                    scope: 'https://www.googleapis.com/auth/calendar.events',
-                    // hosted_domain: 'http://localhost:5173'
-                }).then(() => {
-                    gapi.client.calendar.events.insert({
-                         
-                    })
-                })
-                // console.log(gapi.client.calendar)
-                // console.log(gapi.client.calendar.calendarList.list())
-            })
+            const response = await axios.post(`http://localhost:3001/create-meeting`, {
+                startTime: formattedStartTime ?? new Date().toISOString(),
+                endTime: formattedEndTime ?? new Date().toISOString(), // Replace with your logic for endTime
+                // Add any other necessary parameters
+              });
+
+            console.log(response.data)
+
+            // gapi.load('client', () => {
+            //     // gapi.client.setApiKey(import.meta.env.VITE_GOOGLE_API_KEY)
+            //     gapi.client.init({
+            //         apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
+            //         clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+            //         discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+            //         scope: 'https://www.googleapis.com/auth/calendar.events',
+            //         // hosted_domain: 'http://localhost:5173'
+            //     }).then(() => {
+            //         gapi.client.calendar.events.insert({
+
+            //         })
+            //     })
+            //     // console.log(gapi.client.calendar)
+            //     // console.log(gapi.client.calendar.calendarList.list())
+            // })
 
             // const createEventInGoogleCalendar = async (startTime, endTime, eventName) => {
             //     try {
