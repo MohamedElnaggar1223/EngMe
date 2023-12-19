@@ -125,6 +125,8 @@ export default function StudentSignUp()
                     const fileType = uploadedFile.type;
                     //@ts-expect-error file
                     setFileType(fileType);
+                    //@ts-expect-error name
+                    console.log(file.name)
                 }
             }
         }
