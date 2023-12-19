@@ -1,5 +1,5 @@
-import { lazy, useContext } from 'react'
-import { Box, Typography, SvgIcon, Stack } from "@mui/material";
+import { lazy, useContext, useState } from 'react'
+import { Box, Typography, SvgIcon, Stack, Input } from "@mui/material";
 const ChatCard = lazy(() => import("./ChatCard"))
 import { ChatContext } from "./Chats";
 // import { collection, onSnapshot, query, where } from "firebase/firestore";
@@ -16,6 +16,8 @@ export default function ChatsHome()
     const { unReadMessages } = useUnReadMessages()
     //@ts-expect-error context
     const { chatDisplayed, setChatDisplayed } = useContext(ChatContext)
+    const [search, setSearch] = useState(false)
+    const [searchFriends, setSearchFriends] = useState('')
     // const [userFriends, setUserFriends] = useState([])
     // const usersRef = collection(db, 'users')
 
@@ -92,7 +94,7 @@ export default function ChatsHome()
     // console.log(userChat)
 
     const displayedChats = userData?.friends?.map((user: string) => 
-        <ChatCard id={user} />
+        <ChatCard id={user} searchFriends={searchFriends} search={search} />
     ) ?? []
 
     // console.log(displayedChats.length)
@@ -108,15 +110,34 @@ export default function ChatsHome()
                 px={1}
                 bgcolor={chatDisplayed ? '#226E9F' : 'transparent'}
                 sx={{
-                    height: chatDisplayed ? 'auto' : '0px',
+                    height: chatDisplayed ? '30px' : '0px',
                 }}
             >
                 {
                     chatDisplayed &&
                     <>
                         <Typography sx={{ color:'#226E9F' }}>tt</Typography>
-                        <Typography sx={{ color:'#fff' }} fontWeight={600} fontFamily='Inter'>Messages</Typography>
-                        <SvgIcon sx={{ padding: 1, background: '#D0EBFC', color:'#226E9F', borderRadius: '8px', fontSize: 18 }}>
+                        {
+                            search ?
+                            <Input
+                                sx={{ 
+                                    flex: 1,
+                                    marginRight: 2,
+                                    fontSize: 20,
+                                    width: search ? '120px' : '0px',
+                                    transition: '0.5s',
+                                    bgcolor: '#fcfcfc',
+                                    borderRadius: '5px',
+                                    border: search ? '0px solid #6A9DBC' : '',
+                                    paddingX: 1.5
+                                }}
+                                value={searchFriends}
+                                onChange={(e) => setSearchFriends(e.target.value)}
+                            />
+                            :
+                            <Typography sx={{ color:'#fff' }} fontWeight={600} fontFamily='Inter'>Messages</Typography>
+                        }
+                        <SvgIcon onClick={() => setSearch(prev => !prev)} sx={{ padding: 1, background: '#D0EBFC', color:'#226E9F', borderRadius: '8px', fontSize: 18, cursor: 'pointer' }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17" fill="none">
                                 <path d="M7.16079 3.36975C6.65533 3.36975 6.31836 3.70672 6.31836 4.21217C6.31836 4.71763 6.65533 5.0546 7.16079 5.0546C8.34019 5.0546 9.26686 5.98127 9.26686 7.16066C9.26686 7.66611 9.60383 8.00308 10.1093 8.00308C10.6147 8.00308 10.9517 7.66611 10.9517 7.16066C10.9517 5.0546 9.26686 3.36975 7.16079 3.36975Z" fill="#226E9F"/>
                                 <path d="M16.2589 14.3212L12.7207 11.7939C13.7316 10.5303 14.4055 8.92969 14.4055 7.24484C14.3213 3.20121 11.1201 0 7.16065 0C3.20123 0 0 3.20121 0 7.1606C0 11.12 3.20123 14.3212 7.16065 14.3212C8.92975 14.3212 10.4461 13.7315 11.7098 12.6364L14.237 16.1745C14.7425 16.9327 15.7534 17.017 16.3431 16.343C16.9328 15.6691 16.9328 14.8267 16.2589 14.3212ZM7.16065 12.6364C4.1279 12.6364 1.68486 10.1933 1.68486 7.1606C1.68486 4.12788 4.1279 1.68485 7.16065 1.68485C10.1934 1.68485 12.6364 4.12788 12.6364 7.1606C12.6364 10.1933 10.1934 12.6364 7.16065 12.6364Z" fill="url(#paint0_linear_2_5800)"/>

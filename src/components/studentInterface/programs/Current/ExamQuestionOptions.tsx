@@ -15,7 +15,8 @@ import { setSubmitExamSessionFinalExam } from "../../../helpers/setSubmitExamSes
 
 interface Question{
     options: string[],
-    question: string
+    question: string,
+    image?: string
 }
 
 interface ExamQuestionProps{
@@ -118,6 +119,10 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
             alignItems='center'
             mt={6}
         >
+            {
+                question?.image &&
+                <img src={question?.image} height='225px' />
+            }
             <Stack
                 direction='row'
                 justifyContent='space-between'

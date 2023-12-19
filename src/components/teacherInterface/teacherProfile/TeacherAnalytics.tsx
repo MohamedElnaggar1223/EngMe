@@ -4,6 +4,7 @@ import { useContext } from 'react'
 import { AuthContext } from '../../authentication/auth/AuthProvider'
 import { getStudentInTeacherPrograms } from '../../helpers/getStudentInTeacherPrograms'
 import { StarOutline, StarRate } from '@mui/icons-material'
+import { getStudentGraduatedTeacherPrograms } from '../../helpers/getStudentGraduatedTeacherPrograms'
 
 export default function TeacherTestimonials() 
 {
@@ -13,6 +14,12 @@ export default function TeacherTestimonials()
     const { data: teacheStudents } = useQuery({
         queryKey: ['teacherStudentsPrograms', userData?.id],
         queryFn: () => getStudentInTeacherPrograms(userData?.programs),
+        enabled: !!userData?.id
+    })
+
+    const { data: teacherStudentsGraduated } = useQuery({
+        queryKey: ['teacherStudentsGraduated', userData?.id],
+        queryFn: () => getStudentGraduatedTeacherPrograms(userData?.programs),
         enabled: !!userData?.id
     })
 
@@ -110,7 +117,7 @@ export default function TeacherTestimonials()
                             color: '#000'
                         }}
                     >
-                        {teacheStudents} Student(s)
+                        {teacherStudentsGraduated ?? 0} Student(s)
                     </Typography>
                 </Stack>
                 <Stack

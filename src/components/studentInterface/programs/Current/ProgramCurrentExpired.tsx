@@ -1,6 +1,6 @@
 import { Box, Stack, SvgIcon, Typography, Avatar, Button } from "@mui/material";
 import ProgramProps from "../../../../interfaces/ProgramProps";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAssessmentsData } from "../../../helpers/getAssessmentsData";
 import { getCoursesData } from "../../../helpers/getCoursesData";
 import { getLessonsData } from "../../../helpers/getLessonsData";
@@ -9,10 +9,18 @@ import { getStudentCount } from "../../../helpers/getStudentCount";
 // import { getStudentRequest } from "../../../helpers/getStudentRequest";
 import { getTeacherDataFromProgram } from "../../../helpers/getTeacherDataFromProgram";
 import { useNavigate } from "react-router-dom";
+import { setStudentRepurchaseProgram } from "../../../helpers/setStudentRepurchaseProgram";
+import { useContext } from "react";
+import { AuthContext } from "../../../authentication/auth/AuthProvider";
 
 export default function ProgramCurrentExpired(program: ProgramProps) 
 {
+    const queryClient = useQueryClient()
+
     const navigate = useNavigate()
+
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
 
     const { data: prereqsData } = useQuery({
         queryKey: ['preReqData', program?.id ?? ''],
@@ -70,6 +78,21 @@ export default function ProgramCurrentExpired(program: ProgramProps)
     // })
 
     const materialCount = (courses?.length ?? [].length) + (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
+
+    const { mutate } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['currentPrograms', userData?.id])
+
+            queryClient.setQueryData(['currentPrograms', userData?.id], (oldData: unknown) => {
+                //@ts-expect-error oldData
+                const filteredData = oldData ? oldData.slice().filter(programData => programData.id !== program.id) : []
+                return filteredData ? [...filteredData, {...program, expired: false}] : [{...program, expired: false}]
+            })
+
+            return () => queryClient.setQueryData(['currentPrograms', userData?.id], previousData)
+        },
+        mutationFn: () => setStudentRepurchaseProgram(userData?.id, program)
+    })
 
     //@ts-expect-error prereq
     const displayedPrereqs = prereqsData?.map(preqreq => <Typography sx={{ textDecoration: 'underline', cursor: 'pointer' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{preqreq.name}</Typography>)
@@ -284,7 +307,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                 px={1.5}
                                 py={0.5}
                             >
-                                <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>2 months</Typography>
+                                <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program.duration}</Typography>
                             </Box>
                             <Box
                                 bgcolor='#D0EBFC'
@@ -308,7 +331,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                 px={1.5}
                                 py={0.5}
                             >
-                                <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>Intermediate</Typography>
+                                <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.level}</Typography>
                             </Box>
                             <Box
                                 bgcolor='#D0EBFC'
@@ -320,19 +343,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                 px={1.5}
                                 py={0.5}
                             >
-                                <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>2 months</Typography>
-                            </Box>
-                            <Box
-                                bgcolor='#D0EBFC'
-                                sx={{
-                                    border: '1.5px solid',
-                                    borderRadius: '20px', 
-                                    borderColor: '#6A9DBC'
-                                }}
-                                px={1.5}
-                                py={0.5}
-                            >
-                                <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>Completion Certificate</Typography>
+                                <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program.expiry}</Typography>
                             </Box>
                             </Stack>
                             <Button
@@ -356,6 +367,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                     },
                                     paddingX: 6
                                 }}
+                                onClick={() => mutate()}
                             >
                                 This program expired.
                                 Repurchase to complete

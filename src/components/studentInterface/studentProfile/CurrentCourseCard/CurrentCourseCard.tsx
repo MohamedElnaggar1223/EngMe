@@ -490,7 +490,7 @@ export default function CurrentCourseCard(program: ProgramProps)
                                             px={1.5}
                                             py={0.5}
                                         >
-                                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program.expiry}</Typography>
+                                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.duration}</Typography>
                                         </Box>
                                         <Box
                                             bgcolor='#D0EBFC'
@@ -514,7 +514,7 @@ export default function CurrentCourseCard(program: ProgramProps)
                                             px={1.5}
                                             py={0.5}
                                         >
-                                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>Intermediate</Typography>
+                                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.level}</Typography>
                                         </Box>
                                         <Box
                                             bgcolor='#D0EBFC'
@@ -526,19 +526,7 @@ export default function CurrentCourseCard(program: ProgramProps)
                                             px={1.5}
                                             py={0.5}
                                         >
-                                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>2 months</Typography>
-                                        </Box>
-                                        <Box
-                                            bgcolor='#D0EBFC'
-                                            sx={{
-                                                border: '1.5px solid',
-                                                borderRadius: '20px', 
-                                                borderColor: '#6A9DBC'
-                                            }}
-                                            px={1.5}
-                                            py={0.5}
-                                        >
-                                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>Completion Certificate</Typography>
+                                            <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.expiry}</Typography>
                                         </Box>
                                     </Stack>
 

@@ -9,6 +9,10 @@ import MenuItem from "@mui/material/MenuItem";
 import { getUserByEmail } from "../../helpers/getUserByEmail";
 // import { getUserByNumber } from "../../helpers/getUserByNumber";
 import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { setTeacherRequest } from "../../helpers/setTeacherRequest";
+import { getTeacherRequest } from "../../helpers/getTeacherRequest";
+import { getUserByNumber } from "../../helpers/getUserByNumber";
 
 export default function StudentSignUp() 
 {
@@ -25,6 +29,7 @@ export default function StudentSignUp()
     const [file, setFile] = useState(null)
     //const [canSave, setCanSave] = useState(false)
     const [error, setError] = useState('')
+    const [applied, setApplied] = useState('')
 
     // const signUp = async (e: React.FormEvent<HTMLFormElement>) => {
     //     e.preventDefault()
@@ -100,6 +105,19 @@ export default function StudentSignUp()
     //     }
     // }
 
+    const { mutate: mutateTeacherRequest } = useMutation({
+        onSettled: () => {
+            setError('')
+            setApplied('Successfully Applied for Our Team!')
+            setFirstname('')
+            setLastname('')
+            setEmail('')
+            setNumber('+20')
+            setFile(null)
+        },
+        mutationFn: () => setTeacherRequest(firstname, lastname, email, number)
+    })
+
     async function signUp(e: React.FormEvent<HTMLFormElement>)
     {
         e.preventDefault()
@@ -108,6 +126,28 @@ export default function StudentSignUp()
         if(emailAlreadyInUse)
         {
             setError('Email is Already In Use!')
+        }
+        else
+        {
+            const numberAlreadyInUse = await getUserByNumber(number)
+
+            if(numberAlreadyInUse)
+            {
+                setError('Mobile Number Already In Use!')
+            }
+            else
+            {
+                const emailAlreadyRequested = await getTeacherRequest(email)
+    
+                if(emailAlreadyRequested)
+                {
+                    setError('Email is Already Applied!')
+                }
+                else
+                {
+                    mutateTeacherRequest()
+                }
+            }
         }
     }
 
@@ -161,6 +201,12 @@ export default function StudentSignUp()
                 error &&
                 <Stack flex={1} mb={4} textAlign='center'>
                     <Alert severity="error">{error}</Alert>
+                </Stack>
+            }
+            {
+                applied &&
+                <Stack flex={1} mb={4} textAlign='center'>
+                    <Alert severity="success">{applied}</Alert>
                 </Stack>
             }
             <form

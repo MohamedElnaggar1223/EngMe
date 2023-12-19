@@ -23,7 +23,8 @@ interface Question{
     secondLabel: string,
     thirdLabel: string,
     fourthLabel: string,
-    question: string
+    question: string,
+    image?: string
 }
 
 interface ExamQuestionProps{
@@ -152,6 +153,10 @@ export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId,
             alignItems='center'
             mt={6}
         >
+            {
+                question?.image &&
+                <img src={question?.image} height='225px' />
+            }
             <Stack
                 direction='row'
                 justifyContent='space-between'

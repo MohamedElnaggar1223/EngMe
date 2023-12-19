@@ -170,7 +170,7 @@ function Header()
                     position='relative'
                 >
                     {
-                        isAdmin ?
+                        isAdmin &&
                         <Stack
                             direction='row'
                         >
@@ -247,18 +247,7 @@ function Header()
                                 Push Notifictaion
                             </Button>
                         </Stack>
-                        :
-                        <SvgIcon sx={{ fontSize: 30, border: '1.5px solid', padding: 0.5, borderRadius: '6px', borderColor: '#6A9DBC' }}>
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M27.098 23.8687L21.201 19.6566C22.8858 17.5505 24.0091 14.8828 24.0091 12.0747C23.8687 5.33535 18.5333 0 11.9343 0C5.33535 0 0 5.33535 0 11.9343C0 18.5333 5.33535 23.8687 11.9343 23.8687C14.8828 23.8687 17.4101 22.8858 19.5162 21.0606L23.7283 26.9576C24.5707 28.2212 26.2555 28.3616 27.2384 27.2384C28.2212 26.1151 28.2212 24.7111 27.098 23.8687ZM11.9343 21.0606C6.8798 21.0606 2.80808 16.9889 2.80808 11.9343C2.80808 6.8798 6.8798 2.80808 11.9343 2.80808C16.9889 2.80808 21.0606 6.8798 21.0606 11.9343C21.0606 16.9889 16.9889 21.0606 11.9343 21.0606Z" fill="url(#paint0_linear_2_11900)"/>
-                                <defs>
-                                <linearGradient id="paint0_linear_2_11900" x1="2" y1="3" x2="29.5" y2="30.5" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#226E9F"/>
-                                <stop offset="0.94445" stopColor="#6A9DBC"/>
-                                </linearGradient>
-                                </defs>
-                            </svg>
-                        </SvgIcon>
+                        
                     }
                     <PopupState variant="popper" popupId="demo-popup-poppers">
                     {(popupState) => (

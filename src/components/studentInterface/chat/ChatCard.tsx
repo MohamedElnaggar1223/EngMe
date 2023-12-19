@@ -10,10 +10,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getLastMessage } from "../../helpers/getLastMessage";
 
 interface Props{
-    id: string
+    id: string,
+    search: boolean,
+    searchFriends: string
 }
 
-export default function ChatCard({ id }: Props) 
+export default function ChatCard({ id, search, searchFriends }: Props) 
 {
     //@ts-expect-error dad
     const { setChat } = useContext(ChatContext)
@@ -64,9 +66,10 @@ export default function ChatCard({ id }: Props)
 
     if(!userData || !chatUserData) return <></>
 
-    console.log(lastMessage, id, userData.id)
-
     return (
+        //@ts-expect-error name
+        search && !chatUserData?.name.toLowerCase().includes(searchFriends.toLowerCase()) ?
+        <></> :
         <Box
             display='flex'
             flexDirection='row'
