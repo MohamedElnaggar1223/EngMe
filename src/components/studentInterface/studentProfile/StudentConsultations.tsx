@@ -1,17 +1,20 @@
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { Avatar, Box, Button, Link, MenuItem, Select, Stack, Typography } from '@mui/material'
 import ExpandMore from "@mui/icons-material/ExpandMore"
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AuthContext } from '../../authentication/auth/AuthProvider'
 import { getStudentConsultation } from '../../helpers/getStudentConsultation'
 import { Timestamp } from 'firebase/firestore'
 import { getTeachersData } from '../../helpers/getTeachersData'
 import { useNavigate } from 'react-router-dom'
+import { setCancelConsultation } from '../../helpers/setCancelConsultation'
+import { setRescheduleConsultation } from '../../helpers/setRescheduleConsultation'
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 
 export default function StudentConsultations() 
 {
+    const queryClient = useQueryClient()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
 
@@ -43,6 +46,64 @@ export default function StudentConsultations()
         queryFn: () => getTeachersData(studentConsultations?.map(consultation => consultation?.teacherId)),
         enabled: !!studentConsultations
     })
+
+    const { mutate: mutateCancel } = useMutation({
+        onMutate: (consultationId: string) => {
+            const previousData = queryClient.getQueryData(['studentConsultations', userData?.id])
+
+            queryClient.setQueryData(['studentConsultations', userData?.id], (oldData: unknown) => {
+                //@ts-expect-error oldData
+                const newData = oldData ? oldData.slice().filter(consultation => consultation.id !== consultationId) : []
+                return newData
+            })
+
+            return () => queryClient.setQueryData(['studentConsultations', userData?.id], previousData)
+        },
+        mutationFn: (consultationId: string) => setCancelConsultation(consultationId)
+    })
+
+    const { mutate: mutateReschedule } = useMutation({
+        onMutate: (consultationId: string) => {
+            const previousData = queryClient.getQueryData(['studentConsultations', userData?.id])
+
+            queryClient.setQueryData(['studentConsultations', userData?.id], (oldData: unknown) => {
+                //@ts-expect-error oldData
+                const newData = oldData ? oldData.slice().filter(consultation => consultation.id !== consultationId) : []
+                return newData
+            })
+
+            return () => queryClient.setQueryData(['studentConsultations', userData?.id], previousData)
+        },
+        mutationFn: (consultationId: string) => setRescheduleConsultation(consultationId)
+    })
+
+    const handleZoomMeeting = (meetingLink: string) => {
+        console.log(meetingLink)
+        window.location.href = meetingLink
+    }
+
+    useEffect(() => {
+        const deletePassedConsultations = async () => {
+            if(studentConsultations)
+            {
+                const passedConsultations = studentConsultations.slice().filter(consultation => {
+                    //@ts-expect-error time
+                    const secondsSinceEndTime = Timestamp.now().seconds - consultation?.endTime?.seconds
+                    const oneWeekInSeconds = 7 * 24 * 60 * 60;
+    
+                    return secondsSinceEndTime >= oneWeekInSeconds
+                })
+    
+                const deletedConsultations = passedConsultations.map(async(consultation) => {
+                    await setCancelConsultation(consultation.id)
+                })
+    
+                await Promise.all(deletedConsultations)
+            }
+        }
+
+        deletePassedConsultations()
+    }, [studentConsultations])
 
     const displayedConsultations = studentConsultations?.slice()
     //@ts-expect-error type
@@ -120,6 +181,8 @@ export default function StudentConsultations()
                                 color: '#fff',
                                 paddingX: 1
                             }}
+                            //@ts-expect-error meeting
+                            onClick={() => handleZoomMeeting(consultation?.meetingLink)}
                         >
                             <Typography noWrap sx={{ textTransform: 'none' }} fontSize={14} fontWeight={400} fontFamily='Inter'>Join Consultation</Typography>
                         </Button>
@@ -140,6 +203,7 @@ export default function StudentConsultations()
                                 paddingX: 1,
                                 width: '100px'
                             }}
+                            onClick={() => mutateReschedule(consultation.id)}
                         >
                             <Typography noWrap sx={{ textTransform: 'none' }} fontSize={14} fontWeight={400} fontFamily='Inter'>Reschedule</Typography>
                         </Button>
@@ -152,6 +216,7 @@ export default function StudentConsultations()
                                 paddingX: 1,
                                 width: '70px'
                             }}
+                            onClick={() => mutateCancel(consultation.id)}
                         >
                             <Typography noWrap sx={{ textTransform: 'none' }} fontSize={14} fontWeight={500} fontFamily='Inter'>Cancel</Typography>
                         </Button>
