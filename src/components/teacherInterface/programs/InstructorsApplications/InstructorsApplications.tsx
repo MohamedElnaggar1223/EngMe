@@ -11,7 +11,7 @@ export default function InstructorsApplications()
     })
 
     //@ts-expect-error map
-    const displayedRequests = teacherRequests && teacherRequests.map((request: {id: string, name: string, email: string, number: string}) => (
+    const displayedRequests = teacherRequests && teacherRequests.map((request: {id: string, name: string, email: string, number: string, cv: string}) => (
         <InstructorsApplicationsRequest {...request} />
     ))
 
