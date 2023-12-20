@@ -12,9 +12,9 @@ import AuthProvider from "./components/authentication/auth/AuthProvider"
 import PrivateRoute from "./components/authentication/auth/PrivateRoute"
 import PrefetchPrograms from "./components/authentication/auth/PrefetchPrograms"
 import TeacherLayout from "./components/TeacherLayout"
-import Lesson from "./components/studentInterface/programs/Current/Lesson"
+const Lesson = lazy(() => import("./components/studentInterface/programs/Current/Lesson"))
 import { BrowserView, MobileView } from "react-device-detect"
-import KnowledgeBankPdf from "./components/studentInterface/knowledgebank/KnowledgeBankPdf"
+const KnowledgeBankPdf = lazy(() => import("./components/studentInterface/knowledgebank/KnowledgeBankPdf"))
 const TeacherInterfaceTeacherProfile = lazy(() => import("./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"))
 const TeacherProgramsPage = lazy(() => import("./components/teacherInterface/programs/TeacherProgramsPage"))
 const ExamBank = lazy(() => import("./components/studentInterface/exambank/ExamBank"))
