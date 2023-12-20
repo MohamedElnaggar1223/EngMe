@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getExamSession } from '../../helpers/getExamSession'
 import { useNavigate } from 'react-router-dom'
 import { getUserData } from '../../helpers/getUserData'
+import axios from 'axios'
 
 //@ts-expect-error context
 export const AuthContext = createContext()
@@ -39,6 +40,14 @@ export default function AuthProvider({ children })
         }
     //eslint-disable-next-line
     }, [isSuccess])
+
+    useEffect(() => {
+        const initiatebackend = async() => {
+            await axios.get('https://engmebackendzoom.onrender.com/')
+        }
+
+        initiatebackend()
+    }, [])
 
     useLayoutEffect(() => {
 
