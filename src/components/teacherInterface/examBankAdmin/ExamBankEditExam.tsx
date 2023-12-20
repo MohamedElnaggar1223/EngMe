@@ -1,40 +1,39 @@
 import { Box, Stack, Button, SvgIcon, Typography } from "@mui/material";
 import { useMemo, memo, lazy, createContext, Suspense } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { setQuizData } from "../../../helpers/setQuizData";
-const EditOptionQuestion = lazy(() => import("./EditOptionQuestionQuiz"))
-const EditSelectQuestion = lazy(() => import("./EditSelectQuestionQuiz"))
+import { setExamBankData } from "../../helpers/setExamBankData";
+const EditOptionQuestion = lazy(() => import("./EditOptionQuestionExamBank"))
+const EditSelectQuestion = lazy(() => import("./EditSelectQuestionExamBank"))
 
 //@ts-expect-error context
 export const EditQuizContext = createContext()
 
 //@ts-expect-error anytype
-function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded }) 
+function ExamBankEditExam({ setEdited, examBank }) 
 {
     const queryClient = useQueryClient()
 
     const { data: questions } = useQuery({
-        queryKey: ['quizEdit', quiz?.id ?? '', course.id],
+        queryKey: ['examBankEdit', examBank?.id ?? ''],
         queryFn: () => {
-            return quiz?.questions.slice()
+            return examBank?.questions.slice()
         }
     })
 
     const { mutate } = useMutation({
         onMutate: () => {
-            const previousData = queryClient.getQueryData(['quizzes', course.programId, course.id])
+            const previousData = queryClient.getQueryData(['examBankContent', examBank.majorId])
 
-            queryClient.setQueryData(['quizzes', course.programId, course.id], (oldData: []) => {
+            queryClient.setQueryData(['examBankContent', examBank.majorId], (oldData: unknown) => {
                 //@ts-expect-error lesson
-                const filteredArray = oldData.slice().filter(quizData => quizData.id !== quiz?.id)
-                const newArray = [...filteredArray, quiz ? {...quiz, questions} : { title: 'Quiz', questions }]
-
-                return newArray
+                const filteredArray = oldData ? oldData.slice().filter(examContent => examContent.id !== examBank.id) : []
+                const newData = [...filteredArray, { ...examBank, questions }]
+                return newData
             })
 
-            return () => queryClient.setQueryData(['quizzes', course.programId, course.id], previousData)
-        },
-        mutationFn: () => setQuizData(questions, quiz, course, (order + 1))
+            return () => queryClient.setQueryData(['examBankContent', examBank.majorId], previousData)
+        },//questions, quiz, course, (order + 1)
+        mutationFn: () => setExamBankData(examBank, questions)
     })
 
     // const memoizedQuestions = useMemo(() => questions, [questions])
@@ -43,11 +42,11 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
     const displayedQuestions = useMemo(() => questions?.map((question, index) => (
         question.type === 'options' ?
         <Suspense>
-            <EditOptionQuestion course={course} quiz={quiz} index={index} question={question} key={index} />
+            <EditOptionQuestion examBank={examBank} index={index} question={question} key={index} />
         </Suspense>
         :
         <Suspense>
-            <EditSelectQuestion course={course} quiz={quiz} index={index} question={question} key={index} />
+            <EditSelectQuestion examBank={examBank} index={index} question={question} key={index} />
         </Suspense>
         //eslint-disable-next-line
     )), [questions])
@@ -87,7 +86,7 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
                         alignSelf: 'flex-end'
                     }}
                     onClick={() => {
-                        queryClient.setQueryData(['quizEdit', quiz?.id ?? '', course.id], (oldData: unknown) => {
+                        queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                             //@ts-expect-error oldata
                             const newData = oldData ? [...oldData, { correctOption: '0', question: '', options: ['', '', '', ''], type: 'options' }] : [{ correctOption: '0', question: '', options: ['', '', '', ''], type: 'options' }]
                             return newData
@@ -139,7 +138,6 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
                                 },
                             }}
                             onClick={() => {
-                                setAdded('')
                                 setEdited('')
                             }}
                         >
@@ -164,7 +162,6 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
                             }}
                             onClick={() => {
                                 setEdited('')
-                                setAdded('')
                                 mutate()
                             }}
                         >
@@ -176,5 +173,5 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
     )
 }
 
-const memoizedComponentCardEditQuiz = memo(ComponentCardEditQuiz)
-export default memoizedComponentCardEditQuiz
+const memoizedExamBankEditExam = memo(ExamBankEditExam)
+export default memoizedExamBankEditExam

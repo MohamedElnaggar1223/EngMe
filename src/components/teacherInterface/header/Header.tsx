@@ -107,7 +107,7 @@ function Header()
         await signOut(auth);
     }
 
-    const isAdmin = userData.email === 'admin@test.com'
+    const isAdmin = userData.email === import.meta.env.VITE_ADMIN_EMAIL
 
     return (
         <Box

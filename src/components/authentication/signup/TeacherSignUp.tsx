@@ -1,7 +1,7 @@
 import FormControl from "@mui/material/FormControl";
 import { Alert, Box, Button, Select, Stack, SvgIcon, TextField, Typography } from "@mui/material";
 import { MuiTelInput } from 'mui-tel-input'
-import { useState } from "react";
+import { useState, useRef } from "react";
 import MenuItem from "@mui/material/MenuItem";
 // import { createUserWithEmailAndPassword } from "firebase/auth";
 // import { addDoc, collection, doc, setDoc } from "firebase/firestore";
@@ -13,9 +13,12 @@ import { useMutation } from "@tanstack/react-query";
 import { setTeacherRequest } from "../../helpers/setTeacherRequest";
 import { getTeacherRequest } from "../../helpers/getTeacherRequest";
 import { getUserByNumber } from "../../helpers/getUserByNumber";
+import emailjs from '@emailjs/browser';
 
 export default function StudentSignUp() 
 {
+    const form = useRef();
+
     const[number, setNumber] = useState('+20')
     const[firstname, setFirstname] = useState('')
     const[lastname, setLastname] = useState('')
@@ -115,39 +118,51 @@ export default function StudentSignUp()
             setNumber('+20')
             setFile(null)
         },
-        mutationFn: () => setTeacherRequest(firstname, lastname, email, number)
+        mutationFn: () => setTeacherRequest(firstname, lastname, email, number, file)
     })
+
+    const canSave = [firstname, lastname, number, file].every(Boolean)
 
     async function signUp(e: React.FormEvent<HTMLFormElement>)
     {
         e.preventDefault()
         const emailAlreadyInUse = await getUserByEmail(email)
 
-        if(emailAlreadyInUse)
+        if(canSave)
         {
-            setError('Email is Already In Use!')
-        }
-        else
-        {
-            const numberAlreadyInUse = await getUserByNumber(number)
-
-            if(numberAlreadyInUse)
+            if(emailAlreadyInUse)
             {
-                setError('Mobile Number Already In Use!')
+                setError('Email is Already In Use!')
             }
             else
             {
-                const emailAlreadyRequested = await getTeacherRequest(email)
+                const numberAlreadyInUse = await getUserByNumber(number)
     
-                if(emailAlreadyRequested)
+                if(numberAlreadyInUse)
                 {
-                    setError('Email is Already Applied!')
+                    setError('Mobile Number Already In Use!')
                 }
                 else
                 {
-                    mutateTeacherRequest()
+                    const emailAlreadyRequested = await getTeacherRequest(email)
+        
+                    if(emailAlreadyRequested)
+                    {
+                        setError('Email is Already Applied!')
+                    }
+                    else
+                    {
+                        //@ts-expect-error form
+                        emailjs.sendForm(import.meta.env.VITE_EMAILJS_SERVICE_ID, import.meta.env.VITE_EMAILJS_TEMPLATE_ID, form.current, import.meta.env.VITE_EMAILJS_PUBLIC_ID)
+            
+                        mutateTeacherRequest()
+                    }
                 }
             }
+        }
+        else
+        {
+            setError('Please Enter All Details!')
         }
     }
 
@@ -216,6 +231,8 @@ export default function StudentSignUp()
                     flexDirection: 'column',
                     gap: '30px',
                 }}
+                //@ts-expect-error form
+                ref={form}
                 onSubmit={signUp}
             >
                 <Stack
@@ -226,7 +243,7 @@ export default function StudentSignUp()
                         <TextField 
                             fullWidth
                             required
-                            
+                            name='firstName'
                             color="info"
                             variant="outlined"
                             placeholder="First Name"
@@ -246,7 +263,7 @@ export default function StudentSignUp()
                         <TextField 
                             fullWidth
                             required
-                            
+                            name='lastName'
                             color="info"
                             variant="outlined"
                             placeholder="Last Name"
@@ -267,7 +284,7 @@ export default function StudentSignUp()
                     <TextField 
                         fullWidth
                         required
-                        
+                        name='email'
                         color="info"
                         variant="outlined"
                         placeholder="Email"
@@ -288,6 +305,7 @@ export default function StudentSignUp()
                 <FormControl>
                     <MuiTelInput 
                         value={number} 
+                        name='number'
                         onChange={handleNumber} 
                         placeholder='Phone Number'
                         inputProps={{

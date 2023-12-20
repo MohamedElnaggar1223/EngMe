@@ -1,8 +1,9 @@
 import { collection, addDoc, doc, setDoc, deleteDoc } from "firebase/firestore"
 import { auth, db } from "../../firebase/firebaseConfig"
 import { createUserWithEmailAndPassword } from "firebase/auth"
+import { getStorage, ref, uploadBytes } from "firebase/storage"
 
-export const setTeacherRequest = async(firstname?: string, lastname?: string, email?: string, number?: string, request?: {id: string, name: string, email: string, number: string}, password?: string) => {
+export const setTeacherRequest = async(firstname?: string, lastname?: string, email?: string, number?: string, file?: unknown, request?: {id: string, name: string, email: string, number: string}, password?: string) => {
     if(request && password)
     {
         const teacherRequestRef = doc(db, 'teacherRequest', request.id)
@@ -50,11 +51,19 @@ export const setTeacherRequest = async(firstname?: string, lastname?: string, em
     else
     {
         const teacherRequestRef = collection(db, 'teacherRequest')
+
+        const storage = getStorage()
+        //@ts-expect-error file
+        const storageRef = ref(storage, 'CVs/' + file.name)
+        //@ts-expect-error file
+        await uploadBytes(storageRef, file)
     
         const newTeacherRequest = {
             name: `${firstname} ${lastname}`,
             email,
-            number
+            number,
+            //@ts-expect-error file
+            cv: file.name
         }
     
         await addDoc(teacherRequestRef, newTeacherRequest)

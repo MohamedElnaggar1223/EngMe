@@ -1,18 +1,21 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { lazy, useState } from "react";
+import { createContext, lazy, useState } from "react";
 import { getExamBank } from "../../helpers/getExamBank";
-const ExamBankCard = lazy(() => import("./ExamBankCard"))
+import ExamBankContent from "./ExamBankContent";
 const QuizBank = lazy(() => import("./QuizBank"))
 
 interface ExamBankProps{
     admin?: boolean
 }
 
+//@ts-expect-error context
+export const ExamBankContext = createContext()
+
 export default function ExamBank({ admin }: ExamBankProps) 
 {
     const [selected, setSelected] = useState('')
-    const [examClicked, setExamClicked] = useState(false)
+    const [examClicked, setExamClicked] = useState(null)
 
     const { data: examBankMajors } = useQuery({
         queryKey: ['examBankMajors'],
@@ -37,48 +40,39 @@ export default function ExamBank({ admin }: ExamBankProps)
     ))
 
     return (
-        <Box
-            width='100%'
-            display='flex'
-            flexDirection='row'
-            zIndex={1}
-        >
+        <ExamBankContext.Provider value={{ setExamClicked }}>
             <Box
-                bgcolor='#D0EBFC;'
+                width='100%'
+                display='flex'
+                flexDirection='row'
+                zIndex={1}
+                minHeight='77.8vh'
             >
-                {
-                    !admin &&
-                    <Box
-                        px={8}
-                        pb={4.5}
-                        pt={6}
-                        textAlign='center'
-                    >
-                        <Typography noWrap sx={{ color: '#226E9F' }} fontSize={18} fontFamily='Inter' fontWeight={700}>Exam Bank</Typography>
-                    </Box>
-                }
-                {displayedMajors}
-            </Box>
-            {
-               examClicked 
-               ?
-                <QuizBank />
-               :
-                <Stack
-                    flexWrap='wrap'
-                    flexDirection='row'
-                    p={16}
-                    justifyContent='space-evenly'
-                    gap={12}
+                <Box
+                    bgcolor='#D0EBFC;'
                 >
-                    <ExamBankCard setExamClicked={setExamClicked} />
-                    <ExamBankCard setExamClicked={setExamClicked} />
-                    <ExamBankCard setExamClicked={setExamClicked} />
-                    <ExamBankCard setExamClicked={setExamClicked} />
-                    <ExamBankCard setExamClicked={setExamClicked} />
-                    <ExamBankCard setExamClicked={setExamClicked} />
-                </Stack>
-            }
-        </Box>
+                    {
+                        !admin &&
+                        <Box
+                            px={8}
+                            pb={4.5}
+                            pt={6}
+                            textAlign='center'
+                        >
+                            <Typography noWrap sx={{ color: '#226E9F' }} fontSize={18} fontFamily='Inter' fontWeight={700}>Exam Bank</Typography>
+                        </Box>
+                    }
+                    {displayedMajors}
+                </Box>
+                {
+                examClicked 
+                ?
+                    //@ts-expect-error content
+                    <QuizBank {...examClicked} />
+                :
+                    <ExamBankContent id={selected} />
+                }
+            </Box>
+        </ExamBankContext.Provider>
     )
 }

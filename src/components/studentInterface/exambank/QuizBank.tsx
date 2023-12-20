@@ -1,16 +1,31 @@
-    import { Stack, Typography, Box, Button, SvgIcon } from '@mui/material'
+import { Stack } from '@mui/material'
 import { useState } from 'react'
+import ExamQuestionOptions from './ExamQuestionOptions'
+import ExamQuestionSelects from './ExamQuestionSelects'
 
-export default function QuizBank() 
+interface Props {
+    id: string,
+    questions: [],
+    majorId: string,
+    title: string
+}
+
+export default function QuizBank(ebContent: Props) 
 {
-    const [selectedOption, setSelectedOption] = useState(0)
-    const [number, setNumber] = useState(1)
+    const [number, setNumber] = useState(0)
 
-    function handleNext()
-    {
-        setSelectedOption(0)
-        setNumber(prev => prev + 1)
-    }
+    const displayedQuestions = ebContent?.questions?.map((question, index) => 
+        //@ts-expect-error type
+        question?.type === 'options' ?
+        <ExamQuestionOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+        <ExamQuestionSelects setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} />
+    )
+
+    // function handleNext()
+    // {
+    //     setSelectedOption(0)
+    //     setNumber(prev => prev + 1)
+    // }
     return (
         <Stack
             flex={1}
@@ -28,7 +43,7 @@ export default function QuizBank()
                 px={32}
                 borderRadius='15px'
             >
-                <Stack
+                {/* <Stack
                     direction='row'
                     justifyContent='space-between'
                     alignItems='center'
@@ -133,8 +148,9 @@ export default function QuizBank()
                                 </SvgIcon>
                             }
                     </Box>
-                </Stack>
-                <Stack
+                </Stack> */}
+                {displayedQuestions[number]}
+                {/* <Stack
                     direction='row'
                     gap={2}
                     >
@@ -156,7 +172,7 @@ export default function QuizBank()
                             },
                             marginBottom: 3
                         }}
-                        onClick={handleNext}
+                        // onClick={handleNext}
                         >
                         Skip
                     </Button>
@@ -181,8 +197,8 @@ export default function QuizBank()
                         >
                         Next
                     </Button>
-                </Stack>
-                {
+                </Stack> */}
+                {/* {
                     selectedOption !== 1 &&
                     <Stack
                         bgcolor='#FEF4EB'
@@ -199,7 +215,7 @@ export default function QuizBank()
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                         </Typography>
                     </Stack>
-                }
+                } */}
             </Stack>
         </Stack>
     )
