@@ -15,7 +15,6 @@ export const setQuizData = async(questions: unknown, quiz?: unknown, course?: un
     }
     else
     {
-        console.log(course)
         if(course)
         {
             const quizzesRef = collection(db, 'quizzes')

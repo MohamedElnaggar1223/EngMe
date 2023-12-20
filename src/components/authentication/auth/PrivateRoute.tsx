@@ -14,7 +14,6 @@ export default function PrivateRoute({ children })
     const { pathname } = useLocation()
 
     useEffect(() => {
-        console.log(userData)
         if(!user || !userData) {
             pathname === '/signup' ? navigate('/signup') : navigate(`/login`)
         }

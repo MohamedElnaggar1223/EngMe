@@ -34,17 +34,11 @@ export default function TeacherEditConsultaions({ setEdit }: TeacherEditConsulta
         }
     ])
 
-    console.log(newSlots)
-
     function handelNewSlotsChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, i: number, type: string)
     {
         const slot = newSlots[i] ?? { endTime: '', startTime: '', day: '' }
-        console.log(slot)
         const editedSlot = {...slot, [type]: e.target.value}
-        console.log(newSlots.length, i)
-        console.log(newSlots[i])
         const editedSlots = newSlots[i] ? [...newSlots] : [...newSlots, { endTime: '', startTime: '', day: '' }]
-        console.log(editedSlots)
         editedSlots[i] = editedSlot
         
         setNewSlots(editedSlots)

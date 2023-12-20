@@ -30,29 +30,19 @@ export const setSubmitExamSessionQuiz = async (studentId: string, quizId: string
       }
       else
       {
-        console.log(question.correctOption)
         return question.correctOption
       }
     })
-    console.log(correctOptions)
     const answers = orderedQuizzesArray[0]?.data()?.answers
-    console.log(answers)
     //@ts-expect-error anyerror
     const results = correctOptions.map((option, index) => {
       if(typeof answers[index] === 'object')
       {
-        console.log('object', answers[index])
         const objectAnswers = Object.values(answers[index]).map((answer, indexOfAnswer) => Number(option[indexOfAnswer]) === Number(answer))
-        console.log(objectAnswers)
-        console.log(objectAnswers.every(Boolean))
         return objectAnswers.every(Boolean)
       }
       else return answers[index] === Number(option)
     })
-    console.log(results)
-    //@ts-expect-error res
-    console.log(results.slice().filter(res => !!res).length)
-    console.log(results.length)
     //@ts-expect-error anyerror
     const grade = (results.slice().filter(res => !!res)).length
     // const grade = (((results.slice().filter(res => !!res)).length / results.length) * 100).toFixed(2)

@@ -14,7 +14,6 @@ export const setStudentFollowTeacher = async(teacherId: string, studentId: strin
     }
     else
     {
-        console.log(teacherId, studentId)
         const newFollow = {
             teacherId,
             studentId

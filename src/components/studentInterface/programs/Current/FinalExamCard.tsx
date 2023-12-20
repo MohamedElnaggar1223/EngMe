@@ -34,8 +34,6 @@ function FinalExamCard({ program, version, disabled, setQuestions, finalExam, qu
     const navigate = useNavigate()
 
     const handleStudentFinalExam = async (finalExamId: string) => {
-        console.log('test')
-        console.log(finalExamId)
         await setStudentFinalExam(userData.id, finalExamId)
         navigate(`/exam/${finalExamId}`)
     }

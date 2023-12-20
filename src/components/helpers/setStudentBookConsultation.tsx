@@ -22,12 +22,10 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
 
         //@ts-expect-error anytype
         const teacherSlots = teacherSchedule.slots.map(slot => {
-            console.log(slot.startTime)
-            console.log(slot.endTime)
+
             const startTime = slot.startTime.split(' ')[1] === 'PM' ? Number(slot.startTime.split(' ')[0]) === 12 ? 12 :  Number(slot.startTime.split(' ')[0]) + 12 : Number(slot.startTime.split(' ')[0])
-            console.log(startTime)
+
             const endTime = slot.endTime.split(' ')[1] === 'PM' ? Number(slot.endTime.split(' ')[0]) === 12 ? 12 : Number(slot.endTime.split(' ')[0]) + 12 : Number(slot.endTime.split(' ')[0])
-            console.log(endTime)
 
             const dayNumbers = []
             for(let i = startTime; i < endTime; i++)
@@ -54,9 +52,6 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
 
         const formattedClosestDay = `${closestDay} ${currentDate.getHours() + 1}`
 
-        console.log(formattedClosestDay)
-        console.log(flatTeacherSlots)
-
         let startIndex = null
         while(startIndex === null)
         {
@@ -79,7 +74,6 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
                     const tmp = formattedClosestDay.split(" ")[0]
                     //@ts-expect-error anytype
                     match = getIndexOfClosestDay(tmp, flatTeacherSlots.map(slot => slot.split(" ")[0]))
-                    console.log(match)
                     startIndex = match
                 }
             }
@@ -89,11 +83,8 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
         const secondHalf = flatTeacherSlots.slice(0 ,startIndex)
 
         const finalArray = firstHalf.concat(secondHalf)
-
-        console.log(finalArray)
         
         const consultsDates = teacherConsults.docs.map(doc => `${daysOfWeek[doc.data().startTime.toDate().getDay()]} ${doc.data().startTime.toDate().getHours()}`)
-        console.log(teacherConsults.docs.map(doc => `${daysOfWeek[doc.data().startTime.toDate().getDay()]} ${doc.data().startTime.toDate().getHours()}`))
         //@ts-expect-error anytype
         const filteredArray = finalArray.filter(date => !consultsDates.includes(date))
 

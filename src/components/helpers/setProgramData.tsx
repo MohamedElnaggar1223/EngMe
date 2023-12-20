@@ -37,24 +37,7 @@ export const setProgramData = async(teacherId: string, name: string, description
     }
     else
     {
-        console.log('test')
         const programsRef = collection(db, 'programs')
-
-        console.log({
-            name,
-            description,
-            category,
-            level,
-            duration,
-            expiry,
-            paused,
-            averageRating: 5,
-            totalFeedbacks: 0,
-            courses: [],
-            teacherId,
-            prerequisites: [],
-            image: image ?? ''
-        })
         
         let newProgram = {
             name,

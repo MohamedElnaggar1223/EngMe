@@ -14,12 +14,9 @@ export default function Lesson()
 
         if(lessonDoc.data()?.content !== undefined && lessonDoc.data()?.content.content !== undefined)
         {
-            console.log(lessonDoc.data())
             const storage = getStorage();
             const storageRef = ref(storage, `${lessonDoc.data()?.content?.type}${lessonDoc.data()?.content?.content}`);
             const dataDisplayed = await getDownloadURL(storageRef)
-
-            console.log(dataDisplayed)
     
             const lessonData = {...lessonDoc.data(), id: lessonDoc.id, dataDisplayed}
     

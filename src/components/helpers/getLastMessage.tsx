@@ -7,8 +7,6 @@ export const getLastMessage = async (userId: string, friendId: string) => {
 
     const messagesDoc = await getDocs(queryMessages)
 
-    console.log(messagesDoc)
-
     const messageData = {...messagesDoc.docs[0].data(), id: messagesDoc.docs[0].id}
 
     return messageData

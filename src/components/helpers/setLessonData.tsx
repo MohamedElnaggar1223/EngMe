@@ -3,7 +3,6 @@ import { db } from "../../firebase/firebaseConfig"
 import { getStorage, ref, uploadBytes } from "firebase/storage"
 
 export const setLessonData = async(title: string, description: string, lesson?: unknown, course?: unknown, file?: unknown, fileType?: unknown, order?: number) => {
-    console.log(title, description, lesson, course)
     if(lesson)
     {
         //@ts-expect-error course
@@ -31,10 +30,8 @@ export const setLessonData = async(title: string, description: string, lesson?: 
     }
     else
     {
-        console.log(course)
         if(course)
         {
-            console.log('hello')
             const lessonsRef = collection(db, 'lessons')
 
             const newLesson = {

@@ -77,7 +77,6 @@ export default function TeacherConsultations()
     })
 
     const handleZoomMeeting = (meetingLink: string) => {
-        console.log(meetingLink)
         window.location.href = meetingLink
     }
 

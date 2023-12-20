@@ -28,8 +28,6 @@ export default function AuthProvider({ children })
         enabled: userData ? userData.role === 'student' : false,
     })
 
-    console.log(userData)
-
     // useEffect(() => {
     //     refetch()
     // }, [user, refetch])

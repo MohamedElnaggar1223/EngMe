@@ -167,8 +167,6 @@ export default function CurrentCourseCard(program: ProgramProps)
     }
     , [finalExams, studentFinalExams, program])
 
-    console.log(studentAssessment, assessments)
-
     const materialCount = useMemo(() => {if(open) return(assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)}, [assessments, lessons, quizzes, open])
     const materialFinished = useMemo(() => {
         if(open)

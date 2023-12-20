@@ -34,8 +34,6 @@ export default function Grades(program: ProgramProps)
     //@ts-expect-error quiz
     const organizedQuizzes = Object.groupBy(studentQuizzes, quizId)
 
-    console.log(organizedQuizzes)
-
     //@ts-expect-error quiz
     const displayedQuizzes = Object.values(organizedQuizzes).map((quizzesArray, index) => <GradeCard index={index} quizzesArray={quizzesArray} />)
 

@@ -24,8 +24,6 @@ export default function ExamBankContent({ id }: ExamBankContentProps)
         queryFn: () => getExamBankContent(id)
     })
 
-    console.log(examBankContent, id)
-
     const { mutate } = useMutation({
         onMutate: () => {
             const previousData = queryClient.getQueryData(['examBankContent', id])
