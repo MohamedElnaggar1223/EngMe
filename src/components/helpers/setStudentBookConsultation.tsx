@@ -1,4 +1,4 @@
-import { collection, addDoc, Timestamp, query, where, getDocs } from "firebase/firestore"
+import { collection, addDoc, Timestamp, query, where, getDocs, deleteDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 import axios from "axios";
 
@@ -111,7 +111,14 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
 
             const response = await axios.get(`https://engmebackendzoom.onrender.com/start-zoom-auth?startTime=${encodeURIComponent(formattedStartTime ?? "hello")}&consultationId=${addedSession.id}`)
 
-            window.location.href = response.data.link
+            if(response.data.link)
+            {
+                window.location.href = response.data.link
+            }
+            else
+            {
+                await deleteDoc(addedSession)
+            }
         }
     }
 
