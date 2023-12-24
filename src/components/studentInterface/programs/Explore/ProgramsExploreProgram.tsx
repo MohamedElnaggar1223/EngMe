@@ -1,5 +1,5 @@
 import { Suspense, lazy, useContext, useState } from 'react'
-import { Box, Stack, Typography, SvgIcon, Avatar, Button } from '@mui/material'
+import { Box, Stack, Typography, SvgIcon, Avatar, Button, Dialog, CircularProgress } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AuthContext } from '../../../authentication/auth/AuthProvider'
 import ProgramProps from '../../../../interfaces/ProgramProps'
@@ -35,6 +35,7 @@ export default function ProgramsExploreProgram()
     const program = queryClient.getQueryData(['explorePrograms', userData?.id]).find(program => program.id === pageShowed) as ProgramProps
     if(!program) setPageShowed('home')
     const [programShow, setProgramShow] = useState('components')
+    const [loading, setLoading] = useState(false)
 
     const icon = userData.favoritePrograms.length && userData.favoritePrograms.includes(program.id) ? 
     (
@@ -131,6 +132,7 @@ export default function ProgramsExploreProgram()
 
     const handleStudentRequestProgram = async () => {
         // await setStudentRequestProgram(studentRequest, userData.id, program.id)
+        setLoading(true)
         await handlePayment()
         queryClient.invalidateQueries({
             queryKey: ['studentRequest', program?.id]
@@ -171,7 +173,6 @@ export default function ProgramsExploreProgram()
     })
 
     const handlePayment = async () => {
-        console.log(userData)
         const response = await axios.post('https://engmebackendpaymentapi.onrender.com/payment', {
             name: program.name,
             description: program.description,
@@ -212,6 +213,9 @@ export default function ProgramsExploreProgram()
     return (
         <Box
         >
+            <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+            </Dialog>
             <Box
                 display='flex'
                 flexDirection='column'
@@ -495,7 +499,7 @@ export default function ProgramsExploreProgram()
 
                     </Box>
                 </Box>
-            </Box>
+            D</Box>
             <Stack
                 flex={1}
                 alignItems='center'
