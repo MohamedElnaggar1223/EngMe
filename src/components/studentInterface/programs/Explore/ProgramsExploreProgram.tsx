@@ -14,11 +14,12 @@ import { getStudentCount } from '../../../helpers/getStudentCount'
 import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram'
 // import { getPrereqs } from '../../../helpers/getPrereqs'
 import { getStudentRequest } from '../../../helpers/getStudentRequest'
-import { setStudentRequestProgram } from '../../../helpers/setStudentRequestProgram'
+// import { setStudentRequestProgram } from '../../../helpers/setStudentRequestProgram'
 import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFavorite'
 // import { getStudentCompletedPrograms } from '../../../helpers/getStudentCompletedPrograms'
 import { getProgramsData } from '../../../helpers/getProgramsData'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 export default function ProgramsExploreProgram() 
 {
@@ -129,7 +130,8 @@ export default function ProgramsExploreProgram()
     })
 
     const handleStudentRequestProgram = async () => {
-        await setStudentRequestProgram(studentRequest, userData.id, program.id)
+        // await setStudentRequestProgram(studentRequest, userData.id, program.id)
+        await handlePayment()
         queryClient.invalidateQueries({
             queryKey: ['studentRequest', program?.id]
         })
@@ -167,6 +169,24 @@ export default function ProgramsExploreProgram()
         },
         mutationFn: () => handleStudentFavoriteProgram()
     })
+
+    const handlePayment = async () => {
+        console.log(userData)
+        const response = await axios.post('https://engmebackendpaymentapi.onrender.com/payment', {
+            name: program.name,
+            description: program.description,
+            amount_cents: 20000,
+            quantity: 1,
+            email: userData.email,
+            phone_number: userData.number,
+            first_name: userData.name.split(" ")[0],
+            last_name: userData.name.split(" ")[1],
+            studentId: userData.id,
+            programId: program.id
+        })
+
+        window.location.href = response.data.link
+    }
     
     const handleStudentFavoriteProgram = async () => {
         await setStudentProgramFavorite(userData.id, program.id)

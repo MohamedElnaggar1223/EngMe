@@ -1,11 +1,13 @@
 import { createContext, useEffect, useLayoutEffect, useState } from 'react'
-import { auth } from '../../../firebase/firebaseConfig'
+import { auth, db } from '../../../firebase/firebaseConfig'
 import { User, onAuthStateChanged, signOut } from 'firebase/auth'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getExamSession } from '../../helpers/getExamSession'
 import { useNavigate } from 'react-router-dom'
 import { getUserData } from '../../helpers/getUserData'
 import axios from 'axios'
+import { collection, query, where, onSnapshot } from 'firebase/firestore'
+import { setStudentRequestProgram } from '../../helpers/setStudentRequestProgram'
 
 //@ts-expect-error context
 export const AuthContext = createContext()
@@ -44,6 +46,7 @@ export default function AuthProvider({ children })
     useEffect(() => {
         const initiatebackend = async() => {
             await axios.get('https://engmebackendzoom.onrender.com/')
+            await axios.get('https://engmebackendpaymentapi.onrender.com/')
         }
 
         initiatebackend()
@@ -98,6 +101,28 @@ export default function AuthProvider({ children })
             listen()
         }
     }, [])
+
+    useEffect(() => {
+        if(userData?.id)
+        {
+            const ordersRef = collection(db, 'orders')
+            const queryOrders = query(ordersRef, where('studentId', '==', userData?.id))
+    
+            const unsub = onSnapshot(queryOrders, async (querySnapshot) => {
+                const acceptedOrders = querySnapshot.docs.slice().filter(doc => doc.data()?.status === 'accepted')
+    
+                const updateStudentProgram = acceptedOrders.map(async (order) => {
+                    await setStudentRequestProgram('', order.data()?.studentId, order.data()?.programId)
+                })
+    
+                await Promise.all(updateStudentProgram)
+            })
+    
+            return () => {
+                unsub()
+            }
+        }
+    }, [userData])
 
     if(isLoading) return <></>
     else return (
