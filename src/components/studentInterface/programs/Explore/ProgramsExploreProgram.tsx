@@ -20,6 +20,7 @@ import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFav
 import { getProgramsData } from '../../../helpers/getProgramsData'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { loadStripe } from '@stripe/stripe-js'
 
 export default function ProgramsExploreProgram() 
 {
@@ -172,21 +173,48 @@ export default function ProgramsExploreProgram()
         mutationFn: () => handleStudentFavoriteProgram()
     })
 
+    // const handlePayment = async () => {
+    //     const response = await axios.post('https://engmebackendpaymentapi.onrender.com/payment', {
+    //         name: program.name,
+    //         description: program.description,
+    //         amount_cents: 20000,
+    //         quantity: 1,
+    //         email: userData.email,
+    //         phone_number: userData.number,
+    //         first_name: userData.name.split(" ")[0],
+    //         last_name: userData.name.split(" ")[1],
+    //         studentId: userData.id,
+    //         programId: program.id
+    //     })
+
+    //     window.location.href = response.data.link
+    // }
+
     const handlePayment = async () => {
-        const response = await axios.post('https://engmebackendpaymentapi.onrender.com/payment', {
-            name: program.name,
-            description: program.description,
-            amount_cents: 20000,
-            quantity: 1,
-            email: userData.email,
-            phone_number: userData.number,
-            first_name: userData.name.split(" ")[0],
-            last_name: userData.name.split(" ")[1],
-            studentId: userData.id,
-            programId: program.id
+        const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+
+        const headers = {
+            "Content-Type": "application/json"
+        }
+
+        const body = {
+            products: [program]
+        }
+
+        const response = await axios.post('http://localhost:3001/create-checkout-session', body, {
+            headers
         })
 
-        window.location.href = response.data.link
+        const session = response.data
+
+        const result = await stripe?.redirectToCheckout({
+            sessionId: session.id
+        })
+
+        if(result?.error)
+        {
+            console.error(result.error)
+        }
     }
     
     const handleStudentFavoriteProgram = async () => {
