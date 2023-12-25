@@ -192,6 +192,7 @@ export default function ProgramsExploreProgram()
 
     const handlePayment = async () => {
         const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+        console.log(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
         const headers = {
             "Content-Type": "application/json"
@@ -207,6 +208,8 @@ export default function ProgramsExploreProgram()
         })
 
         const session = response.data
+
+        console.log(session)
 
         const result = await stripe?.redirectToCheckout({
             sessionId: session.id
