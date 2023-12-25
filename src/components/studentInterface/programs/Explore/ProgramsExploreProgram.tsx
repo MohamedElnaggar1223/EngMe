@@ -499,7 +499,7 @@ export default function ProgramsExploreProgram()
 
                     </Box>
                 </Box>
-            D</Box>
+            </Box>
             <Stack
                 flex={1}
                 alignItems='center'
