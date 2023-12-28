@@ -30,6 +30,7 @@ export default function Programs()
             <CircularProgress />
         </Box>  
     )
+    
     return (
         <Box
             mx={14}
