@@ -1,4 +1,4 @@
-import { collection, addDoc, Timestamp } from "firebase/firestore"
+import { collection, addDoc, Timestamp, and, query, where, getDocs } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 import { getProgramsData } from "./getProgramsData"
 
@@ -6,7 +6,16 @@ import { getProgramsData } from "./getProgramsData"
 export const setStudentRequestProgram = async (studentRequest, studentId: string, programId: string) => {
     if(!studentRequest?.length)
     {
+        const studentProgramRef = collection(db, 'studentProgram')
         const studentRequestRef = collection(db, 'studentRequestProgram')
+
+        const queryStudentProgram = query(studentProgramRef, and(where('studentId', '==', studentId), where('programId', '==', programId)))
+
+        const studentProgramDocs = await getDocs(queryStudentProgram)
+
+        console.log(studentProgramDocs.docs)
+
+        if(studentProgramDocs.docs.length) return
 
         const newRequest = {
             studentId,
@@ -15,7 +24,6 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
         }
 
         const programData = await getProgramsData([programId])
-        const studentProgramRef = collection(db, 'studentProgram')
 
         //@ts-expect-error date
         const daysToAdd = programData[0].duration.split(" ")[0]

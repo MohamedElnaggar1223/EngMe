@@ -3,6 +3,7 @@ import { setTeacherRequest } from "../../../helpers/setTeacherRequest"
 import { useState } from "react"
 import { Box, Button, Input, Stack, Typography } from "@mui/material"
 import { getDownloadURL, getStorage, ref } from "firebase/storage"
+import axios from "axios"
 
 interface RequestProps{
     id: string, 
@@ -32,8 +33,11 @@ export default function InstructorApplicatiosRequest(request: RequestProps)
 
             return () => queryClient.setQueryData(['teacherRequests'], previousData)
         },
-        mutationFn: () => setTeacherRequest(undefined, undefined, undefined, undefined, undefined, request, password)
+        // mutationFn: () => setTeacherRequest(undefined, undefined, undefined, undefined, undefined, request, password)
+        mutationFn: () => axios.post('http://localhost:3001/create-teacher-account', { request, password }, { headers: { "Content-Type": "application/json" } })
     })
+
+
 
     const getCv = async () => {
         const storage = getStorage();

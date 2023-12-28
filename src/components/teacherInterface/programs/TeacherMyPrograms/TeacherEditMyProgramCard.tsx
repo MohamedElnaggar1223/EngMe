@@ -220,7 +220,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                     gap={1.5}
                     flex={1}
                 >
-                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='ProgramType'>Program's Type</InputLabel>
+                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='ProgramType'>Program's Description</InputLabel>
                     <TextareaAutosize
                         color='primary'
                         aria-labelledby='ProgramType'

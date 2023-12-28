@@ -17,6 +17,7 @@ export default function PrivateRoute({ children })
         if(!user || !userData) {
             pathname === '/signup' ? navigate('/signup') : navigate(`/login`)
         }
+        else if(userData?.role === 'teacher' && userData?.firstLoginLink) window.location.href = userData?.firstLoginLink
         else pathname === '/signup' || pathname === '/login' ? navigate('/') : navigate(`${pathname}`)
     }, [user, userData, navigate, pathname])
 

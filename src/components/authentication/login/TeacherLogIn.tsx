@@ -44,7 +44,7 @@ export default function TeacherLogIn()
                 {
                     signInWithEmailAndPassword(auth, email, password)
                     .then()
-                    .catch(e => console.error(e))
+                    .catch(() => setError('Incorrect Password'))
                     setEmail('')
                     setPassword('')
                 }
