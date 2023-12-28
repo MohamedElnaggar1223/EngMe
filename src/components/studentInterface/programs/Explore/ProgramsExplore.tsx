@@ -43,6 +43,7 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
             const programFound = explorePrograms?.find(program => program.id === pageShowed)
             if(!programFound) setTab('Current')
         }
+    //eslint-disable-next-line
     }, [pageShowed])
 
     // useEffect(() => {
