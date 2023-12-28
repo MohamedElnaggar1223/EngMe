@@ -1,4 +1,4 @@
-import { collection, query, and, where, getDocs, Timestamp, updateDoc } from "firebase/firestore";
+import { collection, query, and, where, getDocs, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 import ProgramProps from "../../interfaces/ProgramProps";
 
@@ -8,22 +8,5 @@ export const setStudentRepurchaseProgram = async(studentId: string, program: Pro
 
     const studentProgramDocs = await getDocs(queryStudentProgram)
 
-    if(studentProgramDocs.docs.length)
-    {
-        //@ts-expect-error date
-        const daysToAdd = program.duration.split(" ")[0]
-    
-        const currentTime = Timestamp.now().toDate()
-        currentTime.setDate(currentTime.getDate() + Number(daysToAdd))
-    
-        const endDate = Timestamp.fromDate(currentTime)
-    
-        const studentProgramUpdated = {
-            startDate: Timestamp.now(),
-            endDate
-        }
-    
-        await updateDoc(studentProgramDocs.docs[0].ref, studentProgramUpdated)
-    }
-
+    if(studentProgramDocs.docs.length) await deleteDoc(studentProgramDocs.docs[0].ref)
 }

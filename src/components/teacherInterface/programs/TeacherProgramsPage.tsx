@@ -7,6 +7,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import ExamBank from '../examBankAdmin/ExamBank'
 import KnowledgeBank from '../knowledgeBankAdmin/KnowledgeBank'
 import InstructorsApplications from './InstructorsApplications/InstructorsApplications'
+import ProgramsPriceShare from './ProgramsPriceShare/ProgramsPriceShare'
 const TeacherMyPrograms = lazy(() => import('./TeacherMyPrograms/TeacherMyPrograms'))
 
 export default function Programs() 
@@ -154,6 +155,25 @@ export default function Programs()
                             </Box>
                         </Stack>
                     }
+                    {
+                        isAdmin &&
+                        <Stack
+                            alignItems='center'
+                            onClick={() => setTab("Programs' Price Share")}
+                            sx={{ cursor: 'pointer' }}
+                        >
+                            <Typography>Programs' Price Share</Typography>
+                            <Box
+                                position='relative'
+                                border='0px'
+                                height='6px'
+                                bgcolor={tab === "Programs' Price Share" ? '#FF9F06' : '#fff'}
+                                width={{xs: '80px', sm: '120px', lg: '180px'}}
+                            >
+
+                            </Box>
+                        </Stack>
+                    }
                 </Stack>
                 <Box
                     position='relative'
@@ -212,6 +232,11 @@ export default function Programs()
                     tab === 'Instructors' ?
                     <Suspense>
                         <InstructorsApplications />
+                    </Suspense>
+                    :
+                    tab === "Programs' Price Share" ?
+                    <Suspense>
+                        <ProgramsPriceShare />
                     </Suspense>
                     :
                     <></>

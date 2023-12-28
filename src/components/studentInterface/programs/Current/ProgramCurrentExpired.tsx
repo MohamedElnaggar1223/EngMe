@@ -1,4 +1,4 @@
-import { Box, Stack, SvgIcon, Typography, Avatar, Button } from "@mui/material";
+import { Box, Stack, SvgIcon, Typography, Avatar, Button, CircularProgress, Dialog } from "@mui/material";
 import ProgramProps from "../../../../interfaces/ProgramProps";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAssessmentsData } from "../../../helpers/getAssessmentsData";
@@ -10,8 +10,10 @@ import { getStudentCount } from "../../../helpers/getStudentCount";
 import { getTeacherDataFromProgram } from "../../../helpers/getTeacherDataFromProgram";
 import { useNavigate } from "react-router-dom";
 import { setStudentRepurchaseProgram } from "../../../helpers/setStudentRepurchaseProgram";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
+import { loadStripe } from '@stripe/stripe-js'
+import axios from "axios";
 
 export default function ProgramCurrentExpired(program: ProgramProps) 
 {
@@ -21,6 +23,8 @@ export default function ProgramCurrentExpired(program: ProgramProps)
 
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
+
+    const [loading, setLoading] = useState(false)
 
     const { data: prereqsData } = useQuery({
         queryKey: ['preReqData', program?.id ?? ''],
@@ -91,8 +95,54 @@ export default function ProgramCurrentExpired(program: ProgramProps)
 
             return () => queryClient.setQueryData(['currentPrograms', userData?.id], previousData)
         },
-        mutationFn: () => setStudentRepurchaseProgram(userData?.id, program)
+        mutationFn: () => handleStudentRequestProgram()
     })
+
+    const handleStudentRequestProgram = async () => {
+        setLoading(true)
+        await setStudentRepurchaseProgram(userData?.id, program)
+        await handlePayment()
+        queryClient.invalidateQueries({
+            queryKey: ['studentRequest', program?.id]
+        })
+        queryClient.invalidateQueries({
+            queryKey: ['currentPrograms', userData?.id],
+        })
+        queryClient.invalidateQueries({
+            queryKey: ['explorePrograms', userData?.id],
+        })
+    }
+
+    const handlePayment = async () => {
+        const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+
+        const headers = {
+            "Content-Type": "application/json"
+        }
+
+        const body = {
+            program: program,
+            studentId: userData.id
+        }
+
+        const response = await axios.post('https://engmestripeapi.onrender.com/create-checkout-session', body, {
+            headers
+        })
+        // const response = await axios.post('http://localhost:3001/create-checkout-session', body, {
+        //     headers
+        // })
+
+        const session = response.data
+
+        const result = await stripe?.redirectToCheckout({
+            sessionId: session.id
+        })
+
+        if(result?.error)
+        {
+            console.error(result.error)
+        }
+    }
 
     //@ts-expect-error prereq
     const displayedPrereqs = prereqsData?.map(preqreq => <Typography sx={{ textDecoration: 'underline', cursor: 'pointer' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{preqreq.name}</Typography>)
@@ -104,6 +154,9 @@ export default function ProgramCurrentExpired(program: ProgramProps)
             height='auto'
             overflow='hidden'
         >
+            <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+            </Dialog>
             <Box
                 p={3}
                 display='flex'

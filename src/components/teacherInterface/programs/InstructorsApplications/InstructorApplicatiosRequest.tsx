@@ -25,15 +25,23 @@ export default function InstructorApplicatiosRequest(request: RequestProps)
     const { mutate } = useMutation({
         onMutate: () => {
             const previousData = queryClient.getQueryData(['teacherRequests'])
+            const previousDataLogin = queryClient.getQueryData(['teacherFirstLogins'])
 
             queryClient.setQueryData(['teacherRequests'], (oldData: RequestProps[]) => {
                 return oldData ? oldData.slice().filter(req => req.id !== request.id) : []
             })
 
-            return () => queryClient.setQueryData(['teacherRequests'], previousData)
+            queryClient.setQueryData(['teacherFirstLogins'], (oldData: []) => {
+                return oldData ? [...oldData, { id: request.id, name: request.name, email: request.email, number: request.number }] : [{ id: request.id, name: request.name, email: request.email, number: request.number }]
+            })
+
+            return () => {
+                queryClient.setQueryData(['teacherRequests'], previousData)
+                queryClient.setQueryData(['teacherFirstLogins'], previousDataLogin)
+            }
         },
         // mutationFn: () => setTeacherRequest(undefined, undefined, undefined, undefined, undefined, request, password)
-        mutationFn: () => axios.post('http://localhost:3001/create-teacher-account', { request, password }, { headers: { "Content-Type": "application/json" } })
+        mutationFn: () => axios.post('https://engmestripeapi.onrender.com/create-teacher-account', { request, password }, { headers: { "Content-Type": "application/json" } })
     })
 
 

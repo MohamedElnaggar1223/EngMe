@@ -3,7 +3,7 @@ import { db } from "../../firebase/firebaseConfig"
 import ProgramProps from "../../interfaces/ProgramProps"
 import { setCourseData } from "./setCourseData"
 
-export const setProgramData = async(teacherId: string, name: string, description: string, category: string, level: string, duration: string, expiry: string, paused: boolean, prereqName: string, program?: ProgramProps, image?: string) => {
+export const setProgramData = async(teacherId: string, name: string, description: string, category: string, level: string, duration: string, expiry: string, price: string, paused: boolean, prereqName: string, program?: ProgramProps, image?: string) => {
     if(program)
     {
         const programDoc = doc(db, 'programs', program.id)
@@ -15,7 +15,8 @@ export const setProgramData = async(teacherId: string, name: string, description
             level,
             duration,
             expiry,
-            paused
+            paused,
+            price
         }
 
         if(prereqName.length > 0)
@@ -47,10 +48,12 @@ export const setProgramData = async(teacherId: string, name: string, description
             duration,
             expiry,
             paused,
+            price,
             averageRating: 5,
             totalFeedbacks: 0,
             courses: [],
             teacherId,
+            teacherShare: '50',
             prerequisites: [],
             image: image ?? '',
             finalExams: {

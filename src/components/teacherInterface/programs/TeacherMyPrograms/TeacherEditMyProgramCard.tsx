@@ -27,6 +27,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
     const [expiry, setExpiry] = useState(program?.expiry ?? '')
     const [level, setLevel] = useState(program?.level ?? 'Beginner')
     const [image, setImage] = useState(program?.image ?? '')
+    const [price, setPrice] = useState(program?.price ?? '')
     const [paused, setPaused] = useState(program?.paused ?? false)
     const [newPrereq, setNewPrePreq] = useState('')
     const [error, setError] = useState('')
@@ -82,7 +83,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
 
             return () => queryClient.setQueryData(['teacherPrograms', userData?.id], previousData)
         },
-        mutationFn: () => setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, paused, newPrereq, program, image ?? '')
+        mutationFn: () => setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, newPrereq, program, image ?? '')
     })
 
     const displayedEditPrereqs = prereqs?.map(prereq =>  
@@ -260,6 +261,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                         color='primary' 
                         disableUnderline
                         aria-labelledby='Expiry'
+                        placeholder="in Days"
                         sx={{
                             border: '1px solid rgba(0, 0, 0, 0.20)',
                             width: '100%',
@@ -284,6 +286,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                         color='primary' 
                         disableUnderline
                         aria-labelledby='Duration'
+                        placeholder="in Hours"
                         sx={{
                             border: '1px solid rgba(0, 0, 0, 0.20)',
                             width: '100%',
@@ -336,6 +339,31 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                         <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='Intermediate'>Intermediate</MenuItem>
                         <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='Expert'>Expert</MenuItem>
                     </Select>
+                </Stack>
+                <Stack
+                    gap={1.5}
+                    flex={1}
+                >
+                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Price'>Price</InputLabel>
+                    <Input 
+                        color='primary' 
+                        disableUnderline
+                        aria-labelledby='Price'
+                        placeholder="in EGP"
+                        sx={{
+                            border: '1px solid rgba(0, 0, 0, 0.20)',
+                            width: '100%',
+                            minWidth: '420px',
+                            background: '#fff',
+                            borderRadius: '5px',
+                            paddingX: 1,
+                            paddingY: 0.5,
+                            flex: 1,
+                            bgcolor: '#F8F8F8'
+                        }}
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                    />
                 </Stack>
                 <Stack
                     gap={1.5}

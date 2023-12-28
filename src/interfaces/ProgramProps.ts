@@ -14,11 +14,13 @@ export default interface ProgramProps{
     image?: string,
     name?: string,
     teacherId?: string,
+    teacherShare?: string,
     totalFeedbacks?: number,
     averageRating?: number,
     prerequisites?: string[],
     paused?: boolean,
     expiry?: string,
+    price?: string,
     level?: string
 }
 

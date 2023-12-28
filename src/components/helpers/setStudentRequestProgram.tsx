@@ -1,4 +1,4 @@
-import { collection, addDoc, Timestamp, and, query, where, getDocs } from "firebase/firestore"
+import { collection, addDoc, Timestamp, and, query, where, getDocs, deleteDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 import { getProgramsData } from "./getProgramsData"
 
@@ -8,6 +8,13 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
     {
         const studentProgramRef = collection(db, 'studentProgram')
         const studentRequestRef = collection(db, 'studentRequestProgram')
+        const ordersRef = collection(db, 'orders')
+
+        const queryOrders = query(ordersRef, and(where('studentId', '==', studentId), where('programId', '==', programId)))
+        
+        const ordersDocs = await getDocs(queryOrders)
+
+        ordersDocs.docs.length && await deleteDoc(ordersDocs.docs[0].ref)
 
         const queryStudentProgram = query(studentProgramRef, and(where('studentId', '==', studentId), where('programId', '==', programId)))
 
