@@ -20,8 +20,6 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
 
         const studentProgramDocs = await getDocs(queryStudentProgram)
 
-        console.log(studentProgramDocs.docs)
-
         if(studentProgramDocs.docs.length) return
 
         const newRequest = {
