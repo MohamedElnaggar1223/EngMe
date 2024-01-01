@@ -14,6 +14,7 @@ import { setTeacherRequest } from "../../helpers/setTeacherRequest";
 import { getTeacherRequest } from "../../helpers/getTeacherRequest";
 import { getUserByNumber } from "../../helpers/getUserByNumber";
 import emailjs from '@emailjs/browser';
+import { ExpandMore } from "@mui/icons-material"
 
 export default function StudentSignUp() 
 {
@@ -33,6 +34,8 @@ export default function StudentSignUp()
     //const [canSave, setCanSave] = useState(false)
     const [error, setError] = useState('')
     const [applied, setApplied] = useState('')
+    const [occupationOpened, setOccupationOpened] = useState(false)
+    const [cityOpened, setCityOpened] = useState(false)
 
     // const signUp = async (e: React.FormEvent<HTMLFormElement>) => {
     //     e.preventDefault()
@@ -320,42 +323,72 @@ export default function StudentSignUp()
                     />
                 </FormControl>
                 <FormControl>
-                    <Select
-                        SelectDisplayProps={{
-                            style: {
-                                borderRight: '1px solid rgba(0, 0, 0, 0.2)',
-                                marginRight: 48,
-                                borderTopRightRadius: '0px',
-                                borderBottomRightRadius: '0px',
-                                textIndent: '80px',
-                                color: 'rgba(0, 0, 0, 0.4)'
-                            }
-                        }}
-                        defaultValue='Occupation'
-                        value={occupation}
-                        onChange={(e) => setOccupation(e.target.value)}
-                    >
-                        <MenuItem value='Occupation'>Occupation</MenuItem>
-                    </Select>
+                <Box sx={{ cursor: 'pointer' }} onClick={() => setOccupationOpened(prev => !prev)}>
+                        <Select
+                            sx={{
+                                width: '100% !important',
+                                flex: 1,
+                                boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0.20)',
+                                borderRadius: '4px !important',
+                                outline: 'none !important',
+                                boxSizing: 'border-box !important',
+                                background: 'transparent',
+                                '&:hover': {
+                                    boxShadow: '0px 0px 0px 1px rgba(0, 0, 0, 0.20)',
+                                    background: 'transparent',
+                                }, 
+                                textAlign: 'left',
+                                pl: '37px',
+                                fontSize: 18,
+                            }}
+                            // value={day}
+                            IconComponent={() => <ExpandMore sx={{ cursor: 'pointer', borderLeft: '1.5px solid rgba(0, 0, 0, 0.20)', color: '#000', paddingLeft: 1, height: '100%', zIndex: 1, position: 'absolute', left: '90%' }} />}
+                            inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
+                            // variant='standard'
+                            disableUnderline
+                            color='primary'
+                            defaultValue='Occupation'
+                            open={occupationOpened}
+                            value={occupation}
+                            onChange={(e) => setOccupation(e.target.value)}
+                        >
+                            <MenuItem value='Occupation'>Occupation</MenuItem>
+                        </Select>
+                    </Box>
                 </FormControl>
                 <FormControl>
-                <Select
-                        SelectDisplayProps={{
-                            style: {
-                                borderRight: '1px solid rgba(0, 0, 0, 0.2)',
-                                marginRight: 48,
-                                borderTopRightRadius: '0px',
-                                borderBottomRightRadius: '0px',
-                                textIndent: '80px',
-                                color: 'rgba(0, 0, 0, 0.4)'
-                            }
-                        }}
-                        defaultValue={'City'}
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                    >
-                        <MenuItem value='City'>City</MenuItem>
-                    </Select>
+                    <Box sx={{ cursor: 'pointer' }} onClick={() => setCityOpened(prev => !prev)}>
+                        <Select
+                            sx={{
+                                width: '100% !important',
+                                flex: 1,
+                                boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0.20)',
+                                borderRadius: '4px !important',
+                                outline: 'none !important',
+                                boxSizing: 'border-box !important',
+                                background: 'transparent',
+                                '&:hover': {
+                                    boxShadow: '0px 0px 0px 1px rgba(0, 0, 0, 0.20)',
+                                    background: 'transparent',
+                                }, 
+                                textAlign: 'left',
+                                pl: '37px',
+                                fontSize: 18,
+                                zIndex: 5
+                            }}
+                            // value={day}
+                            IconComponent={() => <ExpandMore sx={{ cursor: 'pointer', borderLeft: '1.5px solid rgba(0, 0, 0, 0.20)', color: '#000', paddingLeft: 1, height: '100%', zIndex: 1, position: 'absolute', left: '90%' }} />}
+                            inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
+                            // variant='standard'
+                            disableUnderline
+                            defaultValue={'City'}
+                            open={cityOpened}
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                        >
+                            <MenuItem value='City'>City</MenuItem>
+                        </Select>
+                    </Box>
                 </FormControl>
                 {/* <FormControl sx={{ flex: 1 }}>
                     <TextField 
