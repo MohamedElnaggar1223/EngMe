@@ -1,5 +1,5 @@
-import { Box, Stack, Button, SvgIcon, Typography } from "@mui/material";
-import { useMemo, memo, lazy, createContext, Suspense } from "react";
+import { Box, Stack, Button, SvgIcon, Typography, Alert } from "@mui/material";
+import { useMemo, memo, lazy, createContext, Suspense, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { setProgramFinalExam } from "../../../helpers/setProgramFinalExam";
 // import { setProgramFinalExam } from "../../../helpers/setProgramFinalExam";
@@ -13,6 +13,8 @@ export const EditFinalExamContext = createContext()
 function FinalExamCardEdit({ version, program, setEdited, finalExam }) 
 {
     const queryClient = useQueryClient()
+
+    const [error, setError] = useState('')
 
     const { data: questions } = useQuery({
         queryKey: ['finalExamEdit', finalExam?.id, program.id],
@@ -53,6 +55,23 @@ function FinalExamCardEdit({ version, program, setEdited, finalExam })
         //eslint-disable-next-line
     )), [questions])
 
+    const canSave = 
+    questions?.length > 0
+    ? 
+    //@ts-expect-error question
+    !(questions?.find(question => {
+        if(question.type === 'options')
+        {
+            return question.question.length === 0 || question.options[0].length === 0 || question.options[1].length === 0 || question.options[2].length === 0 || question.options[3].length === 0
+        }
+        else
+        {
+            return question.question.length === 0 || question.firstOptions[0].length === 0 || question.firstOptions[1].length === 0 || question.firstOptions[2].length === 0 || question.firstOptions[3].length === 0 || question.secondOptions[0].length === 0 || question.secondOptions[1].length === 0 || question.secondOptions[2].length === 0 || question.secondOptions[3].length === 0 || question.thirdOptions[0].length === 0 || question.thirdOptions[1].length === 0 || question.thirdOptions[2].length === 0 || question.thirdOptions[3].length === 0 || question.fourthOptions[0].length === 0 || question.fourthOptions[1].length === 0 || question.fourthOptions[2].length === 0 || question.fourthOptions[3].length === 0 || question.firstLabel.length === 0 || question.secondLabel.length === 0 || question.thirdLabel.length === 0 || question.fourthLabel.length === 0
+        }
+    }))
+    :
+    true
+
     // const contextValue = useMemo(() => ({ handleQuestionChange }), [handleQuestionChange]);
 
     return (
@@ -64,6 +83,7 @@ function FinalExamCardEdit({ version, program, setEdited, finalExam })
                 py={2}
                 flex={1}
             >
+                {error && <Alert severity="error">{error}</Alert>}
                 {displayedQuestions}
                 <Button
                     sx={{
@@ -163,8 +183,15 @@ function FinalExamCardEdit({ version, program, setEdited, finalExam })
                                 },
                             }}
                             onClick={() => {
-                                setEdited('')
-                                mutate()
+                                if(canSave)
+                                {
+                                    setEdited('')
+                                    mutate()
+                                }
+                                else
+                                {
+                                    setError('Please Enter All Details!')
+                                }
                             }}
                         >
                             Confirm
