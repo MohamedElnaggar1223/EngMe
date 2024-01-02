@@ -24,7 +24,7 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
         }
     }, [lesson])
 
-    const canSave = [title, description].every(Boolean)
+    const canSave = [title, description, file, fileType].every(Boolean)
 
     const { mutate } = useMutation({
         onMutate: () => {
