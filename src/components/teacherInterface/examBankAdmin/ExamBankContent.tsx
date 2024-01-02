@@ -19,7 +19,7 @@ export default function ExamBankContent({ id }: ExamBankContentProps)
     const [add, setAdd] = useState(false)
     const [edit, setEdit] = useState('')
 
-    const { data: examBankContent } = useQuery({
+    const { data: examBankContent, refetch } = useQuery({
         queryKey: ['examBankContent', id],
         queryFn: () => getExamBankContent(id)
     })
@@ -33,9 +33,12 @@ export default function ExamBankContent({ id }: ExamBankContentProps)
                 return (oldData && oldData.length > 0) ? [...oldData, { title, majorId: id, questions: [] }] : [{ title, majorId: id, questions: [] }]
             })
 
-            return () =>queryClient.setQueryData(['examBankContent', id], previousData)
+            return () => queryClient.setQueryData(['examBankContent', id], previousData)
         },
-        onSettled: () => setTitle(''),
+        onSettled: async () => {
+            setTitle('')
+            await refetch()
+        },
         mutationFn: () => setExamBankContent(id, title)
     })
 
