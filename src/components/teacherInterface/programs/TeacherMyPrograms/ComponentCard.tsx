@@ -61,7 +61,13 @@ function ComponentCard({index, course}: ComponentCard)
                 border={edited === lesson.id ? '2px solid rgba(34,110,159,1)' : ''}
             >
                 <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
-                    <SvgIcon onClick={() => setEdited(lesson.id)} sx={{ cursor: 'pointer' }}>
+                    <SvgIcon 
+                        onClick={() => {
+                            setAdded('')
+                            setEdited(lesson.id)
+                        }} 
+                        sx={{ cursor: 'pointer' }}
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" width="27" height="25" viewBox="0 0 27 25" fill="none">
                             <rect width="27" height="25" rx="5" fill="#D0EBFC"/>
                             <path d="M22.1835 11.238C21.7321 11.238 21.366 11.604 21.366 12.0554V19.5213C21.366 20.5377 20.5395 21.3651 19.5223 21.3651H6.47956C5.46231 21.3651 4.63579 20.5377 4.63579 19.5213V6.47866C4.63579 5.46231 5.46231 4.63488 6.47956 4.63488H14.0354C14.4868 4.63488 14.8529 4.26885 14.8529 3.81744C14.8529 3.36603 14.4868 3 14.0354 3H6.47956C4.56131 3 3 4.5604 3 6.47866V19.5213C3 21.4396 4.56131 23 6.47956 23H19.5223C21.4405 23 23.0018 21.4396 23.0018 19.5213V12.0554C23.0018 11.604 22.6349 11.238 22.1835 11.238Z" fill="#226E9F"/>
