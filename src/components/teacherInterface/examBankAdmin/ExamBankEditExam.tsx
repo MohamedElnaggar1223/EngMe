@@ -18,7 +18,7 @@ function ExamBankEditExam({ setEdited, examBank })
     const { data: questions } = useQuery({
         queryKey: ['examBankEdit', examBank?.id ?? ''],
         queryFn: () => {
-            return examBank?.questions.slice()
+            return examBank?.questions?.slice() ?? []
         }
     })
 
