@@ -504,7 +504,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                             <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Course {index + 1}</Typography>
                         </Stack>
                         <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{lessons?.length} Lessons</Typography>
-                        <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>5 Hours</Typography>
+                        <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{course?.duration}</Typography>
                     </Stack>
                 </AccordionSummary>
                 <AccordionDetails sx={{ background: '#F8F8F8', paddingY: 0, paddingX: 0 }}>
