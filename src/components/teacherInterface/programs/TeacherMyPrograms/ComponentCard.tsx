@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails } from "@mui/material";
 // import { PageContext } from "../../../Layout";
 import CourseProps from "../../../../interfaces/CourseProps";
@@ -26,6 +26,9 @@ function ComponentCard({index, course}: ComponentCard)
     const [edited, setEdited] = useState('')
     const [added, setAdded] = useState('')
 
+    console.log(edited)
+    console.log(added)
+
     const { data: assessments } = useQuery({
         queryKey: ['assessments', course.programId, course.id],
         queryFn: () => getAssessmentsData([course]),
@@ -46,6 +49,14 @@ function ComponentCard({index, course}: ComponentCard)
         enabled: !!course,
         refetchOnMount: true
     })
+
+    const editedComponent = useMemo(() => (
+        lessons?.find(lesson => lesson.id === edited) ?
+            <ComponentCardEditLesson order={lessons?.length ?? 0} course={course} setEdited={setEdited} setAdded={setAdded} lesson={lessons?.find(lesson => lesson.id === edited)} /> :
+        quizzes?.find(quiz => quiz.id === edited) ?
+            <ComponentCardEditQuiz course={course} setEdited={setEdited} setAdded={setAdded} quiz={quizzes?.find(quiz => quiz.id === edited)} order={quizzes?.length ?? 0} /> :
+        <ComponentCardEditAssessment order={assessments?.length ?? 0} course={course} setEdited={setEdited} setAdded={setAdded} assessment={assessments?.find(assessment => assessment.id === edited)} />
+    ), [edited, assessments, quizzes, course, lessons])
 
     const displayedLessons = 
     (lessons?.length && lessons?.length > 0) ?
@@ -271,6 +282,7 @@ function ComponentCard({index, course}: ComponentCard)
                         <SvgIcon 
                             onClick={(e) => {
                                 e.stopPropagation()
+                                setEdited('')
                                 setAdded('lesson')
                             }} 
                             sx={{ fontSize: 32 }}
@@ -292,13 +304,7 @@ function ComponentCard({index, course}: ComponentCard)
                 {displayedAssessments}
                 {
                     edited !== '' && added === '' &&
-                    (
-                        lessons?.find(lesson => lesson.id === edited) ?
-                        <ComponentCardEditLesson order={lessons?.length ?? 0} course={course} setEdited={setEdited} setAdded={setAdded} lesson={lessons?.find(lesson => lesson.id === edited)} /> :
-                        quizzes?.find(quiz => quiz.id === edited) ?
-                        <ComponentCardEditQuiz course={course} setEdited={setEdited} setAdded={setAdded} quiz={quizzes?.find(quiz => quiz.id === edited)} order={quizzes?.length ?? 0} /> :
-                        <ComponentCardEditAssessment order={assessments?.length ?? 0} course={course} setEdited={setEdited} setAdded={setAdded} assessment={assessments?.find(assessment => assessment.id === edited)} />
-                    )
+                    editedComponent
                 }
                 {
                     edited === '' && added !== '' &&

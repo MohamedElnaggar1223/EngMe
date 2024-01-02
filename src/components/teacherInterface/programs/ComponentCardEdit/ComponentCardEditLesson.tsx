@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel, Alert } from "@mui/material"
 import { setLessonData } from "../../../helpers/setLessonData"
@@ -10,9 +10,19 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
 
     const [title, setTitle] = useState(lesson?.title ?? '')
     const [description, setDescription] = useState(lesson?.description ?? '')
-    const [file, setFile] = useState({name: lesson ? lesson?.content?.content : ''});
-    const [fileType, setFileType] = useState(lesson?.content?.type === 'Videos/' ? 'video/mp4' : lesson?.content?.type === 'Pdfs/' ? 'pdf' : '');
+    const [file, setFile] = useState(lesson ? {name: lesson?.content?.content} : {});
+    const [fileType, setFileType] = useState(lesson?.content.type === 'Videos/' ? 'video/mp4' : lesson?.content?.type === 'Pdfs/' ? 'pdf' : '');
     const [error, setError] = useState('')
+
+    useEffect(() => {
+        if(lesson)
+        {
+            setTitle(lesson.title)
+            setDescription(lesson.description)
+            setFile({name: lesson.content?.content})
+            setFileType(lesson?.content.type === 'Videos/' ? 'video/mp4' : lesson.content?.type === 'Pdfs/' ? 'pdf' : '')
+        }
+    }, [lesson])
 
     const canSave = [title, description].every(Boolean)
 
@@ -263,7 +273,7 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                             type="file"
                         />
                         {
-                            fileType === null ?
+                            fileType === '' ?
                             <SvgIcon sx={{ fontSize: 42 }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="30" viewBox="0 0 36 30" fill="none">
                                     <path d="M18.8633 11.6064V29.1412C18.8633 29.6064 18.4673 30 17.9994 30C17.5314 30 17.1354 29.6064 17.1354 29.1412V11.6064L13.7155 15.1849C13.3915 15.5428 12.8155 15.5428 12.4556 15.2207C12.0956 14.8987 12.0956 14.3261 12.4196 13.9683L17.3514 8.85097C17.5314 8.67205 17.7474 8.56469 17.9994 8.56469C18.2513 8.56469 18.4673 8.67205 18.6473 8.85097L23.5792 13.9683C23.9031 14.3261 23.9031 14.8629 23.5432 15.2207C23.3632 15.3997 23.1472 15.4712 22.9312 15.4712C22.7152 15.4712 22.4632 15.3639 22.2832 15.1849L18.8633 11.6064ZM35.9987 15.5786C35.8907 11.3917 32.9028 7.13329 27.431 7.13329C27.287 7.13329 27.143 7.13329 26.999 7.13329C26.639 5.45138 25.8831 3.94841 24.6951 2.73171C23.4352 1.44345 21.7792 0.548818 19.9433 0.190966C16.1994 -0.560522 12.5635 0.942454 10.5116 4.05576C8.3877 3.80527 6.33577 4.48518 4.71583 5.91659C3.05989 7.38378 2.19592 9.45932 2.30392 11.6064C0.82797 13.0021 0 14.9345 0 16.9384C0 21.0179 3.34788 24.3102 7.41573 24.3102H14.4715C14.9395 24.3102 15.3355 23.9165 15.3355 23.4513C15.3355 22.9861 14.9395 22.5925 14.4715 22.5925H7.41573C4.28385 22.5925 1.76394 20.0517 1.76394 16.9742C1.76394 15.3281 2.51991 13.7535 3.81586 12.6442C4.03186 12.4653 4.13985 12.179 4.13985 11.8927C3.95986 10.1035 4.64383 8.42155 5.97579 7.20486C7.30774 6.02395 9.07168 5.52295 10.8356 5.88081C11.1956 5.95238 11.5916 5.77345 11.7716 5.45138C13.3555 2.66014 16.4154 1.26452 19.6193 1.94444C22.1392 2.44543 24.9831 4.37783 25.4151 8.20684C25.4511 8.45734 25.5591 8.67205 25.7391 8.81519C25.9191 8.95833 26.1711 9.0299 26.4231 8.99411C26.747 8.95833 27.107 8.92254 27.467 8.92254C32.0389 8.92254 34.1988 12.4295 34.2708 15.6502C34.3428 18.9424 32.2548 22.3778 27.431 22.5925H21.5272C21.0592 22.5925 20.6633 22.9861 20.6633 23.4513C20.6633 23.9165 21.0592 24.3102 21.5272 24.3102H27.431H27.467C30.1669 24.167 32.4348 23.165 33.9828 21.4116C35.3147 19.8728 36.0347 17.7973 35.9987 15.5786Z" fill="#226E9F"/>
@@ -284,7 +294,7 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                                 </svg>
                             </SvgIcon>
                         }
-                        <Typography fontWeight={400} fontFamily='Inter' sx={{ cursor: 'pointer', color: '#226E9F' }}>{fileType === null ? "Upload Program's Content" : file?.name}</Typography>
+                        <Typography fontWeight={400} fontFamily='Inter' sx={{ cursor: 'pointer', color: '#226E9F' }}>{fileType === '' ? "Upload Program's Content" : file?.name}</Typography>
                     </Button>
                 </Stack>
                 <Stack
