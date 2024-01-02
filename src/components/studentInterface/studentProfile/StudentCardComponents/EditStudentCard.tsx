@@ -113,6 +113,8 @@ setEdit }: StudentCardEditProps)
                 justifyContent='center'
                 sx={{
                     backgroundImage: `url(${image})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: 'cover'
                 }}
             >
                 <Box
