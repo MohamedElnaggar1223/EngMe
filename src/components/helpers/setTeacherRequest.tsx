@@ -6,6 +6,7 @@ import { getStorage, ref, uploadBytes } from "firebase/storage"
 export const setTeacherRequest = async(firstname?: string, lastname?: string, email?: string, number?: string, file?: unknown, request?: {id: string, name: string, email: string, number: string}, password?: string) => {
     if(request && password)
     {
+        console.log('Hello')
         const teacherRequestRef = doc(db, 'teacherRequest', request.id)
 
         createUserWithEmailAndPassword(auth, request.email, password)

@@ -197,8 +197,10 @@ export default function ProgramsExploreProgram()
             "Content-Type": "application/json"
         }
 
+        const postProgram = {...program, image: ''}
+
         const body = {
-            program: program,
+            program: postProgram,
             studentId: userData.id
         }
 
