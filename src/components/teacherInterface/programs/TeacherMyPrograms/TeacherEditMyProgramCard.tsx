@@ -167,6 +167,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                 direction='row'
                 flex={1}
                 gap={12}
+                flexWrap='wrap'
             >
                 <Stack
                     direction='column'
@@ -251,10 +252,11 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                 direction='row'
                 gap={3}
                 mt={8}
+                flex={1}
+                flexWrap='wrap'
             >
                 <Stack
                     gap={1.5}
-                    flex={1}
                 >
                     <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Expiry'>Expiry</InputLabel>
                     <Input 
@@ -279,7 +281,6 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                 </Stack>
                 <Stack
                     gap={1.5}
-                    flex={1}
                 >
                     <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Duration'>Duration</InputLabel>
                     <Input 
@@ -304,7 +305,6 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                 </Stack>
                 <Stack
                     gap={1.5}
-                    flex={1}
                 >
                     <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id="Level">Level</InputLabel>
                     <Select
@@ -342,7 +342,6 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                 </Stack>
                 <Stack
                     gap={1.5}
-                    flex={1}
                 >
                     <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Price'>Price</InputLabel>
                     <Input 

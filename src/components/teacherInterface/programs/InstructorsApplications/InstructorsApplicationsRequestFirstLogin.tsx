@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
-import { Box, Button, Stack, Typography } from "@mui/material"
+import { Alert, Box, Button, Stack, Typography } from "@mui/material"
 import axios from "axios"
+import { useEffect, useState } from "react"
 
 interface teacherProps{
     id: string, 
@@ -11,11 +12,18 @@ interface teacherProps{
 
 export default function InstructorsApplicationsRequestFirstLogin(teacher: teacherProps) 
 {
+    const [success, setSuccess] = useState(false)
+
     const { mutate } = useMutation({
+        onSettled: () => setSuccess(true),
         // mutationFn: () => setTeacherRequest(undefined, undefined, undefined, undefined, undefined, request, password)
         mutationFn: () => axios.post('https://engmestripeapi.onrender.com/generate-teacher-account', { teacher }, { headers: { "Content-Type": "application/json" } })
         // mutationFn: () => axios.post('http://localhost:3001/generate-teacher-account', { teacher }, { headers: { "Content-Type": "application/json" } })
     })
+
+    useEffect(() => {
+        if(success) setTimeout(() => setSuccess(false), 1000)
+    }, [success])
 
     return (
         <Box
@@ -58,6 +66,7 @@ export default function InstructorsApplicationsRequestFirstLogin(teacher: teache
                         direction='row'
                         height='35px'
                     >
+                        {success && <Alert severity="success">Regenerated link successfully!</Alert>}
                         <Button
                             sx={{
                                 background: 'linear-gradient(95deg, #FF7E00 5.94%, #FF9F06 95.69%)',

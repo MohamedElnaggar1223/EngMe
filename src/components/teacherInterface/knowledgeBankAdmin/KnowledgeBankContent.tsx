@@ -71,7 +71,7 @@ export default function KnowledgeBankContent({ id }: KnowledgeBankContent)
                 return newData
             })
 
-            return () =>queryClient.setQueryData(['knowledgeBankContent', id], previousData)
+            return () => queryClient.setQueryData(['knowledgeBankContent', id], previousData)
         },
         mutationFn: (kbContentId: string) => setKnowledgeBankContent(id, title, file, kbContentId)
     })
