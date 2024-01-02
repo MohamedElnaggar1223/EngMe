@@ -49,6 +49,9 @@ export const setLessonData = async(title: string, description: string, lesson?: 
                 }
             }
 
+            //@ts-expect-error file
+            await uploadBytes(storageRef, file)
+
             const addedLesson = await addDoc(lessonsRef, newLesson)
 
             //@ts-expect-error course
