@@ -19,7 +19,7 @@ export default function KnowledgeBankContent({ id }: KnowledgeBankContent)
     const [file, setFile] = useState(null)
     const [fileType, setFileType] = useState(null)
 
-    const { data: knowledgeBankContent } = useQuery({
+    const { data: knowledgeBankContent, refetch } = useQuery({
         queryKey: ['knowledgeBankContent', id],
         queryFn: () => getKnowledgeBankContent(id)
     })
@@ -54,7 +54,10 @@ export default function KnowledgeBankContent({ id }: KnowledgeBankContent)
 
             return () =>queryClient.setQueryData(['knowledgeBankContent', id], previousData)
         },
-        onSettled: () => setTitle(''),
+        onSettled: async () => {
+            setTitle('')
+            await refetch()
+        },
         mutationFn: () => setKnowledgeBankContent(id, title, file)
     })
 
