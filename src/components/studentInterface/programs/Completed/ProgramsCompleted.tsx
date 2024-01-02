@@ -5,7 +5,6 @@ import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { getStudentCompletedPrograms } from "../../../helpers/getStudentCompletedPrograms";
 const ProgramCurrentCard = lazy(() => import("../Current/ProgramCurrentCard"))
 
-
 export default function ProgramsCompleted() 
 {
 	//@ts-expect-error context
