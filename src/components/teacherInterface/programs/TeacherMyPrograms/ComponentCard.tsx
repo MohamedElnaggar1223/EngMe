@@ -105,6 +105,7 @@ function ComponentCard({index, course}: ComponentCard)
         <SvgIcon 
             onClick={(e) => {
                 e.stopPropagation()
+                setEdited('')
                 setAdded('lesson')
             }} 
             sx={{ fontSize: 32, cursor: 'pointer', alignSelf: 'center' }}
