@@ -1,9 +1,8 @@
 import { auth, db } from '../../../firebase/firebaseConfig'
 import { signInWithEmailAndPassword } from "firebase/auth"
-import { Alert, Box, Button, Divider, FormControl, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, FormControl, Stack, TextField, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { MuiTelInput } from 'mui-tel-input';
+import { collection, query, where, getDocs } from 'firebase/firestore'
 import { LoginContext } from './Login';
 
 export default function StudentLogIn() 
@@ -13,24 +12,9 @@ export default function StudentLogIn()
 
     const[email, setEmail] = useState('')
     const[password, setPassword] = useState('')
-    const[number, setNumber] = useState('+20')
-
     const [error, setError] = useState('')
 
     const [canSave, setCanSave] = useState(false)
-
-    function handleNumber(e: string)
-    {
-        if(e === '+20 0' && number === '+20')
-        { 
-            return
-        }
-        else 
-        {
-            setNumber(e)
-            setEmail('')
-        }
-    }
 
     const logIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -57,30 +41,9 @@ export default function StudentLogIn()
                     setError('Email Does Not Exist!')
                 }
             }
-            else if(number)
-            {
-                const userRef = collection(db, 'users')
-                const queryUser = query(userRef, where('number', '==', number))
-                const userDoc = await getDocs(queryUser)
-    
-                if(userDoc.docs.length && userDoc.docs[0]?.data().role === 'student')
-                {
-                    signInWithEmailAndPassword(auth, userDoc.docs[0].data().userId, password)
-                    .then()
-                    .catch(() => {
-                        setError('Incorrect Password')
-                    })
-                    setEmail('')
-                    setPassword('')
-                }
-                else
-                {
-                    setError('Mobile Number Does Not Exist!')
-                }
-            }
             else
             {
-                setError('Please Enter Email or Number!')
+                setError('Please Enter Your Email!')
             }
         }
         else
@@ -103,7 +66,7 @@ export default function StudentLogIn()
     // }, [password, confirmPassword])
 
     useEffect(() => {
-        setCanSave([password].every(Boolean))
+        setCanSave([email, password].every(Boolean))
     }, [email, password])
 
     return (
@@ -135,7 +98,6 @@ export default function StudentLogIn()
                         type='email'
                         value={email}
                         onChange={(e) => {
-                            handleNumber('+20')
                             setEmail(e.target.value)
                         }}
                         inputProps={{
@@ -144,30 +106,6 @@ export default function StudentLogIn()
                                 textIndent: '80px',
                                 fontSize: 18,
                                 // border: '1px solid rgba(0, 0, 0, 1)',
-                                borderRadius: '5px'
-                            }
-                        }}
-                    />
-                </FormControl>
-                <div style={{ position: 'relative', margin: '20px 0' }}>
-                    <Divider style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%' }} />
-                    <Typography fontSize={22} fontWeight={500} fontFamily='Inter' variant="body2" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '0 10px' }}>
-                        Or
-                    </Typography>
-                </div>
-                <FormControl sx={{ flex: 1 }}>
-                    <MuiTelInput 
-                        value={number} 
-                        onChange={handleNumber} 
-                        placeholder='Phone Number'
-                        inputProps={{
-                            style: {
-                                textAlign: 'left',
-                                textIndent: '37px',
-                                fontSize: 18,
-                                borderLeft: '1px solid rgba(0, 0, 0, 0.1)',
-                                borderTopLeftRadius: '0px',
-                                borderBottomLeftRadius: '0px',
                                 borderRadius: '5px'
                             }
                         }}

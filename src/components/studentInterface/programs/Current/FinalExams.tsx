@@ -4,7 +4,7 @@ import Question from "./Question";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ProgramProps from "../../../../interfaces/ProgramProps";
 import { useQuery } from "@tanstack/react-query";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { getProgramFinalExams } from "../../../helpers/getProgramFinalExams";
 import { getStudentProgramFinalExams } from "../../../helpers/getStudentProgramFinalExams";
@@ -21,6 +21,8 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 	const { userData } = useContext(AuthContext)
 	const [questions, setQuestions] = useState('')
 	const [selectQuestions, setSelectQuestions] = useState('All Questions')
+
+	const scrollRef = useRef<HTMLDivElement>(null)
 
 	const { data: finalExams, isLoading: isFinalExamsLoading } = useQuery({
 		queryKey: ['finalExams', program.id],
@@ -74,6 +76,14 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 			return questionsDisplay
 		}
 	}, [finalExams, studentFinalExams, questions, selectQuestions])  
+
+	useEffect(() => {
+		if(displayedQuestions?.length)
+		{
+			// scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+			window.scrollTo({ top: scrollRef.current?.offsetTop, behavior: 'smooth' })
+		}
+	}, [displayedQuestions])
 
 	if(isFinalExamsLoading || isStudentFinalExamsLoading) return <></>
 	return (
@@ -135,6 +145,7 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 							</Select>
 						</Stack>
 							{displayedQuestions}
+							<div ref={scrollRef}></div>
 						</>
 					}
 				</Box>

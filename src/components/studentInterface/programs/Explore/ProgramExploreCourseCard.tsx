@@ -1,4 +1,4 @@
-import { Suspense, lazy, useContext } from "react";
+import { Suspense, lazy, useContext, useRef, useState } from "react";
 import { Accordion, AccordionSummary, SvgIcon, Typography, AccordionDetails } from "@mui/material";
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'))
 import { Stack } from "@mui/system";
@@ -22,6 +22,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
     //@ts-expect-error context
     const { pageShowed } = useContext(ProgramExploreContext)
     // const { userData } = useContext(AuthContext)
+    const [expanded, setExpanded] = useState(false)
 
     //@ts-expect-error client
     const lessons = (queryClient.getQueryData(['lessons', pageShowed])).filter(lesson => (course?.lessons)?.includes(lesson.id)) as LessonProps[]
@@ -30,6 +31,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
     //@ts-expect-error created
     const quizzes = (queryClient.getQueryData(['quizzes', pageShowed])).filter(quiz => (course?.quizzes)?.includes(quiz.id))
 
+    const scrollRef = useRef<HTMLDivElement>(null)
 
     // const getStudentAssessment = async () => {
     //     const studentAssessmentRef = collection(db, 'studentAssessment')
@@ -101,7 +103,14 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
 
     return (
         <Suspense>
-            <Accordion sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 } }}>
+            <Accordion 
+                onClick={() => {
+                    setExpanded(prev => !prev)
+                    !expanded && scrollRef?.current?.scrollIntoView({ behavior: 'smooth' })
+                }} 
+                expanded={expanded} 
+                sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 } }}
+            >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon sx={{ paddingRight: 2, paddingLeft: 6 }} />}
                     sx={{
@@ -140,6 +149,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
                     {displayedLessons}
                     {displayedAssessments}
                     {displayedQuizzes}
+                    <div ref={scrollRef}></div>
                 </AccordionDetails>
             </Accordion>
         </Suspense>

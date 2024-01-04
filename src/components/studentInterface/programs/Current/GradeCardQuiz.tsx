@@ -4,13 +4,13 @@ import QuizProps from "../../../../interfaces/QuizProps";
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
 interface GradeCard{
-    quizzesArray: QuizProps[],
+    quizzesArray?: QuizProps[],
     index: number
 }
 
-export default function GradeCard({quizzesArray, index}: GradeCard) 
+export default function GradeCardQuiz({quizzesArray, index}: GradeCard) 
 {
-    const displayedQuizzes = quizzesArray.map((quiz, index) => (
+    const displayedQuizzes = quizzesArray?.map((quiz, index) => (
         <Stack
             direction='row'
             justifyContent='space-between'

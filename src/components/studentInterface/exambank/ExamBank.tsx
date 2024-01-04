@@ -1,8 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box, SvgIcon, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, lazy, useState } from "react";
 import { getExamBank } from "../../helpers/getExamBank";
 import ExamBankContent from "./ExamBankContent";
+import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 const QuizBank = lazy(() => import("./QuizBank"))
 
 interface ExamBankProps{
@@ -16,6 +17,7 @@ export default function ExamBank({ admin }: ExamBankProps)
 {
     const [selected, setSelected] = useState('')
     const [examClicked, setExamClicked] = useState(null)
+    const [open, setOpen] = useState(true)
 
     const { data: examBankMajors } = useQuery({
         queryKey: ['examBankMajors'],
@@ -49,7 +51,14 @@ export default function ExamBank({ admin }: ExamBankProps)
                 minHeight='77.8vh'
             >
                 <Box
-                    bgcolor='#D0EBFC;'
+                    bgcolor='#D0EBFC'
+                    position='sticky'
+                    left={0}
+                    minHeight='77.8vh'
+                    width={open ? 'auto' : '50px'}
+                    sx={{
+                        transition: '0.3s'
+                    }}
                 >
                     {
                         !admin &&
@@ -59,10 +68,19 @@ export default function ExamBank({ admin }: ExamBankProps)
                             pt={6}
                             textAlign='center'
                         >
+                            <SvgIcon onClick={() => setOpen(prev => !prev)} sx={{ cursor: 'pointer', position: 'absolute', zIndex: 2, top: '2.5%', left: !open ? '20%' : '85%', ':hover': { boxShadow: 'inset 0px 0px 0px 9999px rgba(0, 0, 0, 0.05)', borderRadius: '9999px' }, p: 0.5, alignSelf: 'center' }}>
+                                {
+                                    open 
+                                    ?
+                                    <ArrowBackIos sx={{ color: '#226E9F' }} />
+                                    :
+                                    <ArrowForwardIos sx={{ color: '#226E9F' }} />
+                                }
+                            </SvgIcon>
                             <Typography noWrap sx={{ color: '#226E9F' }} fontSize={18} fontFamily='Inter' fontWeight={700}>Exam Bank</Typography>
                         </Box>
                     }
-                    {displayedMajors}
+                    {open && displayedMajors}
                 </Box>
                 {
                 examClicked 

@@ -1,5 +1,5 @@
 import FormControl from "@mui/material/FormControl";
-import { Alert, Box, Button, Select, Stack, SvgIcon, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Select, Stack, SvgIcon, TextField, TextareaAutosize, Typography } from "@mui/material";
 import { MuiTelInput } from 'mui-tel-input'
 import { useState, useRef, useContext } from "react";
 import MenuItem from "@mui/material/MenuItem";
@@ -14,7 +14,8 @@ import { getTeacherRequest } from "../../helpers/getTeacherRequest";
 import { getUserByNumber } from "../../helpers/getUserByNumber";
 import emailjs from '@emailjs/browser';
 import { ExpandMore } from "@mui/icons-material"
-import { LoginContext } from "../login/Login";
+import { LoginContext } from "../login/Login"
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
 export default function StudentSignUp() 
 {
@@ -27,8 +28,10 @@ export default function StudentSignUp()
     const[firstname, setFirstname] = useState('')
     const[lastname, setLastname] = useState('')
     const[email, setEmail] = useState('')
+    const[why, setWhy] = useState('')
     const[city, setCity] = useState('')
     const[occupation, setOccupation] = useState('')
+    const[otherOccupation, setOtherOccupation] = useState('')
     // const[password, setPassword] = useState('')
     // const[confirmPassword, setConfirmPassword] = useState('')
     // const[verifyPassword, setVerifyPassword] = useState(false)
@@ -124,10 +127,10 @@ export default function StudentSignUp()
             setNumber('+20')
             setFile(null)
         },
-        mutationFn: () => setTeacherRequest(firstname, lastname, email, number, file)
+        mutationFn: () => setTeacherRequest(firstname, lastname, email, number, why, occupation !== 'other' ? occupation : otherOccupation, file)
     })
 
-    const canSave = [firstname, lastname, number, file].every(Boolean)
+    const canSave = [firstname, lastname, number, file, occupation, why].every(Boolean)
 
     async function signUp(e: React.FormEvent<HTMLFormElement>)
     {
@@ -341,7 +344,7 @@ export default function StudentSignUp()
                                     background: 'transparent',
                                 }, 
                                 textAlign: 'left',
-                                pl: '37px',
+                                pl: '80px',
                                 fontSize: 18,
                             }}
                             // value={day}
@@ -355,10 +358,38 @@ export default function StudentSignUp()
                             value={occupation}
                             onChange={(e) => setOccupation(e.target.value)}
                         >
-                            <MenuItem value='Occupation'>Occupation</MenuItem>
+                            <MenuItem value='Software Engineer'>Software Engineer</MenuItem>
+                            <MenuItem value='Project Manager'>Project Manager</MenuItem>
+                            <MenuItem value='Mechanical Engineer'>Mechanical Engineer</MenuItem>
+                            <MenuItem value='Student'>Student</MenuItem>
+                            <MenuItem value='Other'>Other</MenuItem>
                         </Select>
                     </Box>
                 </FormControl>
+                {
+                    occupation === 'Other' &&
+                    <FormControl sx={{ flex: 1 }}>
+                        <TextField 
+                            fullWidth
+                            required
+                            name='otherOccupation'
+                            color="info"
+                            variant="outlined"
+                            placeholder="Other Occupation"
+                            value={otherOccupation}
+                            onChange={(e) => setOtherOccupation(e.target.value)}
+                            inputProps={{
+                                style: {
+                                    textAlign: 'left',
+                                    textIndent: '80px',
+                                    fontSize: 18,
+                                    // border: '1px solid rgba(0, 0, 0, 1)',
+                                    borderRadius: '5px'
+                                }
+                            }}
+                        />
+                    </FormControl>
+                }
                 <FormControl>
                     <Box sx={{ cursor: 'pointer' }} onClick={() => setCityOpened(prev => !prev)}>
                         <Select
@@ -375,7 +406,7 @@ export default function StudentSignUp()
                                     background: 'transparent',
                                 }, 
                                 textAlign: 'left',
-                                pl: '37px',
+                                pl: '80px',
                                 fontSize: 18,
                                 zIndex: 5
                             }}
@@ -437,6 +468,41 @@ export default function StudentSignUp()
                         }}
                     />
                 </FormControl> */}
+                <FormControl sx={{ flex: 1 }}>
+                    <TextareaAutosize
+                        required
+                        name='Why'
+                        minRows={5}
+                        style={{
+                            border: '1px solid rgba(0, 0, 0, 0.20)',
+                            width: 'auto',
+                            background: '#fff',
+                            borderRadius: '5px',
+                            paddingTop: 10,
+                            paddingBottom: 10,
+                            paddingRight: 10,
+                            paddingLeft: 10,
+                            flex: 1,
+                            backgroundColor: '#fff',
+                            overflowWrap: 'break-word',
+                            height: '100% !important',
+                            fontSize: '16px',
+                            fontFamily: 'Inter',
+                        }}
+                        placeholder="Why do you want to join our team?"
+                        value={why}
+                        onChange={(e) => setWhy(e.target.value)}
+                        // inputProps={{
+                        //     style: {
+                        //         textAlign: 'left',
+                        //         textIndent: '80px',
+                        //         fontSize: 18,
+                        //         // border: '1px solid rgba(0, 0, 0, 1)',
+                        //         borderRadius: '5px'
+                        //     }
+                        // }}
+                    />
+                </FormControl>
                 <Button
                     component="label"
                     sx={{
@@ -467,12 +533,23 @@ export default function StudentSignUp()
                         onChange={(e) => onFileChange(e)}
                         type="file"
                     />
-                    <SvgIcon sx={{ fontSize: 35 }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="30" viewBox="0 0 36 30" fill="none">
-                            <path d="M18.8633 11.6064V29.1412C18.8633 29.6064 18.4673 30 17.9994 30C17.5314 30 17.1354 29.6064 17.1354 29.1412V11.6064L13.7155 15.1849C13.3915 15.5428 12.8155 15.5428 12.4556 15.2207C12.0956 14.8987 12.0956 14.3261 12.4196 13.9683L17.3514 8.85097C17.5314 8.67205 17.7474 8.56469 17.9994 8.56469C18.2513 8.56469 18.4673 8.67205 18.6473 8.85097L23.5792 13.9683C23.9031 14.3261 23.9031 14.8629 23.5432 15.2207C23.3632 15.3997 23.1472 15.4712 22.9312 15.4712C22.7152 15.4712 22.4632 15.3639 22.2832 15.1849L18.8633 11.6064ZM35.9987 15.5786C35.8907 11.3917 32.9028 7.13329 27.431 7.13329C27.287 7.13329 27.143 7.13329 26.999 7.13329C26.639 5.45138 25.8831 3.94841 24.6951 2.73171C23.4352 1.44345 21.7792 0.548818 19.9433 0.190966C16.1994 -0.560522 12.5635 0.942454 10.5116 4.05576C8.3877 3.80527 6.33577 4.48518 4.71583 5.91659C3.05989 7.38378 2.19592 9.45932 2.30392 11.6064C0.82797 13.0021 0 14.9345 0 16.9384C0 21.0179 3.34788 24.3102 7.41573 24.3102H14.4715C14.9395 24.3102 15.3355 23.9165 15.3355 23.4513C15.3355 22.9861 14.9395 22.5925 14.4715 22.5925H7.41573C4.28385 22.5925 1.76394 20.0517 1.76394 16.9742C1.76394 15.3281 2.51991 13.7535 3.81586 12.6442C4.03186 12.4653 4.13985 12.179 4.13985 11.8927C3.95986 10.1035 4.64383 8.42155 5.97579 7.20486C7.30774 6.02395 9.07168 5.52295 10.8356 5.88081C11.1956 5.95238 11.5916 5.77345 11.7716 5.45138C13.3555 2.66014 16.4154 1.26452 19.6193 1.94444C22.1392 2.44543 24.9831 4.37783 25.4151 8.20684C25.4511 8.45734 25.5591 8.67205 25.7391 8.81519C25.9191 8.95833 26.1711 9.0299 26.4231 8.99411C26.747 8.95833 27.107 8.92254 27.467 8.92254C32.0389 8.92254 34.1988 12.4295 34.2708 15.6502C34.3428 18.9424 32.2548 22.3778 27.431 22.5925H21.5272C21.0592 22.5925 20.6633 22.9861 20.6633 23.4513C20.6633 23.9165 21.0592 24.3102 21.5272 24.3102H27.431H27.467C30.1669 24.167 32.4348 23.165 33.9828 21.4116C35.3147 19.8728 36.0347 17.7973 35.9987 15.5786Z" fill="white"/>
-                        </svg>
-                    </SvgIcon>
-                    Upload CV
+                    {
+                        !file ?
+                        <>
+                            <SvgIcon sx={{ fontSize: 35 }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="30" viewBox="0 0 36 30" fill="none">
+                                    <path d="M18.8633 11.6064V29.1412C18.8633 29.6064 18.4673 30 17.9994 30C17.5314 30 17.1354 29.6064 17.1354 29.1412V11.6064L13.7155 15.1849C13.3915 15.5428 12.8155 15.5428 12.4556 15.2207C12.0956 14.8987 12.0956 14.3261 12.4196 13.9683L17.3514 8.85097C17.5314 8.67205 17.7474 8.56469 17.9994 8.56469C18.2513 8.56469 18.4673 8.67205 18.6473 8.85097L23.5792 13.9683C23.9031 14.3261 23.9031 14.8629 23.5432 15.2207C23.3632 15.3997 23.1472 15.4712 22.9312 15.4712C22.7152 15.4712 22.4632 15.3639 22.2832 15.1849L18.8633 11.6064ZM35.9987 15.5786C35.8907 11.3917 32.9028 7.13329 27.431 7.13329C27.287 7.13329 27.143 7.13329 26.999 7.13329C26.639 5.45138 25.8831 3.94841 24.6951 2.73171C23.4352 1.44345 21.7792 0.548818 19.9433 0.190966C16.1994 -0.560522 12.5635 0.942454 10.5116 4.05576C8.3877 3.80527 6.33577 4.48518 4.71583 5.91659C3.05989 7.38378 2.19592 9.45932 2.30392 11.6064C0.82797 13.0021 0 14.9345 0 16.9384C0 21.0179 3.34788 24.3102 7.41573 24.3102H14.4715C14.9395 24.3102 15.3355 23.9165 15.3355 23.4513C15.3355 22.9861 14.9395 22.5925 14.4715 22.5925H7.41573C4.28385 22.5925 1.76394 20.0517 1.76394 16.9742C1.76394 15.3281 2.51991 13.7535 3.81586 12.6442C4.03186 12.4653 4.13985 12.179 4.13985 11.8927C3.95986 10.1035 4.64383 8.42155 5.97579 7.20486C7.30774 6.02395 9.07168 5.52295 10.8356 5.88081C11.1956 5.95238 11.5916 5.77345 11.7716 5.45138C13.3555 2.66014 16.4154 1.26452 19.6193 1.94444C22.1392 2.44543 24.9831 4.37783 25.4151 8.20684C25.4511 8.45734 25.5591 8.67205 25.7391 8.81519C25.9191 8.95833 26.1711 9.0299 26.4231 8.99411C26.747 8.95833 27.107 8.92254 27.467 8.92254C32.0389 8.92254 34.1988 12.4295 34.2708 15.6502C34.3428 18.9424 32.2548 22.3778 27.431 22.5925H21.5272C21.0592 22.5925 20.6633 22.9861 20.6633 23.4513C20.6633 23.9165 21.0592 24.3102 21.5272 24.3102H27.431H27.467C30.1669 24.167 32.4348 23.165 33.9828 21.4116C35.3147 19.8728 36.0347 17.7973 35.9987 15.5786Z" fill="white"/>
+                                </svg>
+                            </SvgIcon>
+                            Upload CV
+                        </>
+                        :
+                        <>
+                            <TaskAltIcon sx={{ fontSize: 35 }} />
+                            {/* //@ts-expect-error files */}
+                            {file && (file as File).name}
+                        </>
+                    }
                 </Button>
                 <Button
                     sx={{

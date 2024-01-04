@@ -4,6 +4,8 @@ import { useState } from "react";
 import { getKnowledgeBank } from "../../helpers/getKnowledgeBank";
 import KnowledgeBankContent from "./KnowledgeBankContent";
 import { setKnowledgeBankMajor } from "../../helpers/setKnowledgeBankMajor";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 
 export default function KnowledgeBank() 
 {
@@ -12,6 +14,7 @@ export default function KnowledgeBank()
     const [selectedMajor, setSelectedMajor] = useState(null)
     const [add, setAdd] = useState(false)
     const [majorAdded, setMajorAdded] = useState('')
+    const [open, setOpen] = useState(true)
 
     const { data: knowledgeBankMajors } = useQuery({
         queryKey: ['knowledgeBankMajors'],
@@ -66,11 +69,12 @@ export default function KnowledgeBank()
             flexDirection='column'
         >
             <Box
-                width='100%'
                 display='flex'
                 flexDirection='row'
                 zIndex={1}
                 minHeight='77.8vh'
+                position='fixed'
+                width={open ? 'auto' : '50px'}
             >
                 <Box
                     bgcolor='#FEF4EB'
@@ -78,10 +82,30 @@ export default function KnowledgeBank()
                     alignItems='center'
                     justifyContent='flex-start'
                     flexDirection='column'
+                    position='sticky'
+                    left={0}
+                    width={open ? 'auto' : '50px'}
+                    minHeight='77.8vh'
                 >
-                    {displayedMajors}
+                    <Box
+                        px={8}
+                        pb={4.5}
+                        pt={6}
+                        textAlign='center'
+                    >
+                        <SvgIcon onClick={() => setOpen(prev => !prev)} sx={{ cursor: 'pointer', position: 'absolute', zIndex: 2, top: '2.5%', left: !open ? '20%' : '85%', ':hover': { boxShadow: 'inset 0px 0px 0px 9999px rgba(0, 0, 0, 0.05)', borderRadius: '9999px' }, p: 0.5, alignSelf: 'center' }}>
+                            {
+                                open 
+                                ?
+                                <ArrowBackIosIcon sx={{ color: '#FF7E00' }} />
+                                :
+                                <ArrowForwardIosIcon sx={{ color: '#FF7E00' }} />
+                            }
+                        </SvgIcon>
+                    </Box>
+                    {open && displayedMajors}
                     {
-                        add &&
+                        open && add &&
                         <Input
                             sx={{ 
                                 flex: 1,
@@ -102,7 +126,7 @@ export default function KnowledgeBank()
                             onChange={(e) => setMajorAdded(e.target.value)}
                         />
                     }
-                    <Button
+                    {open && <Button
                         sx={{
                             flex: 1,
                             background: 'linear-gradient(95deg, #FF7E00 5.94%, #FF9F06 95.69%)',
@@ -149,7 +173,7 @@ export default function KnowledgeBank()
                             </svg>
                         </SvgIcon>
                         <Typography textAlign='left' noWrap fontFamily='Inter' fontSize={14}>Add Major</Typography>
-                    </Button>
+                    </Button>}
                 </Box>
                 {displayedContent}
             </Box>

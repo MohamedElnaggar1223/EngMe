@@ -10,7 +10,7 @@ export default function StudentCard()
     const { userData } = useContext(AuthContext)
 
     const [name, setName] = useState(userData?.name)
-    const [major, setMajor] = useState('Software Engineer')
+    const [major, setMajor] = useState(userData?.occupation ?? 'Software Engineer')
     const [city, setCity] = useState('Cairo')
     const [country, setCountry] = useState('Egypt')
     const [image, setImage] = useState(userData?.image)
@@ -34,7 +34,6 @@ export default function StudentCard()
             // gap={2}
             py={4}
             zIndex={0}
-            position='relative'
             justifyContent='space-between'
             // pr={8}
             minHeight='200px'

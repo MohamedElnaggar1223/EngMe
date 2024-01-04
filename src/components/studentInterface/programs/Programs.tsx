@@ -7,13 +7,16 @@ const ProgramsFavorites = lazy(() => import('./Favorites/ProgramsFavorites'))
 import { useQuery } from '@tanstack/react-query'
 import { AuthContext } from '../../authentication/auth/AuthProvider'
 import { getStudentCurrentPrograms } from '../../helpers/getStudentCurrentPrograms'
+import { useLocation } from 'react-router-dom'
 
 export default function Programs() 
 {
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
+
+    const { pathname } = useLocation()
     
-    const [tab, setTab] = useState('Explore')
+    const [tab, setTab] = useState(pathname.includes('/programs/current') ? 'Current' : pathname.includes('/programs/current') ?  'Explore' : 'Explore')
 
     const { isLoading } = useQuery({
         queryKey: ['currentPrograms', userData?.id],

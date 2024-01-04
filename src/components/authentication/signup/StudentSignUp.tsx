@@ -22,6 +22,7 @@ export default function StudentSignUp()
     const[email, setEmail] = useState('')
     const[city, setCity] = useState('')
     const[occupation, setOccupation] = useState('')
+    const[otherOccupation, setOtherOccupation] = useState('')
     const[password, setPassword] = useState('')
     const[confirmPassword, setConfirmPassword] = useState('')
     const[verifyPassword, setVerifyPassword] = useState(false)
@@ -62,6 +63,7 @@ export default function StudentSignUp()
                                 email,
                                 number,
                                 image: '',
+                                occupation: occupation !== 'other' ? occupation : otherOccupation,
                                 Country: 'Egypt'
                             })
             
@@ -232,7 +234,7 @@ export default function StudentSignUp()
                                     background: 'transparent',
                                 }, 
                                 textAlign: 'left',
-                                pl: '37px',
+                                pl: '80px',
                                 fontSize: 18,
                             }}
                             // value={day}
@@ -246,10 +248,38 @@ export default function StudentSignUp()
                             value={occupation}
                             onChange={(e) => setOccupation(e.target.value)}
                         >
-                            <MenuItem value='Occupation'>Occupation</MenuItem>
+                            <MenuItem value='Software Engineer'>Software Engineer</MenuItem>
+                            <MenuItem value='Project Manager'>Project Manager</MenuItem>
+                            <MenuItem value='Mechanical Engineer'>Mechanical Engineer</MenuItem>
+                            <MenuItem value='Student'>Student</MenuItem>
+                            <MenuItem value='Other'>Other</MenuItem>
                         </Select>
                     </Box>
                 </FormControl>
+                {
+                    occupation === 'Other' &&
+                    <FormControl sx={{ flex: 1 }}>
+                        <TextField 
+                            fullWidth
+                            required
+                            name='otherOccupation'
+                            color="info"
+                            variant="outlined"
+                            placeholder="Other Occupation"
+                            value={otherOccupation}
+                            onChange={(e) => setOtherOccupation(e.target.value)}
+                            inputProps={{
+                                style: {
+                                    textAlign: 'left',
+                                    textIndent: '80px',
+                                    fontSize: 18,
+                                    // border: '1px solid rgba(0, 0, 0, 1)',
+                                    borderRadius: '5px'
+                                }
+                            }}
+                        />
+                    </FormControl>
+                }
                 <FormControl>
                     <Box sx={{ cursor: 'pointer' }} onClick={() => setCityOpened(prev => !prev)}>
                         <Select

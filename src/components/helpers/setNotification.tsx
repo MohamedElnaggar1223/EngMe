@@ -1,12 +1,13 @@
 import { collection, Timestamp, addDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 
-export const setNotification = async(notification: string) => {
+export const setNotification = async(notification: string, to: string) => {
     const notificationRef = collection(db, 'notifications')
 
     const newNotification = {
         notification,
-        createdAt: Timestamp.now()
+        createdAt: Timestamp.now(),
+        to
     }
 
     await addDoc(notificationRef, newNotification)

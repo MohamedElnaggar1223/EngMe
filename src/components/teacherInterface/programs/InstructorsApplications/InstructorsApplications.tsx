@@ -1,7 +1,7 @@
 import { useQuery} from "@tanstack/react-query"
 import { getTeacherRequest } from "../../../helpers/getTeacherRequest"
 import InstructorsApplicationsRequest from './InstructorApplicatiosRequest'
-import { Stack } from "@mui/material"
+import { Stack, Typography } from "@mui/material"
 import { getTeacherFirstLogins } from "../../../helpers/getTeacherFirstLogins"
 import InstructorsApplicationsRequestFirstLogin from "./InstructorsApplicationsRequestFirstLogin"
 
@@ -18,7 +18,7 @@ export default function InstructorsApplications()
     })
 
     //@ts-expect-error map
-    const displayedRequests = teacherRequests && teacherRequests.map((request: {id: string, name: string, email: string, number: string, cv: string}) => (
+    const displayedRequests = teacherRequests && teacherRequests.map((request: {id: string, name: string, email: string, number: string, cv: string, why: string}) => (
         <InstructorsApplicationsRequest {...request} />
     ))
 
@@ -36,8 +36,10 @@ export default function InstructorsApplications()
             my={4}
             gap={6}
         >
-            {displayedRequests}
-            {displayedRequestsLogins}
+            {(displayedRequestsLogins?.length ?? 0 > 0) && <Typography fontSize={24} fontWeight={600} fontFamily='Inter' color='#000'>Accepted Applications ({displayedRequestsLogins?.length})</Typography>}
+                {displayedRequestsLogins}
+            {displayedRequests?.length > 0 && <Typography fontSize={24} fontWeight={600} fontFamily='Inter' color='#000'>Pending Applications ({displayedRequests?.length})</Typography>}
+                {displayedRequests}
         </Stack>
     )
 }

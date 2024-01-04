@@ -3,7 +3,7 @@ import { auth, db } from "../../firebase/firebaseConfig"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { getStorage, ref, uploadBytes } from "firebase/storage"
 
-export const setTeacherRequest = async(firstname?: string, lastname?: string, email?: string, number?: string, file?: unknown, request?: {id: string, name: string, email: string, number: string}, password?: string) => {
+export const setTeacherRequest = async(firstname?: string, lastname?: string, email?: string, number?: string, why?: string, occupation?: string, file?: unknown, request?: {id: string, name: string, email: string, number: string}, password?: string) => {
     if(request && password)
     {
         console.log('Hello')
@@ -20,6 +20,7 @@ export const setTeacherRequest = async(firstname?: string, lastname?: string, em
                 email: request.email,
                 image: '',
                 programs: [],
+                occupation,
                 title: 'Professor in Human Biology',
                 university: 'The German University in Cairo',
                 averageRating: 0,
@@ -63,6 +64,8 @@ export const setTeacherRequest = async(firstname?: string, lastname?: string, em
             name: `${firstname} ${lastname}`,
             email,
             number,
+            occupation,
+            why,
             //@ts-expect-error file
             cv: file.name
         }

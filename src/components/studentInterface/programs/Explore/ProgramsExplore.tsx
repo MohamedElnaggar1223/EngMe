@@ -4,6 +4,8 @@ import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { collection, documentId, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
+import { useParams } from "react-router-dom";
+import ProgramProps from "../../../../interfaces/ProgramProps";
 const ProgramsExploreHome = lazy(() => import("./ProgramsExploreHome"))
 const ProgramsExploreProgram = lazy(() => import("./ProgramsExploreProgram"))
 
@@ -20,6 +22,8 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
 
+    const { id } = useParams()
+
     const [filters, setFilters] = useState(false)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedFilters, setSelectedFilters] = useState<any>({
@@ -31,7 +35,7 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
     const [applyFilters, setApplyFilters] = useState(false)
     const [pageShowed, setPageShowed] = useState('home')
 
-    const { data: explorePrograms } = useQuery({
+    const { data: explorePrograms, isLoading } = useQuery({
         queryKey: ['explorePrograms', userData?.id],
         queryFn: () => getExplorePrograms(),
         enabled: !!userData,
@@ -41,10 +45,14 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
         if(pageShowed !== 'home')
         {
             const programFound = explorePrograms?.find(program => program.id === pageShowed)
-            if(!programFound) setTab('Current')
+            if(!programFound) setTab('Explore')
         }
     //eslint-disable-next-line
     }, [pageShowed])
+
+    useEffect(() => {
+        if(id) setPageShowed(id)
+    }, [id])
 
     // useEffect(() => {
     //     refetch()
@@ -107,6 +115,7 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
         setSelectedFilters(newFilters)
     }
     
+    if(isLoading) return <></>
     return (
         <ProgramExploreContext.Provider value={{ setPageShowed, pageShowed }}>
             <Box
@@ -128,7 +137,8 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
                         />
                     </Suspense> :
                     <Suspense>
-                        <ProgramsExploreProgram />
+                        {/* //@ts-expect-error pageShowed */}
+                        <ProgramsExploreProgram explorePrograms={explorePrograms as ProgramProps[]} />
                     </Suspense>
                 }
             </Box>

@@ -3,13 +3,15 @@ import { useState } from "react"
 import { Box, Button, Input, Stack, Typography } from "@mui/material"
 import { getDownloadURL, getStorage, ref } from "firebase/storage"
 import axios from "axios"
+import { setDeleteTeacherRequest } from "../../../helpers/setDeleteTeacherRequest"
 
 interface RequestProps{
     id: string, 
     name: string, 
     email: string, 
     number: string,
-    cv: string
+    cv: string,
+    why: string,
 }
 
 export default function InstructorApplicatiosRequest(request: RequestProps) 
@@ -21,6 +23,7 @@ export default function InstructorApplicatiosRequest(request: RequestProps)
 
     const [cv, setCv] = useState(null)
     const [showCv, setShowCv] = useState(false)
+    const [showWhy, setShowWhy] = useState(false)
 
     const { mutate } = useMutation({
         onMutate: () => {
@@ -45,7 +48,20 @@ export default function InstructorApplicatiosRequest(request: RequestProps)
         // mutationFn: () => axios.post('http://localhost:3001/create-teacher-account', { request, password }, { headers: { "Content-Type": "application/json" } })
     })
 
+    const { mutate: mutateDelete } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['teacherRequests'])
 
+            queryClient.setQueryData(['teacherRequests'], (oldData: RequestProps[]) => {
+                return oldData ? oldData.slice().filter(req => req.id !== request.id) : []
+            })
+
+            return () => {
+                queryClient.setQueryData(['teacherRequests'], previousData)
+            }
+        },
+        mutationFn: () => setDeleteTeacherRequest(request.id)
+    })
 
     const getCv = async () => {
         const storage = getStorage();
@@ -86,14 +102,29 @@ export default function InstructorApplicatiosRequest(request: RequestProps)
                         gap={8}
                     >
                         <Typography noWrap fontFamily='Inter' fontWeight={500} fontSize={16}>{request.email}</Typography>
-                        <Button
-                            onClick={() => {
-                                getCv()
-                                setShowCv(prev => !prev)
-                            }}
+                        <Stack
+                            direction='row'
+                            gap={2}
                         >
-                            Show CV
-                        </Button>
+                            <Button
+                                onClick={() => {
+                                    getCv()
+                                    setShowCv(prev => !prev)
+                                    setShowWhy(false)
+                                }}
+                            >
+                                Show CV
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    getCv()
+                                    setShowWhy(prev => !prev)
+                                    setShowCv(false)
+                                }}
+                            >
+                                Reason For Applying
+                            </Button>
+                        </Stack>
                     </Stack>
                 </Stack>
                 <Stack
@@ -164,12 +195,43 @@ export default function InstructorApplicatiosRequest(request: RequestProps)
                         >
                             Accept
                         </Button>
+                        <Button
+                            sx={{
+                                background: '#D30000',
+                                color: '#fff',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 400,
+                                border: '1px solid #D30000',
+                                borderRadius: '10px',
+                                '&:hover': {
+                                    background: '#D30000',
+                                    opacity: 1
+                                },
+                                paddingX: 1.5,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '160px',
+                                alignSelf: 'flex-end',
+                                height: '38px',
+                                ml: 2
+                            }}
+                            onClick={() => mutateDelete()}
+                        >
+                            Decline
+                        </Button>
                     </Stack>
                 </Stack>
             </Stack>
             {
-                (cv && showCv) &&
+                (cv && showCv && !showWhy) &&
                 <embed style={{ marginTop: 24 }} src={cv} type="application/pdf" width="70%" height="600px" />
+            }
+            {
+                (showWhy && !showCv) &&
+                <Typography sx={{ marginTop: 6 }} fontFamily='Inter' fontWeight={500} fontSize={16}>{request.why}</Typography>
             }
         </Box>
     )

@@ -1,7 +1,7 @@
 import { Box, Stack, Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, AccordionDetails, Input } from '@mui/material'
 import ReactApexChart from "react-apexcharts";
 import star from '../../../../assets/Star 4.png'
-import { memo, useContext, useMemo, useState, lazy, Suspense, createContext, useEffect } from 'react';
+import { memo, useContext, useMemo, useState, lazy, Suspense, createContext, useEffect, useRef } from 'react';
 // eslint-disable-next-line react-refresh/only-export-components
 const Components = lazy(() => import('./Components'))
 // eslint-disable-next-line react-refresh/only-export-components
@@ -10,27 +10,27 @@ const FinalExams = lazy(() => import('./FinalExams'))
 const Discussions = lazy(() => import('./Discussions'))
 // eslint-disable-next-line react-refresh/only-export-components
 const Grades = lazy(() => import('./Grades'))
-import ProgramProps from '../../../../interfaces/ProgramProps';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram';
-import { getProgramsData } from '../../../helpers/getProgramsData';
-import { AuthContext } from '../../../authentication/auth/AuthProvider';
-import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFavorite';
-import { getAssessmentsData } from '../../../helpers/getAssessmentsData';
-import { getCoursesData } from '../../../helpers/getCoursesData';
-import { getLessonsData } from '../../../helpers/getLessonsData';
-import { getQuizzesData } from '../../../helpers/getQuizzesData';
-import { getStudentAssessments } from '../../../helpers/getStudentAssessments';
-import { getStudentLessons } from '../../../helpers/getStudentLessons';
-import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes';
-import { getProgramFinalExams } from '../../../helpers/getProgramFinalExams';
-import { getStudentProgramFinalExams } from '../../../helpers/getStudentProgramFinalExams';
-import { getStudentCompletedProgram } from '../../../helpers/getStudentCompletedProgram';
-import { getStudentProgramComment } from '../../../helpers/getStudentProgramComment';
-import { StarOutline, StarRate } from '@mui/icons-material';
-import { setStudentProgramComment } from '../../../helpers/setStudentProgramComment';
-import { setStudentProgramCertificate } from '../../../helpers/setStudentProgramCertificate';
-import { useNavigate } from 'react-router-dom';
+import ProgramProps from '../../../../interfaces/ProgramProps'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getTeacherDataFromProgram } from '../../../helpers/getTeacherDataFromProgram'
+import { getProgramsData } from '../../../helpers/getProgramsData'
+import { AuthContext } from '../../../authentication/auth/AuthProvider'
+import { setStudentProgramFavorite } from '../../../helpers/setStudentProgramFavorite'
+import { getAssessmentsData } from '../../../helpers/getAssessmentsData'
+import { getCoursesData } from '../../../helpers/getCoursesData'
+import { getLessonsData } from '../../../helpers/getLessonsData'
+import { getQuizzesData } from '../../../helpers/getQuizzesData'
+import { getStudentAssessments } from '../../../helpers/getStudentAssessments'
+import { getStudentLessons } from '../../../helpers/getStudentLessons'
+import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes'
+import { getProgramFinalExams } from '../../../helpers/getProgramFinalExams'
+import { getStudentProgramFinalExams } from '../../../helpers/getStudentProgramFinalExams'
+import { getStudentCompletedProgram } from '../../../helpers/getStudentCompletedProgram'
+import { getStudentProgramComment } from '../../../helpers/getStudentProgramComment'
+import { StarOutline, StarRate } from '@mui/icons-material'
+import { setStudentProgramComment } from '../../../helpers/setStudentProgramComment'
+import { setStudentProgramCertificate } from '../../../helpers/setStudentProgramCertificate'
+import { useNavigate } from 'react-router-dom'
 
 interface ProgramCurrentCard{
     program: ProgramProps,
@@ -49,6 +49,10 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     const { userData } = useContext(AuthContext)
 
     const navigate = useNavigate()
+
+    const componentsRef = useRef<HTMLDivElement>(null)
+    const scrollCompRef = useRef<HTMLDivElement>(null)
+    const testRef = useRef<HTMLDivElement>(null)
 
     const [expand, setExpand] = useState(false)
     const [selectedStars, setSelectedStars] = useState(0)
@@ -72,6 +76,9 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
         else
         {
             setExpand(prev => !prev)
+            // !expand && scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+            console.log(scrollCompRef.current?.scrollHeight)
+            !expand && window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
         }
     }
 
@@ -372,6 +379,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                     borderRadius: '20px',
                 } 
             }}
+            ref={scrollCompRef}
         >
             <AccordionSummary
                 sx={{
@@ -891,7 +899,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                     </Box>
                 </Box>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails ref={componentsRef}>
                 <Box
                     display='flex'
                     flexDirection='column'
@@ -922,7 +930,11 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                     opacity: 1
                                 }
                             }}
-                            onClick={() => setProgramPage('Components')}
+                            onClick={() => {
+                                setProgramPage('Components')
+                                // window.scrollTo({ top: componentsRef.current?.scrollHeight, behavior: 'smooth' })
+                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                            }}
                         >
                             Components
                         </Button>
@@ -943,7 +955,11 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                     opacity: 1
                                 }
                             }}
-                            onClick={() => setProgramPage('Exams')}
+                            onClick={() => {
+                                setProgramPage('Exams')
+                                // window.scrollTo({ top: componentsRef.current?.scrollHeight, behavior: 'smooth' })
+                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                            }}
                         >
                             Final Exams
                         </Button>
@@ -964,7 +980,11 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                     opacity: 1
                                 }
                             }}
-                            onClick={() => setProgramPage('Grades')}
+                            onClick={() => {
+                                setProgramPage('Grades')
+                                // window.scrollTo({ top: componentsRef.current?.scrollHeight, behavior: 'smooth' })
+                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                            }}
                         >
                             Grades
                         </Button>
@@ -985,7 +1005,10 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                     opacity: 1
                                 }
                             }}
-                            onClick={() => setProgramPage('Discussions')}
+                            onClick={() => {
+                                setProgramPage('Discussions')
+                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                            }}
                         >
                             Discussions
                         </Button>
@@ -1016,6 +1039,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                         </ProgramCurrentCardContext.Provider>
                     }
                 </Box>
+            <div ref={testRef}></div>
             </AccordionDetails>
         </Accordion>
     )

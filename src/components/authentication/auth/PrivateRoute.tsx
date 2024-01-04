@@ -2,12 +2,13 @@ import { ReactNode, useContext, useEffect, useState } from 'react'
 import { AuthContext } from "./AuthProvider"
 import { useLocation, useNavigate } from 'react-router-dom'
 import Login from '../login/Login'
+import { Dialog, CircularProgress } from '@mui/material'
 
 //@ts-expect-error children
 export default function PrivateRoute({ children }) 
 {
     //@ts-expect-error context
-    const { user, userData } = useContext(AuthContext)
+    const { user, userData, userIsSuccess } = useContext(AuthContext)
     const { pathname } = useLocation()
 
     const [page, setPage] = useState<ReactNode>()
@@ -41,19 +42,21 @@ export default function PrivateRoute({ children })
     //     } 
     // }, [user, userData, navigate, children, pathname])
 
-    useEffect(() => {
-        if(user)
-        {
-            navigate(pathname !== '/login' ? pathname : '/')
-            setPage(children[userData?.role])
-        }
-        else
-        {
-            setPage(<Login />)
-        }
-    }, [user, navigate])
+    // useEffect(() => {
+    //     if(user)
+    //     {
+    //         navigate(pathname !== '/login' ? pathname : '/')
+    //         console.log(userData?.role)
+    //         if(userData) setPage(children[userData?.role])
+    //         else setPage(<Login />)
+    //     }
+    //     else
+    //     {
+    //         setPage(<Login />)
+    //     }
+    // }, [user, userData, navigate])
     
-    return page
+    // return page
 
     // if(userData)
     // {
@@ -62,4 +65,24 @@ export default function PrivateRoute({ children })
     // }
     // // else if(pathname === '/signup' ) return <Signup />
     // else return <Login />
+
+    useEffect(() => {
+        if(userIsSuccess)
+        {
+            if(user && userData) {
+                navigate(pathname !== '/login' ? pathname : '/')
+                setPage(children[userData?.role ?? 0])
+            } 
+            else 
+            {
+                setPage(<Login />)
+            }
+        }
+    }, [user, userData, navigate, children, pathname, userIsSuccess])
+    
+    return page ? page : (
+        <Dialog open={!userIsSuccess} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+            <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+        </Dialog>
+    )
 }

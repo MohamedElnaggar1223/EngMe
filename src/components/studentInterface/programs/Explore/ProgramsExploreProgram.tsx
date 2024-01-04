@@ -1,4 +1,4 @@
-import { Suspense, lazy, useContext, useState } from 'react'
+import { Suspense, lazy, useContext, useRef, useState } from 'react'
 import { Box, Stack, Typography, SvgIcon, Avatar, Button, Dialog, CircularProgress } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AuthContext } from '../../../authentication/auth/AuthProvider'
@@ -22,7 +22,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { loadStripe } from '@stripe/stripe-js'
 
-export default function ProgramsExploreProgram() 
+export default function ProgramsExploreProgram({ explorePrograms }: { explorePrograms: ProgramProps[]}) 
 {
     //PAGE SHOWED MAKE IT FOR EXPLORE, CURRENT, COMPLETED, CHECKS WHICH PROGRAM IT BELONGS TO BEFORE NAVIGATING
     const queryClient = useQueryClient()
@@ -32,9 +32,14 @@ export default function ProgramsExploreProgram()
     const { setPageShowed, pageShowed } = useContext(ProgramExploreContext)
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
-    //@ts-expect-error idk man
-    const program = queryClient.getQueryData(['explorePrograms', userData?.id]).find(program => program.id === pageShowed) as ProgramProps
-    if(!program) setPageShowed('home')
+
+    const scrollRef = useRef<HTMLDivElement>(null)
+
+    const program = explorePrograms?.find(program => program.id === pageShowed) as ProgramProps
+    if(!program) {
+        window.location.href = '/programs'
+        setPageShowed('home')
+    }
     const [programShow, setProgramShow] = useState('components')
     const [loading, setLoading] = useState(false)
 
@@ -233,8 +238,20 @@ export default function ProgramsExploreProgram()
     
     const materialCount = (courses?.length ?? [].length) + (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
 
-    //@ts-expect-error prereq
-    const displayedPrereqs = prereqsData?.map(preqreq => <Typography sx={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => setPageShowed(preqreq.id)} fontSize={18} fontFamily='Inter' fontWeight={400}>{preqreq.name}</Typography>)
+    
+    const displayedPrereqs = prereqsData?.map(preqreq => 
+    <Typography 
+        sx={{ textDecoration: 'underline', cursor: 'pointer' }} 
+        onClick={() => {
+            setPageShowed(preqreq.id)
+        }} 
+        fontSize={18} 
+        fontFamily='Inter' 
+        fontWeight={400}
+    >
+        {/*//@ts-expect-error prereq */}
+        {preqreq.name}
+    </Typography>)
  
     const getCanRequest = () => {
         //@ts-expect-error length
@@ -561,7 +578,10 @@ export default function ProgramsExploreProgram()
                             opacity: 1
                         }
                     }}
-                    onClick={() => setProgramShow('components')}
+                    onClick={() => {
+                        setProgramShow('components')
+                        window.scrollTo({ top: scrollRef.current?.offsetTop, behavior: 'smooth' })
+                    }}
                 >
                     Components
                 </Button>
@@ -582,7 +602,10 @@ export default function ProgramsExploreProgram()
                             opacity: 1
                         }
                     }}
-                    onClick={() => setProgramShow('comments')}
+                    onClick={() => {
+                        setProgramShow('comments')
+                        window.scrollTo({ top: scrollRef.current?.offsetTop, behavior: 'smooth' })
+                    }}
                 >
                     Comments
                 </Button>
@@ -597,6 +620,7 @@ export default function ProgramsExploreProgram()
                     <ProgramExploreCourseComments NoAdd={true} program={program} />
                 </Suspense>
             }
+            <div ref={scrollRef}></div>
         </Box>
     )
 }

@@ -1,6 +1,7 @@
-import { collection, addDoc, Timestamp, and, query, where, getDocs, deleteDoc } from "firebase/firestore"
+import { collection, addDoc, Timestamp, and, query, where, getDocs, deleteDoc, getDoc, doc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 import { getProgramsData } from "./getProgramsData"
+import { setNotification } from "./setNotification"
 
 //@ts-expect-error array
 export const setStudentRequestProgram = async (studentRequest, studentId: string, programId: string) => {
@@ -47,5 +48,12 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
 
         await addDoc(studentRequestRef, newRequest)
         await addDoc(studentProgramRef, studentProgram)
+
+        const studentDoc = doc(db, 'students', studentId)
+
+        const studentData = await getDoc(studentDoc)
+
+        //@ts-expect-error name
+        setNotification(`${studentData.data().name} just purchased ${programData[0].name}`, programData[0].teacherId)
     }
 }

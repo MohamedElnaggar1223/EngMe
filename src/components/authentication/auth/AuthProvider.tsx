@@ -17,7 +17,7 @@ export default function AuthProvider({ children })
 {   
     const queryClient = useQueryClient()
     const [user, setUser] = useState<User | null>(null)
-    const { data: userData, isSuccess } = useQuery({
+    const { data: userData, isSuccess, isSuccess: userIsSuccess } = useQuery({
         queryKey: ['userData'],
         queryFn: () => getUserData(user?.uid ?? ''),
         enabled: !!user
@@ -94,6 +94,7 @@ export default function AuthProvider({ children })
             else
             {
                 setUser(null)
+                queryClient.setQueryData(['userData'], null)
             }
         })
 
@@ -127,7 +128,7 @@ export default function AuthProvider({ children })
     if(isLoading) return <></>
     else return (
         <AuthContext.Provider
-            value={{ user, userData }}
+            value={{ user, userData, userIsSuccess }}
         >
             { children }
         </AuthContext.Provider>

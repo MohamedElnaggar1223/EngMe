@@ -155,6 +155,9 @@ export default function ExamBankContent({ id }: ExamBankContentProps)
             direction='column'
             flex={1}
             mt={6}
+            ml={6}
+            width='100%'
+            alignItems='flex-end'
         >
             <Stack
                 direction='row'

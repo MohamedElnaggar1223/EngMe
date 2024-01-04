@@ -1,12 +1,12 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { Avatar, Box, Button, Link, MenuItem, Select, Stack, Typography } from '@mui/material'
+import { Avatar, Box, Button, MenuItem, Select, Stack, Typography } from '@mui/material'
 import ExpandMore from "@mui/icons-material/ExpandMore"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AuthContext } from '../../authentication/auth/AuthProvider'
 import { getStudentConsultation } from '../../helpers/getStudentConsultation'
 import { Timestamp } from 'firebase/firestore'
 import { getTeachersData } from '../../helpers/getTeachersData'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { setCancelConsultation } from '../../helpers/setCancelConsultation'
 import { setRescheduleConsultation } from '../../helpers/setRescheduleConsultation'
 
@@ -294,7 +294,7 @@ export default function StudentConsultations()
                         displayedConsultations?.length ?
                         displayedConsultations :
                         <Typography sx={{ p: 8 }} fontFamily='Inter' fontSize={16} fontWeight={500} textAlign='center' alignSelf='center'>No booked consultations yet.<br/>
-                        <Link style={{ color: '#226E9F', textDecoration: 'none', fontWeight: 700 }}>Search</Link> for teachers & start booking.</Typography>
+                        <Link style={{ color: '#226E9F', textDecoration: 'none', fontWeight: 700, cursor: 'pointer' }} to='/instructors'>Search</Link> for teachers & start booking.</Typography>
                     }
                 </Box>
             </Box>

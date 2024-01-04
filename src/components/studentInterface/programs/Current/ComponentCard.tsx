@@ -1,4 +1,4 @@
-import { lazy, memo, useContext, useEffect, useMemo } from "react";
+import { lazy, memo, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails, Button } from "@mui/material";
 // import { PageContext } from "../../../Layout";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +30,8 @@ function ComponentCard({index, course, disabled}: ComponentCard)
     const queryClient = useQueryClient()
     //@ts-expect-error context
     const { completed } = useContext(ProgramCurrentCardContext)
+    const [expanded, setExpanded] = useState(false)
+    const scrollRef = useRef<HTMLDivElement>(null)
     //console.log(disabled)
     ////console.log(course, index)
 
@@ -476,7 +478,14 @@ function ComponentCard({index, course, disabled}: ComponentCard)
     const navigate = useNavigate()
     return (
         
-            <Accordion sx={{ width: '100%', flex: 1, '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
+            <Accordion 
+                onClick={() => {
+                    setExpanded(prev => !prev)
+                    !expanded && scrollRef?.current?.scrollIntoView({ behavior: 'smooth' })
+                }} 
+                expanded={expanded} 
+                sx={{ width: '100%', flex: 1, '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}
+            >
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon sx={{ paddingRight: 2, paddingLeft: 6, color: '#fff' }} />}
                     sx={{
@@ -511,6 +520,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                     {displayedLessons}
                     {displayedQuizzes}
                     {displayedAssessments}
+                    <div ref={scrollRef}></div>
                 </AccordionDetails>
             </Accordion>
     )

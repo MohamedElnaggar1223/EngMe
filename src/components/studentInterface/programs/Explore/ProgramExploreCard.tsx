@@ -67,8 +67,13 @@ export default function ProgramExploreCard({ setPageShowed, program }: ProgramEx
     )
 
     return (
-        //@ts-expect-error set
-        <Card onClick={() => setPageShowed(program.id)} sx={{ cursor: 'pointer', width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 } }}>
+        <Card 
+            onClick={() => {
+                //@ts-expect-error set
+                setPageShowed(program.id)
+            }} 
+            sx={{ cursor: 'pointer', width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 } }}
+        >
             <CardMedia
                 sx={{ height: 180 }}
                 image={program.image}

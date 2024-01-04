@@ -20,7 +20,7 @@ export async function getUserData(uid: string)
         
                 if(userSnapshot.exists())
                 {
-                    const userData = {...userSnapshot.data(), id: userSnapshot.id, role: 'teacher'}
+                    const userData = {...userSnapshot.data(), id: userSnapshot.id, role: userSnapshot.data().email === import.meta.env.VITE_ADMIN_EMAIL ? 'admin' : 'teacher'}
                     return userData
                 }
                 else

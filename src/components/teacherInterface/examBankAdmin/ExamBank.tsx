@@ -4,6 +4,8 @@ import { useState } from "react";
 import { getExamBank } from "../../helpers/getExamBank";
 import ExamBankContent from "./ExamBankContent";
 import { setExamBankMajor } from "../../helpers/setExamBankMajor";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 // const ExamBankCard = lazy(() => import("./ExamBankCard"))
 // const QuizBank = lazy(() => import("./QuizBank"))
 
@@ -14,6 +16,7 @@ export default function ExamBank()
     const [selectedMajor, setSelectedMajor] = useState(null)
     const [add, setAdd] = useState(false)
     const [majorAdded, setMajorAdded] = useState('')
+    const [open, setOpen] = useState(true)
 
     const { data: examBankMajors } = useQuery({
         queryKey: ['examBankMajors'],
@@ -64,15 +67,34 @@ export default function ExamBank()
             minHeight='77.8vh'
         >
             <Box
-                bgcolor='#D0EBFC;'
+                bgcolor='#D0EBFC'
                 display='flex'
                 alignItems='center'
+                minHeight='100vh'
                 justifyContent='flex-start'
                 flexDirection='column'
+                position='sticky'
+                left={0}
+                width={open ? 'auto' : '50px'}
             >
-                {displayedMajors}
+                <Box
+                    px={8}
+                    pt={6}
+                    textAlign='center'
+                >
+                    <SvgIcon onClick={() => setOpen(prev => !prev)} sx={{ cursor: 'pointer', position: 'absolute', zIndex: 2, top: '2.5%', left: !open ? '20%' : '85%', ':hover': { boxShadow: 'inset 0px 0px 0px 9999px rgba(0, 0, 0, 0.05)', borderRadius: '9999px' }, p: 0.5, alignSelf: 'center' }}>
+                        {
+                            open 
+                            ?
+                            <ArrowBackIosIcon sx={{ color: '#226E9F' }} />
+                            :
+                            <ArrowForwardIosIcon sx={{ color: '#226E9F' }} />
+                        }
+                    </SvgIcon>
+                </Box>
+                {open && displayedMajors}
                 {
-                    add &&
+                    open && add &&
                     <Input
                         sx={{ 
                             flex: 1,
@@ -93,7 +115,7 @@ export default function ExamBank()
                         onChange={(e) => setMajorAdded(e.target.value)}
                     />
                 }
-                <Button
+                {open && <Button
                     sx={{
                         flex: 1,
                         background: 'linear-gradient(95deg, #226E9F 5.94%, #6A9DBC 95.69%)',
@@ -140,7 +162,7 @@ export default function ExamBank()
                         </svg>
                     </SvgIcon>
                     <Typography textAlign='left' noWrap fontFamily='Inter' fontSize={14}>Add Major</Typography>
-                </Button>
+                </Button>}
             </Box>
             {
                 selectedMajor ?
