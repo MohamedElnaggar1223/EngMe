@@ -31,7 +31,7 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
         const programData = await getProgramsData([programId])
 
         //@ts-expect-error date
-        const daysToAdd = programData[0].duration.split(" ")[0]
+        const daysToAdd = programData[0].expiry.split(" ")[0]
 
         const currentTime = Timestamp.now().toDate()
         currentTime.setDate(currentTime.getDate() + Number(daysToAdd))

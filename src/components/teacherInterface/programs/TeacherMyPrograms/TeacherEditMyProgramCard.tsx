@@ -276,7 +276,9 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                             bgcolor: '#F8F8F8'
                         }}
                         value={expiry}
-                        onChange={(e) => setExpiry(e.target.value)}
+                        onChange={(e) => {
+                            if(e.target.value.match("^[0-9]*$")) setExpiry(e.target.value)
+                        }}
                     />
                 </Stack>
                 <Stack
@@ -300,7 +302,9 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                             bgcolor: '#F8F8F8'
                         }}
                         value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
+                        onChange={(e) => {
+                            if(e.target.value.match("^[0-9]*$")) setDuration(e.target.value)
+                        }}
                     />
                 </Stack>
                 <Stack
@@ -361,7 +365,9 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                             bgcolor: '#F8F8F8'
                         }}
                         value={price}
-                        onChange={(e) => setPrice(e.target.value)}
+                        onChange={(e) => {
+                            if(e.target.value.match("^[0-9]*$")) setPrice(e.target.value)
+                        }}
                     />
                 </Stack>
                 <Stack

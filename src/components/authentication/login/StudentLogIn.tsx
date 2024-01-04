@@ -1,13 +1,16 @@
 import { auth, db } from '../../../firebase/firebaseConfig'
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { Alert, Box, Button, Divider, FormControl, Stack, TextField, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { useContext, useEffect, useState } from "react";
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { MuiTelInput } from 'mui-tel-input';
+import { LoginContext } from './Login';
 
 export default function StudentLogIn() 
 {
+    //@ts-expect-error context
+    const { setSelectedPage } = useContext(LoginContext)
+
     const[email, setEmail] = useState('')
     const[password, setPassword] = useState('')
     const[number, setNumber] = useState('+20')
@@ -218,7 +221,7 @@ export default function StudentLogIn()
                         >
                         Log In
                     </Button>
-                    <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Dont have an account? <Link style={{ color: '#FF7E00', textDecoration: 'none' }} to='/signup'>Signup</Link></Typography>
+                    <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Dont have an account? <span style={{ color: '#FF7E00', textDecoration: 'none', cursor: 'pointer' }} onClick={() => setSelectedPage('StudentSignup')}>Signup</span></Typography>
                 </Box>
             </form>
         </Box>

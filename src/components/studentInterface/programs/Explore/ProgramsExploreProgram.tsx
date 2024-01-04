@@ -465,7 +465,7 @@ export default function ProgramsExploreProgram()
                                     px={1.5}
                                     py={0.5}
                                 >
-                                    <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.duration}</Typography>
+                                    <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.duration} Hours</Typography>
                                 </Box>
                                 <Box
                                     bgcolor='#D0EBFC'
@@ -501,7 +501,7 @@ export default function ProgramsExploreProgram()
                                     px={1.5}
                                     py={0.5}
                                 >
-                                    <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.expiry}</Typography>
+                                    <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.expiry} Days</Typography>
                                 </Box>
                                 </Stack>
                                 <Button

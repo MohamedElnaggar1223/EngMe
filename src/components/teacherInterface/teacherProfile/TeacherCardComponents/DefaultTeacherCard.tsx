@@ -39,7 +39,9 @@ function DefaultTeacherCard({setEdit, image, title, name, university}: {title: s
                             background: 'lightgray -30.877px 0px / 185.106% 100% no-repeat',
                             objectFit: 'cover',
                             marginBottom: '-100px',
-                            marginLeft: '-50px'
+                            marginLeft: '-50px',
+                            minWidth: '250px',
+                            minHeight: '250px',
                         }}
                         src={image} width='250px' height='250px' alt='profile' 
                     />
@@ -119,19 +121,6 @@ function DefaultTeacherCard({setEdit, image, title, name, university}: {title: s
                         <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{teacherFollowers?.length}</Typography>
                         <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Followers</Typography>
                     </Stack>
-                    <Stack
-                        direction='column'
-                        bgcolor='#fff'
-                        gap={0.2}
-                        alignItems='center'
-                        borderRadius='10px'
-                        py={0.1}
-                        px={5}
-                    >
-                        <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{userData?.profileViews}</Typography>
-                        <Typography fontSize={14} fontFamily='Inter' fontWeight={400}>Profile View(s)</Typography>
-                    </Stack>
-                    
                 </Stack>
             </>
     )

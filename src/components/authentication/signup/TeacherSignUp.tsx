@@ -1,23 +1,26 @@
 import FormControl from "@mui/material/FormControl";
 import { Alert, Box, Button, Select, Stack, SvgIcon, TextField, Typography } from "@mui/material";
 import { MuiTelInput } from 'mui-tel-input'
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 import MenuItem from "@mui/material/MenuItem";
 // import { createUserWithEmailAndPassword } from "firebase/auth";
 // import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 // import { auth, db } from "../../../firebase/firebaseConfig";
 import { getUserByEmail } from "../../helpers/getUserByEmail";
 // import { getUserByNumber } from "../../helpers/getUserByNumber";
-import { Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { setTeacherRequest } from "../../helpers/setTeacherRequest";
 import { getTeacherRequest } from "../../helpers/getTeacherRequest";
 import { getUserByNumber } from "../../helpers/getUserByNumber";
 import emailjs from '@emailjs/browser';
 import { ExpandMore } from "@mui/icons-material"
+import { LoginContext } from "../login/Login";
 
 export default function StudentSignUp() 
 {
+    //@ts-expect-error context
+    const { setSelectedPage } = useContext(LoginContext)
+
     const form = useRef();
 
     const[number, setNumber] = useState('+20')
@@ -493,7 +496,7 @@ export default function StudentSignUp()
                     Sign Up
                 </Button>
             </form>
-            <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Already have an account? <Link style={{ color: '#FF7E00', textDecoration: 'none' }} to='/login'>Login</Link></Typography>
+            <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Already have an account? <span style={{ color: '#FF7E00', textDecoration: 'none', cursor: 'pointer' }} onClick={() => setSelectedPage('TeacherLogin')}>Login</span></Typography>
         </Box>
     )
 }

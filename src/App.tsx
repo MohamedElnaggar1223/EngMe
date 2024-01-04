@@ -5,7 +5,6 @@ import Layout from "./components/Layout"
 const StudentProfile = lazy(() => import("./components/studentInterface/studentProfile/StudentProfile"))
 const Programs = lazy(() => import("./components/studentInterface/programs/Programs"))
 import Login from "./components/authentication/login/Login"
-const Signup = lazy(() => import("./components/authentication/signup/Signup"))
 const Exam = lazy(() => import("./components/studentInterface/programs/Current/Exam"))
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import AuthProvider from "./components/authentication/auth/AuthProvider"
@@ -95,13 +94,6 @@ function App() {
 									
 								<Route path='login'>
 									<Route index element={<Login />} />
-								</Route>
-								<Route path='signup'>
-									<Route index element={
-										<Suspense>
-											<Signup />
-										</Suspense>
-									} />
 								</Route>
 									<Route path='exam/:id'>
 										<Route index element={

@@ -1,14 +1,17 @@
 import FormControl from "@mui/material/FormControl";
 import { Alert, Box, Button, Divider, Stack, TextField, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../firebase/firebaseConfig";
-import { Link } from "react-router-dom";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { MuiTelInput } from "mui-tel-input";
+import { LoginContext } from "./Login";
 
 export default function TeacherLogIn() 
 {
+    //@ts-expect-error context
+    const { setSelectedPage } = useContext(LoginContext)
+
     const[email, setEmail] = useState('')
     const[password, setPassword] = useState('')
     const[number, setNumber] = useState('+20')
@@ -217,7 +220,7 @@ export default function TeacherLogIn()
                         >
                         Log In
                     </Button>
-                    <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Dont have an account? <Link style={{ color: '#FF7E00', textDecoration: 'none' }} to='/signup'>Signup</Link></Typography>
+                    <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Dont have an account? <span style={{ color: '#FF7E00', textDecoration: 'none', cursor: 'pointer' }} onClick={() => {setSelectedPage('TeacherSignup')}}>Signup</span></Typography>
                 </Box>
             </form>
         </Box>

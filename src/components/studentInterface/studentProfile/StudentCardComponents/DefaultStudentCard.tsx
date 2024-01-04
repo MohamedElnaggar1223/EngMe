@@ -51,7 +51,9 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                             background: 'lightgray -30.877px 0px / 185.106% 100% no-repeat',
                             objectFit: 'cover',
                             marginBottom: '-100px',
-                            marginLeft: '-50px'
+                            marginLeft: '-50px',
+                            minWidth: '250px',
+                            minHeight: '250px',
                         }} 
                         src={image === '' ? placeholder : image} width='250px' height='250px' alt='profile' 
                     />
