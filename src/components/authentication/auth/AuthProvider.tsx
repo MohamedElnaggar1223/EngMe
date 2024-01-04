@@ -46,7 +46,7 @@ export default function AuthProvider({ children })
     useEffect(() => {
         const initiatebackend = () => {
             axios.get('https://engmebackendzoom.onrender.com/')
-            axios.get('https://engmebackendpaymentapi.onrender.com/')
+            axios.get('https://engmestripeapi.onrender.com/')
         }
 
         initiatebackend()
