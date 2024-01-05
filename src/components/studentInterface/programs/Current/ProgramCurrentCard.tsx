@@ -76,7 +76,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
         else
         {
             setExpand(prev => !prev)
-            !expand && window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+            !expand && testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
         }
     }
 
@@ -371,6 +371,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     const displayedPrereqs = prereqs?.map(prereq => <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>) 
 
     return (
+        <>
         <Accordion expanded={expand} sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
                 style: { 
@@ -929,7 +930,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                             onClick={() => {
                                 setProgramPage('Components')
                                 // window.scrollTo({ top: componentsRef.current?.scrollHeight, behavior: 'smooth' })
-                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                             }}
                         >
                             Components
@@ -954,7 +955,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                             onClick={() => {
                                 setProgramPage('Exams')
                                 // window.scrollTo({ top: componentsRef.current?.scrollHeight, behavior: 'smooth' })
-                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                             }}
                         >
                             Final Exams
@@ -979,7 +980,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                             onClick={() => {
                                 setProgramPage('Grades')
                                 // window.scrollTo({ top: componentsRef.current?.scrollHeight, behavior: 'smooth' })
-                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                             }}
                         >
                             Grades
@@ -1003,7 +1004,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                             }}
                             onClick={() => {
                                 setProgramPage('Discussions')
-                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                             }}
                         >
                             Discussions
@@ -1035,9 +1036,10 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                         </ProgramCurrentCardContext.Provider>
                     }
                 </Box>
-            <div ref={testRef}></div>
             </AccordionDetails>
         </Accordion>
+        <div style={{ marginTop: 'auto', height: '1px' }} ref={testRef}></div>
+        </>
     )
 }
 

@@ -34,7 +34,7 @@ function Message({ id, isSender, isLast, createdAt, message }: Message)
     }
 
     useEffect(() => {
-        isLast && scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start'})
+        isLast && scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'end' })
     }, [scrollRef, isLast])
 
     useEffect(() => {

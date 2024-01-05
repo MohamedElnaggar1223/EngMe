@@ -54,9 +54,9 @@ export default function Grades(program: ProgramProps)
     }
 
     //@ts-expect-error quiz
-    const organizedQuizzes = Object.groupBy(studentQuizzes, quizId)
+    const organizedQuizzes = studentQuizzes ? Object.groupBy(studentQuizzes, quizId) : {}
     //@ts-expect-error quiz
-    const organizedAssessments = Object.groupBy(studentAssessment, assessmentId)
+    const organizedAssessments = studentAssessment ? Object.groupBy(studentAssessment, assessmentId) : {}
 
     //@ts-expect-error quiz
     const displayedQuizzes = Object.values(organizedQuizzes).map((quizzesArray, index) => <GradeCardQuiz index={index} quizzesArray={quizzesArray} />)

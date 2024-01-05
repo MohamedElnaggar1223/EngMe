@@ -59,7 +59,7 @@ function ComponentCard({index, course}: ComponentCard)
         else
         {
             setExpand(prev => !prev)
-            !expand && window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+            !expand && testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
         }
     }
 
@@ -312,7 +312,7 @@ function ComponentCard({index, course}: ComponentCard)
                                 setEdited('')
                                 setAdded('lesson')
                                 setExpand(true)
-                                !expand && window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                !expand && testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                             }} 
                             sx={{ fontSize: 32 }}
                         >
@@ -347,7 +347,7 @@ function ComponentCard({index, course}: ComponentCard)
                 }
             </AccordionDetails>
         </Accordion>
-        <div ref={testRef}></div>
+        {!expand && <div ref={testRef} style={{ marginTop: 'auto', height: '1px' }}></div>}
         </>
 )
 }

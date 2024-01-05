@@ -263,6 +263,7 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
     }
 
     return (
+        <>
         <Box
         >
             <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
@@ -578,7 +579,7 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
                     }}
                     onClick={() => {
                         setProgramShow('components')
-                        window.scrollTo({ top: scrollRef.current?.offsetTop, behavior: 'smooth' })
+                        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' })
                     }}
                 >
                     Components
@@ -602,7 +603,7 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
                     }}
                     onClick={() => {
                         setProgramShow('comments')
-                        window.scrollTo({ top: scrollRef.current?.offsetTop, behavior: 'smooth' })
+                        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' })
                     }}
                 >
                     Comments
@@ -618,7 +619,8 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
                     <ProgramExploreCourseComments NoAdd={true} program={program} />
                 </Suspense>
             }
-            <div ref={scrollRef}></div>
         </Box>
+        <div ref={scrollRef} style={{ marginTop: 'auto', height: '1px' }}></div>
+        </>
     )
 }

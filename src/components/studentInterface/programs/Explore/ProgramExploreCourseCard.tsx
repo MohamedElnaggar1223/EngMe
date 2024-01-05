@@ -105,11 +105,12 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
     ))
 
     return (
+        <>
         <Suspense>
             <Accordion 
                 onClick={() => {
                     setExpanded(prev => !prev)
-                    !expanded && scrollRef?.current?.scrollIntoView({ behavior: 'smooth' })
+                    !expanded && scrollRef?.current?.scrollIntoView({ behavior: 'smooth', block: !expanded ? 'center' : 'end', inline: !expanded ? 'center' : 'end' })
                 }} 
                 expanded={expanded} 
                 sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 } }}
@@ -152,9 +153,10 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
                     {displayedLessons}
                     {displayedAssessments}
                     {displayedQuizzes}
-                    <div ref={scrollRef}></div>
                 </AccordionDetails>
             </Accordion>
         </Suspense>
+        <div ref={scrollRef} style={{ marginTop: 'auto', height: '1px' }}></div>
+        </>
     )
 }

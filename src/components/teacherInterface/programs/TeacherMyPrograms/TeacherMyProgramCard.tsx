@@ -36,7 +36,7 @@ function TeacherMyProgramCard(program: ProgramProps)
         else
         {
             setExpand(prev => !prev)
-            !expand && window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+            !expand && testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
         }
     }
 
@@ -54,6 +54,7 @@ function TeacherMyProgramCard(program: ProgramProps)
     ) 
 
     return (
+        <>
         <Accordion expanded={expand} sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
                 style: { 
@@ -111,7 +112,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                                 <SvgIcon 
                                     onClick={() => {
                                         setEdit(prev => !prev)
-                                        window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                        testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                                     }}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="27" height="25" viewBox="0 0 27 25" fill="none">
@@ -303,7 +304,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                             }}
                             onClick={() => {
                                 setProgramPage('Components')
-                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                             }}
                         >
                             Components
@@ -327,7 +328,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                             }}
                             onClick={() => {
                                 setProgramPage('Exams')
-                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                             }}
                         >
                             Final Exams
@@ -351,7 +352,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                             }}
                             onClick={() => {
                                 setProgramPage('Discussions')
-                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                             }}
                         >
                             Discussions
@@ -399,9 +400,10 @@ function TeacherMyProgramCard(program: ProgramProps)
                         <></>
                     }
                 </Box>
-            <div ref={testRef}></div>
             </AccordionDetails>
         </Accordion>
+        <div ref={testRef} style={{ marginTop: 'auto', height: '1px' }}></div>
+        </>
     )
 }
 

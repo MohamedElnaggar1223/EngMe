@@ -68,10 +68,10 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 			const questionsDisplay = foundExam?.questions?.map((question, index) => (
 				question.type === 'dropdowns' ?
 				//@ts-expect-error question
-				<QuestionDropDowns selectQuestions={selectQuestions} index={index} question={question} answer={foundStudentExam?.answers[index]} />
+				<QuestionDropDowns key={index} selectQuestions={selectQuestions} index={index} question={question} answer={foundStudentExam?.answers[index]} />
 				:
 				//@ts-expect-error question
-				<Question selectQuestions={selectQuestions} index={index} question={question} answer={foundStudentExam?.answers[index]} />
+				<Question key={index} selectQuestions={selectQuestions} index={index} question={question} answer={foundStudentExam?.answers[index]} />
 			))
 			return questionsDisplay
 		}
@@ -80,8 +80,8 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 	useEffect(() => {
 		if(displayedQuestions?.length)
 		{
-			// scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
-			window.scrollTo({ top: scrollRef.current?.offsetTop, behavior: 'smooth' })
+			scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+			// window.scrollTo({ top: scrollRef.current?.offsetTop, behavior: 'smooth' })
 		}
 	}, [displayedQuestions])
 
