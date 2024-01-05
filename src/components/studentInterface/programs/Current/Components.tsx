@@ -35,7 +35,7 @@ export default function Components(program: ProgramProps)
         if(index === 0)
         {
             return (
-                <Suspense>
+                <Suspense key={index}>
                     <ComponentCard index={index} course={course as CourseProps} />
                 </Suspense>
             )
@@ -45,7 +45,7 @@ export default function Components(program: ProgramProps)
             if(studentCourses?.length === 0) 
             {
                 return(
-                    <Suspense>
+                    <Suspense key={index}>
                         <ComponentCard disabled={true} index={index} course={course as CourseProps} />
                     </Suspense>
                 )
@@ -55,7 +55,7 @@ export default function Components(program: ProgramProps)
             if(completedCourses)
             {
                 return (
-                    <Suspense>
+                    <Suspense key={index}>
                         <ComponentCard index={index} course={course as CourseProps} />
                     </Suspense>
                 )
@@ -63,7 +63,7 @@ export default function Components(program: ProgramProps)
             else
             {
                 return (
-                    <Suspense>
+                    <Suspense key={index}>
                         <ComponentCard disabled={true} index={index} course={course as CourseProps} />
                     </Suspense>
                 )

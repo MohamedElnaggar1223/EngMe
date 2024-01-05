@@ -14,7 +14,7 @@ export default function ProgramExploreCourseComponents()
 
     //@ts-expect-error course
     const displayedCourses = coursesData?.map((course, index) => (
-        <Suspense>
+        <Suspense key={index}>
             <ProgramExploreCourseCard index={index} course={course as CourseProps} />
         </Suspense>
     )) ?? []

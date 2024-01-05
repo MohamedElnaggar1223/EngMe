@@ -313,6 +313,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                 height='50px'
                 sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5, cursor: !disabled ? !completed ? 'pointer' : 'default' : 'default' }}
                 alignItems='center'
+                key={lesson.id}
                 bgcolor='#D0EBFC'
                 onClick={!disabled ? !completed ? () => {
                     mutateLesson(lesson.id)
@@ -355,6 +356,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                 sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
                 alignItems='center'
                 bgcolor='#D0EBFC'
+                key={index}
             >
 
                     <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
@@ -443,6 +445,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                 sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
                 alignItems='center'
                 bgcolor='#FEF4EB'
+                key={assessment.id}
             >
                 {/*//@ts-expect-error lesson*/}
                 <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment?.title}</Typography>
@@ -522,7 +525,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                             <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Course {index + 1}</Typography>
                         </Stack>
                         <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{lessons?.length} Lessons</Typography>
-                        <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{course?.duration}</Typography>
+                        <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{course.duration.split(" ")[0] === '00' ? '0' : course.duration.split(" ")[0]} Hours</Typography>
                     </Stack>
                 </AccordionSummary>
                 <AccordionDetails sx={{ background: '#F8F8F8', paddingY: 0, paddingX: 0 }}>

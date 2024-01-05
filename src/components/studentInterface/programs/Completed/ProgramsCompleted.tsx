@@ -16,7 +16,7 @@ export default function ProgramsCompleted()
 	})
 	
 	const displayedPrograms = completedPrograms?.map(program => (
-			<Suspense>
+			<Suspense key={program.id}>
 				<ProgramCurrentCard completed={true} program={program} />
 			</Suspense>
 	))

@@ -56,6 +56,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
             height='50px'
             sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
             alignItems='center'
+            key={lesson.id}
         >
             <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson.title}</Typography>
             <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson.description}</Typography>
@@ -63,7 +64,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
         </Stack>
     ))
 
-    const displayedQuizzes = quizzes.map(() => (
+    const displayedQuizzes = quizzes.map((_: unknown, index: number) => (
         <Stack
             direction='row'
             justifyContent='space-between'
@@ -71,6 +72,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
             height='50px'
             sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
             alignItems='center'
+            key={index}
         >
             <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
                 <SvgIcon>
@@ -94,6 +96,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
             sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
             alignItems='center'
             bgcolor='#FEF4EB'
+            key={assessment.id}
         >
             <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment.title}</Typography>
             <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment.description}</Typography>
@@ -142,7 +145,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
                             <Typography fontFamily='Inter' fontSize={16} fontWeight={700}>Course {index + 1}</Typography>
                         </Stack>
                         <Typography fontFamily='Inter' fontSize={16} fontWeight={700}>{course.lessons?.length} Lessons</Typography>
-                        <Typography fontFamily='Inter' fontSize={16} fontWeight={700}>{course.duration}</Typography>
+                        <Typography fontFamily='Inter' fontSize={16} fontWeight={700}>{course.duration.split(" ")[0] === '00' ? '0' : course.duration.split(" ")[0]} Hours</Typography>
                     </Stack>
                 </AccordionSummary>
                 <AccordionDetails sx={{ background: '#F8F8F8', paddingY: 0, paddingX: 0 }}>
