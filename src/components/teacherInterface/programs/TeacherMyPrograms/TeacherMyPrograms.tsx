@@ -12,7 +12,7 @@ export default function TeacherMyPrograms({ programs }: TeacherMyProgramsProps)
 {
     const [add, setAdd] = useState(false)
 
-    const displayedPrograms = programs.map(program => <TeacherMyProgramCard key={program.id} {...program} />)
+    const displayedPrograms = programs?.map(program => <TeacherMyProgramCard key={program.id} {...program} />)
 
     return (
         <Box

@@ -105,7 +105,9 @@ export const setLessonData = async(title: string, description: string, lesson?: 
             const secondsAddedToMinutes = Number(duration?.split(' ')[4]) / 60
             const hoursAddedToMinutes = Number(duration?.split(' ')[0]) * 60
             //@ts-expect-error duration
-            const minutesAdded = Number(duration?.split(' ')[2]) + secondsAddedToMinutes + hoursAddedToMinutes - Number(lesson?.duration?.split(' ')[2]) - (Number(lesson?.duration?.split(' ')[0]) * 60) - (Number(lesson?.duration?.split(' ')[4]) / 60)
+            const courseMinutes = Number(course?.duration?.split(' ')[4] / 60) + Number(course?.duration?.split(' ')[2]) + (Number(course?.duration?.split(' ')[0]) * 60)  
+
+            const minutesAdded = Number(duration?.split(' ')[2]) + secondsAddedToMinutes + hoursAddedToMinutes + courseMinutes
 
             const mins_num = parseFloat(minutesAdded.toFixed(2))
             const hours   = Math.floor(mins_num / 60);

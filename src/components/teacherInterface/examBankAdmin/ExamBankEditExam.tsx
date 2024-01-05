@@ -12,7 +12,7 @@ export const EditQuizContext = createContext()
 function ExamBankEditExam({ setEdited, examBank }) 
 {
     const queryClient = useQueryClient()
-    const [selectedQuestion, setSelectedQuestion] = useState(0)
+    const [selectedQuestion, setSelectedQuestion] = useState(-1)
 
     const [error, setError] = useState('')
 

@@ -1,12 +1,12 @@
-import { Suspense, lazy, useContext, useRef, useState } from "react";
+import { Suspense, lazy, useRef, useState } from "react";
 import { Accordion, AccordionSummary, SvgIcon, Typography, AccordionDetails } from "@mui/material";
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'))
 import { Stack } from "@mui/system";
 import CourseProps from "../../../../interfaces/CourseProps";
-import { useQueryClient } from "@tanstack/react-query";
-import { ProgramExploreContext } from "./ProgramsExplore";
-import LessonProps from "../../../../interfaces/LessonProps";
-import AssessmentProps from "../../../../interfaces/AssessmentProps";
+import { useQuery } from "@tanstack/react-query"
+import { getAssessmentsData } from "../../../helpers/getAssessmentsData";
+import { getLessonsData } from "../../../helpers/getLessonsData";
+import { getQuizzesData } from "../../../helpers/getQuizzesData";
 // import { AuthContext } from "../../../authentication/auth/AuthProvider";
 // import { and, collection, getDocs, query, where } from "firebase/firestore";
 // import { db } from "../../../../firebase/firebaseConfig";
@@ -18,18 +18,29 @@ interface ProgramExploreCourseCard{
 
 export default function ProgramExploreCourseCard({ course, index }: ProgramExploreCourseCard) 
 {
-    const queryClient = useQueryClient()
-    //@ts-expect-error context
-    const { pageShowed } = useContext(ProgramExploreContext)
     // const { userData } = useContext(AuthContext)
     const [expanded, setExpanded] = useState(false)
 
-    //@ts-expect-error client
-    const lessons = (queryClient.getQueryData(['lessons', pageShowed])).filter(lesson => (course?.lessons)?.includes(lesson.id)) as LessonProps[]
-    //@ts-expect-error created
-    const assessments = (queryClient.getQueryData(['assessments', pageShowed])).filter(assessment => (course?.assessments)?.includes(assessment.id)) as AssessmentProps[]
-    //@ts-expect-error created
-    const quizzes = (queryClient.getQueryData(['quizzes', pageShowed])).filter(quiz => (course?.quizzes)?.includes(quiz.id))
+    const { data: assessments } = useQuery({
+        queryKey: ['assessments', course.id, 'currentCard'],
+        queryFn: () => getAssessmentsData([course]),
+        enabled: !!course,
+        refetchOnMount: true
+    })
+    //console.log(program.id, program.course)
+    const { data: lessons } = useQuery({
+        queryKey: ['lessons', course.id, 'currentCard'],
+        queryFn: () => getLessonsData([course]),
+        enabled: !!course,
+        refetchOnMount: true
+    })
+    //console.log(lessons)
+    const { data: quizzes } = useQuery({
+        queryKey: ['quizzes', course.id, 'currentCard'],
+        queryFn: () => getQuizzesData([course]),
+        enabled: !!course,
+        refetchOnMount: true
+    })
 
     const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -48,7 +59,9 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
     //     queryFn: () => getStudentAssessment()
     // })
 
-    const displayedLessons = lessons.map(lesson => (
+    console.log(course)
+
+    const displayedLessons = lessons?.map(lesson => (
         <Stack
             direction='row'
             justifyContent='space-between'
@@ -58,13 +71,16 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
             alignItems='center'
             key={lesson.id}
         >
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson.title}</Typography>
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson.description}</Typography>
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson.duration}</Typography>
+            {/*//@ts-expect-error course*/}
+            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.title}</Typography>
+            {/*//@ts-expect-error course*/}
+            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.description}</Typography>
+            {/*//@ts-expect-error course*/}
+            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration.length ? `${lesson?.duration?.split(" ")[0]?.length > 1 ? lesson?.duration?.split(" ")[0] : `0${lesson?.duration?.split(" ")[0]}`}:${lesson?.duration?.split(" ")[2]?.length > 1 ? lesson?.duration?.split(" ")[2] : `0${lesson?.duration?.split(" ")[2]}`}:${lesson?.duration?.split(" ")[4]?.length > 1 ? lesson?.duration?.split(" ")[4] : `0${lesson?.duration?.split(" ")[4]}`}` : ''}</Typography>
         </Stack>
     ))
 
-    const displayedQuizzes = quizzes.map((_: unknown, index: number) => (
+    const displayedQuizzes = quizzes?.map((_: unknown, index: number) => (
         <Stack
             direction='row'
             justifyContent='space-between'
@@ -82,12 +98,12 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
                 </SvgIcon>
                 Quiz
             </Typography>
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>This lesson is an explanation of the previous prerequisites because why not.</Typography>
+            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>30 mins</Typography>
             <Stack></Stack>
         </Stack>
     ))
 
-    const displayedAssessments = assessments.map(assessment => (
+    const displayedAssessments = assessments?.map(assessment => (
         <Stack
             direction='row'
             justifyContent='space-between'
@@ -98,9 +114,11 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
             bgcolor='#FEF4EB'
             key={assessment.id}
         >
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment.title}</Typography>
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment.description}</Typography>
-            <Typography sx={{ color: '#FF7E00' }} fontFamily='Inter' fontSize={14} fontWeight={700}>80%</Typography>
+            {/*//@ts-expect-error course*/}
+            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment?.title}</Typography>
+            {/*//@ts-expect-error course*/}
+            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{assessment?.description}</Typography>
+            <Typography sx={{ color: '#FF7E00' }} fontFamily='Inter' fontSize={14} fontWeight={700}></Typography>
         </Stack>
     ))
 
@@ -145,14 +163,14 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
                             </SvgIcon>
                             <Typography fontFamily='Inter' fontSize={16} fontWeight={700}>Course {index + 1}</Typography>
                         </Stack>
-                        <Typography fontFamily='Inter' fontSize={16} fontWeight={700}>{course.lessons?.length} Lessons</Typography>
-                        <Typography fontFamily='Inter' fontSize={16} fontWeight={700}>{course.duration.split(" ")[0] === '00' ? '0' : course.duration.split(" ")[0]} Hours</Typography>
+                        <Typography fontFamily='Inter' fontSize={16} fontWeight={700}>{course.lessons?.length}{' '} Lesson(s)</Typography>
+                        <Typography fontFamily='Inter' fontSize={16} fontWeight={700}>{course.duration.split(" ")[0] === '00' ? '0' : Number(course.duration.split(" ")[0])} Hour(s)</Typography>
                     </Stack>
                 </AccordionSummary>
                 <AccordionDetails sx={{ background: '#F8F8F8', paddingY: 0, paddingX: 0 }}>
                     {displayedLessons}
-                    {displayedAssessments}
                     {displayedQuizzes}
+                    {displayedAssessments}
                 </AccordionDetails>
             </Accordion>
         </Suspense>

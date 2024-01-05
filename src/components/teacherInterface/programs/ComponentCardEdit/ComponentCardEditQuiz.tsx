@@ -12,7 +12,7 @@ export const EditQuizContext = createContext()
 function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded }) 
 {
     const queryClient = useQueryClient()
-    const [selectedQuestion, setSelectedQuestion] = useState(0)
+    const [selectedQuestion, setSelectedQuestion] = useState(-1)
 
     const [error, setError] = useState('')
 

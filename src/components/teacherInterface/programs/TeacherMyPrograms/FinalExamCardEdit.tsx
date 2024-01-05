@@ -13,7 +13,7 @@ export const EditFinalExamContext = createContext()
 function FinalExamCardEdit({ version, program, setEdited, finalExam }) 
 {
     const queryClient = useQueryClient()
-    const [selectedQuestion, setSelectedQuestion] = useState(0)
+    const [selectedQuestion, setSelectedQuestion] = useState(-1)
 
     const [error, setError] = useState('')
 
