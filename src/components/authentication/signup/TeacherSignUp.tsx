@@ -29,7 +29,6 @@ export default function StudentSignUp()
     const[lastname, setLastname] = useState('')
     const[email, setEmail] = useState('')
     const[why, setWhy] = useState('')
-    const[city, setCity] = useState('')
     const[occupation, setOccupation] = useState('')
     const[otherOccupation, setOtherOccupation] = useState('')
     // const[password, setPassword] = useState('')
@@ -41,8 +40,6 @@ export default function StudentSignUp()
     const [error, setError] = useState('')
     const [applied, setApplied] = useState('')
     const [occupationOpened, setOccupationOpened] = useState(false)
-    const [cityOpened, setCityOpened] = useState(false)
-
     // const signUp = async (e: React.FormEvent<HTMLFormElement>) => {
     //     e.preventDefault()
     //     if(canSave)
@@ -390,40 +387,6 @@ export default function StudentSignUp()
                         />
                     </FormControl>
                 }
-                <FormControl>
-                    <Box sx={{ cursor: 'pointer' }} onClick={() => setCityOpened(prev => !prev)}>
-                        <Select
-                            sx={{
-                                width: '100% !important',
-                                flex: 1,
-                                boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0.20)',
-                                borderRadius: '4px !important',
-                                outline: 'none !important',
-                                boxSizing: 'border-box !important',
-                                background: 'transparent',
-                                '&:hover': {
-                                    boxShadow: '0px 0px 0px 1px rgba(0, 0, 0, 0.20)',
-                                    background: 'transparent',
-                                }, 
-                                textAlign: 'left',
-                                pl: '80px',
-                                fontSize: 18,
-                                zIndex: 5
-                            }}
-                            // value={day}
-                            IconComponent={() => <ExpandMore sx={{ cursor: 'pointer', borderLeft: '1.5px solid rgba(0, 0, 0, 0.20)', color: '#000', paddingLeft: 1, height: '100%', zIndex: 1, position: 'absolute', left: '90%' }} />}
-                            inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
-                            // variant='standard'
-                            disableUnderline
-                            defaultValue={'City'}
-                            open={cityOpened}
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                        >
-                            <MenuItem value='City'>City</MenuItem>
-                        </Select>
-                    </Box>
-                </FormControl>
                 {/* <FormControl sx={{ flex: 1 }}>
                     <TextField 
                         fullWidth

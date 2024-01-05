@@ -395,13 +395,12 @@ export default function CurrentCourseCard(program: ProgramProps)
                                                     alignItems='center'
                                                     gap={0.5}
                                                 >
-                                                    <SvgIcon sx={{ fontSize: 12 }}>
+                                                    {/* <SvgIcon sx={{ fontSize: 12 }}>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
                                                             <path d="M5.98199 1.22337C6.11981 0.806014 6.71018 0.806015 6.84799 1.22337L7.9764 4.64051C8.03809 4.82733 8.21265 4.95352 8.4094 4.95352H12.0451C12.4886 4.95352 12.6711 5.52254 12.3103 5.78048L9.38171 7.87408C9.2193 7.99018 9.1513 8.19844 9.2139 8.38802L10.3355 11.7846C10.4738 12.2034 9.99612 12.555 9.63731 12.2985L6.68018 10.1845C6.52157 10.0711 6.30841 10.0711 6.1498 10.1845L3.19268 12.2985C2.83387 12.555 2.35618 12.2034 2.49448 11.7846L3.61609 8.38802C3.67869 8.19844 3.61069 7.99018 3.44828 7.87408L0.519688 5.78048C0.158882 5.52254 0.341356 4.95352 0.784878 4.95352H4.42058C4.61733 4.95352 4.79189 4.82733 4.85359 4.64051L5.98199 1.22337Z" fill="#FF9F06"/>
                                                         </svg>
-                                                    </SvgIcon>
-                                                    {/*//@ts-expect-error reduction */}
-                                                    <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>{teacherData?.averageRating}</Typography>
+                                                    </SvgIcon> */}
+                                                    {/* <Typography fontSize={11} fontWeight={700} fontFamily='Poppins'>{teacherData?.averageRating}</Typography> */}
                                                 </Stack>
                                             </Stack>
                                         </Stack>
