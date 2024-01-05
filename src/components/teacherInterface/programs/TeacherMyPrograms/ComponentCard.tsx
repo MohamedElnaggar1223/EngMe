@@ -280,7 +280,7 @@ function ComponentCard({index, course}: ComponentCard)
 
     return (
         <>
-        <Accordion onClick={(e) => handleExpand(e)} expanded={expand} sx={{ width: '100%', flex: 1, '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
+        <Accordion expanded={expand} sx={{ width: '100%', flex: 1, '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
             <AccordionSummary
                 expandIcon={<ExpandMore sx={{ paddingRight: 2, paddingLeft: 6, color: '#fff' }} />}
                 sx={{
@@ -289,6 +289,7 @@ function ComponentCard({index, course}: ComponentCard)
                     boxShadow: 'none',
                     background: '#226E9F',
                 }}
+                onClick={(e) => handleExpand(e)}
             >
                 <Stack
                     justifyContent='space-between'
