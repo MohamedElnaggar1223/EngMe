@@ -1,6 +1,7 @@
 import { doc, collection, addDoc, updateDoc, arrayUnion, arrayRemove, deleteDoc } from "firebase/firestore"
 import { getStorage, ref, uploadBytes } from "firebase/storage"
 import { db } from "../../firebase/firebaseConfig"
+import { setNotification } from "./setNotification"
 
 export const setKnowledgeBankContent = async(majorId: string, title: string, file: unknown, kbContentId?: string) => {
     if(kbContentId)
@@ -33,6 +34,7 @@ export const setKnowledgeBankContent = async(majorId: string, title: string, fil
     
         const newknowledgeBankContent = await addDoc(knowledgeBankContentRef, knowledgeBankContentCreated)
     
+        await setNotification(`${title} has been added to the Knowledge Bank!`, ['all'])
         await updateDoc(knowledgeBankRef, { content: arrayUnion(newknowledgeBankContent.id) })
     }
 }

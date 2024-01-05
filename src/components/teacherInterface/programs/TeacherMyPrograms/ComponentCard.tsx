@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails } from "@mui/material";
 // import { PageContext } from "../../../Layout";
 import CourseProps from "../../../../interfaces/CourseProps";
@@ -25,9 +25,9 @@ function ComponentCard({index, course}: ComponentCard)
     // const { userData } = useContext(AuthContext)
     const [edited, setEdited] = useState('')
     const [added, setAdded] = useState('')
+    const [expand, setExpand] = useState(false)
 
-    console.log(edited)
-    console.log(added)
+    const testRef = useRef<HTMLDivElement>(null)
 
     const { data: assessments } = useQuery({
         queryKey: ['assessments', course.programId, course.id],
@@ -49,6 +49,19 @@ function ComponentCard({index, course}: ComponentCard)
         enabled: !!course,
         refetchOnMount: true
     })
+
+    function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)
+    {
+        if(e.target instanceof HTMLInputElement ||  e.target instanceof HTMLButtonElement || e.target instanceof HTMLParagraphElement)
+        {
+            return
+        }
+        else
+        {
+            setExpand(prev => !prev)
+            !expand && window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+        }
+    }
 
     const editedComponent = useMemo(() => (
         lessons?.find(lesson => lesson.id === edited) ?
@@ -73,7 +86,8 @@ function ComponentCard({index, course}: ComponentCard)
             >
                 <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
                     <SvgIcon 
-                        onClick={() => {
+                        onClick={(e) => {
+                            e.stopPropagation()
                             setAdded('')
                             setEdited(lesson.id)
                         }} 
@@ -97,7 +111,7 @@ function ComponentCard({index, course}: ComponentCard)
                     width='150px'
                 >
                     {/*//@ts-expect-error lesson*/}
-                    <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration?.split(" ")[0]}:{lesson?.duration?.split(" ")[2]}:00</Typography>
+                    <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration.length ? `${lesson?.duration?.split(" ")[0]?.length > 1 ? lesson?.duration?.split(" ")[0] : `0${lesson?.duration?.split(" ")[0]}`}:${lesson?.duration?.split(" ")[2]?.length > 1 ? lesson?.duration?.split(" ")[2] : `0${lesson?.duration?.split(" ")[2]}`}:${lesson?.duration?.split(" ")[4]?.length > 1 ? lesson?.duration?.split(" ")[4] : `0${lesson?.duration?.split(" ")[4]}`}` : ''}</Typography>
                     <SvgIcon  sx={{ fontSize: 18, marginLeft: 'auto' }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11" fill="none">
                             <line y1="0.5" x2="11" y2="0.5" stroke="#226E9F"/>
@@ -147,7 +161,13 @@ function ComponentCard({index, course}: ComponentCard)
         >
 
                 <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
-                <SvgIcon onClick={() => setEdited(quiz.id)} sx={{ cursor: 'pointer' }}>
+                <SvgIcon 
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        setEdited(quiz.id)
+                    }} 
+                    sx={{ cursor: 'pointer' }}
+                >
                     <svg xmlns="http://www.w3.org/2000/svg" width="27" height="25" viewBox="0 0 27 25" fill="none">
                         <rect width="27" height="25" rx="5" fill="#D0EBFC"/>
                         <path d="M22.1835 11.238C21.7321 11.238 21.366 11.604 21.366 12.0554V19.5213C21.366 20.5377 20.5395 21.3651 19.5223 21.3651H6.47956C5.46231 21.3651 4.63579 20.5377 4.63579 19.5213V6.47866C4.63579 5.46231 5.46231 4.63488 6.47956 4.63488H14.0354C14.4868 4.63488 14.8529 4.26885 14.8529 3.81744C14.8529 3.36603 14.4868 3 14.0354 3H6.47956C4.56131 3 3 4.5604 3 6.47866V19.5213C3 21.4396 4.56131 23 6.47956 23H19.5223C21.4405 23 23.0018 21.4396 23.0018 19.5213V12.0554C23.0018 11.604 22.6349 11.238 22.1835 11.238Z" fill="#226E9F"/>
@@ -190,7 +210,13 @@ function ComponentCard({index, course}: ComponentCard)
             border={edited === assessment.id ? '2px solid #FF9F06' : ''}
         >
             <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
-                <SvgIcon onClick={() => setEdited(assessment.id)} sx={{ cursor: 'pointer' }}>
+                <SvgIcon 
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        setEdited(assessment.id)
+                    }} 
+                    sx={{ cursor: 'pointer' }}
+                >
                     <svg xmlns="http://www.w3.org/2000/svg" width="27" height="25" viewBox="0 0 27 25" fill="none">
                         <rect width="27" height="25" rx="5" fill="white"/>
                         <path d="M22.1835 11.238C21.7321 11.238 21.366 11.604 21.366 12.0554V19.5213C21.366 20.5377 20.5395 21.3651 19.5223 21.3651H6.47956C5.46231 21.3651 4.63579 20.5377 4.63579 19.5213V6.47866C4.63579 5.46231 5.46231 4.63488 6.47956 4.63488H14.0354C14.4868 4.63488 14.8529 4.26885 14.8529 3.81744C14.8529 3.36603 14.4868 3 14.0354 3H6.47956C4.56131 3 3 4.5604 3 6.47866V19.5213C3 21.4396 4.56131 23 6.47956 23H19.5223C21.4405 23 23.0018 21.4396 23.0018 19.5213V12.0554C23.0018 11.604 22.6349 11.238 22.1835 11.238Z" fill="#FF9F06"/>
@@ -253,8 +279,8 @@ function ComponentCard({index, course}: ComponentCard)
     </Stack>
 
     return (
-        
-        <Accordion sx={{ width: '100%', flex: 1, '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
+        <>
+        <Accordion onClick={(e) => handleExpand(e)} expanded={expand} sx={{ width: '100%', flex: 1, '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
             <AccordionSummary
                 expandIcon={<ExpandMore sx={{ paddingRight: 2, paddingLeft: 6, color: '#fff' }} />}
                 sx={{
@@ -284,6 +310,8 @@ function ComponentCard({index, course}: ComponentCard)
                                 e.stopPropagation()
                                 setEdited('')
                                 setAdded('lesson')
+                                setExpand(true)
+                                !expand && window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
                             }} 
                             sx={{ fontSize: 32 }}
                         >
@@ -295,7 +323,7 @@ function ComponentCard({index, course}: ComponentCard)
                         <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Course {index + 1}</Typography>
                     </Stack>
                     <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{lessons?.length} Lessons</Typography>
-                    <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{course.duration}</Typography>
+                    <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{course.duration.split(" ")[0] === '00' ? '0' : course.duration.split(" ")[0]} Hours</Typography>
                 </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{ background: '#F8F8F8', paddingY: 0, paddingX: 0 }}>
@@ -318,6 +346,8 @@ function ComponentCard({index, course}: ComponentCard)
                 }
             </AccordionDetails>
         </Accordion>
+        <div ref={testRef}></div>
+        </>
 )
 }
 

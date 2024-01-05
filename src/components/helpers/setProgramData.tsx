@@ -2,6 +2,7 @@ import { doc, updateDoc, collection, addDoc, query, where, getDocs, arrayUnion }
 import { db } from "../../firebase/firebaseConfig"
 import ProgramProps from "../../interfaces/ProgramProps"
 import { setCourseData } from "./setCourseData"
+import { setNotification } from "./setNotification"
 
 export const setProgramData = async(teacherId: string, name: string, description: string, category: string, level: string, duration: string, expiry: string, price: string, paused: boolean, prereqName: string, program?: ProgramProps, image?: string) => {
     if(program)
@@ -34,7 +35,16 @@ export const setProgramData = async(teacherId: string, name: string, description
             }
         }
 
+        const studentProgramsRef = collection(db, 'studentProgram')
+
+        const studentProgramsQuery = query(studentProgramsRef, where('programId', '==', program.id))
+
+        const studentProgramsData = await getDocs(studentProgramsQuery)
+
+        const studentPrograms = studentProgramsData.docs.map(doc => doc.data().studentId)
+
         await updateDoc(programDoc, updatedProgram)
+        await setNotification(`${program.name}'s details has been updated!`, [...studentPrograms, program.teacherId])
     }
     else
     {

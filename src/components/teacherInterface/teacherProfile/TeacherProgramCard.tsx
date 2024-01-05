@@ -34,7 +34,7 @@ function TeacherProgramCard(program: ProgramProps)
                             </svg>
                         </SvgIcon>
                         <Typography sx={{ color: '#004643' }}fontSize={14} fontWeight={700} fontFamily='Poppins'>{program.averageRating}</Typography>
-                        <Typography fontSize={14} fontFamily='Inter'>{'(1290)'}</Typography>
+                        <Typography fontSize={14} fontFamily='Inter'>({program.totalFeedbacks})</Typography>
                     </Stack>
                 </Stack>
                 <Stack

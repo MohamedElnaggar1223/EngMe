@@ -1,7 +1,12 @@
-import { doc, updateDoc, collection, Timestamp, addDoc, arrayUnion } from "firebase/firestore"
+import { doc, updateDoc, collection, Timestamp, addDoc, arrayUnion, getDoc, getDocs, query, where } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
+import { setNotification } from "./setNotification"
 
 export const setQuizData = async(questions: unknown, quiz?: unknown, course?: unknown, order?: number) => {
+    //@ts-expect-error course
+    const programDoc = doc(db, 'programs', course?.programId)
+
+    const programData = await getDoc(programDoc)
     if(quiz)
     {
         //@ts-expect-error course
@@ -11,7 +16,16 @@ export const setQuizData = async(questions: unknown, quiz?: unknown, course?: un
             questions
         }
 
+        const studentProgramsRef = collection(db, 'studentProgram')
+
+        const studentProgramsQuery = query(studentProgramsRef, where('programId', '==', programData.id))
+
+        const studentProgramsData = await getDocs(studentProgramsQuery)
+
+        const studentPrograms = studentProgramsData.docs.map(doc => doc.data().studentId)
+        
         await updateDoc(quizDoc, updatedQuiz)
+        await setNotification(`${programData.data()?.name}'s Quizzes have been updated!`, [...studentPrograms, programData.data()?.teacherId])
     }
     else
     {
@@ -35,9 +49,30 @@ export const setQuizData = async(questions: unknown, quiz?: unknown, course?: un
             const courseDoc = doc(db, 'courses', course.id)
 
             //@ts-expect-error duration
-            const durationAdded = ((30 / 60) + Number(course?.duration?.split(' ')[0])).toFixed(0)
+            const courseMinutes = (Number(course?.duration?.split(' ')[0]) * 60) + (Number(course?.duration?.split(' ')[4]) / 60) + Number(course?.duration?.split(' ')[2]) + 30
+ 
+            const mins_num = parseFloat(courseMinutes.toFixed(2))
+            const hours   = Math.floor(mins_num / 60);
+            const minutes = Math.floor((mins_num - ((hours * 3600)) / 60));
+            const seconds = Math.floor((mins_num * 60) - (hours * 3600) - (minutes * 60));
 
-            await updateDoc(courseDoc, { quizzes: arrayUnion(addedQuiz.id), duration: `${durationAdded} Hours` })
+            const Hours   = String(hours).length   > 1 ? hours.toString()   : '0' + hours
+            const Minutes = String(minutes).length > 1 ? minutes.toString() : '0' + minutes
+            const Seconds = String(seconds).length > 1 ? seconds.toString() : '0' + seconds
+
+            const durationAdded = `${Hours} Hours ${Minutes} Minutes ${Seconds} Seconds`
+
+            const studentProgramsRef = collection(db, 'studentProgram')
+
+            const studentProgramsQuery = query(studentProgramsRef, where('programId', '==', programData.id))
+
+            const studentProgramsData = await getDocs(studentProgramsQuery)
+
+            const studentPrograms = studentProgramsData.docs.map(doc => doc.data().studentId)
+            
+            await setNotification(`New Quiz has been uploaded for ${programData.data()?.name}!`, [...studentPrograms, programData.data()?.teacherId])
+
+            await updateDoc(courseDoc, { quizzes: arrayUnion(addedQuiz.id), duration: `${durationAdded}` })
         }
     }
 }

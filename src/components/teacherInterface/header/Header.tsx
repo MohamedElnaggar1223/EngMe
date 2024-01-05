@@ -51,14 +51,14 @@ function Header()
             return () => queryClient.setQueryData(['notifications', userData?.id], previousData)
         },
         onSettled: () => setNotifictaionSent(''),
-        mutationFn: () => setNotification(notification, 'all')
+        mutationFn: () => setNotification(notification, ['all'])
     })
     
     useEffect(() => {
         //@ts-expect-error event
         const handleClickOutside = (event) => {
-            console.log(notRef.current)
-            console.log(event.target)
+            // console.log(notRef.current)
+            // console.log(event.target)
             //@ts-expect-error event
             if (notRef.current && !notRef.current.contains(event.target)) {
                 setOpenNot(false);  // Update your state as needed
@@ -75,8 +75,8 @@ function Header()
     useEffect(() => {
         //@ts-expect-error event
         const handleClickOutside = (event) => {
-            console.log(settingsRef.current)
-            console.log(event.target)
+            // console.log(settingsRef.current)
+            // console.log(event.target)
             //@ts-expect-error event
             if (settingsRef.current && !settingsRef.current.contains(event.target)) {
                 setOpenSettings(false);  // Update your state as needed
@@ -91,7 +91,7 @@ function Header()
     }, []);
 
     //@ts-expect-error tonotif
-    const filteredNotifications = isAdmin ? notifications : notifications?.filter(notif => notif?.to === 'all' || notif?.to === userData?.id)
+    const filteredNotifications = isAdmin ? notifications : notifications?.filter(notif => notif?.to.includes('all') || notif?.to.includes(userData?.id))
 
     const displayedNotifications = filteredNotifications?.map(notif => {
         //@ts-expect-error notif

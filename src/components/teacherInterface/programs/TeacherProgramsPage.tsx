@@ -15,7 +15,7 @@ export default function Programs()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
 
-    const isAdmin = userData.email === import.meta.env.VITE_ADMIN_EMAIL
+    const isAdmin = userData?.email === import.meta.env.VITE_ADMIN_EMAIL
     
     const [tab, setTab] = useState('Explore')
 

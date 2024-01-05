@@ -1,5 +1,6 @@
 import { doc, collection, addDoc, updateDoc, arrayUnion, arrayRemove, deleteDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
+import { setNotification } from "./setNotification"
 
 export const setExamBankContent = async(majorId: string, title: string, ebContentId?: string) => {
     if(ebContentId)
@@ -24,6 +25,7 @@ export const setExamBankContent = async(majorId: string, title: string, ebConten
     
         const newexamBankContent = await addDoc(examBankContentRef, examBankContentCreated)
     
+        await setNotification(`${title} has been added to the Exam Bank!`, ['all'])
         await updateDoc(examBankRef, { content: arrayUnion(newexamBankContent.id) })
     }
 }

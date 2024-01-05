@@ -39,7 +39,7 @@ function Header()
     })
 
     //@ts-expect-error tonotif
-    const filteredNotifications = notifications?.filter(notif => notif?.to === 'all' || notif?.to === userData?.id)
+    const filteredNotifications = notifications?.filter(notif => notif?.to.includes('all') || notif?.to.includes(userData?.id))
 
     const displayedNotifications = filteredNotifications?.map(notif => {
         //@ts-expect-error notif
@@ -63,8 +63,8 @@ function Header()
                     mr='auto'
                 >
                     {
-                        //@ts-expect-error notifto
-                        notif?.to === 'all' && 
+                        ////@ts-expect-error notifto
+                        // notif?.to === 'all' && 
                         <Stack
                             alignItems='center'
                             width='fit-content'
@@ -102,7 +102,7 @@ function Header()
                         {notif?.notification}
                     </Typography>
                 </Stack>
-                <Typography fontSize={12} sx={{ opacity: 0.6, ml: 'auto' }}>{hoursAgo > 1 ? `${hoursAgo.toFixed(0)} Hours Ago` : `${minutesAgo.toFixed(0)} Minutes Ago`}</Typography>
+                <Typography fontSize={12} sx={{ opacity: 0.6, ml: 'auto' }}>{hoursAgo > 1 ? `${hoursAgo.toFixed(0)} Hours Ago` : `${minutesAgo.toFixed(0)} Minute(s) Ago`}</Typography>
             </Stack>
         )
     })
@@ -123,8 +123,8 @@ function Header()
     useEffect(() => {
         //@ts-expect-error event
         const handleClickOutside = (event) => {
-            console.log(notRef.current)
-            console.log(event.target)
+            // console.log(notRef.current)
+            // console.log(event.target)
             //@ts-expect-error event
             if (notRef.current && !notRef.current.contains(event.target)) {
                 setOpenNot(false);  // Update your state as needed
@@ -141,8 +141,8 @@ function Header()
     useEffect(() => {
         //@ts-expect-error event
         const handleClickOutside = (event) => {
-            console.log(settingsRef.current)
-            console.log(event.target)
+            // console.log(settingsRef.current)
+            // console.log(event.target)
             //@ts-expect-error event
             if (settingsRef.current && !settingsRef.current.contains(event.target)) {
                 setOpenSettings(false);  // Update your state as needed

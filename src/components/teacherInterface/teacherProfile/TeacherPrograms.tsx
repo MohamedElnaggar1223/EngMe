@@ -1,6 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Typography, Stack } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { Suspense, lazy, useContext, useState } from 'react'
+import { Suspense, lazy, useContext, useRef, useState } from 'react'
 import { getTeacherPrograms } from '../../helpers/getTeacherPrograms'
 import { AuthContext } from '../../authentication/auth/AuthProvider'
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'))
@@ -25,6 +25,8 @@ export default function TeacherPrograms()
         </Suspense>
     )
 
+    const scrollRef = useRef<HTMLDivElement>(null)
+
     return (
         <Box
             mx={14}
@@ -42,7 +44,10 @@ export default function TeacherPrograms()
                         borderTop: 0
                     }}
                     expanded={open}
-                    onClick={() => setOpen(prev => !prev)}
+                    onClick={() => {
+                        setOpen(prev => !prev)
+                        !open && scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+                    }}
                 >
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon sx={{ fontSize: '32px' }} />}
@@ -61,7 +66,7 @@ export default function TeacherPrograms()
                             All Programs
                         </Typography>
                     </AccordionSummary>
-                    <AccordionDetails>
+                    <AccordionDetails ref={scrollRef}>
                         <Stack
                             direction='row'
                             gap={3}

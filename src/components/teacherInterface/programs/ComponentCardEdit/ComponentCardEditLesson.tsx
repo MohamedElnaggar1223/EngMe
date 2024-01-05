@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel, Alert } from "@mui/material"
+import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel, Alert, CircularProgress, Dialog } from "@mui/material"
 import { setLessonData } from "../../../helpers/setLessonData"
 
 //@ts-expect-error anytype
@@ -10,17 +10,25 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
 
     const [title, setTitle] = useState(lesson?.title ?? '')
     const [description, setDescription] = useState(lesson?.description ?? '')
-    const [file, setFile] = useState(lesson ? {name: lesson?.content?.content} : {});
+    const [file, setFile] = useState(lesson ? {name: lesson?.content?.content} : {})
+    const [duration, setDuration] = useState(lesson?.duration ?? '')
+    const [loading, setLoading] = useState(false)
     const [fileType, setFileType] = useState((lesson && lesson?.content && lesson?.content?.type) && lesson?.content?.type === 'Videos/' ? 'video/mp4' : lesson?.content?.type === 'Pdfs/' ? 'pdf' : '');
     const [error, setError] = useState('')
+    const [success, setSuccess] = useState(true)
 
     useEffect(() => {
-        if(lesson)
+        if(lesson && lesson.title !== title)
         {
             setTitle(lesson.title)
             setDescription(lesson.description)
             setFile({name: lesson.content?.content})
+            setDuration(lesson.duration)
             setFileType((lesson && lesson?.content && lesson?.content?.type) && lesson?.content?.type === 'Videos/' ? 'video/mp4' : lesson?.content?.type === 'Pdfs/' ? 'pdf' : '')
+        }
+
+        return () => {
+            close()
         }
     }, [lesson])
 
@@ -33,14 +41,15 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
             queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
                 //@ts-expect-error lesson
                 const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson?.id)
-                const newArray = [...filteredArray, lesson ? {...lesson, title, description} : { title, description, duration: '1 Hour 55 Minutes' }]
+                const newArray = [...filteredArray, lesson ? {...lesson, title, description} : { title, description, duration }]
 
                 return newArray
             })
 
             return () => queryClient.setQueryData(['lessons', course.programId, course.id], previousData)
         },
-        mutationFn: () => setLessonData(title, description, lesson, course, file, fileType, (order + 1))
+        onSettled: () => setSuccess(true),
+        mutationFn: () => setLessonData(title, description, lesson, course, file, fileType, duration, (order + 1))
     })
 
     const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,13 +61,42 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                 // Check if the file type is either PDF or MP4
                 const allowedTypes = ['application/pdf', 'video/mp4'];
                 if (allowedTypes.includes(uploadedFile.type)) {
+                    setLoading(true)
                     setFile(uploadedFile);
                     const fileType = uploadedFile.type;
                     setFileType(fileType);
+                    if(fileType === 'video/mp4')
+                    {
+                        const video = document.createElement('video')
+
+                        const objectURL = window.URL.createObjectURL(uploadedFile as File)
+
+                        video.addEventListener('loadedmetadata', () => {
+                            setDuration(`${Math.round(video.duration / 3600)} Hours ${Math.round(video.duration / 60)} Minutes ${Math.round(video.duration % 60)} Seconds`);
+                            setLoading(false)
+                        })
+
+                        video.src = objectURL
+                    }
+                    else
+                    {
+                        const xhr = new XMLHttpRequest();
+
+                        xhr.open('GET', URL.createObjectURL(uploadedFile as File), true);
+                        xhr.responseType = 'arraybuffer'
+
+                        xhr.onload = () => {
+                            setLoading(false);
+                        }
+
+                        xhr.send();
+                    }
                 }
             }
         }
     }
+
+    console.log(success)
 
     return (
         <Box
@@ -67,6 +105,12 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
             bgcolor='#fff'
             py={2}
         >
+            {
+                !success &&
+                <Dialog open={!success} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                    <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+                </Dialog>
+            }
             <Stack
                 direction='row'
                 justifyContent='space-between'
@@ -159,7 +203,8 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                             gap: 1,
                             width: '160px',
                         }}
-                        onClick={() => {
+                        onClick={(e) => {
+                            e.stopPropagation()
                             setEdited('')
                             setAdded('quiz')
                         }}
@@ -263,8 +308,10 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                             alignSelf: 'flex-start',
                             '&:hover': {
                                 bgcolor: '#fff'
-                            }
+                            },
+                            overflow: 'hidden'
                         }}
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <input
                             hidden
@@ -272,6 +319,12 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                             onChange={(e) => onFileChange(e)}
                             type="file"
                         />
+                        {
+                            loading &&
+                            <Box width='100%' height='100%' display='flex' alignItems='center' justifyContent='center' sx={{ position: 'absolute', opacity: '0.35', bgcolor: '#000' }}>
+                                <CircularProgress sx={{ position: 'absolute' }} />
+                            </Box>
+                        }
                         {
                             fileType === '' ?
                             <SvgIcon sx={{ fontSize: 42 }}>
@@ -346,6 +399,7 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                         onClick={() => {
                             if(canSave)
                             {
+                                setSuccess(false)
                                 mutate()
                                 setEdited('')
                                 setAdded('')

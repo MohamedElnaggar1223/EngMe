@@ -1,5 +1,5 @@
 import { Box, Stack, Typography, SvgIcon, Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
-import { memo, useState, lazy, Suspense } from 'react';
+import { memo, useState, lazy, Suspense, useRef } from 'react';
 // eslint-disable-next-line react-refresh/only-export-components
 // const Components = lazy(() => import('./Components'))
 // // eslint-disable-next-line react-refresh/only-export-components
@@ -25,6 +25,7 @@ function TeacherMyProgramCard(program: ProgramProps)
     const [programPage, setProgramPage] = useState('Components')
     const [expand, setExpand] = useState(false)
     const [edit, setEdit] = useState(false)
+    const testRef = useRef<HTMLDivElement>(null)
 
     function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)
     {
@@ -35,6 +36,7 @@ function TeacherMyProgramCard(program: ProgramProps)
         else
         {
             setExpand(prev => !prev)
+            !expand && window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
         }
     }
 
@@ -106,7 +108,12 @@ function TeacherMyProgramCard(program: ProgramProps)
                                 >
                                     {program?.name}
                                 </Typography>
-                                <SvgIcon onClick={() => setEdit(prev => !prev)}>
+                                <SvgIcon 
+                                    onClick={() => {
+                                        setEdit(prev => !prev)
+                                        window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                                    }}
+                                >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="27" height="25" viewBox="0 0 27 25" fill="none">
                                         <rect width="27" height="25" rx="5" fill="#D0EBFC"/>
                                         <path d="M22.1835 11.238C21.7321 11.238 21.366 11.604 21.366 12.0554V19.5213C21.366 20.5377 20.5395 21.3651 19.5223 21.3651H6.47956C5.46231 21.3651 4.63579 20.5377 4.63579 19.5213V6.47866C4.63579 5.46231 5.46231 4.63488 6.47956 4.63488H14.0354C14.4868 4.63488 14.8529 4.26885 14.8529 3.81744C14.8529 3.36603 14.4868 3 14.0354 3H6.47956C4.56131 3 3 4.5604 3 6.47866V19.5213C3 21.4396 4.56131 23 6.47956 23H19.5223C21.4405 23 23.0018 21.4396 23.0018 19.5213V12.0554C23.0018 11.604 22.6349 11.238 22.1835 11.238Z" fill="#226E9F"/>
@@ -294,7 +301,10 @@ function TeacherMyProgramCard(program: ProgramProps)
                                     opacity: 1
                                 }
                             }}
-                            onClick={() => setProgramPage('Components')}
+                            onClick={() => {
+                                setProgramPage('Components')
+                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                            }}
                         >
                             Components
                         </Button>
@@ -315,7 +325,10 @@ function TeacherMyProgramCard(program: ProgramProps)
                                     opacity: 1
                                 }
                             }}
-                            onClick={() => setProgramPage('Exams')}
+                            onClick={() => {
+                                setProgramPage('Exams')
+                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                            }}
                         >
                             Final Exams
                         </Button>
@@ -336,7 +349,10 @@ function TeacherMyProgramCard(program: ProgramProps)
                                     opacity: 1
                                 }
                             }}
-                            onClick={() => setProgramPage('Discussions')}
+                            onClick={() => {
+                                setProgramPage('Discussions')
+                                window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
+                            }}
                         >
                             Discussions
                         </Button>
@@ -383,6 +399,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                         <></>
                     }
                 </Box>
+            <div ref={testRef}></div>
             </AccordionDetails>
         </Accordion>
     )

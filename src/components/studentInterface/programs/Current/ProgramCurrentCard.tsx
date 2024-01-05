@@ -76,8 +76,6 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
         else
         {
             setExpand(prev => !prev)
-            // !expand && scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
-            console.log(scrollCompRef.current?.scrollHeight)
             !expand && window.scrollTo({ top: testRef.current?.offsetTop, behavior: 'smooth' })
         }
     }
