@@ -12,6 +12,7 @@ import { db } from "../../../../firebase/firebaseConfig";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { getExamSession } from "../../../helpers/getExamSession";
 import { setExamSessionTime } from "../../../helpers/setExamSessionTime";
+import ExamQuestionSelects from "./ExamQuestionSelects";
 
 export default function Assessment() 
 {

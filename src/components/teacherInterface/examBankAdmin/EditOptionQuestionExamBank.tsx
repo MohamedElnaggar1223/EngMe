@@ -114,7 +114,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                             onChange={(e) => {
                                 queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     const oldQuestion = newData[index]
                                     newData[index] = {...oldQuestion, question: e.target.value}
                                     return newData
@@ -157,9 +157,9 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                             onChange={() => {
                                 queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     const oldQuestion = newData[index]
-                                    newData[index] = { question: oldQuestion.question, firstCorrect: '0', secondCorrect: '0', thirdCorrect: '0', fourthCorrect: '0', firstLabel: '', secondLabel: '', thirdLabel: '', fourthLabel: '', firstOptions: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3]], secondOptions: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3]], thirdOptions: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3]], fourthOptions: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3]], type: 'dropdowns' }
+                                    newData[index] = { question: oldQuestion.question, firstCorrect: oldQuestion.options[0], secondCorrect: oldQuestion.options[1], thirdCorrect: oldQuestion.options[2], fourthCorrect: oldQuestion.options[3], firstLabel: '', secondLabel: '', thirdLabel: '', fourthLabel: '', type: 'dropdowns' }
                                     return newData
                                 })
                             }}
@@ -207,7 +207,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                         reader(e.target.files![0]).then((result: string) =>
                         queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                             //@ts-expect-error oldData
-                            const newData = [...oldData]
+                            const newData = oldData ? [...oldData] : []
                             const oldQuestion = newData[index]
                             newData[index] = { ...oldQuestion, image: result}
                             return newData
@@ -265,7 +265,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                             onChange={(e) => {
                                 queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     //@ts-expect-error oldata
                                     newData[index] = {...newData[index], options: newData[index].options.map((option, index) => index === 0 ? e.target.value : option)}
                                     return newData
@@ -276,7 +276,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                     <IOSSwitch onChange={() => {
                         queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                             //@ts-expect-error oldata
-                            const newData = [...oldData]
+                            const newData = oldData ? [...oldData] : []
                             newData[index] = {...newData[index], correctOption: '0'}
                             return newData
                         })
@@ -314,7 +314,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                             onChange={(e) => {
                                 queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     //@ts-expect-error oldata
                                     newData[index] = {...newData[index], options: newData[index].options.map((option, index) => index === 1 ? e.target.value : option)}
                                     return newData
@@ -325,7 +325,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                     <IOSSwitch onChange={() => {
                         queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                             //@ts-expect-error oldata
-                            const newData = [...oldData]
+                            const newData = oldData ? [...oldData] : []
                             newData[index] = {...newData[index], correctOption: '1'}
                             return newData
                         })
@@ -377,7 +377,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                                 onChange={(e) => {
                                     queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                         //@ts-expect-error oldata
-                                        const newData = [...oldData]
+                                        const newData = oldData ? [...oldData] : []
                                         // newData[index].options[2] = e.target.value
                                         //@ts-expect-error oldata
                                         newData[index] = {...newData[index], options: newData[index].options.map((option, index) => index === 2 ? e.target.value : option)}
@@ -390,7 +390,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                         <IOSSwitch onChange={() => {
                             queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                 //@ts-expect-error oldata
-                                const newData = [...oldData]
+                                const newData = oldData ? [...oldData] : []
                                 // newData[index].correctOption = '2'
                                 newData[index] = {...newData[index], correctOption: '2'}
                                 return newData
@@ -435,7 +435,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                                 onChange={(e) => {
                                     queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                         //@ts-expect-error oldata
-                                        const newData = [...oldData]
+                                        const newData = oldData ? [...oldData] : []
                                         // newData[index].options[3] = e.target.value
                                         //@ts-expect-error oldata
                                         newData[index] = {...newData[index], options: newData[index].options.map((option, index) => index === 3 ? e.target.value : option)}
@@ -448,7 +448,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                         <IOSSwitch onChange={() => {
                             queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                 //@ts-expect-error oldata
-                                const newData = [...oldData]
+                                const newData = oldData ? [...oldData] : []
                                 // newData[index].correctOption = '3'
                                 newData[index] = {...newData[index], correctOption: '3'}
                                 return newData
@@ -488,7 +488,7 @@ function EditOptionQuestionExamBank({ examBank, index, question })
                         onChange={(e) => {
                             queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                 //@ts-expect-error oldata
-                                const newData = [...oldData]
+                                const newData = oldData ? [...oldData] : []
                                 // newData[index].options[3] = e.target.value
                                 newData[index] = {...newData[index], explanation: e.target.value}
                                 return newData

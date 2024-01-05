@@ -15,10 +15,10 @@ import { setLastQuestionExamSessionFinalExam } from "../../../helpers/setLastQue
 import { setSubmitExamSessionFinalExam } from "../../../helpers/setSubmitExamSessionFinalExam";
 
 interface Question{
-    firstOptions: string[],
-    secondOptions: string[],
-    thirdOptions: string[],
-    fourthOptions: string[],
+    firstCorrect: string,
+    secondCorrect: string,
+    thirdCorrect: string,
+    fourthCorrect: string,
     firstLabel: string,
     secondLabel: string,
     thirdLabel: string,
@@ -129,20 +129,38 @@ export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId,
     
     // const end = number === total
 
-    const displayedFirstOptions = question.firstOptions.map((option, index) => (
-        <MenuItem key={index} value={index}>{option}</MenuItem>
+    const questionsOptions = [question.firstCorrect, question.secondCorrect, question.thirdCorrect, question.fourthCorrect]
+
+    const displayedFirstOptions = questionsOptions.map((option, index) => (
+        option === firstSelectOption || option === secondSelectOption || option === thirdSelectOption || option === fourthSelectOption 
+        ?
+        <MenuItem key={index} value={option} disabled={true}>{option}</MenuItem>
+        :
+        <MenuItem key={index} value={option}>{option}</MenuItem>
     ))
 
-    const displayedSecondOptions = question.secondOptions.map((option, index) => (
-        <MenuItem key={index} value={index}>{option}</MenuItem>
+    const displayedSecondOptions = questionsOptions.map((option, index) => (
+        option === firstSelectOption || option === secondSelectOption || option === thirdSelectOption || option === fourthSelectOption 
+        ?
+        <MenuItem key={index} value={option} disabled={true}>{option}</MenuItem>
+        :
+        <MenuItem key={index} value={option}>{option}</MenuItem>
     ))
 
-    const displayedThirdOptions = question.thirdOptions.map((option, index) => (
-        <MenuItem key={index} value={index}>{option}</MenuItem>
+    const displayedThirdOptions = questionsOptions.map((option, index) => (
+        option === firstSelectOption || option === secondSelectOption || option === thirdSelectOption || option === fourthSelectOption 
+        ?
+        <MenuItem key={index} value={option} disabled={true}>{option}</MenuItem>
+        :
+        <MenuItem key={index} value={option}>{option}</MenuItem>
     ))
 
-    const displayedFourthOptions = question.fourthOptions.map((option, index) => (
-        <MenuItem key={index} value={index}>{option}</MenuItem>
+    const displayedFourthOptions = questionsOptions.map((option, index) => (
+        option === firstSelectOption || option === secondSelectOption || option === thirdSelectOption || option === fourthSelectOption 
+        ?
+        <MenuItem key={index} value={option} disabled={true}>{option}</MenuItem>
+        :
+        <MenuItem key={index} value={option}>{option}</MenuItem>
     ))
 
     return (

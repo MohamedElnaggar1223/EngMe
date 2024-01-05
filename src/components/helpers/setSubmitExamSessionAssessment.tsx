@@ -38,7 +38,7 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
       const results = correctOptions.map((option, index) => {
         if(typeof answers[index] === 'object')
         {
-          const objectAnswers = Object.values(answers[index]).map((answer, indexOfAnswer) => Number(option[indexOfAnswer]) === Number(answer))
+          const objectAnswers = Object.values(answers[index]).map((answer, indexOfAnswer) => option[indexOfAnswer] === answer)
           return objectAnswers.every(Boolean)
         }
         else return answers[index] === Number(option)

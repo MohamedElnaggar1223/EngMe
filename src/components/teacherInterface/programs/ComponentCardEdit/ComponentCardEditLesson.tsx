@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel, Alert, CircularProgress, Dialog } from "@mui/material"
+import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel, Alert, CircularProgress } from "@mui/material"
 import { setLessonData } from "../../../helpers/setLessonData"
+import { setDeleteLesson } from "../../../helpers/setDeleteLesson"
 
 //@ts-expect-error anytype
 export default function ComponentCardEditLesson({ course, setEdited, lesson, order, setAdded }) 
@@ -15,7 +16,6 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
     const [loading, setLoading] = useState(false)
     const [fileType, setFileType] = useState((lesson && lesson?.content && lesson?.content?.type) && lesson?.content?.type === 'Videos/' ? 'video/mp4' : lesson?.content?.type === 'Pdfs/' ? 'pdf' : '');
     const [error, setError] = useState('')
-    const [success, setSuccess] = useState(true)
 
     useEffect(() => {
         if(lesson && lesson.title !== title)
@@ -41,15 +41,30 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
             queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
                 //@ts-expect-error lesson
                 const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson?.id)
-                const newArray = [...filteredArray, lesson ? {...lesson, title, description} : { title, description, duration }]
+                const newArray = [...filteredArray, lesson ? {...lesson, title, description, duration} : { title, description, duration }]
 
                 return newArray
             })
 
             return () => queryClient.setQueryData(['lessons', course.programId, course.id], previousData)
         },
-        onSettled: () => setSuccess(true),
         mutationFn: () => setLessonData(title, description, lesson, course, file, fileType, duration, (order + 1))
+    })
+
+    const { mutate: mutateDelete } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['lessons', course.programId, course.id])
+
+            queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
+                //@ts-expect-error lesson
+                const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson?.id)
+
+                return filteredArray
+            })
+
+            return () => queryClient.setQueryData(['lessons', course.programId, course.id], previousData)
+        },
+        mutationFn: () => setDeleteLesson(lesson, course)
     })
 
     const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,8 +111,6 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
         }
     }
 
-    console.log(success)
-
     return (
         <Box
             display='flex'
@@ -105,12 +118,12 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
             bgcolor='#fff'
             py={2}
         >
-            {
+            {/* {
                 !success &&
                 <Dialog open={!success} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
                     <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
                 </Dialog>
-            }
+            } */}
             <Stack
                 direction='row'
                 justifyContent='space-between'
@@ -138,6 +151,7 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                         justifyContent: 'space-between',
                         maxWidth: '160px',
                     }}
+                    onClick={() => mutateDelete()}
                 >
                     <SvgIcon sx={{ fontSize: 28, fontWeight: 400 }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="23" height="28" viewBox="0 0 23 28" fill="none">
@@ -399,7 +413,6 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                         onClick={() => {
                             if(canSave)
                             {
-                                setSuccess(false)
                                 mutate()
                                 setEdited('')
                                 setAdded('')

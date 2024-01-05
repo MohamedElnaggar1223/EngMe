@@ -159,7 +159,7 @@ function EditOptionQuestion({ course, quiz, index, question })
                                     //@ts-expect-error oldata
                                     const newData = [...oldData]
                                     const oldQuestion = newData[index]
-                                    newData[index] = { question: oldQuestion.question, firstCorrect: '0', secondCorrect: '0', thirdCorrect: '0', fourthCorrect: '0', firstLabel: '', secondLabel: '', thirdLabel: '', fourthLabel: '', firstOptions: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3]], secondOptions: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3]], thirdOptions: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3]], fourthOptions: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3]], type: 'dropdowns' }
+                                    newData[index] = { question: oldQuestion.question, firstCorrect: oldQuestion.options[0], secondCorrect: oldQuestion.options[1], thirdCorrect: oldQuestion.options[2], fourthCorrect: oldQuestion.options[3], firstLabel: '', secondLabel: '', thirdLabel: '', fourthLabel: '', type: 'dropdowns' }
                                     return newData
                                 })
                             }}

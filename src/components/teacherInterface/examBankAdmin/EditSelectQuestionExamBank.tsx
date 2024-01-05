@@ -1,5 +1,5 @@
 import { ExpandMore } from '@mui/icons-material'
-import { Stack, InputLabel, Input, Select, MenuItem, Switch, SwitchProps, styled, Button, SvgIcon, Typography } from '@mui/material'
+import { Stack, InputLabel, Input, Select, MenuItem, Button, SvgIcon, Typography } from '@mui/material'
 import { memo } from 'react'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useQueryClient } from '@tanstack/react-query';
@@ -9,57 +9,6 @@ import { useQueryClient } from '@tanstack/react-query';
 function EditSelectQuestionExamBank({ examBank, index, question })
 {
     const queryClient = useQueryClient()
-
-    const IOSSwitch = styled((props: SwitchProps) => (
-        <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-    ))(({ theme }) => ({
-        width: 42,
-        height: 26,
-        padding: 0,
-        '& .MuiSwitch-switchBase': {
-        padding: 0,
-        margin: 2,
-        transitionDuration: '300ms',
-        '&.Mui-checked': {
-            transform: 'translateX(16px)',
-            color: '#fff',
-            '& + .MuiSwitch-track': {
-            backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
-            opacity: 1,
-            border: 0,
-            },
-            '&.Mui-disabled + .MuiSwitch-track': {
-            opacity: 0.5,
-            },
-        },
-        '&.Mui-focusVisible .MuiSwitch-thumb': {
-            color: '#33cf4d',
-            border: '6px solid #fff',
-        },
-        '&.Mui-disabled .MuiSwitch-thumb': {
-            color:
-            theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[600],
-        },
-        '&.Mui-disabled + .MuiSwitch-track': {
-            opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
-        },
-        },
-        '& .MuiSwitch-thumb': {
-        boxSizing: 'border-box',
-        width: 22,
-        height: 22,
-        },
-        '& .MuiSwitch-track': {
-        borderRadius: 26 / 2,
-        backgroundColor: theme.palette.mode === 'light' ? '#FF3333' : '#39393D',
-        opacity: 1,
-        transition: theme.transitions.create(['background-color'], {
-            duration: 500,
-        }),
-        },
-    }));
 
     return (
         <Stack
@@ -86,7 +35,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                 >
                     <HighlightOffIcon onClick={() => queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                         //@ts-expect-error oldata
-                        const newData = oldData.slice().filter((_, indexData) => indexData !== index)
+                        const newData = oldData ? oldData.slice().filter((_, indexData) => indexData !== index) : []
                         return newData
                     })} sx={{ cursor: 'pointer', color: '#000', ml: -5.2, alignSelf: 'flex-end', mb: 2 }} />
                     <Stack
@@ -114,7 +63,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                             onChange={(e) => {
                                 queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     const oldQuestion = newData[index]
                                     newData[index] = {...oldQuestion, question: e.target.value}
                                     return newData
@@ -157,7 +106,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                             onChange={() => {
                                 queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     const oldQuestion = newData[index]
                                     newData[index] = { question: oldQuestion.question, correctOption: '0', options: [oldQuestion.firstOptions[oldQuestion.firstCorrect], oldQuestion.secondOptions[oldQuestion.secondCorrect], oldQuestion.thirdOptions[oldQuestion.thirdCorrect], oldQuestion.fourthOptions[oldQuestion.fourthCorrect]], type: 'options' }
                                     return newData
@@ -207,7 +156,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                         reader(e.target.files![0]).then((result: string) =>
                         queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                             //@ts-expect-error oldData
-                            const newData = [...oldData]
+                            const newData = oldData ? [...oldData] : []
                             const oldQuestion = newData[index]
                             newData[index] = { ...oldQuestion, image: result}
                             return newData
@@ -263,7 +212,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                             onChange={(e) => {
                                 queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     newData[index] = {...newData[index], firstLabel: e.target.value}
                                     return newData
                                 })
@@ -290,148 +239,16 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                                     ml: 6
                                 }}
                                 inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.firstOptions[0]}
+                                value={question.firstCorrect}
                                 onChange={(e) => {
                                     queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                         //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], firstOptions: newData[index].firstOptions.map((option, index) => index === 0 ? e.target.value : option)}
+                                        const newData = oldData ? [...oldData] : []
+                                        newData[index] = {...newData[index], firstCorrect: e.target.value}
                                         return newData
                                     })
                                 }}
                             />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], firstCorrect: '0'}
-                                    return newData
-                                })
-                            }} checked={question.firstCorrect === '0'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.firstOptions[1]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], firstOptions: newData[index].firstOptions.map((option, index) => index === 1 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], firstCorrect: '1'}
-                                    return newData
-                                })
-                            }} checked={question.firstCorrect === '1'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.firstOptions[2]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], firstOptions: newData[index].firstOptions.map((option, index) => index === 2 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], firstCorrect: '2'}
-                                    return newData
-                                })
-                            }} checked={question.firstCorrect === '2'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.firstOptions[3]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], firstOptions: newData[index].firstOptions.map((option, index) => index === 3 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], firstCorrect: '3'}
-                                    return newData
-                                })
-                            }} checked={question.firstCorrect === '3'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                         </Stack>
                     </Stack>
                 </Stack>
@@ -465,7 +282,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                             onChange={(e) => {
                                 queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     newData[index] = {...newData[index], secondLabel: e.target.value}
                                     return newData
                                 })
@@ -492,148 +309,16 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                                     ml: 6
                                 }}
                                 inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.secondOptions[0]}
+                                value={question.secondCorrect}
                                 onChange={(e) => {
                                     queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                         //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], secondOptions: newData[index].secondOptions.map((option, index) => index === 0 ? e.target.value : option)}
+                                        const newData = oldData ? [...oldData] : []
+                                        newData[index] = {...newData[index], secondCorrect: e.target.value}
                                         return newData
                                     })
                                 }}
                             />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], secondCorrect: '0'}
-                                    return newData
-                                })
-                            }} checked={question.secondCorrect === '0'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.secondOptions[1]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], secondOptions: newData[index].secondOptions.map((option, index) => index === 1 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], secondCorrect: '1'}
-                                    return newData
-                                })
-                            }} checked={question.secondCorrect === '1'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.secondOptions[2]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], secondOptions: newData[index].secondOptions.map((option, index) => index === 2 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], secondCorrect: '2'}
-                                    return newData
-                                })
-                            }} checked={question.secondCorrect === '2'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.secondOptions[3]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], secondOptions: newData[index].secondOptions.map((option, index) => index === 3 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], secondCorrect: '3'}
-                                    return newData
-                                })
-                            }} checked={question.secondCorrect === '3'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                         </Stack>
                     </Stack>
                 </Stack>
@@ -676,7 +361,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                             onChange={(e) => {
                                 queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     newData[index] = {...newData[index], thirdLabel: e.target.value}
                                     return newData
                                 })
@@ -703,148 +388,16 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                                     ml: 6
                                 }}
                                 inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.thirdOptions[0]}
+                                value={question.thirdCorrect}
                                 onChange={(e) => {
                                     queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                         //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], thirdOptions: newData[index].thirdOptions.map((option, index) => index === 0 ? e.target.value : option)}
+                                        const newData = oldData ? [...oldData] : []
+                                        newData[index] = {...newData[index], thirdCorrect: e.target.value}
                                         return newData
                                     })
                                 }}
                             />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], thirdCorrect: '0'}
-                                    return newData
-                                })
-                            }} checked={question.thirdCorrect === '0'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.thirdOptions[1]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], thirdOptions: newData[index].thirdOptions.map((option, index) => index === 1 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], thirdCorrect: '1'}
-                                    return newData
-                                })
-                            }} checked={question.thirdCorrect === '1'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.thirdOptions[2]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], thirdOptions: newData[index].thirdOptions.map((option, index) => index === 2 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], thirdCorrect: '2'}
-                                    return newData
-                                })
-                            }} checked={question.thirdCorrect === '2'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.thirdOptions[3]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], thirdOptions: newData[index].thirdOptions.map((option, index) => index === 3 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], thirdCorrect: '3'}
-                                    return newData
-                                })
-                            }} checked={question.thirdCorrect === '3'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                         </Stack>
                     </Stack>
                 </Stack>
@@ -878,7 +431,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                             onChange={(e) => {
                                 queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = [...oldData]
+                                    const newData = oldData ? [...oldData] : []
                                     newData[index] = {...newData[index], fourthLabel: e.target.value}
                                     return newData
                                 })
@@ -905,148 +458,16 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                                     ml: 6
                                 }}
                                 inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.fourthOptions[0]}
+                                value={question.fourthCorrect}
                                 onChange={(e) => {
                                     queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
                                         //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], fourthOptions: newData[index].fourthOptions.map((option, index) => index === 0 ? e.target.value : option)}
+                                        const newData = oldData ? [...oldData] : []
+                                        newData[index] = {...newData[index], fourthCorrect: e.target.value}
                                         return newData
                                     })
                                 }}
                             />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], fourthCorrect: '0'}
-                                    return newData
-                                })
-                            }} checked={question.fourthCorrect === '0'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.fourthOptions[1]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], fourthOptions: newData[index].fourthOptions.map((option, index) => index === 1 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], fourthCorrect: '1'}
-                                    return newData
-                                })
-                            }} checked={question.fourthCorrect === '1'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.fourthOptions[2]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], fourthOptions: newData[index].fourthOptions.map((option, index) => index === 2 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], fourthCorrect: '2'}
-                                    return newData
-                                })
-                            }} checked={question.fourthCorrect === '2'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
-                        </Stack>
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                    ml: 6
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.fourthOptions[3]}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = [...oldData]
-                                        //@ts-expect-error option
-                                        newData[index] = {...newData[index], fourthOptions: newData[index].fourthOptions.map((option, index) => index === 3 ? e.target.value : option)}
-                                        return newData
-                                    })
-                                }}
-                            />
-                            <IOSSwitch onChange={() => {
-                                queryClient.setQueryData(['examBankEdit', examBank.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    newData[index] = {...newData[index], fourthCorrect: '3'}
-                                    return newData
-                                })
-                            }} checked={question.fourthCorrect === '3'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                         </Stack>
                     </Stack>
                 </Stack>
@@ -1082,7 +503,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                         onChange={(e) => {
                             queryClient.setQueryData(['examBankEdit', examBank?.id ?? ''], (oldData: unknown) => {
                                 //@ts-expect-error oldata
-                                const newData = [...oldData]
+                                const newData = oldData ? [...oldData] : []
                                 // newData[index].options[3] = e.target.value
                                 newData[index] = {...newData[index], explanation: e.target.value}
                                 return newData

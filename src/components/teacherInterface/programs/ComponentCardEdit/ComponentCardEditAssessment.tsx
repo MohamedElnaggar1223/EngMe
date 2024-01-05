@@ -19,7 +19,7 @@ function ComponentCardEditAssessment({ order, course, setEdited, assessment, set
     const { data: questions } = useQuery({
         queryKey: ['assessmentEdit', assessment?.id ?? '', course.id],
         queryFn: () => {
-            return assessment?.questions.slice()
+            return assessment?.questions?.slice()
         }
     })
 
@@ -288,7 +288,7 @@ function ComponentCardEditAssessment({ order, course, setEdited, assessment, set
         }
         else
         {
-            return question.question.length === 0 || question.firstOptions[0].length === 0 || question.firstOptions[1].length === 0 || question.firstOptions[2].length === 0 || question.firstOptions[3].length === 0 || question.secondOptions[0].length === 0 || question.secondOptions[1].length === 0 || question.secondOptions[2].length === 0 || question.secondOptions[3].length === 0 || question.thirdOptions[0].length === 0 || question.thirdOptions[1].length === 0 || question.thirdOptions[2].length === 0 || question.thirdOptions[3].length === 0 || question.fourthOptions[0].length === 0 || question.fourthOptions[1].length === 0 || question.fourthOptions[2].length === 0 || question.fourthOptions[3].length === 0 || question.firstLabel.length === 0 || question.secondLabel.length === 0 || question.thirdLabel.length === 0 || question.fourthLabel.length === 0
+            return question.question.length === 0 || question.firstCorrect.length === 0 || question.secondCorrect.length === 0 || question.thirdCorrect.length === 0 || question.fourthCorrect.length === 0 || question.firstLabel.length === 0 || question.secondLabel.length === 0 || question.thirdLabel.length === 0 || question.fourthLabel.length === 0
         }
     }))
     :
@@ -390,6 +390,7 @@ function ComponentCardEditAssessment({ order, course, setEdited, assessment, set
                             alignSelf: 'flex-end'
                         }}
                         onClick={() => {
+                            setSelectedQuestion(prev => prev + 1)
                             queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                                 //@ts-expect-error oldata
                                 const newData = oldData ? [...oldData, { correctOption: '0', question: '', options: ['', '', '', ''], type: 'options' }] : [{ correctOption: '0', question: '', options: ['', '', '', ''], type: 'options' }]
