@@ -43,8 +43,16 @@ export const setProgramData = async(teacherId: string, name: string, description
 
         const studentPrograms = studentProgramsData.docs.map(doc => doc.data().studentId)
 
+        const studentFollowTeacherRef = collection(db, 'studentFollowTeacher')
+
+        const studentFollowTeacherQuery = query(studentFollowTeacherRef, where('teacherId', '==', program.teacherId))
+
+        const studentFollowTeacherData = await getDocs(studentFollowTeacherQuery)
+
+        const studentFollowTeacher = studentFollowTeacherData.docs.map(doc => doc.data().studentId)
+
         await updateDoc(programDoc, updatedProgram)
-        await setNotification(`${program.name}'s details has been updated!`, [...studentPrograms, program.teacherId])
+        await setNotification(`${program.name}'s details has been updated!`, [...studentPrograms, program.teacherId], [...studentFollowTeacher], `/programs/current/${program.id}`)
     }
     else
     {

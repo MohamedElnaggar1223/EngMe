@@ -1,12 +1,20 @@
 import { useQuery } from "@tanstack/react-query"
 import { doc, getDoc } from "firebase/firestore"
 import { getStorage, ref, getDownloadURL } from "firebase/storage"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
+import { Document, Page, pdfjs } from 'react-pdf';
 import { db } from "../../../firebase/firebaseConfig"
+import { useState } from "react";
+import { Box, Stack, Typography, Button } from "@mui/material";
 
 export default function KnowledgeBankPdf() 
 {
     const { id } = useParams()
+
+    const [numPages, setNumPages] = useState(0);
+    const [pageNumber, setPageNumber] = useState(1);
+
+    const navigate = useNavigate()
 
     const getKnowledgeBank = async (id: string) => {
         const knowledgeBankRef = doc(db, 'knowledgeBankContent', id)
@@ -20,6 +28,9 @@ export default function KnowledgeBankPdf()
     
             const knowledgeBankData = {...knowledgeBankDoc.data(), id: knowledgeBankDoc.id, dataDisplayed}
     
+            pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+
             return knowledgeBankData
         }
         else return null
@@ -54,7 +65,33 @@ export default function KnowledgeBankPdf()
     //     :
     //     <>No Data Yet!</>
 
+    function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
+        setNumPages(numPages);
+
+    }
+
     return (
-        <embed src={knowledgeBank?.dataDisplayed} type="application/pdf" width="100%" height="900px" />
+        <Box sx={{ width: '950px', mx: 'auto', display: 'flex', flex: 1, '*': { width: '100%' }, mt: 5 }}>
+            <Stack
+                direction="column"
+                alignItems="center"
+            >
+                <Button sx={{ textTransform: 'none', fontSize: 16 }} onClick={() => navigate('/knowledgebank')}>Back</Button>
+            </Stack>
+            <Document
+                file={knowledgeBank?.dataDisplayed}
+                onLoadSuccess={onDocumentLoadSuccess}
+            >
+                <Page width={850} pageNumber={pageNumber} renderTextLayer={false} renderAnnotationLayer={false} />
+            </Document>
+            <Stack
+                direction="column"
+                alignItems="center"
+            >
+                <Typography noWrap sx={{ width: '100%' }}>Page {pageNumber} of {numPages}</Typography>
+                <Button sx={{ textTransform: 'none', fontSize: 16 }} disabled={pageNumber === numPages} onClick={() => setPageNumber(prev => prev + 1)}>Next</Button>
+                <Button sx={{ textTransform: 'none', fontSize: 16 }} disabled={pageNumber === 1} onClick={() => setPageNumber(prev => prev - 1)}>Previous</Button>
+            </Stack>
+        </Box>    
     )
 }

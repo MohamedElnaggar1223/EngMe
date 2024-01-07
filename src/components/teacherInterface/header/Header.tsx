@@ -51,7 +51,7 @@ function Header()
             return () => queryClient.setQueryData(['notifications', userData?.id], previousData)
         },
         onSettled: () => setNotifictaionSent(''),
-        mutationFn: () => setNotification(notification, ['all'])
+        mutationFn: () => setNotification(notification, ['all'], [''], '/'),
     })
     
     useEffect(() => {
@@ -114,7 +114,31 @@ function Header()
                     gap={4}
                     mr='auto'
                 >
-                    <Avatar src='' sx={{ width: '81px', height: '81px' }} />
+                    {
+                        ////@ts-expect-error notifto
+                        // notif?.to === 'all' && 
+                        <Stack
+                            alignItems='center'
+                            width='fit-content'
+                            gap={1}
+                            my={0}
+                            alignSelf='center'
+                        >
+                            <Avatar src={logo} sx={{ width: 70, height: 70, bgcolor: '#fff' }} alt='engme' variant="circular" />
+                            <Typography
+                                fontSize={16}
+                                fontFamily='Inter'
+                                noWrap
+                                fontWeight={500}
+                                sx={{
+                                    color: '#000',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                EngMe
+                            </Typography>
+                        </Stack>
+                    }                    
                     <Typography
                         fontSize={14}
                         fontWeight={600}

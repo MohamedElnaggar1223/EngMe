@@ -41,7 +41,7 @@ export default function ChatCard({ id, search, searchFriends }: Props)
     })
 
     //@ts-expect-error read
-    const hour = lastMessage?.createdAt.toDate().getHours() >= 12 ?  lastMessage?.createdAt.toDate().getHours() % 12 : lastMessage?.createdAt.toDate().getHours()
+    const hour = lastMessage?.createdAt.toDate().getHours() >= 12 ?  lastMessage?.createdAt.toDate().getHours() % 12 === 0 ? '12' : lastMessage?.createdAt.toDate().getHours() % 12 : lastMessage?.createdAt.toDate().getHours()
     //@ts-expect-error read
     const pmOram = lastMessage?.createdAt.toDate().getHours() >= 12 ? 'PM' : 'AM'
     //@ts-expect-error read
@@ -122,7 +122,7 @@ export default function ChatCard({ id, search, searchFriends }: Props)
                         </svg>
                     </SvgIcon>
                 }
-                <Typography sx={{ marginTop: 'auto' }} fontSize={12} fontWeight={500} fontFamily='Inter'>{hour}{hour && ':'}{minutes}{hour && pmOram}</Typography>
+                <Typography sx={{ marginTop: 'auto' }} fontSize={12} fontWeight={500} fontFamily='Inter'>{hour}{!isNaN(hour) && ':'}{minutes}{!isNaN(hour) && pmOram}</Typography>
             </Stack>
         </Box>
     )

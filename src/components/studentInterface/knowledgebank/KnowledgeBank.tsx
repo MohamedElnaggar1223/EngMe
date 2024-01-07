@@ -50,23 +50,20 @@ export default function KnowledgeBank()
             flexDirection='row'
             zIndex={1}
             minHeight='77.8vh'
-            sx={{
-                transition: '0.3s'
-            }}
         >
             <Box
                 bgcolor='#FEF4EB'
+                display='flex'
+                alignItems='center'
+                minHeight='100vh'
+                justifyContent='flex-start'
+                flexDirection='column'
                 position='sticky'
                 left={0}
-                minHeight='77.8vh'
                 width={open ? 'auto' : '50px'}
-                sx={{
-                    transition: '0.3s'
-                }}
             >
                 <Box
                     px={8}
-                    pb={4.5}
                     pt={6}
                     textAlign='center'
                 >

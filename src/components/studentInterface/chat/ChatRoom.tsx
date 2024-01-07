@@ -1,11 +1,13 @@
 import { lazy, useContext, useEffect, useState } from "react"
 import { ChatContext } from "./Chats"
 import { Box, Typography, SvgIcon, Stack, Input } from "@mui/material"
-import { CollectionReference, DocumentData, FieldValue, Timestamp, addDoc, and, collection, getDocs, onSnapshot, or, orderBy, query, where } from "firebase/firestore"
+import { CollectionReference, DocumentData, FieldValue, Timestamp, addDoc, and, collection, getDocs, onSnapshot, or, orderBy, query, updateDoc, where } from "firebase/firestore"
 import { db } from "../../../firebase/firebaseConfig"
 import useUnReadMessages from "./useUnReadMessages"
 import UserProps from "../../../interfaces/UserProps"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { AuthContext } from "../../authentication/auth/AuthProvider"
+import { useNavigate } from "react-router-dom"
 const Message = lazy(() => import("./Message"))
 const Avatar = lazy(() => import('./AvatarLazy'))
 
@@ -26,6 +28,12 @@ interface Message{
 export default function ChatRoom({ user, friend }: Props)
 {  
     const queryClient = useQueryClient()
+
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const navigate = useNavigate()
+
     //@ts-expect-error context
     const { chatDisplayed, setChatDisplayed, setChat } = useContext(ChatContext)
     const { unReadMessages } = useUnReadMessages()
@@ -67,8 +75,19 @@ export default function ChatRoom({ user, friend }: Props)
     useEffect(() => {
         const queryMessages = query(messagesRef, or(and(where('sender', '==', user?.id ?? ''), where('receiver', '==', friend?.id ?? '')),and(where('sender', '==', friend?.id ?? ''), where('receiver', '==', user.id ?? ''))), orderBy("createdAt", "asc"))
 
-        const unsub = onSnapshot(queryMessages, () => {
+        const unsub = onSnapshot(queryMessages, (querySnapshot) => {
             queryClient.invalidateQueries({ queryKey: ['chatData', user.id, friend.id] })
+            const newFriendsData = querySnapshot.docs.filter(doc => !(userData?.friends.includes(doc.data().sender)))
+
+            if(newFriendsData.length > 0)
+            {
+                console.log(newFriendsData)
+                const newFriends = newFriendsData.map(doc => doc.data().sender)
+                const newFriendsAdded = [...userData.friends, ...newFriends]
+                //@ts-expect-error context
+                const newFriendsAddedRef = doc(db, userData.role === 'student' ? 'students' : 'teachers', userData?.id)
+                updateDoc(newFriendsAddedRef, { friends: newFriendsAdded })
+            }
         })
 
         return () => {
@@ -154,7 +173,7 @@ export default function ChatRoom({ user, friend }: Props)
                                     justifyContent='space-between'
                                     gap={1}
                                 >
-                                    <Typography sx={{ textDecoration: 'underline', color: '#fff' }} noWrap fontFamily='Inter' fontSize={12} fontWeight={400}>View Profile</Typography>
+                                    {userData?.role === 'student' && <Typography onClick={() => navigate(`/teacherProfile/${friend?.id}`)} sx={{ cursor: 'pointer', textDecoration: 'underline', color: '#fff' }} noWrap fontFamily='Inter' fontSize={12} fontWeight={400}>View Profile</Typography>}
                                 </Stack>
                             </Stack>
                         </Stack>

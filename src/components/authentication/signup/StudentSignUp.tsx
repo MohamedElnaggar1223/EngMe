@@ -5,7 +5,7 @@ import { Alert, Box, Button, Select, Stack, TextField, Typography } from "@mui/m
 import { MuiTelInput } from 'mui-tel-input'
 import { useContext, useEffect, useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { getUserByNumber } from "../../helpers/getUserByNumber";
 import { getUserByEmail } from "../../helpers/getUserByEmail";
 import { ExpandMore } from "@mui/icons-material"
@@ -54,9 +54,14 @@ export default function StudentSignUp()
                             const uid = user.user.uid
             
                             const studentRef = doc(db, 'students', uid)
+
+                            const teachersRef = collection(db, 'teachers')
+
+                            const teachers = await getDocs(teachersRef)
+
                             await setDoc(studentRef, {
                                 favoritePrograms: [],
-                                friends: [],
+                                friends: [...teachers.docs.map(teacher => teacher.id)],
                                 name: `${firstname} ${lastname}`,
                                 email,
                                 number,

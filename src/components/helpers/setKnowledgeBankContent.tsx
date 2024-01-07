@@ -34,7 +34,7 @@ export const setKnowledgeBankContent = async(majorId: string, title: string, fil
     
         const newknowledgeBankContent = await addDoc(knowledgeBankContentRef, knowledgeBankContentCreated)
     
-        await setNotification(`${title} has been added to the Knowledge Bank!`, ['all'])
+        await setNotification(`${title} has been added to the Knowledge Bank!`, ['all'], [''], '/knowledgeBank')
         await updateDoc(knowledgeBankRef, { content: arrayUnion(newknowledgeBankContent.id) })
     }
 }

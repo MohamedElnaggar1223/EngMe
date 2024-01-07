@@ -23,8 +23,16 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
 
         const studentPrograms = studentProgramsData.docs.map(doc => doc.data().studentId)
 
+        const studentFollowTeacherRef = collection(db, 'studentFollowTeacher')
+
+        const studentFollowTeacherQuery = query(studentFollowTeacherRef, where('teacherId', '==', programData.data()?.teacherId))
+
+        const studentFollowTeacherData = await getDocs(studentFollowTeacherQuery)
+
+        const studentFollowTeacher = studentFollowTeacherData.docs.map(doc => doc.data().studentId)
+
         await updateDoc(assessmentDoc, updatedAssessment)
-        await setNotification(`${programData.data()?.name}'s Assessments have been updated!`, [...studentPrograms, programData.data()?.teacherId])
+        await setNotification(`${programData.data()?.name}'s Assessments have been updated!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
     }
     else
     {
@@ -68,9 +76,17 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
             const studentProgramsData = await getDocs(studentProgramsQuery)
 
             const studentPrograms = studentProgramsData.docs.map(doc => doc.data().studentId)
+
+            const studentFollowTeacherRef = collection(db, 'studentFollowTeacher')
+
+            const studentFollowTeacherQuery = query(studentFollowTeacherRef, where('teacherId', '==', programData.data()?.teacherId))
+
+            const studentFollowTeacherData = await getDocs(studentFollowTeacherQuery)
+
+            const studentFollowTeacher = studentFollowTeacherData.docs.map(doc => doc.data().studentId)
             
             await updateDoc(courseDoc, { assessments: arrayUnion(addedAssessment.id), duration: `${durationAdded}` })
-            await setNotification(`New Quiz has been uploaded for ${programData.data()?.name}!`, [...studentPrograms, programData.data()?.teacherId])
+            await setNotification(`New Quiz has been uploaded for ${programData.data()?.name}!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
         }
     }
 }

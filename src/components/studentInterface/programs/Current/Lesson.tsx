@@ -1,5 +1,5 @@
 import { doc, getDoc } from "firebase/firestore"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { db } from "../../../../firebase/firebaseConfig"
 import { useQuery } from "@tanstack/react-query"
 import { getDownloadURL, getStorage, ref } from "firebase/storage"
@@ -14,6 +14,8 @@ export default function Lesson()
     const [numPages, setNumPages] = useState(0);
     const [pageNumber, setPageNumber] = useState(1);
 
+    const navigate = useNavigate()
+
     const getLesson = async (id: string) => {
         const lessonRef = doc(db, 'lessons', id)
         const lessonDoc = await getDoc(lessonRef)
@@ -23,10 +25,10 @@ export default function Lesson()
             const storage = getStorage();
             const storageRef = ref(storage, `${lessonDoc.data()?.content?.type}${lessonDoc.data()?.content?.content}`);
             const dataDisplayed = await getDownloadURL(storageRef)
-    
-            const lessonData = {...lessonDoc.data(), id: lessonDoc.id, dataDisplayed}
 
-            console.log(lessonData?.dataDisplayed)
+            const course = await getDoc(doc(db, 'courses', lessonDoc.data()?.courseId))
+    
+            const lessonData = {...lessonDoc.data(), id: lessonDoc.id, dataDisplayed, programId: course.data()?.programId}
     
             pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -75,6 +77,12 @@ export default function Lesson()
         :
         // <embed src={lesson?.dataDisplayed} type="video/mp4" width="100%" height="900px" />
         <Box sx={{ width: '950px', mx: 'auto', display: 'flex', flex: 1, '*': { width: '100%' }, mt: 5 }}>
+            <Stack
+                direction="column"
+                alignItems="center"
+            >
+                <Button sx={{ textTransform: 'none', fontSize: 16 }} onClick={() => navigate(`/programs/current/${lesson?.programId}`)}>Back</Button>
+            </Stack>
             <Document
                 file={lesson?.dataDisplayed}
                 onLoadSuccess={onDocumentLoadSuccess}
@@ -85,8 +93,9 @@ export default function Lesson()
                 direction="column"
                 alignItems="center"
             >
-                <Typography noWrap sx={{ width: '10%' }}>Page {pageNumber} of {numPages}</Typography>
+                <Typography noWrap sx={{ width: '100%' }}>Page {pageNumber} of {numPages}</Typography>
                 <Button sx={{ textTransform: 'none', fontSize: 16 }} disabled={pageNumber === numPages} onClick={() => setPageNumber(prev => prev + 1)}>Next</Button>
+                <Button sx={{ textTransform: 'none', fontSize: 16 }} disabled={pageNumber === 1} onClick={() => setPageNumber(prev => prev - 1)}>Previous</Button>
             </Stack>
         </Box>
     )

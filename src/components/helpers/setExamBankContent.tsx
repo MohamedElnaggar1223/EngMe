@@ -25,7 +25,7 @@ export const setExamBankContent = async(majorId: string, title: string, ebConten
     
         const newexamBankContent = await addDoc(examBankContentRef, examBankContentCreated)
     
-        await setNotification(`${title} has been added to the Exam Bank!`, ['all'])
+        await setNotification(`${title} has been added to the Exam Bank!`, ['all'], [''], '/examBank')
         await updateDoc(examBankRef, { content: arrayUnion(newexamBankContent.id) })
     }
 }

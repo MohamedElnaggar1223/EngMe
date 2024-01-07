@@ -54,6 +54,6 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
         const studentData = await getDoc(studentDoc)
 
         //@ts-expect-error name
-        setNotification(`${studentData.data().name} just purchased ${programData[0].name}`, [programData[0].teacherId])
+        setNotification(`${studentData.data()?.name} just purchased ${programData[0].name}`, [programData[0].teacherId], [''], '/')
     }
 }

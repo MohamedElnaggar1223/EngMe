@@ -49,7 +49,7 @@ function ExamBankCard({ ebContent }: CardProps)
         <Stack
             direction='column'
             position='relative'
-            width='450px'
+            width='auto'
             px={1}
             py={6}
             bgcolor='#D0EBFC'
@@ -59,6 +59,7 @@ function ExamBankCard({ ebContent }: CardProps)
             gap={5}
             pb={8}
             height='140px'
+            mx='20%'
         >
             <SvgIcon sx={{ fontSize: 56, mb: -4, mr: -2 }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="49" height="48" viewBox="0 0 49 48" fill="none">
@@ -75,7 +76,7 @@ function ExamBankCard({ ebContent }: CardProps)
             </Typography>
             <Button
                 sx={{
-                    width: '350px',
+                    width: '70%',
                     minHeight: '50px',
                     background: '#fff',
                     color: '#000',

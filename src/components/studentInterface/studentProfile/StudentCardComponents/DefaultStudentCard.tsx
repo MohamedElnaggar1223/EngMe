@@ -92,8 +92,8 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                 </Stack>
                 <Stack
                     direction='row'
-                    gap={{xs: 2, sm: 4, lg: 8}}
-                    mr={{ xs: 2, sm: 4, lg: 8 }}
+                    gap={{xs: 2, sm: 4, lg: 5}}
+                    mr={{ xs: 2, sm: 4, lg: 5 }}
                     // flex={1}
                     flexWrap='wrap'
                 >
@@ -104,7 +104,7 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                         alignItems='center'
                         borderRadius='10px'
                         py={1}
-                        width={{ xs: '100px', sm: '120px', lg: '180px' }}
+                        width={{ xs: '80px', sm: '100px', lg: 'auto', xl: '180px' }}
                     >
                         <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{currentPrograms?.length}</Typography>
                         <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Program(s)</Typography>
@@ -116,7 +116,7 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                         alignItems='center'
                         borderRadius='10px'
                         py={1}
-                        width={{ xs: '100px', sm: '120px', lg: '180px' }}
+                        width={{ xs: '80px', sm: '100px', lg: 'auto', xl: '180px' }}
                     >
                         <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{recommendationLetters?.length}</Typography>
                         <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Recommendation Letter(s)</Typography>
@@ -128,7 +128,7 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                         alignItems='center'
                         borderRadius='10px'
                         py={1}
-                        width={{ xs: '100px', sm: '120px', lg: '180px' }}
+                        width={{ xs: '80px', sm: '100px', lg: 'auto', xl: '180px' }}
                     >
                         <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{certificatesCount}</Typography>
                         <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Certificates</Typography>

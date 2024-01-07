@@ -67,11 +67,17 @@ export const setLessonData = async(title: string, description: string, lesson?: 
         const studentProgramsData = await getDocs(studentProgramsQuery)
 
         const studentPrograms = studentProgramsData.docs.map(doc => doc.data().studentId)
+
+        const studentFollowTeacherRef = collection(db, 'studentFollowTeacher')
+
+        const studentFollowTeacherQuery = query(studentFollowTeacherRef, where('teacherId', '==', programData.data()?.teacherId))
+
+        const studentFollowTeacherData = await getDocs(studentFollowTeacherQuery)
+
+        const studentFollowTeacher = studentFollowTeacherData.docs.map(doc => doc.data().studentId)
         
-        console.log(updatedLesson)
         await updateDoc(lessonDoc, updatedLesson)
-        await setNotification(`${programData.data()?.name}'s Lesson(s) have been updated!`, [...studentPrograms, programData.data()?.teacherId])
-        console.log('updated')
+        await setNotification(`${programData.data()?.name}'s Lesson(s) have been updated!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
     }
     else
     {
@@ -127,9 +133,17 @@ export const setLessonData = async(title: string, description: string, lesson?: 
             const studentProgramsData = await getDocs(studentProgramsQuery)
 
             const studentPrograms = studentProgramsData.docs.map(doc => doc.data().studentId)
+
+            const studentFollowTeacherRef = collection(db, 'studentFollowTeacher')
+
+            const studentFollowTeacherQuery = query(studentFollowTeacherRef, where('teacherId', '==', programData.data()?.teacherId))
+
+            const studentFollowTeacherData = await getDocs(studentFollowTeacherQuery)
+
+            const studentFollowTeacher = studentFollowTeacherData.docs.map(doc => doc.data().studentId)
             
             await updateDoc(courseDoc, { lessons: arrayUnion(addedLesson.id), duration: `${durationAdded}` })
-            await setNotification(`New Lesson has been uploaded for ${programData.data()?.name}!`, [...studentPrograms, programData.data()?.teacherId])
+            await setNotification(`New Lesson has been uploaded for ${programData.data()?.name}!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
         }
     }
 }
