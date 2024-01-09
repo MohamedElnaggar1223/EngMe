@@ -29,7 +29,7 @@ export default function StudentSignUp()
     const[lastname, setLastname] = useState('')
     const[email, setEmail] = useState('')
     const[why, setWhy] = useState('')
-    const[occupation, setOccupation] = useState('')
+    const[occupation, setOccupation] = useState('Occupation')
     const[otherOccupation, setOtherOccupation] = useState('')
     // const[password, setPassword] = useState('')
     // const[confirmPassword, setConfirmPassword] = useState('')
@@ -124,10 +124,10 @@ export default function StudentSignUp()
             setNumber('+20')
             setFile(null)
         },
-        mutationFn: () => setTeacherRequest(firstname, lastname, email, number, why, occupation !== 'other' ? occupation : otherOccupation, file)
+        mutationFn: () => setTeacherRequest(firstname, lastname, email, number, why, occupation !== 'other' && occupation !== 'Occupation' ? occupation : otherOccupation, file)
     })
 
-    const canSave = [firstname, lastname, number, file, occupation, why].every(Boolean)
+    const canSave = [firstname, lastname, number, file, occupation, why, occupation !== 'Occupation'].every(Boolean)
 
     async function signUp(e: React.FormEvent<HTMLFormElement>)
     {
@@ -355,6 +355,7 @@ export default function StudentSignUp()
                             value={occupation}
                             onChange={(e) => setOccupation(e.target.value)}
                         >
+                            <MenuItem value='Occupation' disabled>Occupation</MenuItem>
                             <MenuItem value='Software Engineer'>Software Engineer</MenuItem>
                             <MenuItem value='Project Manager'>Project Manager</MenuItem>
                             <MenuItem value='Mechanical Engineer'>Mechanical Engineer</MenuItem>

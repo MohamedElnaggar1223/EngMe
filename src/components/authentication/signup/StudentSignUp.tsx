@@ -21,7 +21,7 @@ export default function StudentSignUp()
     const[firstname, setFirstname] = useState('')
     const[lastname, setLastname] = useState('')
     const[email, setEmail] = useState('')
-    const[occupation, setOccupation] = useState('')
+    const[occupation, setOccupation] = useState('Occupation')
     const[otherOccupation, setOtherOccupation] = useState('')
     const[password, setPassword] = useState('')
     const[confirmPassword, setConfirmPassword] = useState('')
@@ -112,7 +112,7 @@ export default function StudentSignUp()
     }, [password, confirmPassword])
 
     useEffect(() => {
-        setCanSave([verifyPassword, email, firstname, lastname, number, occupation].every(Boolean))
+        setCanSave([verifyPassword, email, firstname, lastname, number, occupation, occupation !== 'Occupation'].every(Boolean))
     }, [verifyPassword, email, firstname, lastname, number, occupation])
 
     return (
@@ -256,6 +256,7 @@ export default function StudentSignUp()
                             value={occupation}
                             onChange={(e) => setOccupation(e.target.value)}
                         >
+                            <MenuItem value='Occupation' disabled>Occupation</MenuItem>
                             <MenuItem value='Software Engineer'>Software Engineer</MenuItem>
                             <MenuItem value='Project Manager'>Project Manager</MenuItem>
                             <MenuItem value='Mechanical Engineer'>Mechanical Engineer</MenuItem>
