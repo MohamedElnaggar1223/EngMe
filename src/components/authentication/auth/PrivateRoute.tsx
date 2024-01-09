@@ -11,13 +11,14 @@ export default function PrivateRoute({ children })
 {
     //@ts-expect-error context
     const { user, userIsSuccess, fetchStatus } = useContext(AuthContext)
+    const [refetchTime, setRefetchTime] = useState(500)
     const { pathname } = useLocation()
 
     const { data: userData, isLoading } = useQuery({
         queryKey: ['userData'],
         queryFn: () => getUserData(user?.uid ?? ''),
         enabled: user !== null,
-        refetchInterval: 500
+        refetchInterval: refetchTime
     })
 
     const [page, setPage] = useState<ReactNode>()
@@ -82,6 +83,7 @@ export default function PrivateRoute({ children })
         {
             if(user && userData) {
                 console.log('test')
+                setRefetchTime(Infinity)
                 navigate(pathname !== '/login' ? pathname : '/')
                 setPage(children[userData?.role ?? 0])
             }
