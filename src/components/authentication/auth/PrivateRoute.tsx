@@ -3,13 +3,21 @@ import { AuthContext } from "./AuthProvider"
 import { useLocation, useNavigate } from 'react-router-dom'
 import Login from '../login/Login'
 import { Dialog, CircularProgress } from '@mui/material'
+import { getUserData } from '../../helpers/getUserData'
+import { useQuery } from '@tanstack/react-query'
 
 //@ts-expect-error children
 export default function PrivateRoute({ children }) 
 {
     //@ts-expect-error context
-    const { user, userData, userIsSuccess } = useContext(AuthContext)
+    const { user, userIsSuccess, fetchStatus } = useContext(AuthContext)
     const { pathname } = useLocation()
+
+    const { data: userData } = useQuery({
+        queryKey: ['userData'],
+        queryFn: () => getUserData(user?.uid ?? ''),
+        enabled: user !== null
+    })
 
     const [page, setPage] = useState<ReactNode>()
 
@@ -66,19 +74,22 @@ export default function PrivateRoute({ children })
     // // else if(pathname === '/signup' ) return <Signup />
     // else return <Login />
 
+    console.log(userData, pathname, userIsSuccess, fetchStatus)
+
     useEffect(() => {
         if(userIsSuccess)
         {
             if(user && userData) {
+                console.log('test')
                 navigate(pathname !== '/login' ? pathname : '/')
                 setPage(children[userData?.role ?? 0])
-            } 
+            }
             else 
             {
                 setPage(<Login />)
             }
         }
-    }, [user, userData, navigate, children, pathname, userIsSuccess])
+    }, [user, userData, navigate, children, pathname, userIsSuccess, fetchStatus])
     
     return page ? page : (
         <Dialog open={!userIsSuccess} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>

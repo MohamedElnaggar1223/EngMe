@@ -17,11 +17,13 @@ export default function AuthProvider({ children })
 {   
     const queryClient = useQueryClient()
     const [user, setUser] = useState<User | null>(null)
-    const { data: userData, isSuccess, isSuccess: userIsSuccess, refetch } = useQuery({
+    const { data: userData, isSuccess: userIsSuccess, fetchStatus, refetch } = useQuery({
         queryKey: ['userData'],
         queryFn: () => getUserData(user?.uid ?? ''),
-        enabled: !!user
+        enabled: user !== null
     })
+
+    console.log(userData)
 
     const navigate = useNavigate()
 
@@ -36,12 +38,12 @@ export default function AuthProvider({ children })
     // }, [user, refetch])
 
     useEffect(() => {
-        if(isSuccess)
+        if(userIsSuccess)
         {
             if(userData === null) signOut(auth)
         }
     //eslint-disable-next-line
-    }, [isSuccess])
+    }, [userIsSuccess])
 
     useEffect(() => {
         const initiatebackend = () => {
@@ -90,7 +92,7 @@ export default function AuthProvider({ children })
             if(authUser)
             {
                 setUser(authUser)
-                refetch()
+                await refetch().then(() => console.log('hi'))
             }
             else
             {
@@ -129,7 +131,7 @@ export default function AuthProvider({ children })
     if(isLoading) return <></>
     else return (
         <AuthContext.Provider
-            value={{ user, userData, userIsSuccess }}
+            value={{ user, userData, userIsSuccess, fetchStatus }}
         >
             { children }
         </AuthContext.Provider>
