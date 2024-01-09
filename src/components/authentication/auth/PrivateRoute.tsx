@@ -16,7 +16,8 @@ export default function PrivateRoute({ children })
     const { data: userData } = useQuery({
         queryKey: ['userData'],
         queryFn: () => getUserData(user?.uid ?? ''),
-        enabled: user !== null
+        enabled: user !== null,
+        refetchOnMount: true
     })
 
     const [page, setPage] = useState<ReactNode>()
