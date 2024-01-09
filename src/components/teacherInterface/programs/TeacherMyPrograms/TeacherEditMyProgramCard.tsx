@@ -418,12 +418,11 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                 >
                     {displayedEditPrereqs}
                 </Stack>
-                {
-                    program === undefined &&
                     <Button
                         component="label"
                         sx={{
                             width: "fit-content",
+                            maxWidth: "250px",
                             color: "#2ed480",
                             textTransform: "capitalize",
                             fontSize: 16,
@@ -460,7 +459,6 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                         }
                         <Typography fontWeight={400} fontFamily='Inter' sx={{ cursor: 'pointer', color: '#226E9F' }}>Upload Program's Image</Typography>
                     </Button>
-                }
             </Stack>
             <Stack
                 flex={1}

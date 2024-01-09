@@ -89,6 +89,7 @@ export default function PrivateRoute({ children })
             }
             else 
             {
+                setRefetchTime(500)
                 setPage(<Login />)
             }
         }

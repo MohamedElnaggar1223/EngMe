@@ -17,6 +17,7 @@ export const setProgramData = async(teacherId: string, name: string, description
             duration: duration.split(" ").length > 1 && duration.split(" ")[1] === "Hours" ? duration : `${duration} Hours`,
             expiry: expiry.split(" ").length > 1 && expiry.split(" ")[1] === "Days" ? expiry : `${expiry} Days`,
             paused,
+            image,
             price
         }
 
