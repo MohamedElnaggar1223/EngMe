@@ -1,6 +1,6 @@
 import FormControl from "@mui/material/FormControl";
 import { auth, db } from '../../../firebase/firebaseConfig'
-import { createUserWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 import { Alert, Box, Button, Select, Stack, TextField, Typography } from "@mui/material";
 import { MuiTelInput } from 'mui-tel-input'
 import { useContext, useEffect, useState } from "react";
