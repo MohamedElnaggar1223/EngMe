@@ -495,6 +495,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                     setExpanded(prev => !prev)
                     !expanded && scrollRef?.current?.scrollIntoView({ behavior: 'smooth' })
                 }} 
+                disabled={disabled}
                 expanded={expanded} 
                 sx={{ width: '100%', flex: 1, '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}
             >

@@ -76,7 +76,7 @@ export default function PrivateRoute({ children })
     // // else if(pathname === '/signup' ) return <Signup />
     // else return <Login />
 
-    console.log(userData, pathname, userIsSuccess, fetchStatus)
+    console.log(userData, pathname, userIsSuccess, fetchStatus, refetchTime)
 
     useEffect(() => {
         if(userIsSuccess)

@@ -230,19 +230,14 @@ function Header()
                                 <Typography onClick={() => navigate('/programs')} sx={{ color: pathname === '/' ?  '#000' : pathname.includes('programs') ? '#226E9F' : '#000', cursor: 'pointer' }}>
                                     Programs
                                 </Typography>
-                                {
-                                    isAdmin &&
-                                    <>
-                                        <SvgIcon>
-                                            <svg width="1" height="22" viewBox="0 0 1 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <line x1="0.501953" y1="2.18558e-08" x2="0.501952" y2="22" stroke="black"/>
-                                            </svg>
-                                        </SvgIcon>
-                                        <Typography onClick={() => navigate('/instructors')} sx={{ color: pathname === '/' ?  '#000' : pathname.includes('instructors') ? '#226E9F' : '#000', cursor: 'pointer' }}>
-                                            Instructors
-                                        </Typography>
-                                    </>
-                                }
+                                <SvgIcon>
+                                    <svg width="1" height="22" viewBox="0 0 1 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <line x1="0.501953" y1="2.18558e-08" x2="0.501952" y2="22" stroke="black"/>
+                                    </svg>
+                                </SvgIcon>
+                                <Typography onClick={() => navigate('/instructors')} sx={{ color: pathname === '/' ?  '#000' : pathname.includes('instructors') ? '#226E9F' : '#000', cursor: 'pointer' }}>
+                                    Instructors
+                                </Typography>
                             </Stack>
                         </Stack>
                     </Stack>

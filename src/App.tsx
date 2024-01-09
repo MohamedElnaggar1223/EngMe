@@ -229,6 +229,9 @@ function App() {
 												student: <Suspense>
 															<StudentInstructors />
 														</Suspense>,
+												teacher: <Suspense>
+															<StudentInstructors disabled={true} />
+														</Suspense>,
 											}}
 										</PrivateRoute>
 									} />

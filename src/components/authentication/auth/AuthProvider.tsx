@@ -17,7 +17,7 @@ export default function AuthProvider({ children })
 {   
     const queryClient = useQueryClient()
     const [user, setUser] = useState<User | null>(null)
-    const { data: userData, isSuccess: userIsSuccess, fetchStatus, refetch } = useQuery({
+    const { data: userData, isSuccess: userIsSuccess, fetchStatus } = useQuery({
         queryKey: ['userData'],
         queryFn: () => getUserData(user?.uid ?? ''),
         enabled: user !== null
@@ -92,7 +92,6 @@ export default function AuthProvider({ children })
             if(authUser)
             {
                 setUser(authUser)
-                await refetch().then(() => console.log('hi'))
             }
             else
             {

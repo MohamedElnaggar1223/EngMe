@@ -280,7 +280,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     }
     , [finalExams, studentFinalExams, program])
 
-    const materialCount = (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
+    const materialCount = (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length) + 1
     const materialFinished = useMemo(() => {
         const newStudentAssessment = studentAssessment?.slice().reduce((result, currentAssessment) => {
             //@ts-expect-error reduction
@@ -357,10 +357,15 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
 
             return result
         }, [])
-        return (newStudentAssessment?.length ?? [].length) + (studentLesson?.length ?? [].length) + (newStudentQuiz?.length ?? [].length)
-    }, [studentAssessment, studentLesson, studentQuizzes])
+
+        //@ts-expect-error grade
+        const newStudentFinalExamLength = studentFinalExams?.slice().find(studentFinalExamData => Number(studentFinalExamData?.grade) > 85) ? 1 : 0
+        return (newStudentAssessment?.length ?? [].length) + (studentLesson?.length ?? [].length) + (newStudentQuiz?.length ?? [].length) + newStudentFinalExamLength
+    }, [studentAssessment, studentLesson, studentQuizzes, studentFinalExams])
 
     const progress = materialCount !== 0 ? ((materialFinished/materialCount)*100).toFixed() : 0
+
+    const finalExamProgress = materialCount !== 0 ? ((materialFinished/(materialCount - 1))*100).toFixed() : 0
 
     ////console.log(materialCount, materialFinished, progress)
 
@@ -1021,7 +1026,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                 :
                                 programPage === 'Exams' ?
                                 <Suspense>
-                                    <FinalExams progress={Number(progress)} program={program} />
+                                    <FinalExams progress={Number(finalExamProgress)} program={program} />
                                 </Suspense>
                                 :
                                 programPage === 'Grades' ?

@@ -3,7 +3,7 @@ import { getTeachers } from "../../../helpers/getTeachers";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-export default function StudentInstructors() 
+export default function StudentInstructors({ disabled }: { disabled?: boolean }) 
 {
     const navigate = useNavigate()
 
@@ -56,7 +56,7 @@ export default function StudentInstructors()
                                 backgroundColor: '#fcfcfc',
                             }
                         }}
-                        onClick={() => navigate(`/teacherprofile/${teacher.id}`)}
+                        onClick={() => !disabled && navigate(`/teacherprofile/${teacher.id}`)}
                     >
                         {/*//@ts-expect-error image */}
                         <Avatar src={teacher?.image} sx={{ width: {xs: 50, sm: 65, lg: 81}, height: {xs: 50, sm: 65, lg: 81} }} />
