@@ -51,6 +51,7 @@ export default function StudentSignUp()
                 {
                     createUserWithEmailAndPassword(auth, email, password)
                     .then(async (user) => {
+                            await signInWithEmailAndPassword(auth, email, password)
                             const uid = user.user.uid
             
                             const studentRef = doc(db, 'students', uid)
