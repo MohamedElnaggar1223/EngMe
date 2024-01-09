@@ -13,11 +13,11 @@ export default function PrivateRoute({ children })
     const { user, userIsSuccess, fetchStatus } = useContext(AuthContext)
     const { pathname } = useLocation()
 
-    const { data: userData } = useQuery({
+    const { data: userData, isLoading } = useQuery({
         queryKey: ['userData'],
         queryFn: () => getUserData(user?.uid ?? ''),
         enabled: user !== null,
-        refetchOnMount: true
+        refetchInterval: 500
     })
 
     const [page, setPage] = useState<ReactNode>()
@@ -91,6 +91,12 @@ export default function PrivateRoute({ children })
             }
         }
     }, [user, userData, navigate, children, pathname, userIsSuccess, fetchStatus])
+
+    if(isLoading) return (
+        <Dialog open={!userIsSuccess} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+            <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+        </Dialog>
+    )
     
     return page ? page : (
         <Dialog open={!userIsSuccess} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
