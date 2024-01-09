@@ -1,5 +1,5 @@
 import { auth, db } from '../../../firebase/firebaseConfig'
-import { signInWithEmailAndPassword } from "firebase/auth"
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth"
 import { Alert, Box, Button, FormControl, Stack, TextField, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { collection, query, where, getDocs } from 'firebase/firestore'
@@ -13,6 +13,7 @@ export default function StudentLogIn()
     const[email, setEmail] = useState('')
     const[password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const [reset, setReset] = useState('')
 
     const [canSave, setCanSave] = useState(false)
 
@@ -69,6 +70,18 @@ export default function StudentLogIn()
         setCanSave([email, password].every(Boolean))
     }, [email, password])
 
+    const handleResetPass = async () => {
+        if(email)
+        {
+            await sendPasswordResetEmail(auth, email)
+            setReset('Password Reset Email Sent Successfully')
+        }
+        else
+        {
+            setError('Please Enter Your Email!')
+        }
+    }
+
     return (
         <Box
             display='flex'
@@ -88,7 +101,8 @@ export default function StudentLogIn()
                 }}
                 onSubmit={logIn}
             >
-                {error && <Alert severity="error">{error}</Alert>}
+                {error && !reset && <Alert severity="error">{error}</Alert>}
+                {reset && !error && <Alert severity="success">{reset}</Alert>}
                 <FormControl sx={{ flex: 1 }}>
                     <TextField 
                         fullWidth
@@ -132,6 +146,9 @@ export default function StudentLogIn()
                             }
                         }}
                     />
+                </FormControl>
+                <FormControl>
+                    <Typography onClick={handleResetPass} fontSize={14} fontFamily='Inter' sx={{ color: '#1976d2', ml: 0.5, mt: -2.5, cursor: 'pointer' }}>Forgot Password?</Typography>
                 </FormControl>
                 <Box
                     flex={1}

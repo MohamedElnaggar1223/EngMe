@@ -92,13 +92,13 @@ function Login()
                         >
                             <Stack
                                 direction='row'
-                                justifyContent='space-between'
+                                justifyContent='space-evenly'
                                 alignItems='center'
                                 gap={5}
                             >
-                                <Typography onClick={() => setSelectedPage(prev => prev.includes('Login') ? 'StudentLogin' : 'StudentSignup')} sx={{ paddingLeft: {xs: 3, sm: 3, lg: 10.5, xl: 10.5}, cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Student</Typography>
+                                <Typography onClick={() => setSelectedPage(prev => prev.includes('Login') ? 'StudentLogin' : 'StudentSignup')} sx={{ cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Student</Typography>
                                 <Typography onClick={() => setSelectedPage(prev => prev.includes('Login') ? 'TeacherLogin': 'TeacherSignup')} sx={{ cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Instructor</Typography>
-                                <Typography onClick={() => setSelectedPage('Company')} sx={{ paddingRight: {xs: 3, sm: 3, lg: 10, xl: 10}, cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Company</Typography>
+                                <Typography onClick={() => setSelectedPage('Company')} sx={{ cursor: 'pointer' }} fontFamily='Inter' fontSize={18} fontWeight={600}>Company</Typography>
                             </Stack>
                             <Box
                                 width='35%'
