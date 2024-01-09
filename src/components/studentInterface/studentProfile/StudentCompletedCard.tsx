@@ -174,43 +174,46 @@ export default function StudentCompletedCard(program: ProgramProps)
                 bgcolor='#fff'
                 position='relative'
             >
-                <Typography textAlign='center' fontSize={16} fontWeight={700} fontFamily='Inter'>
-                    <SvgIcon sx={{ fontSize: 16, marginX: 1, marginBottom: 1 }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M0.0074587 1.30412e-09L6.02054 1.05266e-06L6.02054 6.63462L3.38078 6.63462L3.38078 7.41453C3.3769 7.92542 3.4091 8.43594 3.47716 8.94231C3.53287 9.36636 3.65957 9.77807 3.85197 10.1603C4.04223 10.5275 4.31533 10.8457 4.64979 11.0897C5.06606 11.3835 5.52968 11.6039 6.02054 11.7415L6.02054 14.9947C4.30389 14.6468 2.75291 13.7368 1.6138 12.4092C0.497062 10.9894 -0.0728211 9.21746 0.0074574 7.41453L0.0074587 1.30412e-09ZM8.98692 7.41453C8.90664 9.21747 9.47652 10.9894 10.5933 12.4092C11.7313 13.7391 13.2825 14.6511 15 15L15 11.7415C14.5091 11.6039 14.0455 11.3835 13.6293 11.0897C13.2948 10.8457 13.0217 10.5275 12.8314 10.1603C12.6392 9.778 12.5125 9.36632 12.4566 8.94231C12.376 8.43683 12.3313 7.9263 12.3228 7.41453L12.3228 6.63462L15 6.63462L15 2.62268e-06L8.98692 1.57132e-06L8.98692 7.41453Z" fill="#FF7E00"/>
-                        </svg>
-                    </SvgIcon>
-                    {/*//@ts-expect-error comment */}
-                    {!!studentProgramComment?.length && studentProgramComment[0]?.comment}
-                    <SvgIcon sx={{ fontSize: 16, marginX: 1, marginBottom: -1 }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                            <path d="M14.9925 1.30412e-09L8.97946 1.05266e-06L8.97946 6.63462L11.6192 6.63462L11.6192 7.41453C11.6231 7.92542 11.5909 8.43594 11.5228 8.94231C11.4671 9.36636 11.3404 9.77807 11.148 10.1603C10.9578 10.5275 10.6847 10.8457 10.3502 11.0897C9.93394 11.3835 9.47032 11.6039 8.97946 11.7415L8.97946 14.9947C10.6961 14.6468 12.2471 13.7368 13.3862 12.4092C14.5029 10.9894 15.0728 9.21746 14.9925 7.41453L14.9925 1.30412e-09ZM6.01308 7.41453C6.09336 9.21747 5.52348 10.9894 4.40674 12.4092C3.2687 13.7391 1.71751 14.6511 2.62268e-06 15L2.05294e-06 11.7415C0.490859 11.6039 0.954476 11.3835 1.37075 11.0897C1.70521 10.8457 1.97831 10.5275 2.16857 10.1603C2.36078 9.778 2.48748 9.36632 2.54338 8.94231C2.624 8.43683 2.66873 7.9263 2.67724 7.41453L2.67724 6.63462L1.16003e-06 6.63462L0 2.62268e-06L6.01308 1.57132e-06L6.01308 7.41453Z" fill="#FF7E00"/>
-                        </svg>
-                    </SvgIcon>
-                    <Box
-                        borderRadius='50%'
-                        position='absolute'
-                        top='70%'
-                        left={{xs: '80%', sm: '80%', lg: '90%'}}
-                        bgcolor='#FF7E00'
-                        width='45px'
-                        height='45px'
-                        display='flex'
-                        alignItems='center'
-                        justifyContent='center'
-                        p={0.5}
+                {
+                    !!studentProgramComment?.length &&
+                    <Typography textAlign='center' fontSize={16} fontWeight={700} fontFamily='Inter'>
+                        <SvgIcon sx={{ fontSize: 16, marginX: 1, marginBottom: 1 }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+                                <path d="M0.0074587 1.30412e-09L6.02054 1.05266e-06L6.02054 6.63462L3.38078 6.63462L3.38078 7.41453C3.3769 7.92542 3.4091 8.43594 3.47716 8.94231C3.53287 9.36636 3.65957 9.77807 3.85197 10.1603C4.04223 10.5275 4.31533 10.8457 4.64979 11.0897C5.06606 11.3835 5.52968 11.6039 6.02054 11.7415L6.02054 14.9947C4.30389 14.6468 2.75291 13.7368 1.6138 12.4092C0.497062 10.9894 -0.0728211 9.21746 0.0074574 7.41453L0.0074587 1.30412e-09ZM8.98692 7.41453C8.90664 9.21747 9.47652 10.9894 10.5933 12.4092C11.7313 13.7391 13.2825 14.6511 15 15L15 11.7415C14.5091 11.6039 14.0455 11.3835 13.6293 11.0897C13.2948 10.8457 13.0217 10.5275 12.8314 10.1603C12.6392 9.778 12.5125 9.36632 12.4566 8.94231C12.376 8.43683 12.3313 7.9263 12.3228 7.41453L12.3228 6.63462L15 6.63462L15 2.62268e-06L8.98692 1.57132e-06L8.98692 7.41453Z" fill="#FF7E00"/>
+                            </svg>
+                        </SvgIcon>
+                        {/*//@ts-expect-error comment */}
+                        {!!studentProgramComment?.length && studentProgramComment[0]?.comment}
+                        <SvgIcon sx={{ fontSize: 16, marginX: 1, marginBottom: -1 }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+                                <path d="M14.9925 1.30412e-09L8.97946 1.05266e-06L8.97946 6.63462L11.6192 6.63462L11.6192 7.41453C11.6231 7.92542 11.5909 8.43594 11.5228 8.94231C11.4671 9.36636 11.3404 9.77807 11.148 10.1603C10.9578 10.5275 10.6847 10.8457 10.3502 11.0897C9.93394 11.3835 9.47032 11.6039 8.97946 11.7415L8.97946 14.9947C10.6961 14.6468 12.2471 13.7368 13.3862 12.4092C14.5029 10.9894 15.0728 9.21746 14.9925 7.41453L14.9925 1.30412e-09ZM6.01308 7.41453C6.09336 9.21747 5.52348 10.9894 4.40674 12.4092C3.2687 13.7391 1.71751 14.6511 2.62268e-06 15L2.05294e-06 11.7415C0.490859 11.6039 0.954476 11.3835 1.37075 11.0897C1.70521 10.8457 1.97831 10.5275 2.16857 10.1603C2.36078 9.778 2.48748 9.36632 2.54338 8.94231C2.624 8.43683 2.66873 7.9263 2.67724 7.41453L2.67724 6.63462L1.16003e-06 6.63462L0 2.62268e-06L6.01308 1.57132e-06L6.01308 7.41453Z" fill="#FF7E00"/>
+                            </svg>
+                        </SvgIcon>
+                    </Typography>
+                }
+                <Box
+                    borderRadius='50%'
+                    position='absolute'
+                    top='65%'
+                    left={{xs: '80%', md: '90%', lg: '85%'}}
+                    bgcolor='#FF7E00'
+                    width='45px'
+                    height='45px'
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='center'
+                    p={0.5}
+                >
+                    <Typography
+                        fontSize={18}
+                        fontWeight={500}
+                        fontFamily='Inter'
+                        sx={{ color: '#fff' }}
                     >
-                        <Typography
-                            fontSize={18}
-                            fontWeight={500}
-                            fontFamily='Inter'
-                            sx={{ color: '#fff' }}
-                        >
-                            {/*//@ts-expect-error comment */}
-                            {Number(highestPercentage?.grade) !== 100 ? Number(highestPercentage?.grade).toFixed(1) : Number(highestPercentage?.grade).toFixed(0)}%
-                        </Typography>
-                    </Box>
-                </Typography>
+                        {/*//@ts-expect-error comment */}
+                        {Number(highestPercentage?.grade) !== 100 ? Number(highestPercentage?.grade).toFixed(1) : Number(highestPercentage?.grade).toFixed(0)}%
+                    </Typography>
+                </Box>
             </Stack>
         </Box>
     )
