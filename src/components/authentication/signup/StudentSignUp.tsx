@@ -10,6 +10,7 @@ import { getUserByNumber } from "../../helpers/getUserByNumber";
 import { getUserByEmail } from "../../helpers/getUserByEmail";
 import { ExpandMore } from "@mui/icons-material"
 import { LoginContext } from "../login/Login";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentSignUp() 
 {
@@ -28,6 +29,8 @@ export default function StudentSignUp()
     const [canSave, setCanSave] = useState(false)
     const [occupationOpened, setOccupationOpened] = useState(false)
     const [error, setError] = useState('')
+
+    const navigate = useNavigate()
 
     const signUp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -77,6 +80,7 @@ export default function StudentSignUp()
                                 role: 'student',
                                 number
                             })
+                            navigate('/')
                     })
                     .catch(e => console.error(e))
                     setEmail('')
