@@ -52,7 +52,7 @@ function Login()
                         top: '0%',
                         width: '700px',
                         maxWidth: '40%',
-                        height: '1000px',
+                        height: '100%',
                         border: '0px',
                     }}
                     allowFullScreen={true}
