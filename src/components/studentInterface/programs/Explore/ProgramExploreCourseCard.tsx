@@ -128,7 +128,9 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
             <Accordion 
                 onClick={() => {
                     setExpanded(prev => !prev)
-                    !expanded && scrollRef?.current?.scrollIntoView({ behavior: 'smooth', block: !expanded ? 'center' : 'end', inline: !expanded ? 'center' : 'end' })
+                    setTimeout(() => {
+                        !expanded && scrollRef?.current?.scrollIntoView({ behavior: 'smooth', block: !expanded ? 'center' : 'end', inline: !expanded ? 'center' : 'end' })
+                    }, 100)
                 }} 
                 expanded={expanded} 
                 sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 } }}

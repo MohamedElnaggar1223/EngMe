@@ -489,11 +489,12 @@ function ComponentCard({index, course, disabled}: ComponentCard)
 
     const navigate = useNavigate()
     return (
-        
             <Accordion 
                 onClick={() => {
                     setExpanded(prev => !prev)
-                    !expanded && scrollRef?.current?.scrollIntoView({ behavior: 'smooth' })
+                    setTimeout(() => {
+                        !expanded && scrollRef?.current?.scrollIntoView({ behavior: 'smooth' })
+                    }, 100)
                 }} 
                 disabled={disabled}
                 expanded={expanded} 
@@ -533,8 +534,8 @@ function ComponentCard({index, course, disabled}: ComponentCard)
                     {displayedLessons}
                     {displayedQuizzes}
                     {displayedAssessments}
-                    <div ref={scrollRef}></div>
                 </AccordionDetails>
+            <div ref={scrollRef}></div>
             </Accordion>
     )
 }
