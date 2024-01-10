@@ -15,6 +15,8 @@ import TeacherInstructors from "./components/teacherInterface/programs/TeacherMy
 import StudentInstructors from "./components/studentInterface/teacherProfile/Teachers/StudentInstructors"
 const Lesson = lazy(() => import("./components/studentInterface/programs/Current/Lesson"))
 // import { BrowserView, MobileView } from "react-device-detect"
+import { BrowserView, MobileView } from "react-device-detect"
+const MobileLogin = lazy(() => import("./components/authentication/login/MobileLogin"))
 const KnowledgeBankPdf = lazy(() => import("./components/studentInterface/knowledgebank/KnowledgeBankPdf"))
 const TeacherInterfaceTeacherProfile = lazy(() => import("./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"))
 const TeacherProgramsPage = lazy(() => import("./components/teacherInterface/programs/TeacherProgramsPage"))
@@ -26,8 +28,10 @@ const Assessment = lazy(() => import("./components/studentInterface/programs/Cur
 function App() {
 	const [queryClient] = useState(() => new QueryClient())
 	return (
+		<>
 		<QueryClientProvider client={queryClient}>
 			<AuthProvider>
+				<BrowserView>
 				<Routes>
 					<Route element={<PrefetchPrograms />}>
 						<Route path='/' element={
@@ -242,8 +246,13 @@ function App() {
 						</Route>
 					</Route>
 				</Routes>
+				</BrowserView>
 			</AuthProvider>
 		</QueryClientProvider>
+		<MobileView>
+			<MobileLogin />
+		</MobileView>
+		</>
 	)
 }
 
