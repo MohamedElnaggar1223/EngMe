@@ -48,12 +48,12 @@ function Login()
                     src="https://firebasestorage.googleapis.com/v0/b/engme-84d22.appspot.com/o/HomePage%2Feng%20me%20website%20final%20edit%20s.mp4?alt=media&token=59433475-4266-4897-bc4b-92814fc5a6f0?autoplay=1" 
                     style={{
                         position: 'absolute',
-                        left: '7.5%',
-                        top: '30%',
-                        width: '680px',
-                        maxWidth: '30%',
-                        height: '324px',
-                        border: '0px'
+                        left: '7%',
+                        top: '0%',
+                        width: '700px',
+                        maxWidth: '40%',
+                        height: '1000px',
+                        border: '0px',
                     }}
                     allowFullScreen={true}
                     allow="autoplay"
