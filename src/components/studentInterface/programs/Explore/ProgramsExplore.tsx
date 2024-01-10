@@ -13,10 +13,11 @@ const ProgramsExploreProgram = lazy(() => import("./ProgramsExploreProgram"))
 export const ProgramExploreContext = createContext()
 
 interface ProgramsExplore{
-    setTab: React.Dispatch<React.SetStateAction<string>>
+    setTab: React.Dispatch<React.SetStateAction<string>>,
+    teacherId?: string
 }
 
-export default function ProgramsExplore({ setTab }: ProgramsExplore) 
+export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore) 
 {
     const queryClient = useQueryClient()
     //@ts-expect-error context
@@ -73,6 +74,19 @@ export default function ProgramsExplore({ setTab }: ProgramsExplore)
             const querySnapshot  = await getDocs(q)
 
             // const filteredArray = querySnapshot.docs.slice().filter(doc => !userData.favoritePrograms.includes(doc.id))
+    
+            const exploreProgramsData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }))
+    
+            return exploreProgramsData
+        }
+        else if(teacherId)
+        {
+            const q = query(programsRef, where('teacherId', '!=', teacherId))
+    
+            const querySnapshot  = await getDocs(q)
     
             const exploreProgramsData = querySnapshot.docs.map(doc => ({
                 id: doc.id,

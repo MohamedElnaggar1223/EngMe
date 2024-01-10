@@ -8,6 +8,7 @@ import ExamBank from '../examBankAdmin/ExamBank'
 import KnowledgeBank from '../knowledgeBankAdmin/KnowledgeBank'
 import InstructorsApplications from './InstructorsApplications/InstructorsApplications'
 import ProgramsPriceShare from './ProgramsPriceShare/ProgramsPriceShare'
+import ProgramsExplore from '../../studentInterface/programs/Explore/ProgramsExplore'
 const TeacherMyPrograms = lazy(() => import('./TeacherMyPrograms/TeacherMyPrograms'))
 
 export default function Programs() 
@@ -170,6 +171,12 @@ export default function Programs()
                 // )
                 !isLoading && 
                 (
+                    tab === 'Explore' ?
+                    <Suspense>
+                        {/*//@ts-expect-error programs */}
+                        <ProgramsExplore programs={teacherPrograms} teacherId={userData.id} />
+                    </Suspense>
+                    :
                     tab === 'Programs' ?
                     <Suspense>
                         {/*//@ts-expect-error programs */}
