@@ -21,6 +21,8 @@ export default function LetterCard({teacherId}: LetterProps)
             alignItems='center'
             width='fit-content'
             gap={1.5}
+            onClick={() => navigate(`/teacherProfile/${teacherId}`)}
+            sx={{ cursor: 'pointer' }}
         >
             {/*//@ts-expect-error teacher */}
             <Avatar src={teacherData?.image} sx={{ width: '82px', height: '82px' }} />

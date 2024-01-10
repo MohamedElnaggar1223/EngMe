@@ -6,8 +6,8 @@ import placeholder from '../../../../assets/images.jpg'
 import { useQuery } from '@tanstack/react-query'
 import { getStudentCurrentPrograms } from '../../../helpers/getStudentCurrentPrograms'
 import { AuthContext } from '../../../authentication/auth/AuthProvider'
-import { getStudentRecommendationLetters } from '../../../helpers/getStudentRecommendationLetters'
 import { getStudentProgramCertificate } from '../../../helpers/getStudentProgramCertificate'
+import { getStudentFollowing } from '../../../helpers/getStudentFollowing'
 
 //eslint-disable-next-line
 function DefaultStudentCard({ name, major, city, country, image, setEdit }: StudentCardProps) 
@@ -21,9 +21,9 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
         enabled: !!userData?.id
     })
 
-    const { data: recommendationLetters } = useQuery({
-        queryKey: ['recommendationLetters', userData?.id],
-        queryFn: () => getStudentRecommendationLetters(userData?.id),
+    const { data: studentFollowing } = useQuery({
+        queryKey: ['studentFollowing', userData?.id],
+        queryFn: () => getStudentFollowing(userData?.id),
         enabled: !!userData?.id
     })
 
@@ -118,8 +118,8 @@ function DefaultStudentCard({ name, major, city, country, image, setEdit }: Stud
                         py={1}
                         width={{ xs: '80px', sm: '100px', lg: 'auto', xl: '180px' }}
                     >
-                        <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{recommendationLetters?.length}</Typography>
-                        <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Recommendation Letter(s)</Typography>
+                        <Typography fontFamily='Inter' fontSize={22} fontWeight={700}>{studentFollowing?.length}</Typography>
+                        <Typography textAlign='center' fontSize={14} fontFamily='Inter' fontWeight={400}>Following(s)</Typography>
                     </Stack>
                     <Stack
                         direction='column'

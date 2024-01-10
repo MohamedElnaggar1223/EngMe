@@ -1,8 +1,8 @@
 import { Box, Typography } from '@mui/material'
 import { Suspense, lazy, useContext } from 'react'
-import { getStudentRecommendationLetters } from '../../helpers/getStudentRecommendationLetters'
 import { useQuery } from '@tanstack/react-query'
 import { AuthContext } from '../../authentication/auth/AuthProvider'
+import { getStudentFollowing } from '../../helpers/getStudentFollowing'
 const LetterCard = lazy(() => import('./LetterCard'))
  
 export default function StudentLetters() 
@@ -10,14 +10,15 @@ export default function StudentLetters()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
 
-    const { data: recommendationLetters } = useQuery({
-        queryKey: ['recommendationLetters', userData?.id],
-        queryFn: () => getStudentRecommendationLetters(userData?.id),
+    const { data: studentFollowing } = useQuery({
+        queryKey: ['studentFollowing', userData?.id],
+        queryFn: () => getStudentFollowing(userData?.id),
         enabled: !!userData?.id
     })
 
-    const displayedLetters = recommendationLetters?.map(letter => (
-        <Suspense>
+    const displayedLetters = studentFollowing?.map(letter => (
+        //@ts-expect-error letterId
+        <Suspense key={letter.teacherId}>
             {/*//@ts-expect-error teacherId*/}
             <LetterCard teacherId={letter.teacherId} />
         </Suspense>
@@ -42,7 +43,7 @@ export default function StudentLetters()
                     fontFamily='Inter'
                     fontSize={24}
                 >
-                    Recommendation Letters
+                    Following(s)
                 </Typography>
             </Box>
             <Box
