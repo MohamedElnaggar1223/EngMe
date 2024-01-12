@@ -105,7 +105,7 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
             }}
             width='790px'
             py={2}
-            onClick={() => setSelectedOption(index)}
+            onClick={selectedOption === index ? () => setSelectedOption(-1) : () => setSelectedOption(index)}
         >
             <Typography>{option}</Typography>
         </Box>

@@ -352,7 +352,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                         color='primary' 
                         disableUnderline
                         aria-labelledby='Price'
-                        placeholder="in EGP"
+                        placeholder="in USD"
                         sx={{
                             border: '1px solid rgba(0, 0, 0, 0.20)',
                             width: '100%',
