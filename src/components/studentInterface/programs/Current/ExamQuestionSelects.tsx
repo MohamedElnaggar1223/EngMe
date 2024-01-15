@@ -391,6 +391,7 @@ export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId,
                             marginBottom: 3
                         }}
                         onClick={() => mutateSubmitExamSession()}
+                        disabled={firstSelectOption === '' || secondSelectOption === '' || thirdSelectOption === '' || fourthSelectOption === ''}
                     >
                         Submit
                     </Button>
@@ -413,6 +414,7 @@ export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId,
                             },
                             marginBottom: 3
                         }}
+                        disabled={firstSelectOption === '' || secondSelectOption === '' || thirdSelectOption === '' || fourthSelectOption === ''}
                         onClick={() => mutateLastQuestionSession()}
                     >
                         Next

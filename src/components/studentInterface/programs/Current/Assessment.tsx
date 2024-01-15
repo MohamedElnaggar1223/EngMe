@@ -13,6 +13,7 @@ import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { getExamSession } from "../../../helpers/getExamSession";
 import { setExamSessionTime } from "../../../helpers/setExamSessionTime";
 import ExamQuestionSelects from "./ExamQuestionSelects";
+import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
 
 export default function Assessment() 
 {
@@ -111,6 +112,9 @@ export default function Assessment()
     //@ts-expect-error errrrr
     const displayedQuestions = assessment?.questions?.map((question, index) => 
         question.type === 'options' ?
+        question.correctOption.length > 1 ?
+        //@ts-expect-error errrrr
+        <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
         //@ts-expect-error errrrr
         <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
         //@ts-expect-error errrrr

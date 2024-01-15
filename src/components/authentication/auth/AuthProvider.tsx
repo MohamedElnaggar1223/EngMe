@@ -22,9 +22,7 @@ export default function AuthProvider({ children })
         queryFn: () => getUserData(user?.uid ?? ''),
         enabled: user !== null
     })
-
-    console.log(userData)
-
+    
     const navigate = useNavigate()
 
     const { data: examSession, isLoading } = useQuery({

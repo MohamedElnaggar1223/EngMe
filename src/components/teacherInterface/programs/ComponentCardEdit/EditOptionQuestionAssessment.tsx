@@ -278,10 +278,29 @@ function EditOptionQuestion({ course, assessment, index, question })
                         queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                             //@ts-expect-error oldata
                             const newData = oldData ? [...oldData] : []
-                            newData[index] = {...newData[index], correctOption: '0'}
+                            let newCorrectOptions
+                            if(newData[index].correctOption.length > 1) 
+                            {
+                                if(newData[index].correctOption.includes('0'))
+                                {
+                                    newCorrectOptions = newData[index].correctOption.filter((option: string) => option !== '0')
+                                }
+                                else
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption[0], '0']
+                                }
+                            }
+                            else
+                            {
+                                if(!(newData[index].correctOption.includes('0')))
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption, '0']
+                                }
+                            }
+                            newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
                             return newData
                         })
-                    }} checked={question.correctOption === '0'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
+                    }} checked={question.correctOption.includes('0')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                 </Stack>
                 <Stack
                     justifyContent='center'
@@ -327,10 +346,29 @@ function EditOptionQuestion({ course, assessment, index, question })
                         queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                             //@ts-expect-error oldata
                             const newData = oldData ? [...oldData] : []
-                            newData[index] = {...newData[index], correctOption: '1'}
+                            let newCorrectOptions
+                            if(newData[index].correctOption.length > 1) 
+                            {
+                                if(newData[index].correctOption.includes('1'))
+                                {
+                                    newCorrectOptions = newData[index].correctOption.filter((option: string) => option !== '1')
+                                }
+                                else
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption[0], '1']
+                                }
+                            }
+                            else
+                            {
+                                if(!(newData[index].correctOption.includes('1')))
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption, '1']
+                                }
+                            }
+                            newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
                             return newData
                         })
-                    }} checked={question.correctOption === '1'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
+                    }} checked={question.correctOption.includes('1')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                 </Stack>
             </Stack>
             <Stack
@@ -392,11 +430,29 @@ function EditOptionQuestion({ course, assessment, index, question })
                             queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                                 //@ts-expect-error oldata
                                 const newData = oldData ? [...oldData] : []
-                                // newData[index].correctOption = '2'
-                                newData[index] = {...newData[index], correctOption: '2'}
+                                let newCorrectOptions
+                                if(newData[index].correctOption.length > 1) 
+                                {
+                                    if(newData[index].correctOption.includes('2'))
+                                    {
+                                        newCorrectOptions = newData[index].correctOption.filter((option: string) => option !== '2')
+                                    }
+                                    else
+                                    {
+                                        newCorrectOptions = [...newData[index].correctOption[0], '2']
+                                    }
+                                }
+                                else
+                                {
+                                    if(!(newData[index].correctOption.includes('2')))
+                                    {
+                                        newCorrectOptions = [...newData[index].correctOption, '2']
+                                    }
+                                }
+                                newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
                                 return newData
                             })
-                        }} checked={question.correctOption === '2'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
+                        }} checked={question.correctOption.includes('2')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                     </Stack>
                 </Stack>
                 <Stack
@@ -450,11 +506,29 @@ function EditOptionQuestion({ course, assessment, index, question })
                             queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                                 //@ts-expect-error oldata
                                 const newData = oldData ? [...oldData] : []
-                                // newData[index].correctOption = '3'
-                                newData[index] = {...newData[index], correctOption: '3'}
+                                let newCorrectOptions
+                                if(newData[index].correctOption.length > 1) 
+                                {
+                                    if(newData[index].correctOption.includes('3'))
+                                    {
+                                        newCorrectOptions = newData[index].correctOption.filter((option: string) => option !== '3')
+                                    }
+                                    else
+                                    {
+                                        newCorrectOptions = [...newData[index].correctOption[0], '3']
+                                    }
+                                }
+                                else
+                                {
+                                    if(!(newData[index].correctOption.includes('3')))
+                                    {
+                                        newCorrectOptions = [...newData[index].correctOption, '3']
+                                    }
+                                }
+                                newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
                                 return newData
                             })
-                        }} checked={question.correctOption === '3'} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
+                        }} checked={question.correctOption.includes('3')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                     </Stack>
                 </Stack>
             </Stack>

@@ -41,6 +41,11 @@ export const setSubmitExamSessionFinalExam = async (studentId: string, finalExam
           const objectAnswers = Object.values(answers[index]).map((answer, indexOfAnswer) => option[indexOfAnswer] === answer)
           return objectAnswers.every(Boolean)
         }
+        else if(Array.isArray(option))
+        {
+          const arrayAnswers = Object.values(answers[index]).map((answer) => option.includes(answer))
+          return arrayAnswers.every(Boolean)
+        }
         else return answers[index] === Number(option)
       })
     //@ts-expect-error anyerror

@@ -10,6 +10,8 @@ import { Timestamp, doc, getDoc } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
 import ExamQuestionOptions from "./ExamQuestionOptions";
 import ExamQuestionSelects from "./ExamQuestionSelects";
+import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
+
 // import ExamQuestionOptions from "./ExamQuestionOptions";
 // import ExamQuestionSelects from "./ExamQuestionSelects";
 // import ExamQuestionPic from "./ExamQuestionPic";
@@ -93,6 +95,9 @@ export default function Exam()
     //@ts-expect-error type
     const displayedQuestions = finalExam?.questions?.map((question, index) => 
         question.type === 'options' ?
+        question.correctOption.length > 1 ?
+        //@ts-expect-error errrrr
+        <ExamQuestionTwoOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
         //@ts-expect-error errrrr
         <ExamQuestionOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
         //@ts-expect-error errrrr

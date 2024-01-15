@@ -10,6 +10,7 @@ import { db } from "../../../../firebase/firebaseConfig";
 import { getExamSession } from "../../../helpers/getExamSession";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import ExamQuestionSelects from "./ExamQuestionSelects";
+import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
 
 export default function Quiz() 
 {
@@ -39,6 +40,9 @@ export default function Quiz()
     //@ts-expect-error errrrr
     const displayedQuestions = quiz?.questions?.map((question, index) => 
         question.type === 'options' ?
+        question.correctOption.length > 1 ?
+        //@ts-expect-error errrrr
+        <ExamQuestionTwoOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
         //@ts-expect-error errrrr
         <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
         //@ts-expect-error errrrr
