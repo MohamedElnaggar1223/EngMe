@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, AccordionDetails, Input } from '@mui/material'
+import { Box, Stack, Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, AccordionDetails, Input, Snackbar, Alert } from '@mui/material'
 import ReactApexChart from "react-apexcharts";
 import star from '../../../../assets/Star 4.png'
 import { memo, useContext, useMemo, useState, lazy, Suspense, createContext, useEffect, useRef } from 'react';
@@ -29,9 +29,9 @@ import { getStudentCompletedProgram } from '../../../helpers/getStudentCompleted
 import { getStudentProgramComment } from '../../../helpers/getStudentProgramComment'
 import { StarOutline, StarRate } from '@mui/icons-material'
 import { setStudentProgramComment } from '../../../helpers/setStudentProgramComment'
-import { setStudentProgramCertificate } from '../../../helpers/setStudentProgramCertificate'
+// import { setStudentProgramCertificate } from '../../../helpers/setStudentProgramCertificate'
 import { useNavigate } from 'react-router-dom'
-
+import emailjs from '@emailjs/browser';
 interface ProgramCurrentCard{
     program: ProgramProps,
     completed?: boolean
@@ -50,6 +50,8 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
 
     const navigate = useNavigate()
 
+    const form = useRef();
+
     const testRef = useRef<HTMLDivElement>(null)
     const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -58,6 +60,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     const [submitFeedback, setSubmitFeedback] = useState(false)
     const [feedback, setFeedback] = useState('')
     const [disappear, setDisappear] = useState(false)
+    const [requestSuccess, setRequestSuccess] = useState(false)
 
     useEffect(() => {
         if(submitFeedback) {
@@ -220,20 +223,20 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
         enabled: !!completed
 	})
 
-    const { mutate: mutateCertificate } = useMutation({
-        onMutate: () => {
-            const previousData = queryClient.getQueryData(['completedPrograms', userData.id, program.id])
+    // const { mutate: mutateCertificate } = useMutation({
+    //     onMutate: () => {
+    //         const previousData = queryClient.getQueryData(['completedPrograms', userData.id, program.id])
 
-            queryClient.setQueryData(['completedPrograms', userData.id, program.id], (oldData: unknown) => {
-                //@ts-expect-error object
-                return {...oldData, status: 'accepted'}
-            })
+    //         queryClient.setQueryData(['completedPrograms', userData.id, program.id], (oldData: unknown) => {
+    //             //@ts-expect-error object
+    //             return {...oldData, status: 'pending'}
+    //         })
 
-            return () => queryClient.setQueryData(['completedPrograms', userData.id, program.id], previousData)
-        },
-        //@ts-expect-error idprogram
-        mutationFn: () => setStudentProgramCertificate(completedProgram?.id)
-    })
+    //         return () => queryClient.setQueryData(['completedPrograms', userData.id, program.id], previousData)
+    //     },
+    //     //@ts-expect-error idprogram
+    //     mutationFn: () => setStudentProgramCertificate(completedProgram?.id)
+    // })
 
     const { data: studentProgramComment } = useQuery({
         queryKey: ['studentProgramComment', userData.id, program.id],
@@ -376,8 +379,31 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     //@ts-expect-error error
     const displayedPrereqs = prereqs?.map(prereq => <Typography sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>) 
 
+    const handleRequestCertificate = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        //@ts-expect-error form
+        emailjs.sendForm(import.meta.env.VITE_EMAILJS_SERVICE_ID, import.meta.env.VITE_EMAILJS_TEMPLATE_REQUEST_ID, form.current, import.meta.env.VITE_EMAILJS_PUBLIC_ID)
+        setRequestSuccess(true)
+    }
+
+    const successAlert = (
+        <Box sx={{ width: 800 }}>
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                open={requestSuccess}
+                onClose={() => setRequestSuccess(false)}
+                autoHideDuration={2000}
+            >
+                <Alert onClose={() => setRequestSuccess(false)} severity="success" sx={{ width: '100%' }}>
+                    Request Sent Successfully!
+                </Alert>
+            </Snackbar>
+        </Box>
+    )
+
     return (
         <>
+        {successAlert}
         <Accordion expanded={expand} sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
                 style: { 
@@ -686,31 +712,42 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                 {
                                     //@ts-expect-error status
                                     completed && completedProgram?.status === 'pending' &&
-                                    <Button
-                                        sx={{
-                                            marginLeft: 'auto',
-                                            marginRight: 24,
-                                            marginTop: -10,
-                                            width: '300px',
-                                            height: '50px',
-                                            background: '#fff',
-                                            color: '#226E9F',
-                                            fontFamily: 'Inter',
-                                            fontSize: 14,
-                                            textTransform: 'none',
-                                            fontWeight: 700,
-                                            border: '1px solid #226E9F',
-                                            borderRadius: '15px',
-                                            '&:hover': {
-                                                background: '#fff',
-                                                opacity: 1
-                                            }
-                                        }}
-                                        // onClick={() => console.log('ts')}
-                                        onClick={() => mutateCertificate()}
+                                    <form
+                                        //@ts-expect-error form
+                                        ref={form}
+                                        onSubmit={handleRequestCertificate}
                                     >
-                                        Request Certificate
-                                    </Button>
+                                        <input name='programName' value={program.name} hidden />
+                                        {/*//@ts-expect-error teacher */}
+                                        <input name='teacherName' value={teacherData?.name} hidden />
+                                        <input name='studentName' value={userData?.name} hidden />
+                                        <input name='date' value={(new Date()).toDateString()} hidden />
+                                        <Button
+                                            sx={{
+                                                marginLeft: 'auto',
+                                                marginRight: 24,
+                                                marginTop: -10,
+                                                width: '300px',
+                                                height: '50px',
+                                                background: '#fff',
+                                                color: '#226E9F',
+                                                fontFamily: 'Inter',
+                                                fontSize: 14,
+                                                textTransform: 'none',
+                                                fontWeight: 700,
+                                                border: '1px solid #226E9F',
+                                                borderRadius: '15px',
+                                                '&:hover': {
+                                                    background: '#fff',
+                                                    opacity: 1
+                                                }
+                                            }}
+                                            // onClick={() => console.log('ts')}
+                                            type='submit'
+                                        >
+                                            Request Certificate
+                                        </Button>
+                                    </form>
                                 }
                             </Stack>
 
