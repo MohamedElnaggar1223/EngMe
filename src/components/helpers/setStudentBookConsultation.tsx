@@ -5,6 +5,7 @@ import axios from "axios";
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export const setStudentBookConsultation = async(studentId: string, teacherId: string) => {
+    console.log(studentId, teacherId)
     const consultationSessionsRef = collection(db, 'consultationSessions')
     const teacherScheduleRef = collection(db, 'teacherSchedule')
 
