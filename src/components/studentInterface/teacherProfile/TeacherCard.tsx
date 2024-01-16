@@ -1,15 +1,19 @@
-import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, Stack, SvgIcon, Typography } from "@mui/material";
 import { getUserData } from "../../helpers/getUserData";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getStudentInTeacherPrograms } from "../../helpers/getStudentInTeacherPrograms";
 import { getTeacherFollowers } from "../../helpers/getTeacherFollowers";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../authentication/auth/AuthProvider";
 import { setStudentFollowTeacher } from "../../helpers/setStudentFollowTeacher";
 import { getStudentConsultation } from "../../helpers/getStudentConsultation";
 import { setStudentBookConsultation } from "../../helpers/setStudentBookConsultation";
 import { setStudentChatTeacher } from "../../helpers/setStudentChatTeacher";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../../../firebase/firebaseConfig";
+import axios from 'axios'
+import { loadStripe } from '@stripe/stripe-js'
 
 export default function TeacherCard() 
 {
@@ -19,6 +23,8 @@ export default function TeacherCard()
     const { userData } = useContext(AuthContext)
 
     const queryClient = useQueryClient()
+
+    const [loading, setLoading] = useState(false)
 
     const { data: teacherData } = useQuery({
         queryKey: ['teacherLetterData', id],
@@ -91,6 +97,62 @@ export default function TeacherCard()
         mutationFn: () => setStudentChatTeacher(id ?? '', userData?.id)
     })
 
+    const handlePayment = async () => {
+        const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+
+        const headers = {
+            "Content-Type": "application/json"
+        }
+
+        const body = {
+            teacherId: id,
+            studentId: userData.id
+        }
+
+        const response = await axios.post('https://engmestripeapi.onrender.com/create-checkout-session', body, {
+            headers
+        })
+        
+        // const response = await axios.post('http://localhost:3001/create-checkout-session', body, {
+        //     headers
+        // })
+
+        const session = response.data
+
+        const result = await stripe?.redirectToCheckout({
+            sessionId: session.id
+        })
+
+        if(result?.error)
+        {
+            console.error(result.error)
+        }
+    }
+
+    const handleConsultations = async (studentId: string, teacherId: string) => {
+        const teacherScheduleRef = collection(db, 'teacherSchedule')
+        const queryTeacherSchedule = query(teacherScheduleRef, where('teacherId', '==', teacherId))
+        const teacherScheduleSnap = await getDocs(queryTeacherSchedule)
+
+        if(teacherScheduleSnap.docs.length > 0)
+        {
+            const teacherScheduleData = teacherScheduleSnap.docs[0].data()
+
+            setLoading(true)
+            
+            if(Number(teacherScheduleData?.hourlyRate))
+            {
+                await handlePayment()
+            }
+            else
+            {
+                await setStudentBookConsultation(studentId, teacherId)
+            }
+
+            setLoading(false)
+        }
+     }
+
     const { mutate: mutateBookConsultation } = useMutation({
         onMutate: () => {
             const previousData = queryClient.getQueryData(['studentConsultations', userData?.id])
@@ -103,7 +165,7 @@ export default function TeacherCard()
             return () => queryClient.setQueryData(['studentConsultations', userData?.id], previousData)
         },
         //@ts-expect-error idteacher
-        mutationFn: () => setStudentBookConsultation(userData?.id, id)
+        mutationFn: () => handleConsultations(userData?.id, id)
     })
 
     return (
@@ -125,6 +187,9 @@ export default function TeacherCard()
             minHeight='200px'
             // mb={10}
         >
+            <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+            </Dialog>
             <Stack
                 direction='row'
                 alignItems='center'

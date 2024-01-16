@@ -8,6 +8,7 @@ import { getUserData } from '../../helpers/getUserData'
 import axios from 'axios'
 import { collection, query, where, onSnapshot } from 'firebase/firestore'
 import { setStudentRequestProgram } from '../../helpers/setStudentRequestProgram'
+import { setStudentBookConsultation } from '../../helpers/setStudentBookConsultation'
 
 //@ts-expect-error context
 export const AuthContext = createContext()
@@ -125,6 +126,28 @@ export default function AuthProvider({ children })
         }
     }, [userData])
 
+    useEffect(() => {
+        if(userData?.id)
+        {
+            const ordersRef = collection(db, 'ordersConsultations')
+            const queryOrders = query(ordersRef, where('studentId', '==', userData?.id))
+    
+            const unsub = onSnapshot(queryOrders, async (querySnapshot) => {
+                const acceptedOrders = querySnapshot.docs.slice().filter(doc => doc.data()?.status === 'accepted')
+    
+                const updateStudentProgram = acceptedOrders.map(async (order) => {
+                    await setStudentBookConsultation(order.data()?.studentId, order.data()?.teacherId)
+                })
+    
+                await Promise.all(updateStudentProgram)
+            })
+    
+            return () => {
+                unsub()
+            }
+        }
+    }, [userData])
+    
     if(isLoading) return <></>
     else return (
         <AuthContext.Provider

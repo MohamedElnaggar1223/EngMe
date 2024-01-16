@@ -1,5 +1,5 @@
 import { ExpandMore } from "@mui/icons-material"
-import { Box, Select, MenuItem, InputLabel, Stack, Button } from "@mui/material"
+import { Box, Select, MenuItem, InputLabel, Stack, Button, Typography, Input } from "@mui/material"
 import { useContext, useEffect, useMemo, useState } from "react"
 import { AuthContext } from "../../authentication/auth/AuthProvider"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -12,6 +12,8 @@ interface TeacherEditConsultaionsProps{
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 const Hours = ["12 AM", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", '9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM','5 PM', '6 PM', '7 PM', '8 PM', '9 PM', '10 PM', '11 PM']
+
+const hourlyRateRegex = /^\d*\.?\d{0,2}$/
 
 export default function TeacherEditConsultaions({ setEdit }: TeacherEditConsultaionsProps) 
 {
@@ -34,6 +36,8 @@ export default function TeacherEditConsultaions({ setEdit }: TeacherEditConsulta
             endTime: ''
         }
     ])
+    //@ts-expect-error number
+    const [hourlyRate, setHourlyRate] = useState(teacherSchedule?.hourlyRate ?? '')
 
     function handelNewSlotsChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, i: number, type: string)
     {
@@ -73,7 +77,7 @@ export default function TeacherEditConsultaions({ setEdit }: TeacherEditConsulta
             return () => queryClient.setQueryData(['teacherSchedule', userData?.id], previousData)
         },
         //@ts-expect-error slots
-        mutationFn: () => setTeacherSchedule(teacherSchedule?.id, selectedNoOfDays, newSlots)
+        mutationFn: () => setTeacherSchedule(teacherSchedule?.id, selectedNoOfDays, newSlots, hourlyRate)
     })
 
     const displayedSelects = useMemo(() => {
@@ -85,6 +89,7 @@ export default function TeacherEditConsultaions({ setEdit }: TeacherEditConsulta
                         alignItems='center'
                         justifyContent='center'
                         gap={2}
+                        key={i}
                     >
                         <Stack
                             direction='column'
@@ -271,45 +276,78 @@ export default function TeacherEditConsultaions({ setEdit }: TeacherEditConsulta
                 gap={4}
             >
                 <Stack
-                    direction='column'
-                    gap={0.65}
+                    direction='row'
+                    flex={1}
+                    justifyContent='space-between'
                 >
-                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id="noOfDays"># of Days</InputLabel>
-                    <Select
-                        // labelId="demo-select-small-label"
-                        // id="demo-select-small"
-                        sx={{
-                            width: '140px !important',
-                            height: '38px !important',
-                            boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
-                            borderRadius: '7.5px !important',
-                            outline: 'none !important',
-                            boxSizing: 'border-box !important',
-                            background: '#fff',
-                            paddingX: 1,
-                            '&:hover': {
-                                boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
-                                background: '#fff',
-                            }, fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F',
-                            textAlign: 'center'
-                        }}
-                        // value={day}
-                        IconComponent={() => <ExpandMore sx={{ borderLeft: '1.5px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', zIndex: 1, position: 'absolute', left: '70%' }} />}
-                        inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
-                        variant='standard'
-                        disableUnderline
-                        color='primary'
-                        labelId="noOfDays"
-                        value={selectedNoOfDays}
-                        onChange={(e) => setSelectedNoOfDays(Number(e.target.value))}
+                    <Stack
+                        direction='column'
+                        gap={0.65}
                     >
-                        <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='1'>1</MenuItem>
-                        <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='2'>2</MenuItem>
-                        <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='3'>3</MenuItem>
-                        <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='4'>4</MenuItem>
-                        <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='5'>5</MenuItem>
-                        <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='6'>6</MenuItem>
-                    </Select>
+                        <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id="noOfDays"># of Days</InputLabel>
+                        <Select
+                            // labelId="demo-select-small-label"
+                            // id="demo-select-small"
+                            sx={{
+                                width: '140px !important',
+                                height: '38px !important',
+                                boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                borderRadius: '7.5px !important',
+                                outline: 'none !important',
+                                boxSizing: 'border-box !important',
+                                background: '#fff',
+                                paddingX: 1,
+                                '&:hover': {
+                                    boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                    background: '#fff',
+                                }, fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F',
+                                textAlign: 'center'
+                            }}
+                            // value={day}
+                            IconComponent={() => <ExpandMore sx={{ borderLeft: '1.5px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', zIndex: 1, position: 'absolute', left: '70%' }} />}
+                            inputProps={{ style: { borderRight: '1px solid rgba(0, 0, 0, 1)', width: '100%' } }}
+                            variant='standard'
+                            disableUnderline
+                            color='primary'
+                            labelId="noOfDays"
+                            value={selectedNoOfDays}
+                            onChange={(e) => setSelectedNoOfDays(Number(e.target.value))}
+                        >
+                            <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='1'>1</MenuItem>
+                            <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='2'>2</MenuItem>
+                            <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='3'>3</MenuItem>
+                            <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='4'>4</MenuItem>
+                            <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='5'>5</MenuItem>
+                            <MenuItem sx={{ background: '#fff', fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F' }} value='6'>6</MenuItem>
+                        </Select>
+                    </Stack>
+                    <Stack
+                        gap={1}
+                        justifyContent='center'
+                        alignItems='center'
+                    >
+                        <Typography sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }}>Hourly Rate (usd/hr)</Typography>
+                        <Input
+                            sx={{
+                                width: '140px !important',
+                                height: '38px !important',
+                                boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                borderRadius: '7.5px !important',
+                                outline: 'none !important',
+                                boxSizing: 'border-box !important',
+                                background: '#fff',
+                                paddingX: 1,
+                                '&:hover': {
+                                    boxShadow: '0px 0px 0px 1px rgba(34,110,159,0.39)',
+                                    background: '#fff',
+                                }, fontSize: 16, fontWeight: 700, fontFamily: 'Inter', color: '#226E9F',
+                                textAlign: 'center'
+                            }}
+                            disableUnderline
+                            value={hourlyRate}
+                            onChange={(e) => hourlyRateRegex.test(e.target.value) && setHourlyRate(e.target.value)}
+                        />
+                    </Stack>
                 </Stack>
                 <Box
                     height='auto'
