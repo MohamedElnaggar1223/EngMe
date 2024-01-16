@@ -108,6 +108,8 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
                 status: 'accepted'
             }
 
+            console.log('TEST BOTTOM')
+
             const addedSession = await addDoc(consultationSessionsRef, newSession)
 
             const response = await axios.get(`https://engmebackendzoom.onrender.com/start-zoom-auth?startTime=${encodeURIComponent(formattedStartTime ?? "hello")}&consultationId=${addedSession.id}`)
