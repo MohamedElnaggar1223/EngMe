@@ -1,9 +1,12 @@
 import { collection, query, where, getDocs, and, Timestamp } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
+import moment from 'moment';
 
 export const getTeacherAvailable = async(teacherId: string) => {
     const teacherScheduleRef = collection(db, 'teacherSchedule')
     const queryTeacherSchedule = query(teacherScheduleRef, where('teacherId', '==', teacherId))
+
+    console.log(teacherId)
 
     const teacherScheduleDoc = await getDocs(queryTeacherSchedule)
 
@@ -11,28 +14,30 @@ export const getTeacherAvailable = async(teacherId: string) => {
     {
         const teacherSlots = teacherScheduleDoc.docs[0].data().slots
 
-        let gapCount = 0
+        let gapCount = 0;
 
-        //@ts-expect-error tserror
-        teacherSlots.sort((a, b) => (a.startTime > b.startTime) ? 1 : -1)
+        // Iterate through teacherSlots to calculate gaps
+        for (let i = 0; i < teacherSlots.length; i++) {
+            const currentEndTime = moment('2022-01-01 ' + teacherSlots[i].endTime, 'YYYY-MM-DD h A').toDate().getTime();
+            const nextStartTime = moment('2022-01-01 ' + teacherSlots[i].startTime, 'YYYY-MM-DD h A').toDate().getTime();
 
-        // Iterate through slots to calculate gaps
-        for (let i = 0; i < teacherSlots.length - 1; i++) 
-        {
-            const currentEndTime = new Date('2022-01-01 ' + teacherSlots[i].endTime).getTime()
-            const nextStartTime = new Date('2022-01-01 ' + teacherSlots[i + 1].startTime).getTime()
-
-            const timeDifference = (nextStartTime - currentEndTime) / (1000 * 60);
+            // Calculate time difference in minutes
+            const timeDifference = (currentEndTime - nextStartTime) / (1000 * 60);
 
             // If the gap is 1 hour or more, count each hour as a separate gap
-            if (timeDifference >= 60) 
-            {
+            if (timeDifference >= 60) {
                 gapCount += Math.floor(timeDifference / 60);
             }
         }
 
-        const teacherConsults = await getDocs(query(collection(db, 'consultationSessions'), and(where('teacherId', '==', teacherId), where('startTime', '>=', Timestamp.now()))))
+        console.log(gapCount)
 
-        return gapCount > teacherConsults.docs.length
+        const teacherConsultsRef = collection(db, 'consultationSessions')
+        const queryTeacherConsults = query(teacherConsultsRef, where('teacherId', '==', teacherId))
+        const teacherConsults = await getDocs(queryTeacherConsults)
+
+        const filteredTeacherConsults = teacherConsults.docs.slice().filter(doc => doc.data().startTime > Timestamp.now())
+
+        return gapCount > filteredTeacherConsults.length
     }
 }
