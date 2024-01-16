@@ -113,7 +113,7 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
 
             if(response.data.link)
             {
-                window.open(response.data.link, '_blank')
+                window.location.href = response.data.link
             }
             else
             {
