@@ -114,6 +114,9 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
 
             const response = await axios.get(`https://engmebackendzoom.onrender.com/start-zoom-auth?startTime=${encodeURIComponent(formattedStartTime ?? "hello")}&consultationId=${addedSession.id}`)
 
+            console.log(response.status)
+            console.log(response.data)
+
             if(response.data.link)
             {
                 console.log(response.data.link)
