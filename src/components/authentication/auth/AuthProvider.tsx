@@ -6,7 +6,7 @@ import { getExamSession } from '../../helpers/getExamSession'
 import { useNavigate } from 'react-router-dom'
 import { getUserData } from '../../helpers/getUserData'
 import axios from 'axios'
-import { collection, query, where, onSnapshot } from 'firebase/firestore'
+import { collection, query, where, onSnapshot, deleteDoc } from 'firebase/firestore'
 import { setStudentRequestProgram } from '../../helpers/setStudentRequestProgram'
 import { setStudentBookConsultation } from '../../helpers/setStudentBookConsultation'
 
@@ -115,6 +115,7 @@ export default function AuthProvider({ children })
     
                 const updateStudentProgram = acceptedOrders.map(async (order) => {
                     await setStudentRequestProgram('', order.data()?.studentId, order.data()?.programId)
+                    await deleteDoc(order.ref)
                 })
     
                 await Promise.all(updateStudentProgram)
@@ -137,6 +138,7 @@ export default function AuthProvider({ children })
     
                 const updateStudentProgram = acceptedOrders.map(async (order) => {
                     await setStudentBookConsultation(order.data()?.studentId, order.data()?.teacherId)
+                    await deleteDoc(order.ref)
                 })
     
                 await Promise.all(updateStudentProgram)
