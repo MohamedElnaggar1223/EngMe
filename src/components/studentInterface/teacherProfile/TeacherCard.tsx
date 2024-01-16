@@ -100,6 +100,8 @@ export default function TeacherCard()
     const handlePayment = async () => {
         const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
+        console.log(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+
         const headers = {
             "Content-Type": "application/json"
         }
@@ -112,6 +114,8 @@ export default function TeacherCard()
         const response = await axios.post('https://engmestripeapi.onrender.com/create-checkout-session', body, {
             headers
         })
+
+        console.log(response.data)
         
         // const response = await axios.post('http://localhost:3001/create-checkout-session', body, {
         //     headers
@@ -125,6 +129,7 @@ export default function TeacherCard()
 
         if(result?.error)
         {
+            console.log('Failed')
             console.error(result.error)
         }
     }
