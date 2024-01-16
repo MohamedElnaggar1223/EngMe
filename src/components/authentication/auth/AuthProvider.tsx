@@ -138,7 +138,7 @@ export default function AuthProvider({ children })
     
                 const updateStudentProgram = acceptedOrders.map(async (order) => {
                     await setStudentBookConsultation(order.data()?.studentId, order.data()?.teacherId)
-                    await deleteDoc(order.ref)
+                    // await deleteDoc(order.ref)
                 })
     
                 await Promise.all(updateStudentProgram)
