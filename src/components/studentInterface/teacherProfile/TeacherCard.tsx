@@ -97,27 +97,23 @@ export default function TeacherCard()
         mutationFn: () => setStudentChatTeacher(id ?? '', userData?.id)
     })
 
-    const handlePayment = async () => {
+    const handlePayment = async (hourlyRate: string) => {
         const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
-        console.log(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-
         const headers = {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+
         }
 
         const body = {
             teacherId: id,
-            studentId: userData.id
+            studentId: userData.id,
+            hourlyRate
         }
-
-        console.log('?????')
 
         const response = await axios.post('https://engmestripeapi.onrender.com/create-checkout-session', body, {
             headers
         })
-
-        console.log(response.data)
         
         // const response = await axios.post('http://localhost:3001/create-checkout-session', body, {
         //     headers
@@ -131,7 +127,6 @@ export default function TeacherCard()
 
         if(result?.error)
         {
-            console.log('Failed')
             console.error(result.error)
         }
     }
@@ -149,7 +144,7 @@ export default function TeacherCard()
             
             if(Number(teacherScheduleData?.hourlyRate))
             {
-                await handlePayment()
+                await handlePayment(teacherScheduleData?.hourlyRate)
             }
             else
             {
