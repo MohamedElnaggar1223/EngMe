@@ -125,7 +125,7 @@ export default function AuthProvider({ children })
                 unsub()
             }
         }
-    }, [])
+    }, [userData])
 
     useEffect(() => {
         if(userData?.id)
@@ -148,7 +148,7 @@ export default function AuthProvider({ children })
                 unsub()
             }
         }
-    }, [])
+    }, [userData])
     
     if(isLoading) return <></>
     else return (
