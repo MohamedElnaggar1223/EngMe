@@ -113,6 +113,7 @@ export const setStudentBookConsultation = async(studentId: string, teacherId: st
 
             if(response.data.link)
             {
+                console.log(response.data.link)
                 window.location.href = response.data.link
             }
             else
