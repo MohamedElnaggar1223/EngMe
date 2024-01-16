@@ -111,6 +111,8 @@ export default function TeacherCard()
             studentId: userData.id
         }
 
+        console.log('?????')
+
         const response = await axios.post('https://engmestripeapi.onrender.com/create-checkout-session', body, {
             headers
         })

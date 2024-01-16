@@ -5,7 +5,6 @@ export async function getUserData(uid: string)
     {
         try
         {
-            console.log('a7a')
             const userRef = doc(db, 'students', uid ?? '')
             const userSnapshot = await getDoc(userRef)
     
