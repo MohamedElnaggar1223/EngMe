@@ -37,7 +37,7 @@ export default function TeacherEditConsultaions({ setEdit }: TeacherEditConsulta
         }
     ])
     //@ts-expect-error number
-    const [hourlyRate, setHourlyRate] = useState(teacherSchedule?.hourlyRate ?? '')
+    const [hourlyRate, setHourlyRate] = useState(teacherSchedule?.hourlyRate)
 
     function handelNewSlotsChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, i: number, type: string)
     {
