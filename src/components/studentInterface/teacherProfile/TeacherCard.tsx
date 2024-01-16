@@ -14,6 +14,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../../firebase/firebaseConfig";
 import axios from 'axios'
 import { loadStripe } from '@stripe/stripe-js'
+import { getTeacherAvailable } from "../../helpers/getTeacherAvailable";
 
 export default function TeacherCard() 
 {
@@ -50,6 +51,12 @@ export default function TeacherCard()
         queryKey: ['studentConsultations', userData?.id],
         queryFn: () => getStudentConsultation(userData?.id),
         enabled: !!userData?.id && !!id
+    })
+
+    const { data: teacherAvailable } = useQuery({
+        queryKey: ['teacherAvailable', id],
+        queryFn: () => getTeacherAvailable(id ?? ''),
+        enabled: !!id
     })
 
     const { mutate: mutateFollow } = useMutation({
@@ -358,6 +365,7 @@ export default function TeacherCard()
                                 background: '#fff'
                             }}
                             onClick={() => mutateBookConsultation()}
+                            disabled={!teacherAvailable}
                         >
                             Book a Consultancy
                         </Button>
