@@ -148,7 +148,7 @@ export default function AuthProvider({ children })
                 unsub()
             }
         }
-    }, [])
+    }, [userData])
     
     if(isLoading) return <></>
     else return (
