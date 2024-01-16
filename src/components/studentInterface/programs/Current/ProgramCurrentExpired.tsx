@@ -120,8 +120,10 @@ export default function ProgramCurrentExpired(program: ProgramProps)
             "Content-Type": "application/json"
         }
 
+        const postProgram = {...program, image: ''}
+
         const body = {
-            program: program,
+            program: postProgram,
             studentId: userData.id
         }
 
