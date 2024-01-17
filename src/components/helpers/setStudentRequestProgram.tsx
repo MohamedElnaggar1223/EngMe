@@ -65,6 +65,14 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
             }
         }
 
+        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+
         //@ts-expect-error name
         setNotification(`${studentData.data()?.name} just purchased ${programData[0].name}`, [programData[0].teacherId], [''], '/')
     }
