@@ -720,6 +720,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                         <input name='programName' value={program.name} hidden />
                                         {/*//@ts-expect-error teacher */}
                                         <input name='teacherName' value={teacherData?.name} hidden />
+                                        <input name='teacherEmail' value={teacherData?.email} hidden />
                                         <input name='studentName' value={userData?.name} hidden />
                                         <input name='date' value={(new Date()).toDateString()} hidden />
                                         <Button
