@@ -104,10 +104,6 @@ export default function AuthProvider({ children })
         }
     }, [])
 
-    console.log(process.env.VITE_EMAILJS_SERVICE_ID,
-        process.env.VITE_EMAILJS_TEMPLATE_ID,
-        process.env.VITE_EMAILJS_PUBLIC_ID,)
-
     useEffect(() => {
         if(userData?.id)
         {
