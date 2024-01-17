@@ -65,6 +65,8 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
             }
         }
 
+        console.log(data)
+
         await fetch('https://api.emailjs.com/api/v1.0/email/send', {
             method: 'POST',
             headers: {
