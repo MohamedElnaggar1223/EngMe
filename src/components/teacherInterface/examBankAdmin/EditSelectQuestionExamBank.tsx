@@ -108,7 +108,7 @@ function EditSelectQuestionExamBank({ examBank, index, question })
                                     //@ts-expect-error oldata
                                     const newData = oldData ? [...oldData] : []
                                     const oldQuestion = newData[index]
-                                    newData[index] = { question: oldQuestion.question, correctOption: '0', options: [oldQuestion.firstOptions[oldQuestion.firstCorrect], oldQuestion.secondOptions[oldQuestion.secondCorrect], oldQuestion.thirdOptions[oldQuestion.thirdCorrect], oldQuestion.fourthOptions[oldQuestion.fourthCorrect]], type: 'options' }
+                                    newData[index] = { question: oldQuestion.question, correctOption: ['0'], options: [oldQuestion.firstOptions[oldQuestion.firstCorrect], oldQuestion.secondOptions[oldQuestion.secondCorrect], oldQuestion.thirdOptions[oldQuestion.thirdCorrect], oldQuestion.fourthOptions[oldQuestion.fourthCorrect]], type: 'options' }
                                     return newData
                                 })
                             }}

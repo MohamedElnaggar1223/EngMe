@@ -53,6 +53,18 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
 
         const studentData = await getDoc(studentDoc)
 
+        const data = {
+            service_id: process.env.VITE_EMAILJS_SERVICE_ID,
+            template_id: process.env.VITE_EMAILJS_TEMPLATE_ID,
+            user_id: process.env.VITE_EMAILJS_PUBLIC_ID,
+            template_params: {
+                'studentName': studentData.data()?.name,
+                //@ts-expect-error name
+                'programName': programData[0].name,
+                'studentEmail': studentData.data()?.email,
+            }
+        }
+
         //@ts-expect-error name
         setNotification(`${studentData.data()?.name} just purchased ${programData[0].name}`, [programData[0].teacherId], [''], '/')
     }

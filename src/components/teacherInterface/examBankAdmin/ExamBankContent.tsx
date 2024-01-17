@@ -58,7 +58,7 @@ export default function ExamBankContent({ id }: ExamBankContentProps)
     })
 
     const displayedContent = examBankContent?.map(ebContent => (
-        <Grid item xs={8} key={ebContent.id} mt={4}>
+        <Grid item xs={8} key={ebContent.id} mt={4} minWidth={edit === ebContent.id ? '100%' : 'auto'}>
             <Stack
                 direction='column'
                 flex={1}
@@ -77,6 +77,7 @@ export default function ExamBankContent({ id }: ExamBankContentProps)
                     gap={5}
                     pb={2}
                     height='180px'
+                    maxWidth='450px'
                     key={ebContent.id}
                     >
                     <SvgIcon sx={{ fontSize: 56 }}>

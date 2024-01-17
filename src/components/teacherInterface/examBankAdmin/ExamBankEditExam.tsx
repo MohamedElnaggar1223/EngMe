@@ -81,6 +81,7 @@ function ExamBankEditExam({ setEdited, examBank })
                 bgcolor='#fff'
                 py={2}
                 flex={1}
+                width='100%'
             >
                 {error && <Alert severity="error">{error}</Alert>}
                 {displayedQuestions?.length > 0 && displayedQuestions[selectedQuestion]}

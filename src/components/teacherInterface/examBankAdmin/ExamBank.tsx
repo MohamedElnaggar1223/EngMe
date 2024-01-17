@@ -1,11 +1,26 @@
-import { Box, Button, Input, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Input, Slide, Stack, SvgIcon, Typography } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { getExamBank } from "../../helpers/getExamBank";
 import ExamBankContent from "./ExamBankContent";
 import { setExamBankMajor } from "../../helpers/setExamBankMajor";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
+import { setEditExamBankMajor } from "../../helpers/setEditExamBankMajor";
+import { TransitionProps } from '@mui/material/transitions';
+
+const Transition = forwardRef(function Transition(
+    props: TransitionProps & {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>,
+    ) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 // const ExamBankCard = lazy(() => import("./ExamBankCard"))
 // const QuizBank = lazy(() => import("./QuizBank"))
 
@@ -17,6 +32,10 @@ export default function ExamBank()
     const [add, setAdd] = useState(false)
     const [majorAdded, setMajorAdded] = useState('')
     const [open, setOpen] = useState(true)
+    const [edit, setEdit] = useState('')
+    const [edited, setEdited] = useState('')
+    const [deleted, setDeleted] = useState('')
+    const [dialogOpen, setDialogOpen] = useState(false)
 
     const { data: examBankMajors } = useQuery({
         queryKey: ['examBankMajors'],
@@ -38,12 +57,49 @@ export default function ExamBank()
         mutationFn: () => setExamBankMajor(majorAdded)
     })
 
+    const { mutate: mutateEdit } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['examBankMajors'])
+
+            queryClient.setQueryData(['examBankMajors'], (oldData: unknown) => {
+                //@ts-expect-error oldData
+                return (oldData && oldData?.length > 0) ? oldData.map((major: unknown) => major.id === edit ? { ...major, major: edited } : major) : []
+            })
+
+            return () => queryClient.setQueryData(['examBankMajors'], previousData)
+        },
+        onSettled: () => {
+            setEdit('')
+            setEdited('')
+            queryClient.invalidateQueries({ queryKey: ['examBankMajors'] })
+        },
+        mutationFn: () => setEditExamBankMajor(edited, edit)
+    })
+
+    const { mutate: mutateDelete } = useMutation({
+        onMutate: () => {
+            const previousData = queryClient.getQueryData(['examBankMajors'])
+
+            queryClient.setQueryData(['examBankMajors'], (oldData: unknown) => {
+                //@ts-expect-error oldData
+                return (oldData && oldData?.length > 0) ? oldData.filter((major: unknown) => major.id !== deleted) : []
+            })
+
+            return () => queryClient.setQueryData(['examBankMajors'], previousData)
+        },
+        onSettled: () => {
+            setDeleted('')
+            queryClient.invalidateQueries({ queryKey: ['examBankMajors'] })
+        },
+        mutationFn: () => setEditExamBankMajor('', deleted, true)
+    })
+
     const displayedMajors = examBankMajors?.map(major => (
         <Box
-            px={8}
+            px={4}
             my={3.5}
             py={2}
-            width='60%'
+            width='100%'
             //@ts-expect-error major
             bgcolor={selectedMajor?.id === major?.id ? '#fff' : ''}
             //@ts-expect-error major
@@ -52,11 +108,68 @@ export default function ExamBank()
                 cursor: 'pointer'
             }}
             textAlign='center'
+            key={major.id}
         >
-            {/*//@ts-expect-error major */}
-            <Typography noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>{major?.major}</Typography>
+            <Stack
+                direction='row'
+                alignItems='center'
+                justifyContent='space-between'
+                px={4}
+            >    
+                {
+                    edit !== major.id ?
+                    //@ts-expect-error major
+                    <Typography alignSelf='center' noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>{major?.major}</Typography>
+                    :
+                    <Stack
+                        direction='row'
+                        gap={0.5}
+                        alignItems='center'
+                        justifyContent='center'
+                    >
+                        <Input
+                            value={edited}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => setEdited(e.target.value)}
+                        />
+                        <CheckIcon 
+                            onClick={(e) => { 
+                                e.stopPropagation()
+                                mutateEdit()
+                            }} 
+                            sx={{ fontSize: 20, color: '#9ca3af', p: 0.5, ':hover': { boxShadow: 'inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1)', borderRadius: '9999px' } }} />
+                    </Stack>
+                }
+                <Stack
+                    direction='column'
+                    gap={0.5}
+                >
+
+                    <EditIcon 
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setEdit(major.id)
+                            //@ts-expect-error major
+                            setEdited(major.major)
+                        }}
+                        sx={{ fontSize: 20, color: '#9ca3af', p: 0.5, ':hover': { boxShadow: 'inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1)', borderRadius: '9999px' } }} 
+                    />
+                    <DeleteForeverIcon 
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setDialogOpen(true)
+                            setDeleted(major.id)
+                        }} 
+                        sx={{ fontSize: 20, color: '#9ca3af', p: 0.5, ':hover': { boxShadow: 'inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1)', borderRadius: '9999px' } }} />
+
+                </Stack>
+            </Stack>
         </Box>
     ))
+
+    const handleClose = () => {
+        setDialogOpen(false)
+    }
 
     return (
         <Box
@@ -66,6 +179,75 @@ export default function ExamBank()
             zIndex={1}
             minHeight='77.8vh'
         >
+            {
+                deleted &&
+                <Dialog
+                    open={dialogOpen}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={handleClose}
+                    aria-describedby="alert-dialog-slide-description"
+                    PaperProps={{
+                        style: {
+                            borderRadius: '20px',
+                            overflow: 'hidden',
+                        }
+                    }}
+                >
+                    <DialogTitle sx={{ mx: 1, mt: 2, mb: 3 }}>Are you sure you want to delete This ExamBank Major?</DialogTitle>
+                    <DialogContent>
+                    <DialogContentText id="alert-dialog-slide-description">
+                    </DialogContentText>
+                    </DialogContent>
+                    <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly', mx: 4, mb: 4 }}>
+                    <Button 
+                        sx={{
+                            width: '120px',
+                            height: '50px',
+                            background: '#fff',
+                            color: '#000',
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            textTransform: 'none',
+                            fontWeight: 400,
+                            border: '1px solid #000',
+                            borderRadius: '10px',
+                            '&:hover': {
+                                background: '#fff',
+                                opacity: 1
+                            }
+                        }}
+                        onClick={handleClose}
+                    >
+                        No
+                    </Button>
+                    <Button 
+                        sx={{
+                            width: '120px',
+                            height: '50px',
+                            background: '#D30000',
+                            color: '#fff',
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            textTransform: 'none',
+                            fontWeight: 400,
+                            border: '0',
+                            borderRadius: '10px',
+                            '&:hover': {
+                                background: '#D30000',
+                                opacity: 1
+                            }
+                        }}
+                        onClick={() => {
+                            mutateDelete()
+                            handleClose()
+                        }}
+                    >
+                        Yes
+                    </Button>
+                    </DialogActions>
+                </Dialog>
+            }
             <Box
                 bgcolor='#D0EBFC'
                 display='flex'
