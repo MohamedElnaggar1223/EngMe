@@ -20,7 +20,7 @@ export const setLessonData = async(title: string, description: string, lesson?: 
         const lessonDoc = doc(db, 'lessons', lesson.id)
         
         //@ts-expect-error course
-        if(lesson?.duration !== duration)
+        if(lesson?.duration !== duration && duration)
         {
             //@ts-expect-error course
             const courseDoc = doc(db, 'courses', course.id)
