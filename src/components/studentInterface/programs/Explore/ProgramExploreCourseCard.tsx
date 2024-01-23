@@ -59,26 +59,38 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
     //     queryFn: () => getStudentAssessment()
     // })
 
-    console.log(course)
-
-    const displayedLessons = lessons?.map(lesson => (
-        <Stack
-            direction='row'
-            justifyContent='space-between'
-            flex={1}
-            height='50px'
-            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
-            alignItems='center'
-            key={lesson.id}
-        >
-            {/*//@ts-expect-error course*/}
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.title}</Typography>
-            {/*//@ts-expect-error course*/}
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.description}</Typography>
-            {/*//@ts-expect-error course*/}
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration.length ? `${lesson?.duration?.split(" ")[0]?.length > 1 ? lesson?.duration?.split(" ")[0] : `0${lesson?.duration?.split(" ")[0]}`}:${lesson?.duration?.split(" ")[2]?.length > 1 ? lesson?.duration?.split(" ")[2] : `0${lesson?.duration?.split(" ")[2]}`}:${lesson?.duration?.split(" ")[4]?.length > 1 ? lesson?.duration?.split(" ")[4] : `0${lesson?.duration?.split(" ")[4]}`}` : ''}</Typography>
-        </Stack>
-    ))
+    const displayedLessons = lessons?.map(lesson => {
+        let finalDuration
+        //@ts-expect-error duration
+        if(lesson?.duration)
+        {
+            //@ts-expect-error duration
+            const sec_num = parseInt(lesson?.duration, 10)
+            const hours_duration = Math.floor(sec_num / 3600);
+            const minutes_duration = Math.floor((sec_num - (hours_duration * 3600)) / 60)
+            const seconds_duration = sec_num - (hours_duration * 3600) - (minutes_duration * 60);
+    
+            finalDuration = `${hours_duration}:${minutes_duration}:${seconds_duration}`
+        }
+        return(
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                height='50px'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                key={lesson.id}
+            >
+                {/*//@ts-expect-error course*/}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.title}</Typography>
+                {/*//@ts-expect-error course*/}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.description}</Typography>
+                {/*//@ts-expect-error course*/}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration ? finalDuration : ''}</Typography>
+            </Stack>
+        )
+    })
 
     const displayedQuizzes = quizzes?.map((_: unknown, index: number) => (
         <Stack

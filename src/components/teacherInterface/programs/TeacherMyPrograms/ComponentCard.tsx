@@ -124,7 +124,7 @@ function ComponentCard({index, course}: ComponentCard)
                     width='150px'
                 >
                     {/*//@ts-expect-error lesson*/}
-                    <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration.length ? finalDuration : ''}</Typography>
+                    <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration ? finalDuration : ''}</Typography>
                     <SvgIcon  sx={{ fontSize: 18, marginLeft: 'auto' }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11" fill="none">
                             <line y1="0.5" x2="11" y2="0.5" stroke="#226E9F"/>
