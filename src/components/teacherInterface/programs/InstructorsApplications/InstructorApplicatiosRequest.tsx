@@ -60,6 +60,9 @@ export default function InstructorApplicatiosRequest(request: RequestProps)
                 queryClient.setQueryData(['teacherRequests'], previousData)
             }
         },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['teacherRequests'] })
+        },
         mutationFn: () => setDeleteTeacherRequest(request.id)
     })
 
@@ -152,6 +155,7 @@ export default function InstructorApplicatiosRequest(request: RequestProps)
                                 }}
                                 disableUnderline
                                 type='password'
+                                placeholder='Password (min 6 characters)'
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
@@ -178,6 +182,7 @@ export default function InstructorApplicatiosRequest(request: RequestProps)
                                 alignSelf: 'flex-end',
                                 height: '38px'
                             }}
+                            disabled={[accept, password, password.length < 6].every(Boolean)}
                             onClick={() => {
                                 if(!accept)
                                 {

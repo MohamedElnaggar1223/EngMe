@@ -108,23 +108,32 @@ export const setLessonData = async(title: string, description: string, lesson?: 
             //@ts-expect-error course
             const courseDoc = doc(db, 'courses', course.id)
 
-            const secondsAddedToMinutes = Number(duration?.split(' ')[4]) / 60
-            const hoursAddedToMinutes = Number(duration?.split(' ')[0]) * 60
-            //@ts-expect-error duration
-            const courseMinutes = Number(course?.duration?.split(' ')[4] / 60) + Number(course?.duration?.split(' ')[2]) + (Number(course?.duration?.split(' ')[0]) * 60)  
+            if(duration)
+            {
+                const secondsAddedToMinutes = Number(duration?.split(' ')[4]) / 60
+                const hoursAddedToMinutes = Number(duration?.split(' ')[0]) * 60
+                //@ts-expect-error duration
+                const courseMinutes = Number(course?.duration?.split(' ')[4] / 60) + Number(course?.duration?.split(' ')[2]) + (Number(course?.duration?.split(' ')[0]) * 60)  
+    
+                const minutesAdded = Number(duration?.split(' ')[2]) + secondsAddedToMinutes + hoursAddedToMinutes + courseMinutes
+    
+                const mins_num = parseFloat(minutesAdded.toFixed(2))
+                const hours   = Math.floor(mins_num / 60);
+                const minutes = Math.floor((mins_num - ((hours * 3600)) / 60));
+                const seconds = Math.floor((mins_num * 60) - (hours * 3600) - (minutes * 60));
+    
+                const Hours   = String(hours).length   > 1 ? hours.toString()   : '0' + hours;
+                const Minutes = String(minutes).length > 1 ? minutes.toString() : '0' + minutes;
+                const Seconds = String(seconds).length > 1 ? seconds.toString() : '0' + seconds;
+    
+                const durationAdded = `${Hours} Hours ${Minutes} Minutes ${Seconds} Seconds`
 
-            const minutesAdded = Number(duration?.split(' ')[2]) + secondsAddedToMinutes + hoursAddedToMinutes + courseMinutes
-
-            const mins_num = parseFloat(minutesAdded.toFixed(2))
-            const hours   = Math.floor(mins_num / 60);
-            const minutes = Math.floor((mins_num - ((hours * 3600)) / 60));
-            const seconds = Math.floor((mins_num * 60) - (hours * 3600) - (minutes * 60));
-
-            const Hours   = String(hours).length   > 1 ? hours.toString()   : '0' + hours;
-            const Minutes = String(minutes).length > 1 ? minutes.toString() : '0' + minutes;
-            const Seconds = String(seconds).length > 1 ? seconds.toString() : '0' + seconds;
-
-            const durationAdded = `${Hours} Hours ${Minutes} Minutes ${Seconds} Seconds`
+                await updateDoc(courseDoc, { lessons: arrayUnion(addedLesson.id), duration: `${durationAdded}` })
+            }
+            else
+            {
+                await updateDoc(courseDoc, { lessons: arrayUnion(addedLesson.id) })
+            }
 
             const studentProgramsRef = collection(db, 'studentProgram')
 
@@ -142,7 +151,7 @@ export const setLessonData = async(title: string, description: string, lesson?: 
 
             const studentFollowTeacher = studentFollowTeacherData.docs.map(doc => doc.data().studentId)
             
-            await updateDoc(courseDoc, { lessons: arrayUnion(addedLesson.id), duration: `${durationAdded}` })
+            
             await setNotification(`New Lesson has been uploaded for ${programData.data()?.name}!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
         }
     }

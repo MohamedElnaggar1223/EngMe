@@ -80,10 +80,14 @@ export default function PrivateRoute({ children })
         if(userIsSuccess)
         {
             if(user && userData) {
-                console.log('test')
                 setRefetchTime(Infinity)
-                navigate(pathname !== '/login' ? pathname : '/')
-                setPage(children[userData?.role ?? 0])
+                //@ts-expect-error firstLogin
+                if(userData?.role === 'teacher' && userData?.firstLoginLink) window.location.href = userData?.firstLoginLink
+                else
+                {
+                    navigate(pathname !== '/login' ? pathname : '/')
+                    setPage(children[userData?.role ?? 0])
+                }
             }
             else 
             {
