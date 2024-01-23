@@ -25,25 +25,63 @@ export const setLessonData = async(title: string, description: string, lesson?: 
             //@ts-expect-error course
             const courseDoc = doc(db, 'courses', course.id)
 
-            const secondsAddedToMinutes = Number(duration?.split(' ')[4]) / 60
-            const hoursAddedToMinutes = Number(duration?.split(' ')[0]) * 60
             //@ts-expect-error duration
-            const minutesAdded = Number(duration?.split(' ')[2]) + secondsAddedToMinutes + hoursAddedToMinutes - Number(lesson?.duration?.split(' ')[2]) - (Number(lesson?.duration?.split(' ')[0]) * 60) - (Number(lesson?.duration?.split(' ')[4]) / 60)
+            const courseDuration = course?.duration
+    
+            const totalCourseDuration = parseInt(courseDuration?.split(' ')[0]) * 3600 + parseInt(courseDuration?.split(' ')[2]) * 60 + parseInt(courseDuration?.split(' ')[4])
+
+            //@ts-expect-error duration
+            const newDuration = lesson?.duration ? (parseFloat(duration) + totalCourseDuration - lesson?.duration).toString() : (parseFloat(duration) + totalCourseDuration).toString()
+            
+            const sec_num = parseInt(newDuration, 10)
+            const hours_duration = Math.floor(sec_num / 3600);
+            const minutes_duration = Math.floor((sec_num - (hours_duration * 3600)) / 60)
+            const seconds_duration = sec_num - (hours_duration * 3600) - (minutes_duration * 60);
+
+            const finalDuration = `${hours_duration} Hours ${minutes_duration} Minutes ${seconds_duration} Seconds`
+
+            // const secondsAddedToMinutes = Number(duration?.split(' ')[4]) / 60
+            // const hoursAddedToMinutes = Number(duration?.split(' ')[0]) * 60
+            // //@ts-expect-error duration
+            // const minutesAdded = Number(duration?.split(' ')[2]) + secondsAddedToMinutes + hoursAddedToMinutes - Number(lesson?.duration?.split(' ')[2]) - (Number(lesson?.duration?.split(' ')[0]) * 60) - (Number(lesson?.duration?.split(' ')[4]) / 60)
+            // //@ts-expect-error course
+            // const courseMinutes = Number(course?.duration?.split(' ')[4] / 60) + Number(course?.duration?.split(' ')[2]) + (Number(course?.duration?.split(' ')[0]) * 60)
+            // const totalMins = courseMinutes + minutesAdded
+            // const mins_num = parseFloat(totalMins.toFixed(2))
+            // const hours   = Math.floor(mins_num / 60);
+            // const minutes = Math.floor((mins_num - ((hours * 3600)) / 60));
+            // const seconds = Math.floor((mins_num * 60) - (hours * 3600) - (minutes * 60));
+
+            // const Hours   = String(hours).length   > 1 ? hours.toString()   : '0' + hours
+            // const Minutes = String(minutes).length > 1 ? minutes.toString() : '0' + minutes
+            // const Seconds = String(seconds).length > 1 ? seconds.toString() : '0' + seconds
+
+            // const durationAdded = `${Hours} Hours ${Minutes} Minutes ${Seconds} Seconds`
+
+            await updateDoc(courseDoc, { duration: `${finalDuration}` })
+        }
+        //@ts-expect-error duration
+        else if(!duration && lesson?.duration)
+        {
             //@ts-expect-error course
-            const courseMinutes = Number(course?.duration?.split(' ')[4] / 60) + Number(course?.duration?.split(' ')[2]) + (Number(course?.duration?.split(' ')[0]) * 60)
-            const totalMins = courseMinutes + minutesAdded
-            const mins_num = parseFloat(totalMins.toFixed(2))
-            const hours   = Math.floor(mins_num / 60);
-            const minutes = Math.floor((mins_num - ((hours * 3600)) / 60));
-            const seconds = Math.floor((mins_num * 60) - (hours * 3600) - (minutes * 60));
+            const courseDoc = doc(db, 'courses', course.id)
 
-            const Hours   = String(hours).length   > 1 ? hours.toString()   : '0' + hours
-            const Minutes = String(minutes).length > 1 ? minutes.toString() : '0' + minutes
-            const Seconds = String(seconds).length > 1 ? seconds.toString() : '0' + seconds
+            //@ts-expect-error duration
+            const courseDuration = course?.duration
+    
+            const totalCourseDuration = parseInt(courseDuration?.split(' ')[0]) * 3600 + parseInt(courseDuration?.split(' ')[2]) * 60 + parseInt(courseDuration?.split(' ')[4])
 
-            const durationAdded = `${Hours} Hours ${Minutes} Minutes ${Seconds} Seconds`
+            //@ts-expect-error duration
+            const newDuration = (totalCourseDuration - lesson?.duration).toString()
+            
+            const sec_num = parseInt(newDuration, 10)
+            const hours_duration = Math.floor(sec_num / 3600);
+            const minutes_duration = Math.floor((sec_num - (hours_duration * 3600)) / 60)
+            const seconds_duration = sec_num - (hours_duration * 3600) - (minutes_duration * 60);
 
-            await updateDoc(courseDoc, { duration: `${durationAdded}` })
+            const finalDuration = `${hours_duration} Hours ${minutes_duration} Minutes ${seconds_duration} Seconds`
+
+            await updateDoc(courseDoc, { duration: `${finalDuration}` })
         }
 
         //@ts-expect-error file
@@ -110,25 +148,60 @@ export const setLessonData = async(title: string, description: string, lesson?: 
 
             if(duration)
             {
-                const secondsAddedToMinutes = Number(duration?.split(' ')[4]) / 60
-                const hoursAddedToMinutes = Number(duration?.split(' ')[0]) * 60
                 //@ts-expect-error duration
-                const courseMinutes = Number(course?.duration?.split(' ')[4] / 60) + Number(course?.duration?.split(' ')[2]) + (Number(course?.duration?.split(' ')[0]) * 60)  
+                const courseDuration = course?.duration
     
-                const minutesAdded = Number(duration?.split(' ')[2]) + secondsAddedToMinutes + hoursAddedToMinutes + courseMinutes
-    
-                const mins_num = parseFloat(minutesAdded.toFixed(2))
-                const hours   = Math.floor(mins_num / 60);
-                const minutes = Math.floor((mins_num - ((hours * 3600)) / 60));
-                const seconds = Math.floor((mins_num * 60) - (hours * 3600) - (minutes * 60));
-    
-                const Hours   = String(hours).length   > 1 ? hours.toString()   : '0' + hours;
-                const Minutes = String(minutes).length > 1 ? minutes.toString() : '0' + minutes;
-                const Seconds = String(seconds).length > 1 ? seconds.toString() : '0' + seconds;
-    
-                const durationAdded = `${Hours} Hours ${Minutes} Minutes ${Seconds} Seconds`
+                const totalCourseDuration = parseInt(courseDuration?.split(' ')[0]) * 3600 + parseInt(courseDuration?.split(' ')[2]) * 60 + parseInt(courseDuration?.split(' ')[4])
+                
+                const newDuration = (parseFloat(duration) + totalCourseDuration).toString()
+                
+                const sec_num = parseInt(newDuration, 10)
+                const hours_duration = Math.floor(sec_num / 3600);
+                const minutes_duration = Math.floor((sec_num - (hours_duration * 3600)) / 60)
+                const seconds_duration = sec_num - (hours_duration * 3600) - (minutes_duration * 60);
 
-                await updateDoc(courseDoc, { lessons: arrayUnion(addedLesson.id), duration: `${durationAdded}` })
+                const finalDuration = `${hours_duration} Hours ${minutes_duration} Minutes ${seconds_duration} Seconds`
+
+
+                // console.log(durationFormatted)
+
+                // const secondsAddedToMinutes = Number(durationFormatted?.split(' ')[4]) / 60
+                // const hoursAddedToMinutes = Number(durationFormatted?.split(' ')[0]) * 60
+                // //@ts-expect-error duration
+                // const courseMinutes = Number(course?.duration?.split(' ')[4] / 60) + Number(course?.duration?.split(' ')[2]) + (Number(course?.duration?.split(' ')[0]) * 60)  
+                
+                // console.log('secondsAddedToMinutes', secondsAddedToMinutes)
+                // console.log('hoursAddedToMinutes', hoursAddedToMinutes)
+                // console.log('courseMinutes', courseMinutes)
+
+                // const minutesAdded = Number(durationFormatted?.split(' ')[2]) + secondsAddedToMinutes + hoursAddedToMinutes + courseMinutes
+    
+                // console.log('minutesAdded', minutesAdded)
+
+                // const mins_num = parseFloat(minutesAdded.toFixed(2))
+                // const hours   = Math.floor(mins_num / 60);
+                // const minutes = Math.floor((mins_num - ((hours * 3600)) / 60));
+                // const seconds = Math.floor((mins_num * 60) - (hours * 3600) - (minutes * 60));
+
+
+                // console.log('mins_num', mins_num)
+                // console.log('hours', hours)
+                // console.log('minutes', minutes)
+                // console.log('seconds', seconds)
+    
+                // const Hours   = String(hours).length   > 1 ? hours.toString()   : '0' + hours;
+                // const Minutes = String(minutes).length > 1 ? minutes.toString() : '0' + minutes;
+                // const Seconds = String(seconds).length > 1 ? seconds.toString() : '0' + seconds;
+
+                // console.log('Hours', Hours)
+                // console.log('Minutes', Minutes)
+                // console.log('Seconds', Seconds)
+
+                // const durationAdded = `${Hours} Hours ${Minutes} Minutes ${Seconds} Seconds`
+
+                // console.log('durationAdded', durationAdded)
+
+                await updateDoc(courseDoc, { lessons: arrayUnion(addedLesson.id), duration: `${finalDuration}` })
             }
             else
             {

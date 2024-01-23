@@ -23,7 +23,7 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
             setTitle(lesson.title)
             setDescription(lesson.description)
             setFile({name: lesson.content?.content})
-            setDuration(lesson.duration)
+            setDuration(lesson?.duration)
             setFileType((lesson && lesson?.content && lesson?.content?.type) && lesson?.content?.type === 'Videos/' ? 'video/mp4' : lesson?.content?.type === 'Pdfs/' ? 'pdf' : '')
         }
 
@@ -87,7 +87,7 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                         const objectURL = window.URL.createObjectURL(uploadedFile as File)
 
                         video.addEventListener('loadedmetadata', () => {
-                            setDuration(`${Math.round(video.duration / 3600)} Hours ${Math.round(video.duration / 60)} Minutes ${Math.round(video.duration % 60)} Seconds`);
+                            setDuration(video.duration);
                             setLoading(false)
                         })
 
@@ -95,6 +95,7 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                     }
                     else
                     {
+                        setDuration(0);
                         const xhr = new XMLHttpRequest();
 
                         xhr.open('GET', URL.createObjectURL(uploadedFile as File), true);

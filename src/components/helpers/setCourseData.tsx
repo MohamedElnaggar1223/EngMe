@@ -1,4 +1,4 @@
-import { collection, doc, Timestamp, addDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { collection, doc, Timestamp, addDoc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 import ProgramProps from "../../interfaces/ProgramProps";
 
@@ -10,7 +10,7 @@ export const setCourseData = async(program: ProgramProps) => {
         assessments: [], 
         lessons: [], 
         quizzes: [], 
-        duration: '0 Hours', 
+        duration: '0 Hours 0 Minutes 0 Seconds', 
         programId: program.id, 
         createdAt: Timestamp.now() 
     }
@@ -18,4 +18,10 @@ export const setCourseData = async(program: ProgramProps) => {
     const addedCourse = await addDoc(coursesRef, newCourse)
     
     await updateDoc(programDoc, { courses: arrayUnion(addedCourse.id) })
+
+    const updatedCourseSnapshot = await getDoc(addedCourse)
+
+    const updatedCourse = {...updatedCourseSnapshot.data(), id: updatedCourseSnapshot.id}
+
+    return updatedCourse
 }

@@ -73,7 +73,20 @@ function ComponentCard({index, course}: ComponentCard)
 
     const displayedLessons = 
     (lessons?.length && lessons?.length > 0) ?
-    lessons?.map(lesson => (
+    lessons?.map(lesson => {
+        let finalDuration
+        //@ts-expect-error duration
+        if(lesson?.duration)
+        {
+            //@ts-expect-error duration
+            const sec_num = parseInt(lesson?.duration, 10)
+            const hours_duration = Math.floor(sec_num / 3600);
+            const minutes_duration = Math.floor((sec_num - (hours_duration * 3600)) / 60)
+            const seconds_duration = sec_num - (hours_duration * 3600) - (minutes_duration * 60);
+    
+            finalDuration = `${hours_duration}:${minutes_duration}:${seconds_duration}`
+        }
+        return (
             <Stack
                 direction='row'
                 justifyContent='space-between'
@@ -111,7 +124,7 @@ function ComponentCard({index, course}: ComponentCard)
                     width='150px'
                 >
                     {/*//@ts-expect-error lesson*/}
-                    <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration.length ? `${lesson?.duration?.split(" ")[0]?.length > 1 ? lesson?.duration?.split(" ")[0] : `0${lesson?.duration?.split(" ")[0]}`}:${lesson?.duration?.split(" ")[2]?.length > 1 ? lesson?.duration?.split(" ")[2] : `0${lesson?.duration?.split(" ")[2]}`}:${lesson?.duration?.split(" ")[4]?.length > 1 ? lesson?.duration?.split(" ")[4] : `0${lesson?.duration?.split(" ")[4]}`}` : ''}</Typography>
+                    <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{lesson?.duration.length ? finalDuration : ''}</Typography>
                     <SvgIcon  sx={{ fontSize: 18, marginLeft: 'auto' }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11" fill="none">
                             <line y1="0.5" x2="11" y2="0.5" stroke="#226E9F"/>
@@ -122,6 +135,7 @@ function ComponentCard({index, course}: ComponentCard)
                 </Stack>
             </Stack>
         )
+    }
     )
     :
     <Stack
