@@ -54,7 +54,8 @@ function Components(program: ProgramProps)
         mutationFn: async () => await setCourseData(program)
     })
 
-    async function handleMutate() {
+    async function handleMutate() 
+    {
         await mutateAsync()
     }
 
