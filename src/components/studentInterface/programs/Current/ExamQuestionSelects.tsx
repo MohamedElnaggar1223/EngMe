@@ -13,6 +13,10 @@ import { setSubmitExamSessionAssessment } from "../../../helpers/setSubmitExamSe
 import { setSubmitExamSessionQuiz } from "../../../helpers/setSubmitExamSessionQuiz";
 import { setLastQuestionExamSessionFinalExam } from "../../../helpers/setLastQuestionExamSessionFinalExam";
 import { setSubmitExamSessionFinalExam } from "../../../helpers/setSubmitExamSessionFinalExam";
+import image from '../../../../assets/watermark.png'
+import { setBackQuestionAssessment } from "../../../helpers/setBackQuestionAssessment";
+import { setBackQuestionFinalExam } from "../../../helpers/setBackQuestionFinalExam";
+import { setBackQuestionQuiz } from "../../../helpers/setBackQuestionQuiz";
 
 interface Question{
     firstCorrect: string,
@@ -48,18 +52,58 @@ export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId,
 
     const navigate = useNavigate()
 
+    const handleBackQuestion = async () => {
+        if(assessmentId)
+        {
+            await setBackQuestionAssessment(userData.id, assessmentId, index)
+            setFirstSelectOption('')
+            setSecondSelectOption('')
+            setThirdSelectOption('')
+            setFourthSelectOption('')
+        }
+        else if(quizId)
+        {
+            await setBackQuestionQuiz(userData.id, quizId, index)
+            setFirstSelectOption('')
+            setSecondSelectOption('')
+            setThirdSelectOption('')
+            setFourthSelectOption('')
+        }
+        else if(finalExamId)
+        {
+            await setBackQuestionFinalExam(userData.id, finalExamId, index)
+            setFirstSelectOption('')
+            setSecondSelectOption('')
+            setThirdSelectOption('')
+            setFourthSelectOption('')
+        }
+        await queryClient.invalidateQueries({queryKey: ['examSession']})
+    }
+
     const handleSetLastQuestionExamSession = async () => {
         if(assessmentId)
         {
             await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
+            setFirstSelectOption('')
+            setSecondSelectOption('')
+            setThirdSelectOption('')
+            setFourthSelectOption('')
         }
         else if(quizId)
         {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
+            setFirstSelectOption('')
+            setSecondSelectOption('')
+            setThirdSelectOption('')
+            setFourthSelectOption('')
         }
         else if (finalExamId)
         {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
+            setFirstSelectOption('')
+            setSecondSelectOption('')
+            setThirdSelectOption('')
+            setFourthSelectOption('')
         }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
@@ -69,16 +113,28 @@ export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId,
         {
             await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
             await setSubmitExamSessionAssessment(userData.id, assessmentId)
+            setFirstSelectOption('')
+            setSecondSelectOption('')
+            setThirdSelectOption('')
+            setFourthSelectOption('')
         }
         else if(quizId)
         {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
             await setSubmitExamSessionQuiz(userData.id, quizId)
+            setFirstSelectOption('')
+            setSecondSelectOption('')
+            setThirdSelectOption('')
+            setFourthSelectOption('')
         }
         else if(finalExamId)
         {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, [firstSelectOption, secondSelectOption, thirdSelectOption, fourthSelectOption])
             await setSubmitExamSessionFinalExam(userData.id, finalExamId)
+            setFirstSelectOption('')
+            setSecondSelectOption('')
+            setThirdSelectOption('')
+            setFourthSelectOption('')
         }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
         navigate('/')
@@ -170,6 +226,13 @@ export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId,
             flex={1}
             alignItems='center'
             mt={6}
+            style={{
+                backgroundImage: `url("${image}")`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPositionX: '50%',
+                backgroundBlendMode: ''
+            }}
         >
             {
                 question?.image &&
@@ -365,8 +428,8 @@ export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId,
                         },
                         marginBottom: 3
                     }}
-                    // onClick={handleNext}
-                    disabled={true}
+                    onClick={handleBackQuestion}
+                    disabled={index === 0}
                 >
                     Skip
                 </Button>

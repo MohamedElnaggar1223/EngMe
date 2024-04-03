@@ -43,7 +43,8 @@ export const setStudentRequestProgram = async (studentRequest, studentId: string
             studentId,
             programId,
             startDate: Timestamp.now(),
-            endDate
+            endDate,
+            extended: false
         }
 
         await addDoc(studentRequestRef, newRequest)

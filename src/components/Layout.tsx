@@ -14,7 +14,6 @@ export default function Layout()
   // const { user } = useAuth()
   //@ts-expect-error context
   const { user } = useContext(AuthContext)
-
   // const navigate = useNavigate()
 
   // function handleSignUp()

@@ -70,7 +70,7 @@ export default function FinalExamCard({program, version, finalExam, setEdited})
                     }
                 }}
             >
-                <DialogTitle sx={{ mx: 1, mt: 2, mb: 3 }}>Are you sure you want to delete {version} Final Exam?</DialogTitle>
+                <DialogTitle sx={{ mx: 1, mt: 2, mb: 3 }}>Are you sure you want to delete {version} Model Exam?</DialogTitle>
                 <DialogContent>
                 <DialogContentText id="alert-dialog-slide-description">
                 </DialogContentText>

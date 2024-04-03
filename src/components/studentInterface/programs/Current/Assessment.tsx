@@ -137,7 +137,6 @@ export default function Assessment()
                     py={4}
                 >
                     <Typography sx={{ color: '#FF7E00' }} fontSize={16} fontFamily='Inter' fontWeight={800}>Assessment</Typography>
-                    <Typography sx={{ color: '#FF7E00' }} fontSize={16} fontFamily='Inter' fontWeight={600}>Course 9</Typography>
                 </Stack>
                 <Box
                     boxShadow='0px 4px 4px 0px rgba(0, 0, 0, 0.25)'

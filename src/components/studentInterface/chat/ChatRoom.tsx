@@ -161,7 +161,8 @@ export default function ChatRoom({ user, friend }: Props)
                             alignItems='center'
                             // mr={7}
                         >
-                            <Avatar />
+                            {/*//@ts-expect-error image*/}
+                            <Avatar image={friend?.image} />
                             <Stack
                                 direction='column'
                                 justifyContent='center'

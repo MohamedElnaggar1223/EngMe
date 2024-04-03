@@ -445,7 +445,7 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
                                 >
                                     <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
                                         <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{Object.keys(program?.finalExams ?? []).length}</Typography>
-                                        <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Final Exam(s)</Typography>
+                                        <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Model Exam(s)</Typography>
                                     </Box>
                                     <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
                                         <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{studentCount}</Typography>

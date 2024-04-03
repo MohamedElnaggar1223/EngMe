@@ -12,6 +12,10 @@ import { setSubmitExamSessionQuiz } from "../../../helpers/setSubmitExamSessionQ
 import Box from "@mui/material/Box"
 import { setLastQuestionExamSessionFinalExam } from "../../../helpers/setLastQuestionExamSessionFinalExam"
 import { setSubmitExamSessionFinalExam } from "../../../helpers/setSubmitExamSessionFinalExam"
+import image from '../../../../assets/watermark.png'
+import { setBackQuestionAssessment } from "../../../helpers/setBackQuestionAssessment"
+import { setBackQuestionFinalExam } from "../../../helpers/setBackQuestionFinalExam"
+import { setBackQuestionQuiz } from "../../../helpers/setBackQuestionQuiz"
 
 interface Question{
     options: string[],
@@ -36,18 +40,40 @@ export default function ExamQuestionTwoOptions({ finalExamId, quizId, assessment
 
     const navigate = useNavigate()
 
+    const handleBackQuestion = async () => {
+        if(assessmentId)
+        {
+            await setBackQuestionAssessment(userData.id, assessmentId, index)
+            setSelectedOption([])
+        }
+        else if(quizId)
+        {
+            await setBackQuestionQuiz(userData.id, quizId, index)
+            setSelectedOption([])
+        }
+        else if(finalExamId)
+        {
+            await setBackQuestionFinalExam(userData.id, finalExamId, index)
+            setSelectedOption([])
+        }
+        await queryClient.invalidateQueries({queryKey: ['examSession']})
+    }
+
     const handleSetLastQuestionExamSession = async () => {
         if(assessmentId)
         {
             await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
+            setSelectedOption([])
         }
         else if(quizId)
         {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, selectedOption)
+            setSelectedOption([])
         }
         else if(finalExamId)
         {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, selectedOption)
+            setSelectedOption([])
         }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
@@ -57,16 +83,19 @@ export default function ExamQuestionTwoOptions({ finalExamId, quizId, assessment
         {
             await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
             await setSubmitExamSessionAssessment(userData.id, assessmentId)
+            setSelectedOption([])
         }
         else if(quizId)
         {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, selectedOption)
             await setSubmitExamSessionQuiz(userData.id, quizId)
+            setSelectedOption([])
         }
         else if(finalExamId)
         {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, selectedOption)
             await setSubmitExamSessionFinalExam(userData.id, finalExamId)
+            setSelectedOption([])
         }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
         navigate('/')
@@ -104,6 +133,7 @@ export default function ExamQuestionTwoOptions({ finalExamId, quizId, assessment
             }}
             width='790px'
             py={2}
+            key={index}
             onClick={selectedOption.includes(index.toString()) 
                 ? () => setSelectedOption(prev => {
                     const newSelectedOption = prev.filter((option) => option !== index.toString())
@@ -134,6 +164,13 @@ export default function ExamQuestionTwoOptions({ finalExamId, quizId, assessment
             flex={1}
             alignItems='center'
             mt={6}
+            style={{
+                backgroundImage: `url("${image}")`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPositionX: '50%',
+                backgroundBlendMode: ''
+            }}
         >
             {
                 question?.image &&
@@ -179,10 +216,11 @@ export default function ExamQuestionTwoOptions({ finalExamId, quizId, assessment
                         },
                         marginBottom: 3
                     }}
-                    disabled={true}
+                    onClick={handleBackQuestion}
+                    disabled={index === 0}
                     // disabled={end}
                 >
-                    Skip
+                    Back
                 </Button>
                 {
                     index + 1 === total ?

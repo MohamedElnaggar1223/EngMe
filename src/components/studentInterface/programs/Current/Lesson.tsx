@@ -6,6 +6,8 @@ import { getDownloadURL, getStorage, ref } from "firebase/storage"
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useState } from "react"
 import { Box, Button, Stack, Typography } from "@mui/material"
+import ReactPlayer from 'react-player'
+
 
 export default function Lesson() 
 {
@@ -73,7 +75,7 @@ export default function Lesson()
     return (
         //@ts-expect-error lesson
         lesson?.content?.type === 'Videos/' ?
-        <iframe allowFullScreen={true} src={lesson?.dataDisplayed} width="100%" height="900px" />
+        <ReactPlayer url={lesson?.dataDisplayed} width="100%" height="100%" controls={true} config={{ file: { attributes: { controlsList: 'nodownload' } } }} />
         :
         // <embed src={lesson?.dataDisplayed} type="video/mp4" width="100%" height="900px" />
         <Box sx={{ width: '950px', mx: 'auto', display: 'flex', flex: 1, '*': { width: '100%' }, mt: 5 }}>

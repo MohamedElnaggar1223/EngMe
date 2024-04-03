@@ -119,7 +119,7 @@ export default function Exam()
                     px={12}
                     py={4}
                 >
-                    <Typography sx={{ color: '#226E9F' }} fontSize={16} fontFamily='Inter' fontWeight={800}>Final Exam</Typography>
+                    <Typography sx={{ color: '#226E9F' }} fontSize={16} fontFamily='Inter' fontWeight={800}>Model Exam</Typography>
                     <Typography sx={{ color: '#226E9F' }} fontSize={16} fontFamily='Inter' fontWeight={600}>Version 1</Typography>
                 </Stack>
                 <Box

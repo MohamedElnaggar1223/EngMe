@@ -1,5 +1,5 @@
 import { Stack, Avatar, Typography, Box, SvgIcon } from "@mui/material";
-import avatar from '../../../assets/Ellipse 3.png'
+// import avatar from '../../../assets/Ellipse 3.png'
 import { ChatContext } from "./Chats";
 import { useContext, useEffect } from "react";
 import { DocumentData, DocumentReference, doc, getDoc, onSnapshot } from "firebase/firestore";
@@ -91,7 +91,8 @@ export default function ChatCard({ id, search, searchFriends }: Props)
                 alignItems='center'
                 // mr={7}
             >
-                <Avatar src={avatar ?? ''} sx={{ width: '70px', height: '70px' }} />
+                {/*//@ts-expect-error image */}
+                <Avatar src={chatUserData?.image ?? ''} sx={{ width: '70px', height: '70px' }} />
                 <Stack
                     direction='column'
                     justifyContent='center'

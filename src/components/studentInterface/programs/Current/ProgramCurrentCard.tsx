@@ -1009,7 +1009,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                 }, 100);
                             }}
                         >
-                            Final Exams
+                            Model Exams
                         </Button>
                         <Button
                             sx={{
