@@ -72,7 +72,7 @@ export default function ProgramExploreCard({ setPageShowed, program }: ProgramEx
                 //@ts-expect-error set
                 setPageShowed(program.id)
             }} 
-            sx={{ cursor: 'pointer', width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 } }}
+            sx={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', width: '384px', borderRadius: '15px', padding: '0', '.css-1i9wt8r-MuiCardContent-root:last-child': { padding: 0 } }}
         >
             <CardMedia
                 sx={{ height: 180 }}
@@ -80,7 +80,7 @@ export default function ProgramExploreCard({ setPageShowed, program }: ProgramEx
                 title="green iguana"
                 // onClick={() => console.log('image clicked')}
             />
-            <CardContent sx={{ padding: 0 }}>
+            <CardContent sx={{ padding: 0, flex: 1 }}>
                 <Stack
                     direction='row'
                     alignItems='center'
@@ -111,9 +111,11 @@ export default function ProgramExploreCard({ setPageShowed, program }: ProgramEx
                 </Stack>
                 <Box
                     bgcolor='#FEF4EB'
-                    pb={1.5}
+                    pb={0.5}
                     px={2}
                     pt={0.1}
+                    flex={1}
+                    height='100%'
                 >
                     <Stack
                         direction='column'
@@ -136,6 +138,7 @@ export default function ProgramExploreCard({ setPageShowed, program }: ProgramEx
                         direction='row'
                         gap={1}
                         flexWrap='wrap'
+                        className='mt-auto'
                     >
                         <Box
                             bgcolor='#D0EBFC'
@@ -186,6 +189,10 @@ export default function ProgramExploreCard({ setPageShowed, program }: ProgramEx
                             <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.expiry} Days</Typography>
                         </Box>
                     </Stack>
+                    {
+                        (program?.discount ?? 0) > 0 &&
+                        <p className='text-[#FF7E00] font-bold font-[Inter] mb-0 text-right'>{program?.discount}% OFF!</p>
+                    }
                 </Box>
             </CardContent>
         </Card>

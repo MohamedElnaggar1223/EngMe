@@ -114,11 +114,11 @@ export default function Assessment()
         question.type === 'options' ?
         question.correctOption.length > 1 ?
         //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+        <ExamQuestionTwoOptions assessmentId={assessment.id}  programId={assessment.programId} question={question} index={index} total={assessment?.questions?.length} /> :
         //@ts-expect-error errrrr
-        <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+        <ExamQuestionOptions assessmentId={assessment.id} programId={assessment.programId} question={question} index={index} total={assessment?.questions?.length} /> :
         //@ts-expect-error errrrr
-        <ExamQuestionSelects assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />
+        <ExamQuestionSelects assessmentId={assessment.id} programId={assessment.programId} question={question} index={index} total={assessment?.questions?.length} />
     )
 
     if(isLoading) return <></>

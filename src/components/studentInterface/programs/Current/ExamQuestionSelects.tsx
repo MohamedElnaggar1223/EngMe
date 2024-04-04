@@ -35,12 +35,13 @@ interface ExamQuestionProps{
     question: Question,
     index: number,
     total: number,
+    programId?: string,
     assessmentId?: string,
     quizId?: string,
     finalExamId?: string
 }
 
-export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, index, total }: ExamQuestionProps)
+export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, index, total, programId }: ExamQuestionProps)
 {
     const queryClient = useQueryClient()
     //@ts-expect-error context
@@ -117,6 +118,7 @@ export default function ExamQuestionSelects({ finalExamId, quizId, assessmentId,
             setSecondSelectOption('')
             setThirdSelectOption('')
             setFourthSelectOption('')
+            navigate(`/programs/current/${programId}`)
         }
         else if(quizId)
         {

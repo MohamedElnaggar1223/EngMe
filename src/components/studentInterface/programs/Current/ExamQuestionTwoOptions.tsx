@@ -27,12 +27,13 @@ interface ExamQuestionProps{
     question: Question,
     index: number,
     total: number,
+    programId?: string,
     assessmentId?: string,
     quizId?: string,
     finalExamId?: string
 }
 
-export default function ExamQuestionTwoOptions({ finalExamId, quizId, assessmentId, question, index, total }: ExamQuestionProps) {
+export default function ExamQuestionTwoOptions({ finalExamId, quizId, assessmentId, question, index, total, programId }: ExamQuestionProps) {
     const queryClient = useQueryClient()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
@@ -84,6 +85,7 @@ export default function ExamQuestionTwoOptions({ finalExamId, quizId, assessment
             await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
             await setSubmitExamSessionAssessment(userData.id, assessmentId)
             setSelectedOption([])
+            navigate(`/programs/current/${programId}`)
         }
         else if(quizId)
         {

@@ -4,7 +4,7 @@ import ProgramProps from "../../interfaces/ProgramProps"
 import { setCourseData } from "./setCourseData"
 import { setNotification } from "./setNotification"
 
-export const setProgramData = async(teacherId: string, name: string, description: string, category: string, level: string, duration: string, expiry: string, price: string, paused: boolean, prereqName: string, program?: ProgramProps, image?: string) => {
+export const setProgramData = async(teacherId: string, name: string, description: string, category: string, level: string, duration: string, expiry: string, price: string, paused: boolean, prereqName: string, program?: ProgramProps, image?: string, discount?: number) => {
     if(program)
     {
         const programDoc = doc(db, 'programs', program.id)
@@ -18,7 +18,8 @@ export const setProgramData = async(teacherId: string, name: string, description
             expiry: expiry.split(" ").length > 1 && expiry.split(" ")[1] === "Days" ? expiry : `${expiry} Days`,
             paused,
             image,
-            price
+            price,
+            discount
         }
 
         if(prereqName.length > 0)
@@ -79,7 +80,8 @@ export const setProgramData = async(teacherId: string, name: string, description
                 'Version 1': '',
                 'Version 2': '',
                 'Version 3': ''
-            }
+            },
+            discount: discount ?? 0
         }
 
         if(prereqName.length > 0)

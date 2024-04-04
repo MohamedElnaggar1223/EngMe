@@ -21,6 +21,7 @@ export default interface ProgramProps{
     paused?: boolean,
     expiry?: string,
     price?: string,
-    level?: string
+    level?: string,
+    discount?: number,
 }
 

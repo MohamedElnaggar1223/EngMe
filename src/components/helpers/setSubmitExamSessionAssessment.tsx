@@ -12,6 +12,8 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
     const assessmentData = await getDoc(assessmentDoc)
     const studentAssessmentDocs = await getDocs(queryStudentAssessment)
     const examSessionData = await getDocs(queryExamSession)
+    const courseDoc = doc(db, 'courses', assessmentData.data()?.courseId)
+    const courseData = await getDoc(courseDoc)
 
     const orderedAssessmentsArray = studentAssessmentDocs.docs.slice().sort((a, b) => {
         const dateA = a.data().createdAt.toDate();
@@ -54,5 +56,5 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
     const studentAssessmentDoc = doc(db, 'studentAssessment', orderedAssessmentsArray[0]?.id)
 
     await updateDoc(studentAssessmentDoc, {...orderedAssessmentsArray[0].data(), grade})
-    await setExamSessionTime(examSessionData.docs[0].id)
+    await setExamSessionTime(examSessionData.docs[0].id, studentId, `/programs/current/${courseData.data()?.programId}`)
 }
