@@ -16,6 +16,7 @@ import StudentInstructors from "./components/studentInterface/teacherProfile/Tea
 const Lesson = lazy(() => import("./components/studentInterface/programs/Current/Lesson"))
 // import { BrowserView, MobileView } from "react-device-detect"
 import { BrowserView, MobileView } from "react-device-detect"
+import Test from "./components/Test"
 const MobileLogin = lazy(() => import("./components/authentication/login/MobileLogin"))
 const KnowledgeBankPdf = lazy(() => import("./components/studentInterface/knowledgebank/KnowledgeBankPdf"))
 const TeacherInterfaceTeacherProfile = lazy(() => import("./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"))
@@ -58,6 +59,7 @@ function App() {
 										}}
 									</PrivateRoute>
 								} />
+								<Route path='test' element={<Test />} />
 								<Route path='teacherprofile'>
 									<Route index element={
 										<PrivateRoute>
