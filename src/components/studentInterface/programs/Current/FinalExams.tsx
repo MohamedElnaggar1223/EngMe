@@ -22,6 +22,8 @@ export default function FinalExams({progress, program}: FinalExamsProps)
 	const [questions, setQuestions] = useState('')
 	const [selectQuestions, setSelectQuestions] = useState('All Questions')
 
+	console.log(progress)
+
 	const scrollRef = useRef<HTMLDivElement>(null)
 
 	const { data: finalExams, isLoading: isFinalExamsLoading } = useQuery({

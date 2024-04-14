@@ -32,6 +32,21 @@ export default function AuthProvider({ children })
         enabled: userData ? userData.role === 'student' : false,
     })
 
+    // const { data: redirect, isLoading: isLoadingRedirect } = useQuery({
+    //     queryKey: ['redirect'],
+    //     queryFn: async () => {
+    //         const redirectRef = collection(db, 'redirect')
+    //         const queryRedirect = query(redirectRef, where('studentId', '==', userData?.id))
+    //         const redirectDocs = await getDocs(queryRedirect)
+    //         console.log(redirectDocs.docs.length)
+    //         if(redirectDocs.docs.length > 0) return {...redirectDocs.docs[0].data(), id: redirectDocs.docs[0].id}
+    //         return null
+    //     },
+    //     enabled: userData ? userData.role === 'student' : false,
+    //     refetchOnMount: true,
+    //     refetchOnWindowFocus: true
+    // })
+
     // useEffect(() => {
     //     refetch()
     // }, [user, refetch])
@@ -85,6 +100,42 @@ export default function AuthProvider({ children })
             }
         }
     }, [examSession, navigate])
+
+    // useEffect(() => {
+    //     if(redirect !== undefined && !isLoadingRedirect)
+    //     {
+    //         //@ts-expect-error path
+    //         const path = redirect?.path
+    //         const deleteRedirect = async () => {
+    //             await deleteDoc(doc(db, 'redirect', redirect?.id ?? ''))
+    //         }
+    //         deleteRedirect().then(() =>{ 
+    //             console.log(path)
+    //             window.location.href = path
+    //         })
+    //     }
+    // }, [redirect, isLoadingRedirect, navigate])
+
+    useEffect(() => {
+        const redirectRef = collection(db, 'redirect')
+        const queryRedirect = query(redirectRef, where('studentId', '==', userData?.id ?? ''))
+
+        const unsub = onSnapshot(queryRedirect, async (querySnapshot) => {
+            if(querySnapshot.docs.length > 0)
+            {
+                const redirectDoc = querySnapshot.docs[0]
+                const path = redirectDoc.data()?.path
+                await deleteDoc(redirectDoc.ref)
+                .then(() =>{ 
+                    window.location.href = path
+                })
+            } 
+        })
+
+        return () => {
+            unsub()
+        }
+    }, [userData])
 
     useLayoutEffect(() => {
         const listen = onAuthStateChanged(auth, async (authUser) => {

@@ -331,7 +331,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                                 testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
                             }}
                         >
-                            Final Exams
+                            Model Exams
                         </Button>
                         <Button
                             sx={{

@@ -74,5 +74,5 @@ export const setSubmitExamSessionFinalExam = async (studentId: string, finalExam
     const studentFinalExamDoc = doc(db, 'studentFinalExam', orderedFinalExamsArray[0]?.id)
 
     await updateDoc(studentFinalExamDoc, {...orderedFinalExamsArray[0].data(), grade})
-    await setExamSessionTime(examSessionData.docs[0].id)
+    await setExamSessionTime(examSessionData.docs[0].id, studentId, `/programs/current/${finalExamData.data()?.programId}`)
 }

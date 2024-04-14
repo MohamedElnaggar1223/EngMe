@@ -14,6 +14,7 @@ function FinalExamCardEdit({ version, program, setEdited, finalExam })
 {
     const queryClient = useQueryClient()
     const [selectedQuestion, setSelectedQuestion] = useState(-1)
+    const [duration, setDuration] = useState(parseInt(finalExam.duration.split(' ')[0]))
 
     const [error, setError] = useState('')
 
@@ -38,7 +39,7 @@ function FinalExamCardEdit({ version, program, setEdited, finalExam })
 
             return () => queryClient.setQueryData(['finalExams', program.id], previousData)
         },
-        mutationFn: () => setProgramFinalExam(version, program, finalExam.id, questions)
+        mutationFn: () => setProgramFinalExam(version, program, finalExam.id, questions, duration)
     })
 
     // const memoizedQuestions = useMemo(() => questions, [questions])
@@ -86,6 +87,16 @@ function FinalExamCardEdit({ version, program, setEdited, finalExam })
             >
                 {error && <Alert severity="error">{error}</Alert>}
                 {displayedQuestions?.length > 0 && displayedQuestions[selectedQuestion]}
+                <div className='ml-auto flex flex-row gap-4 items-center justify-center'>
+                    <p className='font-[Inter] font-semibold text-base'>Duration: </p>
+                    <input
+                        value={duration}
+                        onChange={(e) => setDuration(parseInt(e.target.value))}
+                        placeholder="Duration in Minutes"
+                        type="number"
+                        className='w-24 px-2 py-3 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.1)] rounded-sm font-[Inter]'
+                    />
+                </div>
                 <Stack
                     flex={1}
                     direction='column'

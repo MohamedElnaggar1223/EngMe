@@ -2,19 +2,19 @@ import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
 import ProgramProps from "../../interfaces/ProgramProps";
 
-export const setProgramFinalExam = async(version: string, program: ProgramProps, finalExam?: string, questions?: unknown) => {
+export const setProgramFinalExam = async(version: string, program: ProgramProps, finalExam?: string, questions?: unknown, duration?: number) => {
     if(finalExam)
     {
         const finalExamDoc = doc(db, 'finalExams', finalExam)
 
-        await updateDoc(finalExamDoc, { questions })
+        await updateDoc(finalExamDoc, { questions, duration: `${duration} Minutes`})
     }
     else
     {
         const finalExamsRef = collection(db, 'finalExams')
     
         const newFinalExam = {
-            duration: '90 Minutes',
+            duration: `${duration} Minutes`,
             programId: program.id,
             questions: []
         }

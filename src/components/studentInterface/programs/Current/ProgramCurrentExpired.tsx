@@ -14,6 +14,8 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { loadStripe } from '@stripe/stripe-js'
 import axios from "axios";
+import { and, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { db } from "../../../../firebase/firebaseConfig";
 
 export default function ProgramCurrentExpired(program: ProgramProps) 
 {
@@ -73,6 +75,18 @@ export default function ProgramCurrentExpired(program: ProgramProps)
         queryFn: () => getQuizzesData(courses),
         enabled: !!courses,
         refetchOnMount: true
+    })
+
+    const { data: studentProgram } = useQuery({
+        queryKey: ['studentProgram', program?.id ?? '', userData.id],
+        queryFn: async () => {
+            const studentProgramCollection = collection(db, 'studentProgram')
+            const queryStudentProgram = query(studentProgramCollection, and(where('studentId', '==', userData.id), where('programId', '==', program.id)))
+            const studentProgramDocs = await getDocs(queryStudentProgram)
+            if(studentProgramDocs.docs.length > 0) return {...studentProgramDocs.docs[0].data(), id: studentProgramDocs.docs[0].id }
+            else return null
+        },
+        enabled: !!program.id
     })
 
     // const { data: studentRequest } = useQuery({
@@ -324,7 +338,7 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                             >
                                 <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
                                     <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{Object.keys(program?.finalExams ?? []).length}</Typography>
-                                    <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Final Exam(s)</Typography>
+                                    <Typography fontSize={9} fontWeight={500} fontFamily='Inter'>Model Exam(s)</Typography>
                                 </Box>
                                 <Box display='flex' flexDirection='column' bgcolor='#D0EBFC' alignItems='center' justifyContent='center' textAlign='center' width='68px' border='1px solid #226E9F' borderRadius='10px' height='60px'>
                                     <Typography fontWeight={600} fontFamily='Inter' fontSize={20}>{studentCount}</Typography>
@@ -399,32 +413,76 @@ export default function ProgramCurrentExpired(program: ProgramProps)
                                 <Typography fontSize={12} fontWeight={400} fontFamily='Inter'>{program?.expiry} Days</Typography>
                             </Box>
                             </Stack>
-                            <Button
-                                sx={{
-                                    marginLeft: 'auto',
-                                    marginRight: 11,
-                                    marginTop: -4,
-                                    width: '320px',
-                                    height: '50px',
-                                    background: '#fff',
-                                    color: '#226E9F',
-                                    fontFamily: 'Inter',
-                                    fontSize: 14,
-                                    textTransform: 'none',
-                                    fontWeight: 700,
-                                    border: '1px solid #226E9F',
-                                    borderRadius: '15px',
-                                    '&:hover': {
-                                        background: '#fff',
-                                        opacity: 1
-                                    },
-                                    paddingX: 6
-                                }}
-                                onClick={() => mutate()}
-                            >
-                                This program expired.
-                                Repurchase to complete
-                            </Button>
+                            {
+                                //@ts-expect-error extended
+                                studentProgram?.extended ? (
+                                    <Button
+                                        sx={{
+                                            marginLeft: 'auto',
+                                            marginRight: 11,
+                                            marginTop: -4,
+                                            width: '320px',
+                                            height: '50px',
+                                            background: '#fff',
+                                            color: '#226E9F',
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            textTransform: 'none',
+                                            fontWeight: 700,
+                                            border: '1px solid #226E9F',
+                                            borderRadius: '15px',
+                                            '&:hover': {
+                                                background: '#fff',
+                                                opacity: 1
+                                            },
+                                            paddingX: 6
+                                        }}
+                                        onClick={() => mutate()}
+                                    >
+                                        This program expired.
+                                        Repurchase to complete
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        sx={{
+                                            marginLeft: 'auto',
+                                            marginRight: 11,
+                                            marginTop: -4,
+                                            width: '320px',
+                                            height: '50px',
+                                            background: '#fff',
+                                            color: '#226E9F',
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            textTransform: 'none',
+                                            fontWeight: 700,
+                                            border: '1px solid #226E9F',
+                                            borderRadius: '15px',
+                                            '&:hover': {
+                                                background: '#fff',
+                                                opacity: 1
+                                            },
+                                            paddingX: 6
+                                        }}
+                                        onClick={async () => {
+                                            if(studentProgram?.id !== null && typeof studentProgram?.id === 'string')
+                                            {
+                                                setLoading(true)
+                                                const studentProgramDoc = doc(db, 'studentProgram', studentProgram?.id)
+                                                //@ts-expect-error endDate
+                                                const newDate = studentProgram.endDate.toDate()
+                                                newDate.setDate(newDate.getDate() + 90)
+                                                await updateDoc(studentProgramDoc, { extended: true, endDate: newDate })
+                                                window.location.reload()
+                                                navigate(`/programs/current/${program.id}`)
+                                                setLoading(false)
+                                            }
+                                        }}
+                                    >
+                                        Extend 90 Days For Free!
+                                    </Button>
+                                )
+                            }
                         </Stack>
 
                 </Box>

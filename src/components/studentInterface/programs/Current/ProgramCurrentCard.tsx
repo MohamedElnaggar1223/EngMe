@@ -369,8 +369,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
 
     const progress = materialCount !== 0 ? ((materialFinished/materialCount)*100).toFixed() : 0
 
-    const finalExamProgress = materialCount !== 0 ? ((materialFinished/(materialCount - 1))*100).toFixed() : 0
-
+    const finalExamProgress = materialCount !== 0 ? ((materialFinished/(materialCount))*100).toFixed() : 0
     ////console.log(materialCount, materialFinished, progress)
 
     // const coursePercentage = 
@@ -1009,7 +1008,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                 }, 100);
                             }}
                         >
-                            Final Exams
+                            Model Exams
                         </Button>
                         <Button
                             sx={{

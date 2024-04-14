@@ -2,7 +2,7 @@ import { doc, updateDoc, collection, Timestamp, addDoc, arrayUnion, getDoc, getD
 import { db } from "../../firebase/firebaseConfig"
 import { setNotification } from "./setNotification"
 
-export const setAssessmentData = async(questions: unknown, assessment?: unknown, course?: unknown, order?: number) => {
+export const setAssessmentData = async(questions: unknown, assessment?: unknown, course?: unknown, order?: number, duration?: number) => {
     //@ts-expect-error course
     const programDoc = doc(db, 'programs', course?.programId)
 
@@ -13,6 +13,7 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
         const assessmentDoc = doc(db, 'assessments', assessment.id)
 
         const updatedAssessment = {
+            duration: `${duration} Minutes`,
             questions
         }
         const studentProgramsRef = collection(db, 'studentProgram')
@@ -31,6 +32,24 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
 
         const studentFollowTeacher = studentFollowTeacherData.docs.map(doc => doc.data().studentId)
 
+        //@ts-expect-error course
+        const courseDoc = doc(db, 'courses', course.id)
+
+        //@ts-expect-error duration
+        const courseMinutes = (Number(course?.duration?.split(' ')[0]) * 60) + (Number(course?.duration?.split(' ')[4]) / 60) + Number(course?.duration?.split(' ')[2]) + duration - parseInt(assessment.duration.split(' ')[0])
+
+        const mins_num = parseFloat(courseMinutes.toFixed(2))
+        const hours   = Math.floor(mins_num / 60);
+        const minutes = Math.floor((mins_num - ((hours * 3600)) / 60));
+        const seconds = Math.floor((mins_num * 60) - (hours * 3600) - (minutes * 60));
+
+        const Hours   = String(hours).length   > 1 ? hours.toString()   : '0' + hours
+        const Minutes = String(minutes).length > 1 ? minutes.toString() : '0' + minutes
+        const Seconds = String(seconds).length > 1 ? seconds.toString() : '0' + seconds
+
+        const durationAdded = `${Hours} Hours ${Minutes} Minutes ${Seconds} Seconds`
+        await updateDoc(courseDoc, { duration: `${durationAdded}` })
+
         await updateDoc(assessmentDoc, updatedAssessment)
         await setNotification(`${programData.data()?.name}'s Assessments have been updated!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
         const updatedAssessmentData = await getDoc(assessmentDoc)
@@ -46,7 +65,7 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
                 title: 'Assessment',
                 order,
                 questions,
-                duration: '30 Minutes',
+                duration: `${duration} Minutes`,
                 createdAt: Timestamp.now(),
                 //@ts-expect-error course
                 courseId: course.id
@@ -58,7 +77,7 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
             const courseDoc = doc(db, 'courses', course.id)
 
             //@ts-expect-error duration
-            const courseMinutes = (Number(course?.duration?.split(' ')[0]) * 60) + (Number(course?.duration?.split(' ')[4]) / 60) + Number(course?.duration?.split(' ')[2]) + 30
+            const courseMinutes = (Number(course?.duration?.split(' ')[0]) * 60) + (Number(course?.duration?.split(' ')[4]) / 60) + Number(course?.duration?.split(' ')[2]) + duration
  
             const mins_num = parseFloat(courseMinutes.toFixed(2))
             const hours   = Math.floor(mins_num / 60);

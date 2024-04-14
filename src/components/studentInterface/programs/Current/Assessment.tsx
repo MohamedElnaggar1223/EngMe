@@ -30,25 +30,20 @@ export default function Assessment()
         queryFn: () => getExamSession(userData.id)
     })
 
-    const handleSetExamSessionTime = async () => {
-        //@ts-expect-error session
-        await setExamSessionTime(examSession[0]?.id ?? '')
-        //await queryClient.invalidateQueries({ queryKey: ['examSession'] })
-    }
-
+    
     const { mutate: mutateSession } = useMutation({
         onMutate: () => {
             const previousData = queryClient.getQueryData(['examSession'])
-
+            
             queryClient.setQueryData(['examSession'], () => {
                 return []
             })
-
+            
             return () => queryClient.setQueryData(['examSession'], previousData)
         },
         mutationFn: () => handleSetExamSessionTime()
     })
-
+    
     //@ts-expect-error test
     const startTime = (examSession[0]?.startTime)?.toDate()
     //@ts-expect-error test
@@ -57,23 +52,32 @@ export default function Assessment()
     // const [index, setIndex] = useState(Number(localStorage.getItem('index')) || 0)
     // const [questions, setQuestions] = useState<number[]>([])
     
-
+    
     const { id } = useParams()
-
+    
     const getAssessment = async (id: string) => {
         const assessmentRef = doc(db, 'assessments', id)
         const assessmentDoc = await getDoc(assessmentRef)
-
+        
         const assessmentData = {...assessmentDoc.data(), id: assessmentDoc.id}
 
         return assessmentData
     }
-
+    
     const { data: assessment } = useQuery({
         queryKey: ['examSessionAssessment'],
         queryFn: () => getAssessment(id ?? '')
     })
 
+    const handleSetExamSessionTime = async () => {
+        //@ts-expect-error course
+        const courseDoc = doc(db, 'courses', assessment?.courseId)
+        const courseData = await getDoc(courseDoc)
+        //@ts-expect-error session
+        await setExamSessionTime(examSession[0]?.id ?? '', userData.id, `/programs/current/${courseData.data()?.programId}`)
+        //await queryClient.invalidateQueries({ queryKey: ['examSession'] })
+    }
+    
     // console.log(assessment)
 
     useEffect(() => {
@@ -114,11 +118,11 @@ export default function Assessment()
         question.type === 'options' ?
         question.correctOption.length > 1 ?
         //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+        <ExamQuestionTwoOptions assessmentId={assessment.id}  programId={assessment.programId} question={question} index={index} total={assessment?.questions?.length} /> :
         //@ts-expect-error errrrr
-        <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+        <ExamQuestionOptions assessmentId={assessment.id} programId={assessment.programId} question={question} index={index} total={assessment?.questions?.length} /> :
         //@ts-expect-error errrrr
-        <ExamQuestionSelects assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />
+        <ExamQuestionSelects assessmentId={assessment.id} programId={assessment.programId} question={question} index={index} total={assessment?.questions?.length} />
     )
 
     if(isLoading) return <></>
@@ -137,7 +141,6 @@ export default function Assessment()
                     py={4}
                 >
                     <Typography sx={{ color: '#FF7E00' }} fontSize={16} fontFamily='Inter' fontWeight={800}>Assessment</Typography>
-                    <Typography sx={{ color: '#FF7E00' }} fontSize={16} fontFamily='Inter' fontWeight={600}>Course 9</Typography>
                 </Stack>
                 <Box
                     boxShadow='0px 4px 4px 0px rgba(0, 0, 0, 0.25)'

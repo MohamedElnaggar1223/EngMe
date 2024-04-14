@@ -3,9 +3,9 @@ import avatar from '../../../assets/Ellipse 3.png'
 import { memo } from "react";
 
 // eslint-disable-next-line react-refresh/only-export-components
-function AvatarLazy() {
+function AvatarLazy({image}: {image?: string}) {
   return (
-    <Avatar src={avatar} sx={{ width: '70px', height: '70px' }} />
+    <Avatar src={image ?? avatar} sx={{ width: '70px', height: '70px' }} />
   )
 }
 

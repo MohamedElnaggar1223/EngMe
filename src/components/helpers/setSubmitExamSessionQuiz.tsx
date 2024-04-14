@@ -52,9 +52,11 @@ export const setSubmitExamSessionQuiz = async (studentId: string, quizId: string
     const grade = (results.slice().filter(res => !!res)).length
     // const grade = (((results.slice().filter(res => !!res)).length / results.length) * 100).toFixed(2)
 
+    const courseDoc = doc(db, 'courses', quizData.data()?.courseId)
+    const courseData = await getDoc(courseDoc)
     
     const studentQuizDoc = doc(db, 'studentQuiz', orderedQuizzesArray[0]?.id)
 
     await updateDoc(studentQuizDoc, {...orderedQuizzesArray[0].data(), grade})
-    await setExamSessionTime(examSessionData.docs[0].id)
+    await setExamSessionTime(examSessionData.docs[0].id, studentId, `/programs/current/${courseData.data()?.programId}`)
 }

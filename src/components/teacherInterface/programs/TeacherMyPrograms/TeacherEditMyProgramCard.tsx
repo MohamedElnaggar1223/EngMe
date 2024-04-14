@@ -25,6 +25,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
     const [programDesc, setProgramDesc] = useState(program?.description ?? '')
     const [duration, setDuration] = useState(program?.duration ?? '')
     const [expiry, setExpiry] = useState(program?.expiry ?? '')
+    const [discount, setDiscount] = useState(program?.discount ?? 0)
     const [level, setLevel] = useState(program?.level ?? 'Beginner')
     const [image, setImage] = useState(program?.image ?? '')
     const [price, setPrice] = useState(program?.price ?? '')
@@ -83,7 +84,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
 
             return () => queryClient.setQueryData(['teacherPrograms', userData?.id], previousData)
         },
-        mutationFn: () => setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, newPrereq, program, image ?? '')
+        mutationFn: () => setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, newPrereq, program, image ?? '', discount ?? 0)
     })
 
     const displayedEditPrereqs = prereqs?.map(prereq =>  
@@ -459,6 +460,34 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                         }
                         <Typography fontWeight={400} fontFamily='Inter' sx={{ cursor: 'pointer', color: '#226E9F' }}>Upload Program's Image</Typography>
                     </Button>
+            </Stack>
+            <Stack
+                gap={1.5}
+            >
+                <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Expiry'>Discount</InputLabel>
+                <Input 
+                    color='primary' 
+                    disableUnderline
+                    aria-labelledby='Expiry'
+                    placeholder="in Days"
+                    sx={{
+                        border: '1px solid rgba(0, 0, 0, 0.20)',
+                        width: '100%',
+                        minWidth: '420px',
+                        maxWidth: '420px',
+                        background: '#fff',
+                        borderRadius: '5px',
+                        paddingX: 1,
+                        paddingY: 0.5,
+                        flex: 1,
+                        bgcolor: '#F8F8F8'
+                    }}
+                    value={discount}
+
+                    onChange={(e) => {
+                        if(e.target.value.match("^[0-9]*$")) setDiscount(parseInt(e.target.value))
+                    }}
+                />
             </Stack>
             <Stack
                 flex={1}

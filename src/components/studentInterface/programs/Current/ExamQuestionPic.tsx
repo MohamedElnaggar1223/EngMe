@@ -4,6 +4,7 @@ import Button from "@mui/material/Button"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
 import { useState } from "react"
+import image from '../../../../assets/watermark.png'
 
 interface ExamQuestionProps{
     number: number,
@@ -32,6 +33,13 @@ export default function ExamQuestionPic({ number, setIndex, total }: ExamQuestio
             flex={1}
             alignItems='center'
             mt={6}
+            style={{
+                backgroundImage: `url("${image}")`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPositionX: '50%',
+                backgroundBlendMode: ''
+            }}
         >
             <Stack
                 direction='row'

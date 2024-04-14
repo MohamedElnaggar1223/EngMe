@@ -28,6 +28,7 @@ interface FinalExamCardProps{
 // eslint-disable-next-line react-refresh/only-export-components
 function FinalExamCard({ program, version, disabled, setQuestions, finalExam, questions, foundExam }: FinalExamCardProps)
 {
+    console.log(version)
     const queryClient = useQueryClient()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)

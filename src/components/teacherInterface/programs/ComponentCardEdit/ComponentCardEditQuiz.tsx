@@ -13,6 +13,7 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
 {
     const queryClient = useQueryClient()
     const [selectedQuestion, setSelectedQuestion] = useState(-1)
+    const [duration, setDuration] = useState(parseInt(quiz.duration.split(' ')[0]))
     const [pageLoading, setPageLoading] = useState(false)
 
     const [error, setError] = useState('')
@@ -29,10 +30,10 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
             setPageLoading(true)
             // const previousData = queryClient.getQueryData(['quizzes', course.programId, course.id])
 
-            // queryClient.setQueryData(['quizzes', course.programId, course.id], (oldData: []) => {
-            //     //@ts-expect-error lesson
-            //     const filteredArray = oldData.slice().filter(quizData => quizData.id !== quiz?.id)
-            //     const newArray = [...filteredArray, quiz ? {...quiz, questions} : { title: 'Quiz', questions }]
+            queryClient.setQueryData(['quizzes', course.programId, course.id], (oldData: []) => {
+                //@ts-expect-error lesson
+                const filteredArray = oldData.slice().filter(quizData => quizData.id !== quiz?.id)
+                const newArray = [...filteredArray, quiz ? {...quiz, questions} : { title: 'Quiz', questions }]
 
             //     return newArray
             // })
@@ -50,7 +51,7 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
                 })
             }
         },
-        mutationFn: () => setQuizData(questions, quiz, course, (order + 1))
+        mutationFn: () => setQuizData(questions, quiz, course, (order + 1), duration)
     })
 
     // const memoizedQuestions = useMemo(() => questions, [questions])
@@ -101,6 +102,16 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
                 </Dialog>
                 {error && <Alert severity="error">{error}</Alert>}
                 {displayedQuestions?.length > 0 && displayedQuestions[selectedQuestion]}
+                <div className='ml-auto flex flex-row gap-4 items-center justify-center'>
+                    <p className='font-[Inter] font-semibold text-base'>Duration: </p>
+                    <input
+                        value={duration}
+                        onChange={(e) => setDuration(parseInt(e.target.value))}
+                        placeholder="Duration in Minutes"
+                        type="number"
+                        className='w-24 px-2 py-3 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.1)] rounded-sm font-[Inter]'
+                    />
+                </div>
                 <Stack
                     flex={1}
                     direction='column'

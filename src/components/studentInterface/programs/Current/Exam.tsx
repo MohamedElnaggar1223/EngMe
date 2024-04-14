@@ -31,20 +31,15 @@ export default function Exam()
         queryFn: () => getExamSession(userData.id)
     })
 
-    const handleSetExamSessionTime = async () => {
-        //@ts-expect-error session
-        await setExamSessionTime(examSession[0]?.id ?? '')
-        //await queryClient.invalidateQueries({ queryKey: ['examSession'] })
-    }
-
+    
     const { mutate: mutateSession } = useMutation({
         onMutate: () => {
             const previousData = queryClient.getQueryData(['examSession'])
-
+            
             queryClient.setQueryData(['examSession'], () => {
                 return []
             })
-
+            
             return () => queryClient.setQueryData(['examSession'], previousData)
         },
         mutationFn: () => handleSetExamSessionTime()
@@ -54,23 +49,29 @@ export default function Exam()
     const startTime = (examSession[0]?.startTime)?.toDate()
     //@ts-expect-error test
     const endTime = (examSession[0]?.endTime)?.toDate()
-
+    
     const { id } = useParams()
-
+    
     const getFinalExam = async (id: string) => {
         const finalExamRef = doc(db, 'finalExams', id)
         const finalExamDoc = await getDoc(finalExamRef)
-
+        
         const finalExamData = {...finalExamDoc.data(), id: finalExamDoc.id}
 
         return finalExamData
     }
-
+    
     const { data: finalExam } = useQuery({
         queryKey: ['examSessionAssessment'],
         queryFn: () => getFinalExam(id ?? '')
     })
-
+    
+    const handleSetExamSessionTime = async () => {
+        //@ts-expect-error session
+        await setExamSessionTime(examSession[0]?.id ?? '', userData.id, `/programs/current/${finalExam?.programId}`)
+        //await queryClient.invalidateQueries({ queryKey: ['examSession'] })
+    }
+    
     useEffect(() => {
         const interval = setInterval(() => {
             if(startTime && endTime)
@@ -119,7 +120,7 @@ export default function Exam()
                     px={12}
                     py={4}
                 >
-                    <Typography sx={{ color: '#226E9F' }} fontSize={16} fontFamily='Inter' fontWeight={800}>Final Exam</Typography>
+                    <Typography sx={{ color: '#226E9F' }} fontSize={16} fontFamily='Inter' fontWeight={800}>Model Exam</Typography>
                     <Typography sx={{ color: '#226E9F' }} fontSize={16} fontFamily='Inter' fontWeight={600}>Version 1</Typography>
                 </Stack>
                 <Box
