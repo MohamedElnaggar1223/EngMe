@@ -13,8 +13,8 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
 {
     const queryClient = useQueryClient()
     const [selectedQuestion, setSelectedQuestion] = useState(-1)
-    const [duration, setDuration] = useState(parseInt(quiz.duration.split(' ')[0]))
     const [pageLoading, setPageLoading] = useState(false)
+    const [duration, setDuration] = useState(parseInt(quiz.duration.split(' ')[0]))
 
     const [error, setError] = useState('')
 
@@ -30,10 +30,10 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
             setPageLoading(true)
             // const previousData = queryClient.getQueryData(['quizzes', course.programId, course.id])
 
-            queryClient.setQueryData(['quizzes', course.programId, course.id], (oldData: []) => {
-                //@ts-expect-error lesson
-                const filteredArray = oldData.slice().filter(quizData => quizData.id !== quiz?.id)
-                const newArray = [...filteredArray, quiz ? {...quiz, questions} : { title: 'Quiz', questions }]
+            // queryClient.setQueryData(['quizzes', course.programId, course.id], (oldData: []) => {
+            //     //@ts-expect-error lesson
+            //     const filteredArray = oldData.slice().filter(quizData => quizData.id !== quiz?.id)
+            //     const newArray = [...filteredArray, quiz ? {...quiz, questions} : { title: 'Quiz', questions }]
 
             //     return newArray
             // })

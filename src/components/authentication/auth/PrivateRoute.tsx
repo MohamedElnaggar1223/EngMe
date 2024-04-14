@@ -81,8 +81,6 @@ export default function PrivateRoute({ children })
         {
             if(user && userData) {
                 setRefetchTime(Infinity)
-                console.log(userData?.firstLoginLink)
-                console.log(userData?.role)
                 //@ts-expect-error firstLogin
                 if(userData?.role === 'teacher' && userData?.firstLoginLink) window.location.href = userData?.firstLoginLink
                 else
