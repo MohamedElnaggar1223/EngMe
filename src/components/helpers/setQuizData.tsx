@@ -34,6 +34,8 @@ export const setQuizData = async(questions: unknown, quiz?: unknown, course?: un
         
         await updateDoc(quizDoc, updatedQuiz)
         await setNotification(`${programData.data()?.name}'s Quizzes have been updated!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
+        const updatedQuizData = await getDoc(quizDoc)
+        return {...updatedQuizData.data(), id: updatedQuizData.id}
     }
     else
     {
@@ -88,6 +90,8 @@ export const setQuizData = async(questions: unknown, quiz?: unknown, course?: un
             
             await updateDoc(courseDoc, { quizzes: arrayUnion(addedQuiz.id), duration: `${durationAdded}` })
             await setNotification(`New Quiz has been uploaded for ${programData.data()?.name}!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
+            const updatedQuizData = await getDoc(addedQuiz)
+            return {...updatedQuizData.data(), id: updatedQuizData.id}
         }
     }
 }

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel, Alert, CircularProgress } from "@mui/material"
+import { Box, Stack, Button, SvgIcon, Typography, Input, InputLabel, Alert, CircularProgress, Dialog } from "@mui/material"
 import { setLessonData } from "../../../helpers/setLessonData"
 import { setDeleteLesson } from "../../../helpers/setDeleteLesson"
+import { getStorage, ref, uploadBytesResumable } from "firebase/storage"
 
 //@ts-expect-error anytype
 export default function ComponentCardEditLesson({ course, setEdited, lesson, order, setAdded }) 
@@ -14,7 +15,9 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
     const [file, setFile] = useState(lesson ? {name: lesson?.content?.content} : {})
     const [duration, setDuration] = useState(lesson?.duration ?? '')
     const [loading, setLoading] = useState(false)
+    const [pageLoading, setPageLoading] = useState(false)
     const [fileType, setFileType] = useState((lesson && lesson?.content && lesson?.content?.type) && lesson?.content?.type === 'Videos/' ? 'video/mp4' : lesson?.content?.type === 'Pdfs/' ? 'pdf' : '');
+    const [progress, setProgress] = useState(-1)
     const [error, setError] = useState('')
 
     useEffect(() => {
@@ -34,35 +37,105 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
 
     const canSave = [title, description, file, fileType].every(Boolean)
 
-    const { mutate } = useMutation({
-        onMutate: () => {
-            const previousData = queryClient.getQueryData(['lessons', course.programId, course.id])
+    const handleUploadFile = async(e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
 
-            queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
-                //@ts-expect-error lesson
-                const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson?.id)
-                const newArray = [...filteredArray, lesson ? {...lesson, title, description, duration} : { title, description, duration }]
-
-                return newArray
+        if(canSave)
+        {
+            setPageLoading(true)
+    
+            const storage = getStorage();
+            const storagePath = fileType === 'video/mp4' ? 'Videos/' : 'Pdfs/';
+            
+            const storageRef = ref(storage, storagePath + file.name);
+    
+            //@ts-expect-error file
+            const uploadTask = uploadBytesResumable(storageRef, file)
+    
+            uploadTask.on('state_changed', (snapshot) => {
+                const progressData = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+                setProgress(progressData)
+                // console.log('Upload is'+ progressData + '% done');
+            }, (error) => {
+                setError(error.message)
+                setLoading(false)
+            }, async () => {
+                // setProgress(100)
+                // setLoading(false)
+                const data = await setLessonData(title, description, lesson, course, file, fileType, duration, order)
+                if(data) {
+                    queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
+                        //@ts-expect-error lesson
+                        const filteredArray = oldData ? oldData.slice().filter(lessonData => lessonData.id !== lesson?.id) : []
+                        const newArray = [...filteredArray, data]
+        
+                        return newArray
+                    })
+                    // queryClient.invalidateQueries({ queryKey: ['lessons', course.programId, course.id] })
+                }
+                setPageLoading(false)
+                setAdded(false)
+                setEdited(false)
+                setError('')
             })
+        }
+    }
 
-            return () => queryClient.setQueryData(['lessons', course.programId, course.id], previousData)
-        },
-        mutationFn: () => setLessonData(title, description, lesson, course, file, fileType, duration, (order + 1))
-    })
+    // const { mutateAsync } = useMutation({
+    //     onMutate: () => {
+    //         // const previousData = queryClient.getQueryData(['lessons', course.programId, course.id])
+            
+    //         // queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
+    //             //     //@ts-expect-error lesson
+    //             //     const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson?.id)
+    //             //     const newArray = [...filteredArray, lesson ? {...lesson, title, description, duration} : { title, description, duration }]
+                
+    //             //     return newArray
+    //             // })
+                
+    //             // return () => queryClient.setQueryData(['lessons', course.programId, course.id], previousData)
+    //         setPageLoading(true)
+    //     },
+    //     onSuccess: (data) => {
+    //         if(data) {
+    //             queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
+    //                 //@ts-expect-error lesson
+    //                 const filteredArray = oldData ? oldData.slice().filter(lessonData => lessonData.id !== lesson?.id) : []
+    //                 const newArray = [...filteredArray, data]
+    
+    //                 return newArray
+    //             })
+    //             // queryClient.invalidateQueries({ queryKey: ['lessons', course.programId, course.id] })
+    //         }
+    //     },
+    //     mutationFn: () => setLessonData(title, description, lesson, course, file, fileType, duration, order)
+    // })
 
     const { mutate: mutateDelete } = useMutation({
         onMutate: () => {
-            const previousData = queryClient.getQueryData(['lessons', course.programId, course.id])
+            setPageLoading(true)
+            // const previousData = queryClient.getQueryData(['lessons', course.programId, course.id])
 
-            queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
-                //@ts-expect-error lesson
-                const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson?.id)
+            // queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
+            //     //@ts-expect-error lesson
+            //     const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson?.id)
 
-                return filteredArray
-            })
+            //     return filteredArray
+            // })
 
-            return () => queryClient.setQueryData(['lessons', course.programId, course.id], previousData)
+            // return () => queryClient.setQueryData(['lessons', course.programId, course.id], previousData)
+        },
+        onSuccess: (data) => {
+            if(data.success) {
+                setPageLoading(false)
+                // queryClient.setQueryData(['lessons', course.programId, course.id], (oldData: []) => {
+                //     //@ts-expect-error lesson
+                //     const filteredArray = oldData.slice().filter(lessonData => lessonData.id !== lesson?.id)
+    
+                //     return filteredArray
+                // })
+                queryClient.invalidateQueries({ queryKey: ['lessons', course.programId, course.id] })
+            }
         },
         mutationFn: () => setDeleteLesson(lesson, course)
     })
@@ -119,6 +192,10 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
             bgcolor='#fff'
             py={2}
         >
+            <Dialog open={pageLoading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }}>
+                <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+                <Typography sx={{ color: '#FF7E00', mt: 1 }} >{progress}%</Typography>
+            </Dialog>
             {/* {
                 !success &&
                 <Dialog open={!success} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
@@ -394,38 +471,43 @@ export default function ComponentCardEditLesson({ course, setEdited, lesson, ord
                     >
                         Cancel
                     </Button>
-                    <Button
-                        sx={{
-                            width: '120px',
-                            height: '35px',
-                            background: '#6A9DBC',
-                            color: '#fff',
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            textTransform: 'none',
-                            fontWeight: 500,
-                            border: '1px solid #6A9DBC',
-                            borderRadius: '8px',
-                            '&:hover': {
+                    <form onSubmit={handleUploadFile}>
+
+                        <Button
+                            sx={{
+                                width: '120px',
+                                height: '35px',
                                 background: '#6A9DBC',
-                                opacity: 1
-                            },
-                        }}
-                        onClick={() => {
-                            if(canSave)
-                            {
-                                mutate()
-                                setEdited('')
-                                setAdded('')
-                            }
-                            else
-                            {
-                                setError('Please Enter All Details!')
-                            }
-                        }}
-                    >
-                        Confirm
-                    </Button>
+                                color: '#fff',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 500,
+                                border: '1px solid #6A9DBC',
+                                borderRadius: '8px',
+                                '&:hover': {
+                                    background: '#6A9DBC',
+                                    opacity: 1
+                                },
+                            }}
+                            type='submit'
+                            // onClick={async (e) => {
+                            //     if(canSave)
+                            //     {
+                            //         handleUploadFile(e)
+                            //         // await mutateAsync()
+                            //         setEdited('')
+                            //         setAdded('')
+                            //     }
+                            //     else
+                            //     {
+                            //         setError('Please Enter All Details!')
+                            //     }
+                            // }}
+                        >
+                            Confirm
+                        </Button>
+                    </form>
                 </Stack>
             </Stack>
         </Box>

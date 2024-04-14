@@ -220,7 +220,7 @@ function Header()
                                 alignItems='center'
                             >
                                 <Typography onClick={() => navigate('/')} sx={{ color: pathname === '/' ? '#226E9F' : '#000', cursor: 'pointer' }}>
-                                    Profiles
+                                    Profile
                                 </Typography>
                                 <SvgIcon>
                                     <svg width="1" height="22" viewBox="0 0 1 22" fill="none" xmlns="http://www.w3.org/2000/svg">

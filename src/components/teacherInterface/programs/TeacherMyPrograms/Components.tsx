@@ -1,5 +1,5 @@
 import { lazy, memo, Suspense, useEffect, useState } from "react";
-import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, Stack, SvgIcon, Typography } from "@mui/material";
 const ComponentCard = lazy(() => import("./ComponentCard"))
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCoursesData } from "../../../helpers/getCoursesData";
@@ -19,7 +19,8 @@ function Components(program: ProgramProps)
         queryFn: () => getCoursesData(program),
         refetchOnMount: false,
         enabled: !!program.id,
-        refetchInterval: timer
+        refetchInterval: timer,
+        refetchOnWindowFocus: false
     })
 
     useEffect(() => {
@@ -70,6 +71,9 @@ function Components(program: ProgramProps)
           alignSelf='stretch'
           width='auto'
         >
+            <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+            </Dialog>
             <Stack
                 flex={1}
                 alignItems='flex-end'

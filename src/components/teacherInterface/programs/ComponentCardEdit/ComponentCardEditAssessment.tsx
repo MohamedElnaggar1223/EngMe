@@ -1,4 +1,4 @@
-import { Box, Stack, Button, SvgIcon, Typography, Alert } from "@mui/material";
+import { Box, Stack, Button, SvgIcon, Typography, Alert, CircularProgress, Dialog } from "@mui/material";
 import { useMemo, memo, lazy, createContext, Suspense, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { setAssessmentData } from "../../../helpers/setAssessmentData";
@@ -13,6 +13,7 @@ function ComponentCardEditAssessment({ order, course, setEdited, assessment, set
 {
     const queryClient = useQueryClient()
     const [selectedQuestion, setSelectedQuestion] = useState(-1)
+    const [pageLoading, setPageLoading] = useState(false)
 
     const [error, setError] = useState('')
 
@@ -245,19 +246,32 @@ function ComponentCardEditAssessment({ order, course, setEdited, assessment, set
     //     // memoizedSetQuestions(newQuestions)
     // }, [questions])
 
-    const { mutate } = useMutation({
+    const { mutateAsync } = useMutation({
         onMutate: () => {
-            const previousData = queryClient.getQueryData(['assessments', course.programId, course.id])
+            setPageLoading(true)
+            // const previousData = queryClient.getQueryData(['assessments', course.programId, course.id])
 
-            queryClient.setQueryData(['assessments', course.programId, course.id], (oldData: []) => {
-                //@ts-expect-error lesson
-                const filteredArray = oldData.slice().filter(assessmentData => assessmentData.id !== assessment?.id)
-                const newArray = [...filteredArray, assessment ? {...assessment, questions} : { title: 'Assessment', questions }]
+            // queryClient.setQueryData(['assessments', course.programId, course.id], (oldData: []) => {
+            //     //@ts-expect-error lesson
+            //     const filteredArray = oldData.slice().filter(assessmentData => assessmentData.id !== assessment?.id)
+            //     const newArray = [...filteredArray, assessment ? {...assessment, questions} : { title: 'Assessment', questions }]
 
-                return newArray
-            })
+            //     return newArray
+            // })
 
-            return () => queryClient.setQueryData(['assessments', course.programId, course.id], previousData)
+            // return () => queryClient.setQueryData(['assessments', course.programId, course.id], previousData)
+        },
+        onSuccess: async (data) => {
+            if(data) {
+                setPageLoading(false)
+                queryClient.setQueryData(['assessments', course.programId, course.id], (oldData: []) => {
+                    //@ts-expect-error lesson
+                    const filteredArray = oldData ? oldData.slice().filter(assessmentData => assessmentData.id !== assessment?.id) : []
+                    const newArray = [...filteredArray, data]
+
+                    return newArray
+                })
+            }
         },
         mutationFn: () => setAssessmentData(questions, assessment, course, (order + 1))
     })
@@ -305,6 +319,9 @@ function ComponentCardEditAssessment({ order, course, setEdited, assessment, set
                 py={2}
                 flex={1}
             >
+                <Dialog open={pageLoading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                    <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+                </Dialog>
                 {error && <Alert severity="error">{error}</Alert>}
                 {displayedQuestions?.length > 0 && displayedQuestions[selectedQuestion]}
                 <Stack
@@ -467,12 +484,12 @@ function ComponentCardEditAssessment({ order, course, setEdited, assessment, set
                                     opacity: 1
                                 },
                             }}
-                            onClick={() => {
+                            onClick={async () => {
                                 if(canSave)
                                 {
+                                    await mutateAsync()
                                     setEdited('')
                                     setAdded('')
-                                    mutate()
                                 }
                                 else
                                 {

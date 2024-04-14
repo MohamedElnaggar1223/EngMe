@@ -33,21 +33,24 @@ function ComponentCard({index, course}: ComponentCard)
         queryKey: ['assessments', course.programId, course.id],
         queryFn: () => getAssessmentsData([course]),
         enabled: !!course,
-        refetchOnMount: true
+        refetchOnMount: false,
+        refetchOnWindowFocus: false
     })
 
     const { data: lessons } = useQuery({
         queryKey: ['lessons', course.programId, course.id],
         queryFn: () => getLessonsData([course]),
         enabled: !!course,
-        refetchOnMount: true
+        refetchOnMount: false,
+        refetchOnWindowFocus: false
     })
 
     const { data: quizzes } = useQuery({
         queryKey: ['quizzes', course.programId, course.id],
         queryFn: () => getQuizzesData([course]),
         enabled: !!course,
-        refetchOnMount: true
+        refetchOnMount: false,
+        refetchOnWindowFocus: false
     })
 
     function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)

@@ -33,6 +33,8 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
 
         await updateDoc(assessmentDoc, updatedAssessment)
         await setNotification(`${programData.data()?.name}'s Assessments have been updated!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
+        const updatedAssessmentData = await getDoc(assessmentDoc)
+        return {...updatedAssessmentData.data(), id: updatedAssessmentData.id}
     }
     else
     {
@@ -87,6 +89,8 @@ export const setAssessmentData = async(questions: unknown, assessment?: unknown,
             
             await updateDoc(courseDoc, { assessments: arrayUnion(addedAssessment.id), duration: `${durationAdded}` })
             await setNotification(`New Quiz has been uploaded for ${programData.data()?.name}!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
+            const updatedAssessmentData = await getDoc(addedAssessment)
+            return {...updatedAssessmentData.data(), id: updatedAssessmentData.id}
         }
     }
 }

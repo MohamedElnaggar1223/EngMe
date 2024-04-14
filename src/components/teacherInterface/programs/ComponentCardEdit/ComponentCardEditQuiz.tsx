@@ -1,4 +1,4 @@
-import { Box, Stack, Button, SvgIcon, Typography, Alert } from "@mui/material";
+import { Box, Stack, Button, SvgIcon, Typography, Alert, CircularProgress, Dialog } from "@mui/material";
 import { useMemo, memo, lazy, createContext, Suspense, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { setQuizData } from "../../../helpers/setQuizData";
@@ -13,6 +13,7 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
 {
     const queryClient = useQueryClient()
     const [selectedQuestion, setSelectedQuestion] = useState(-1)
+    const [pageLoading, setPageLoading] = useState(false)
 
     const [error, setError] = useState('')
 
@@ -23,19 +24,31 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
         }
     })
 
-    const { mutate } = useMutation({
+    const { mutateAsync } = useMutation({
         onMutate: () => {
-            const previousData = queryClient.getQueryData(['quizzes', course.programId, course.id])
+            setPageLoading(true)
+            // const previousData = queryClient.getQueryData(['quizzes', course.programId, course.id])
 
-            queryClient.setQueryData(['quizzes', course.programId, course.id], (oldData: []) => {
-                //@ts-expect-error lesson
-                const filteredArray = oldData.slice().filter(quizData => quizData.id !== quiz?.id)
-                const newArray = [...filteredArray, quiz ? {...quiz, questions} : { title: 'Quiz', questions }]
+            // queryClient.setQueryData(['quizzes', course.programId, course.id], (oldData: []) => {
+            //     //@ts-expect-error lesson
+            //     const filteredArray = oldData.slice().filter(quizData => quizData.id !== quiz?.id)
+            //     const newArray = [...filteredArray, quiz ? {...quiz, questions} : { title: 'Quiz', questions }]
 
-                return newArray
-            })
+            //     return newArray
+            // })
 
-            return () => queryClient.setQueryData(['quizzes', course.programId, course.id], previousData)
+            // return () => queryClient.setQueryData(['quizzes', course.programId, course.id], previousData)
+        },
+        onSuccess: (data) => {
+            if(data) {
+                setPageLoading(false)
+                queryClient.setQueryData(['quizzes', course.programId, course.id], (quizzes: []) => {
+                    //@ts-expect-error quiz
+                    const filteredArray = quizzes ? quizzes?.slice().filter(quizData => quizData.id !== quiz?.id) : []
+                    const newArray = [...filteredArray, data]
+                    return newArray
+                })
+            }
         },
         mutationFn: () => setQuizData(questions, quiz, course, (order + 1))
     })
@@ -83,6 +96,9 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
                 py={2}
                 flex={1}
             >
+                <Dialog open={pageLoading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                    <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+                </Dialog>
                 {error && <Alert severity="error">{error}</Alert>}
                 {displayedQuestions?.length > 0 && displayedQuestions[selectedQuestion]}
                 <Stack
@@ -245,12 +261,12 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
                                     opacity: 1
                                 },
                             }}
-                            onClick={() => {
+                            onClick={async () => {
                                 if(canSave)
                                 {
+                                    await mutateAsync()
                                     setEdited('')
                                     setAdded('')
-                                    mutate()
                                 }
                                 else
                                 {

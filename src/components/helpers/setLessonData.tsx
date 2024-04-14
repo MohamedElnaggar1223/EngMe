@@ -1,13 +1,10 @@
 import { doc, updateDoc, collection, Timestamp, addDoc, arrayUnion, getDocs, query, where, getDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
-import { getStorage, ref, uploadBytes } from "firebase/storage"
 import { setNotification } from "./setNotification";
 
 export const setLessonData = async(title: string, description: string, lesson?: unknown, course?: unknown, file?: unknown, fileType?: unknown, duration?: string, order?: number) => {
-    const storage = getStorage();
     const storagePath = fileType === 'video/mp4' ? 'Videos/' : 'Pdfs/';
-    //@ts-expect-error file
-    const storageRef = ref(storage, storagePath + file.name);
+    // const storageRef = ref(storage, storagePath + file.name);
 
     //@ts-expect-error course
     const programDoc = doc(db, 'programs', course?.programId)
@@ -84,8 +81,7 @@ export const setLessonData = async(title: string, description: string, lesson?: 
             await updateDoc(courseDoc, { duration: `${finalDuration}` })
         }
 
-        //@ts-expect-error file
-        await uploadBytes(storageRef, file)
+        // await uploadBytes(storageRef, file)
 
         const updatedLesson = {
             title,
@@ -116,6 +112,8 @@ export const setLessonData = async(title: string, description: string, lesson?: 
         
         await updateDoc(lessonDoc, updatedLesson)
         await setNotification(`${programData.data()?.name}'s Lesson(s) have been updated!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
+        const lessonDataUpdated = await getDoc(lessonDoc)
+        return {...lessonDataUpdated.data(), id: lessonDataUpdated.id}
     }
     else
     {
@@ -138,8 +136,7 @@ export const setLessonData = async(title: string, description: string, lesson?: 
                 }
             }
 
-            //@ts-expect-error file
-            await uploadBytes(storageRef, file)
+            // await uploadBytes(storageRef, file)
 
             const addedLesson = await addDoc(lessonsRef, newLesson)
 
@@ -226,6 +223,9 @@ export const setLessonData = async(title: string, description: string, lesson?: 
             
             
             await setNotification(`New Lesson has been uploaded for ${programData.data()?.name}!`, [...studentPrograms, programData.data()?.teacherId], [...studentFollowTeacher], `/programs/current/${programData.id}`)
+            const lessonRef = doc(db, 'lessons', addedLesson.id)
+            const lessonDataUpdated = await getDoc(lessonRef)
+            return {...lessonDataUpdated.data(), id: lessonDataUpdated.id}
         }
     }
 }

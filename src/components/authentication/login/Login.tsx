@@ -6,6 +6,7 @@ import icon from '../../../assets/Ellipse 1.png'
 import CompanyRegister from "../signup/CompanyRegister"
 import StudentSignUp from "../signup/StudentSignUp"
 import TeacherSignUp from "../signup/TeacherSignUp"
+import { Link } from "react-router-dom"
 // import { PageContext } from '../../Layout'
 
 export const LoginContext = createContext({})
@@ -19,8 +20,6 @@ function Login()
     // useLayoutEffect(() => {
     //     if(user) setPage('profile')
     // }, [user])
-    
-    console.log(selectedPage)
 
     return (
         <LoginContext.Provider value={{ selectedPage, setSelectedPage }}>
@@ -42,7 +41,9 @@ function Login()
                     top='1%'
                     left='1%'
                 >
-                    <img src={icon} width='109px' height='100px' />
+                    <Link to='https://www.engmecamp.com/'>
+                        <img src={icon} width='109px' height='100px' />
+                    </Link>
                 </Box>
                 {/* <iframe 
                     src="https://firebasestorage.googleapis.com/v0/b/engme-84d22.appspot.com/o/HomePage%2Feng%20me%20website%20final%20edit%20s.mp4?alt=media&token=59433475-4266-4897-bc4b-92814fc5a6f0?autoplay=1" 

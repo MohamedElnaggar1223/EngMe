@@ -10,7 +10,7 @@ import { getUserByNumber } from "../../helpers/getUserByNumber";
 import { getUserByEmail } from "../../helpers/getUserByEmail";
 import { ExpandMore } from "@mui/icons-material"
 import { LoginContext } from "../login/Login";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function StudentSignUp() 
 {
@@ -360,6 +360,7 @@ export default function StudentSignUp()
                         Sign Up
                     </Button>
                     <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Already have an account? <span style={{ color: '#FF7E00', textDecoration: 'none', cursor: 'pointer' }} onClick={() => setSelectedPage('StudentLogin')}>Login</span></Typography>
+                    <Typography sx={{ mt: 1 }} fontWeight={600} fontSize={16} fontFamily='Inter' textAlign='center'>Want to know more about us? <Link to='https://www.engmecamp.com/' style={{ color: '#FF7E00', textDecoration: 'none', cursor: 'pointer' }}>Visit this link</Link></Typography>
                 </Box>
             </form>
         </Box>
