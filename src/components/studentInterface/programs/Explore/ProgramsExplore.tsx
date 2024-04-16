@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import { lazy, useState, Suspense, useContext, createContext, useEffect } from "react";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { collection, documentId, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, documentId, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
 import { useParams } from "react-router-dom";
 import ProgramProps from "../../../../interfaces/ProgramProps";
@@ -78,7 +78,19 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
             const exploreProgramsData = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
-            }))
+            })) as ProgramProps[]
+
+            const explorePropgramsFiltered = exploreProgramsData.filter(async (program) => {
+                const teacherDoc = doc(db, "teachers", program.teacherId ?? '');
+                const teacherData = await getDoc(teacherDoc);
+                return !teacherData.data()?.firstLoginLink
+            })
+
+            const finalExplorePrograms = await Promise.all(explorePropgramsFiltered)
+
+            // console.log(exploreProgramsData, 'testprogexdocs')
+    
+            return finalExplorePrograms
     
             return exploreProgramsData
         }
@@ -91,7 +103,19 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
             const exploreProgramsData = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
-            }))
+            })) as ProgramProps[]
+
+            const explorePropgramsFiltered = exploreProgramsData.filter(async (program) => {
+                const teacherDoc = doc(db, "teachers", program.teacherId ?? '');
+                const teacherData = await getDoc(teacherDoc);
+                return !teacherData.data()?.firstLoginLink
+            })
+
+            const finalExplorePrograms = await Promise.all(explorePropgramsFiltered)
+
+            // console.log(exploreProgramsData, 'testprogexdocs')
+    
+            return finalExplorePrograms
     
             return exploreProgramsData
         }
@@ -104,11 +128,19 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
             const exploreProgramsData = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
-            }))
+            })) as ProgramProps[]
+
+            const explorePropgramsFiltered = exploreProgramsData.filter(async (program) => {
+                const teacherDoc = doc(db, "teachers", program.teacherId ?? '');
+                const teacherData = await getDoc(teacherDoc);
+                return !teacherData.data()?.firstLoginLink
+            })
+
+            const finalExplorePrograms = await Promise.all(explorePropgramsFiltered)
 
             // console.log(exploreProgramsData, 'testprogexdocs')
     
-            return exploreProgramsData
+            return finalExplorePrograms
         }
     }
 

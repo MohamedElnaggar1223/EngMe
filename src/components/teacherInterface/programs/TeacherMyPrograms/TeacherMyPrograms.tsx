@@ -11,6 +11,7 @@ interface TeacherMyProgramsProps{
 export default function TeacherMyPrograms({ programs }: TeacherMyProgramsProps) 
 {
     const [add, setAdd] = useState(false)
+    const [manageBundles, setManageBundles] = useState<boolean>(false)
 
     const displayedPrograms = programs?.map(program => <TeacherMyProgramCard key={program.id} {...program} />)
 
@@ -23,13 +24,14 @@ export default function TeacherMyPrograms({ programs }: TeacherMyProgramsProps)
         >
             <Stack
                 flex={1}
-                alignItems='flex-end'
-                justifyContent='center'
+                alignItems='end'
+                justifyContent='end'
                 mt={6}
+                direction='row'
+                gap={3}
             >
                 <Button
                     sx={{
-                        flex: 1,
                         background: 'linear-gradient(95deg, #FF7E00 5.94%, #FF9F06 95.69%)',
                         color: '#fff',
                         fontFamily: 'Inter',
@@ -47,9 +49,13 @@ export default function TeacherMyPrograms({ programs }: TeacherMyProgramsProps)
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        gap: 2
+                        gap: 2,
+                        width: 'fit-content'
                     }}
-                    onClick={() => setAdd(true)}
+                    onClick={() => {
+                        setManageBundles(false)
+                        setAdd(true)
+                    }}
                 >
                     <SvgIcon sx={{ fontSize: 20, fontWeight: 400 }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
@@ -60,7 +66,7 @@ export default function TeacherMyPrograms({ programs }: TeacherMyProgramsProps)
                 </Button>
             </Stack>
             {
-                add &&
+                add && !manageBundles &&
                 <TeacherEditMyProgramCard setEdit={setAdd} program={undefined} />
             }
             {displayedPrograms}

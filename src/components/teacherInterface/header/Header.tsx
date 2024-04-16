@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, IconButton, Input, InputAdornment, Paper, Stack, SvgIcon, Typography } from "@mui/material";
+import { Avatar, Box, Button, IconButton, Input, InputAdornment, Stack, SvgIcon, Typography } from "@mui/material";
 import logo from '../../../assets/Ellipse 1.png'
 import { memo, useContext, useEffect, useRef, useState } from "react";
 // import { PageContext } from "../../Layout";
@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getNotifications } from "../../helpers/getNotifications";
 import { Timestamp, collection, onSnapshot } from "firebase/firestore";
 import { setNotification } from "../../helpers/setNotification";
+import AddCardIcon from '@mui/icons-material/AddCard';
 
 // eslint-disable-next-line react-refresh/only-export-components
 function Header() 
@@ -397,10 +398,16 @@ function Header()
                         }} 
                         ref={settingsRef}
                     >
-                        <Paper onClick={() => handleSignOut()} sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', '&:hover': { bgcolor: '#fcfcfc' },  }}>
+                        {userData.firstLoginLink && (
+                            <div className='rounded-none bg-white flex items-center cursor-pointer hover:bg-[#fcfcfc]' onClick={() => window.location.href = userData.firstLoginLink}>
+                                <AddCardIcon sx={{ pl: 1.5 }} />
+                                <Typography noWrap sx={{ pl: 1, pr: 6, pb: 1.5, pt: 1.8, alignSelf: 'flex-start' }}>Activate Stripe</Typography>
+                            </div>
+                        )}
+                        <div className='rounded-none w-full bg-white flex items-center cursor-pointer hover:bg-[#fcfcfc]' onClick={() => handleSignOut()}>
                             <LogoutIcon sx={{ pl: 1.5 }} />
                             <Typography noWrap sx={{ pl: 1, pr: 6, pb: 1.5, pt: 1.8, alignSelf: 'flex-start' }}>Sign Out</Typography>
-                        </Paper>
+                        </div>
                     </Box>
                 </Stack>
             </Stack>

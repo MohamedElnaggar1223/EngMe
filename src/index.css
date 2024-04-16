@@ -9,6 +9,23 @@
   position: relative;
 }
 
+.swiper {
+  width: 280px;
+  height: 420px;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+
+.swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+}
+
 .css-1a7967t{
   box-shadow: none !important;
 }

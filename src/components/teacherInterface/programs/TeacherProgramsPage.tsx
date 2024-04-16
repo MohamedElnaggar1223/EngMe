@@ -9,6 +9,7 @@ import KnowledgeBank from '../knowledgeBankAdmin/KnowledgeBank'
 import InstructorsApplications from './InstructorsApplications/InstructorsApplications'
 import ProgramsPriceShare from './ProgramsPriceShare/ProgramsPriceShare'
 import ProgramsExplore from '../../studentInterface/programs/Explore/ProgramsExplore'
+import TeacherBundles from './TeacherMyPrograms/TeacherBundles'
 const TeacherMyPrograms = lazy(() => import('./TeacherMyPrograms/TeacherMyPrograms'))
 
 export default function Programs() 
@@ -75,6 +76,22 @@ export default function Programs()
                             border='0px'
                             height='6px'
                             bgcolor={tab === 'Programs' ? '#FF9F06' : '#fff'}
+                            width={{xs: '80px', sm: '120px', lg: '180px'}}
+                        >
+
+                        </Box>
+                    </Stack>
+                    <Stack
+                        alignItems='center'
+                        onClick={() => setTab('Bundles')}
+                        sx={{ cursor: 'pointer' }}
+                    >
+                        <Typography>My Bundles</Typography>
+                        <Box
+                            position='relative'
+                            border='0px'
+                            height='6px'
+                            bgcolor={tab === 'Bundles' ? '#FF9F06' : '#fff'}
                             width={{xs: '80px', sm: '120px', lg: '180px'}}
                         >
 
@@ -181,6 +198,12 @@ export default function Programs()
                     <Suspense>
                         {/*//@ts-expect-error programs */}
                         <TeacherMyPrograms programs={teacherPrograms?.slice().filter(program => !program.paused)} />
+                    </Suspense>
+                    :
+                    tab === 'Bundles' ?
+                    <Suspense>
+                        {/*//@ts-expect-error programs */}
+                        <TeacherBundles programs={teacherPrograms?.slice().filter(program => !program.paused)} />
                     </Suspense>
                     :
                     tab === 'Paused' ?
