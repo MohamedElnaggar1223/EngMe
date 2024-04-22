@@ -1,13 +1,27 @@
-import { Box } from "@mui/material";
+import { Box, CircularProgress, Dialog } from "@mui/material";
 import { lazy, useState, Suspense, useContext, createContext, useEffect } from "react";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { collection, doc, documentId, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
 import { useParams } from "react-router-dom";
 import ProgramProps from "../../../../interfaces/ProgramProps";
+import { BundlesProps } from "../../../../interfaces/BundlesProps";
 const ProgramsExploreHome = lazy(() => import("./ProgramsExploreHome"))
 const ProgramsExploreProgram = lazy(() => import("./ProgramsExploreProgram"))
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/effect-cards';
+
+import '../../../../index.css'
+
+// import required modules
+import { EffectCards } from 'swiper/modules';
+import BundleCard from "../../../teacherInterface/programs/TeacherMyPrograms/BundleCard";
+import axios from 'axios'
+import { loadStripe } from '@stripe/stripe-js'
 
 //@ts-expect-error context
 export const ProgramExploreContext = createContext()
@@ -25,6 +39,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
 
     const { id } = useParams()
 
+    const [loading, setLoading] = useState(false)
     const [filters, setFilters] = useState(false)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedFilters, setSelectedFilters] = useState<any>({
@@ -41,6 +56,95 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
         queryFn: () => getExplorePrograms(),
         enabled: !!userData,
     })
+
+    const { data: bundles, isLoading: bundlesLoading } = useQuery({
+        queryKey: ['bundles', userData?.id],
+        queryFn: async () => {
+            const bundlesRef = collection(db, 'bundles')
+            const querySnapshot = await getDocs(bundlesRef)
+            const bundlesData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })) as BundlesProps[]
+            const bundlesFiltered = bundlesData.slice().filter((bundle) => {
+                explorePrograms?.forEach(explore => console.log(explore.id))
+                if(bundle.teacherId === userData.id) return false
+                if(bundle.programs.every(program => explorePrograms?.map(explore => explore.id)?.includes(program))) return true
+                return false
+            })
+            return bundlesFiltered
+        },
+        enabled: !!userData && !isLoading,
+    })
+
+    const { mutate: mutateBundles } = useMutation({
+        onMutate: () => setLoading(true),
+        onSettled: async () => {
+            setLoading(false)
+            await queryClient.invalidateQueries({
+                queryKey: ['bundles', userData?.id]
+            })
+            await queryClient.invalidateQueries({
+                queryKey: ['explorePrograms', userData?.id]
+            })
+        },
+        mutationFn: async (bundle: BundlesProps) => {
+            await handlePayment(bundle)
+        }
+    })
+
+    const handlePayment = async (bundle: BundlesProps) => {
+        const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+
+        const headers = {
+            "Content-Type": "application/json"
+        }
+        
+        const postBundle = { ...bundle, image: '' }
+
+        const body = {
+            bundle: postBundle,
+            studentId: userData.id
+        }
+
+        const response = await axios.post('https://engmestripeapi.onrender.com/create-checkout-session', body, {
+            headers
+        })
+        
+        // const response = await axios.post('http://localhost:3001/create-checkout-session', body, {
+        //     headers
+        // })
+
+        const session = response.data
+
+        const result = await stripe?.redirectToCheckout({
+            sessionId: session.id
+        })
+
+        if(result?.error)
+        {
+            console.error(result.error)
+        }
+    }
+
+    const displayedBundles = bundles?.map(bundle => (
+        <Swiper
+            effect={'cards'}
+            grabCursor={true}
+            modules={[EffectCards]}
+            className="mySwiper relative"
+            key={bundle.id}
+            onClick={() => {
+                mutateBundles(bundle)
+            }}
+        >
+            {bundle?.programs.map(programId => <SwiperSlide className='bg-[#FEF4EB]' key={programId}><BundleCard programId={programId} /></SwiperSlide>)}
+            <div className='absolute flex flex-col gap-2 w-full text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-5 right-5 z-50'>
+                <p> <span className='font-bold'>Price: </span>${bundle.price}</p>
+                {bundle.discount !== 0 && <p><span className='font-bold'>Discount: </span>{bundle.discount}%</p>}
+            </div>
+        </Swiper>
+    ))
 
     useEffect(() => {
         if(pageShowed !== 'home')
@@ -161,7 +265,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
         setSelectedFilters(newFilters)
     }
     
-    if(isLoading) return <></>
+    if(isLoading || bundlesLoading) return <></>
     return (
         <ProgramExploreContext.Provider value={{ setPageShowed, pageShowed }}>
             <Box
@@ -180,6 +284,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
                             selectedFilters={selectedFilters}
                             setSelectedFilters={setSelectedFilters}
                             explorePrograms={explorePrograms}
+                            displayedBundles={displayedBundles}
                         />
                     </Suspense> :
                     <Suspense>
@@ -188,6 +293,9 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
                     </Suspense>
                 }
             </Box>
+        <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+            <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+        </Dialog>
         </ProgramExploreContext.Provider>
     )
 }

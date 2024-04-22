@@ -15,7 +15,8 @@ export default function ProgramsExploreHome(
     setFilters,
     selectedFilters,
     setSelectedFilters,
-    explorePrograms
+    explorePrograms,
+    displayedBundles
 }: ProgramsExploreHomeProps) 
 {
     //@ts-expect-error context
@@ -310,6 +311,7 @@ export default function ProgramsExploreHome(
                 justifyContent={{xs: 'center', sm: 'center', lg: 'flex-start'}}
             >
                 {displayedPrograms}
+                {displayedBundles}
             </Stack>
         </>
     )

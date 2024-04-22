@@ -1,7 +1,7 @@
 import { useContext, useState } from "react"
 import { AuthContext } from "../../../authentication/auth/AuthProvider"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { addDoc, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
 import { db } from "../../../../firebase/firebaseConfig"
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -13,10 +13,10 @@ import '../../../../index.css'
 
 // import required modules
 import { EffectCards } from 'swiper/modules';
-import { Button, CircularProgress, Dialog, SvgIcon, Typography } from "@mui/material"
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, SvgIcon, Typography } from "@mui/material"
 import ProgramProps from "../../../../interfaces/ProgramProps"
 import { cn } from "../../../libs/utils"
-import TeacherBundleCard from "./TeacherBundleCard"
+import BundleCard from "./BundleCard"
 
 type Props = {
     programs: ProgramProps[]
@@ -24,6 +24,8 @@ type Props = {
 
 export default function TeacherBundles({ programs }: Props)
 {
+    const queryClient = useQueryClient();
+
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
 
@@ -32,6 +34,7 @@ export default function TeacherBundles({ programs }: Props)
     const [price, setPrice] = useState(0)
     const [discount, setDiscount] = useState(0)
     const [edit, setEdit] = useState()
+    const [deleteBundle, setDeleteBundle] = useState(false)
 
     const [loading, setLoading] = useState(false)
 
@@ -48,18 +51,26 @@ export default function TeacherBundles({ programs }: Props)
 
     const { mutate } = useMutation({
         onMutate: () => setLoading(true),
-        onSettled: () => {
+        onSettled: async () => {
             setLoading(false)
             setAdd(false)
+            await queryClient.invalidateQueries({
+                queryKey: ['teacherBundles', userData?.id]
+            })
         },
         mutationFn: async () => {
             const bundleRef = collection(db, 'bundles')
+
+            if(!addedPrograms) return
+            
+            const teacherShare = ((await getDoc(doc(db, 'programs', addedPrograms[0]))).data() as ProgramProps).teacherShare
 
             const addedBundle = {
                 programs: addedPrograms,
                 teacherId: userData?.id,
                 price,
-                discount
+                discount,
+                teacherShare
             }
 
             await addDoc(bundleRef, addedBundle)
@@ -68,9 +79,13 @@ export default function TeacherBundles({ programs }: Props)
 
     const { mutate: mutateEdit } = useMutation({
         onMutate: () => setLoading(true),
-        onSettled: () => {
+        onSettled: async () => {
             setLoading(false)
             setEdit(undefined)
+            await queryClient.invalidateQueries({
+                queryKey: ['teacherBundles', userData?.id]
+            })
+            setAddedPrograms([])
         },
         mutationFn: async () => {
             //@ts-expect-error edit
@@ -84,6 +99,31 @@ export default function TeacherBundles({ programs }: Props)
             }
 
             await updateDoc(bundleDoc, addedBundle)
+        }
+    })
+
+    const { mutate: mutateDelete } = useMutation({
+        onMutate: () => {
+            setDeleteBundle(false)
+            setLoading(true)
+        },
+        onSettled: async () => {
+            setLoading(false)
+            setAddedPrograms([])
+            await queryClient.invalidateQueries({
+                queryKey: ['teacherBundles', userData?.id]
+            })
+            setEdit(undefined)
+        },
+        mutationFn: async () => {
+            if(edit)
+            {
+                //@ts-expect-error editid
+                const bundleDoc = doc(db, 'bundles', edit.id);
+
+                await deleteDoc(bundleDoc);
+                return { success: true }
+            }
         }
     })
 
@@ -123,7 +163,7 @@ export default function TeacherBundles({ programs }: Props)
                 </Button>
             </div>
             {add && (
-                <div className='flex flex-col gap-6'>
+                <div className='flex flex-col gap-6 mb-6'>
                     <p className='font-[Inter] font-medium text-sm'>{addedPrograms?.length ?? 0}/3 Programs Added (add up to 3 programs)</p>
                     {programs.map(program => (
                         <div onClick={(e) => (addedPrograms?.length ?? 0) < 3 || addedPrograms?.includes(program.id) ? setAddedPrograms(prev => (prev ? prev.includes(program.id) ? prev.slice().filter(p => p !== program.id) : [...prev, program.id] : [program.id])) : e.stopPropagation()} key={program.id} className={cn('px-6 py-4 rounded-3xl flex items-center justify-between bg-gradient-to-r from-orange-400 to-orange-600 via-orange-500', addedPrograms?.includes(program.id) || addedPrograms?.length === 3 ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80 cursor-pointer')}>
@@ -177,7 +217,7 @@ export default function TeacherBundles({ programs }: Props)
                 </div>
             )}
             {edit && (
-                <div className='flex flex-col gap-6'>
+                <div className='flex flex-col gap-6 mb-6'>
                     <p className='font-[Inter] font-medium text-sm'>{addedPrograms?.length ?? 0}/3 Programs Added (add up to 3 programs)</p>
                     {programs.map(program => (
                         <div onClick={(e) => (addedPrograms?.length ?? 0) < 3 || addedPrograms?.includes(program.id) ? setAddedPrograms(prev => (prev ? prev.includes(program.id) ? prev.slice().filter(p => p !== program.id) : [...prev, program.id] : [program.id])) : e.stopPropagation()} key={program.id} className={cn('px-6 py-4 rounded-3xl flex items-center justify-between bg-gradient-to-r from-orange-400 to-orange-600 via-orange-500', addedPrograms?.includes(program.id) || addedPrograms?.length === 3 ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80 cursor-pointer')}>
@@ -206,29 +246,53 @@ export default function TeacherBundles({ programs }: Props)
                                 onChange={e => setDiscount(+e.target.value)} 
                             />
                         </div>
-                        <Button
-                            sx={{
-                                width: '180px',
-                                height: '35px',
-                                background: '#226E9F',
-                                color: '#fff',
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                textTransform: 'none',
-                                fontWeight: 400,
-                                border: '1px solid #226E9F',
-                                borderRadius: '6px',
-                                '&:hover': {
+                        <div className='flex items-center justify-center ml-auto gap-4'>
+                            <Button
+                                sx={{
+                                    width: '180px',
+                                    height: '35px',
+                                    background: '#D30000',
+                                    color: '#fff',
+                                    fontFamily: 'Inter',
+                                    fontSize: 14,
+                                    textTransform: 'none',
+                                    fontWeight: 400,
+                                    border: '1px solid #D30000',
+                                    borderRadius: '6px',
+                                    '&:hover': {
+                                        background: '#D30000',
+                                        opacity: 1
+                                    },
+                                    paddingY: 3
+                                }}
+                                onClick={() => setDeleteBundle(true)}
+                            >
+                                Delete
+                            </Button>
+                            <Button
+                                sx={{
+                                    width: '180px',
+                                    height: '35px',
                                     background: '#226E9F',
-                                    opacity: 1
-                                },
-                                paddingY: 3
-                            }}
-                            disabled={!((addedPrograms?.length ?? 0) >= 2)}
-                            onClick={() => mutateEdit()}
-                        >
-                            Confirm
-                        </Button>
+                                    color: '#fff',
+                                    fontFamily: 'Inter',
+                                    fontSize: 14,
+                                    textTransform: 'none',
+                                    fontWeight: 400,
+                                    border: '1px solid #226E9F',
+                                    borderRadius: '6px',
+                                    '&:hover': {
+                                        background: '#226E9F',
+                                        opacity: 1
+                                    },
+                                    paddingY: 3
+                                }}
+                                disabled={!((addedPrograms?.length ?? 0) >= 2)}
+                                onClick={() => mutateEdit()}
+                            >
+                                Confirm
+                            </Button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -252,12 +316,77 @@ export default function TeacherBundles({ programs }: Props)
                         }}
                     >
                         {/*//@ts-expect-error program */}
-                        {bundle?.programs.map(programId => <SwiperSlide className='bg-[#FEF4EB]' key={programId}><TeacherBundleCard programId={programId} /></SwiperSlide>)}
+                        {bundle?.programs.map(programId => <SwiperSlide className='bg-[#FEF4EB]' key={programId}><BundleCard programId={programId} /></SwiperSlide>)}
                     </Swiper>
                 ))}
             </div>
             <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
                 <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+            </Dialog>
+            <Dialog
+                open={deleteBundle}
+                keepMounted
+                onClose={setDeleteBundle}
+                aria-describedby="alert-dialog-slide-description"
+                PaperProps={{
+                    style: {
+                        borderRadius: '20px',
+                        overflow: 'hidden',
+                    }
+                }}
+            >
+                <DialogTitle sx={{ mx: 1, mt: 2, mb: 3 }}>Are you sure you want to delete This ExamBank Major?</DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-slide-description">
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly', mx: 4, mb: 4 }}>
+                <Button 
+                    sx={{
+                        width: '120px',
+                        height: '50px',
+                        background: '#fff',
+                        color: '#000',
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        textTransform: 'none',
+                        fontWeight: 400,
+                        border: '1px solid #000',
+                        borderRadius: '10px',
+                        '&:hover': {
+                            background: '#fff',
+                            opacity: 1
+                        }
+                    }}
+                    onClick={() => setDeleteBundle(false)}
+                >
+                    No
+                </Button>
+                <Button 
+                    sx={{
+                        width: '120px',
+                        height: '50px',
+                        background: '#D30000',
+                        color: '#fff',
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        textTransform: 'none',
+                        fontWeight: 400,
+                        border: '0',
+                        borderRadius: '10px',
+                        '&:hover': {
+                            background: '#D30000',
+                            opacity: 1
+                        }
+                    }}
+                    onClick={() => {
+                        mutateDelete()
+                        setDeleteBundle(false)
+                    }}
+                >
+                    Yes
+                </Button>
+                </DialogActions>
             </Dialog>
         </section>
     )
