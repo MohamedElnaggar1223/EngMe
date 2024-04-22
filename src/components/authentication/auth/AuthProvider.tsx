@@ -163,9 +163,16 @@ export default function AuthProvider({ children })
     
             const unsub = onSnapshot(queryOrders, async (querySnapshot) => {
                 const acceptedOrders = querySnapshot.docs.slice().filter(doc => doc.data()?.status === 'accepted')
-    
+
                 const updateStudentProgram = acceptedOrders.map(async (order) => {
-                    await setStudentRequestProgram('', order.data()?.studentId, order.data()?.programId)
+                    if(order.data().programs)
+                    {
+                        const requestPrograms = order.data().programs.map(async (programId: string) => {
+                            await setStudentRequestProgram('', order.data()?.studentId, programId)
+                        })
+                        await Promise.all(requestPrograms)
+                    }
+                    else await setStudentRequestProgram('', order.data()?.studentId, order.data()?.programId)
                     await deleteDoc(order.ref)
                 })
     
