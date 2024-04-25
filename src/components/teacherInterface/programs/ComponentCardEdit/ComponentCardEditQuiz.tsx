@@ -14,7 +14,7 @@ function ComponentCardEditQuiz({ order, course, setEdited, quiz, setAdded })
     const queryClient = useQueryClient()
     const [selectedQuestion, setSelectedQuestion] = useState(-1)
     const [pageLoading, setPageLoading] = useState(false)
-    const [duration, setDuration] = useState(parseInt(quiz.duration.split(' ')[0]))
+    const [duration, setDuration] = useState(parseInt(quiz?.duration?.split(' ')[0]))
 
     const [error, setError] = useState('')
 

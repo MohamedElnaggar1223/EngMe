@@ -9,8 +9,9 @@ import { useQueryClient } from '@tanstack/react-query';
 function EditOptionQuestion({ course, quiz, index, question }) 
 {
     const queryClient = useQueryClient()
-    console.log(quiz)
-
+    
+    console.log(quiz, course, question)
+    
     const IOSSwitch = styled((props: SwitchProps) => (
         <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
     ))(({ theme }) => ({

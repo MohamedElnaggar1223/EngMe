@@ -1,6 +1,6 @@
 import { ExpandMore } from "@mui/icons-material"
 import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails } from "@mui/material"
-import { Suspense } from "react"
+import { Suspense, useMemo } from "react"
 
 interface QuestionDropDowns {
     question: unknown,
@@ -11,12 +11,23 @@ interface QuestionDropDowns {
 
 export default function QuestionDropDowns({selectQuestions, question, answer, index}: QuestionDropDowns) 
 {
-    //@ts-expect-error firstCorrect
-    const isRight = (Object.values(answer).map((answer, index) => {
-        //@ts-expect-error firstCorrect
-        const questionNumber = index === 0 ? question?.firstCorrect : index === 1 ? question?.secondCorrect : index === 2 ? question?.thirdCorrect : question?.fourthCorrect
-        return Number(questionNumber) === answer
-    })).every(Boolean)
+    const correctOptions = useMemo(() => {
+        //@ts-expect-error anyerr
+        if(question.type === 'dropdowns')
+        {
+            //@ts-expect-error anyerr
+            const correctOptions = [question.firstCorrect, question.secondCorrect, question.thirdCorrect, question.fourthCorrect]
+            return correctOptions
+        }
+    }, [question])
+
+    //@ts-expect-error anyerr
+    const answers = Object.values(answer)
+
+    const isRight = useMemo(() => {
+        return correctOptions?.every((option, index) => answers[index] === option)
+    }, [answers, correctOptions])
+
     const icon = 
     isRight ?
     (
@@ -30,77 +41,253 @@ export default function QuestionDropDowns({selectQuestions, question, answer, in
         </svg>
     )
 
-    //@ts-expect-error first
-    const displayedFirstOptions = question?.firstOptions.map((firstOption, index) => (
-        <Stack
-            direction='row'
-            justifyContent='space-between'
-            flex={1}
-            minHeight='50px'
-            height='auto'
-            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
-            alignItems='center'
-            //@ts-expect-error question
-            bgcolor={index === Number(question?.firstCorrect) ? '#A0F4BD' : index === answer[0] ? '#FCD0D0' : '#fff'}
-            key={index}
-        >
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{firstOption}</Typography>
-        </Stack>
-    ))
+    const displayedFirstOptions =  (
+        <>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[0] === correctOptions[0] ? '#A0F4BD' : '#fff'}
+                key={index}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.firstCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[0] === question.secondCorrect ? '#FCD0D0' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.secondCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[0] === question.thirdCorrect ? '#FCD0D0' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.thirdCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[0] === question.fourthCorrect ? '#FCD0D0' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.fourthCorrect}</Typography>
+            </Stack>
+        </>
+    )
 
-    //@ts-expect-error first
-    const displayedSecondOptions = question?.secondOptions.map((secondOption, index) => (
-        <Stack
-            direction='row'
-            justifyContent='space-between'
-            flex={1}
-            minHeight='50px'
-            height='auto'
-            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
-            alignItems='center'
-            //@ts-expect-error question
-            bgcolor={index === Number(question?.secondCorrect) ? '#A0F4BD' : index === answer[1] ? '#FCD0D0' : '#fff'}
-            key={index}
-        >
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{secondOption}</Typography>
-        </Stack>
-    ))
+    const displayedSecondOptions =  (
+        <>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[1] === question.firstCorrect ? '#FCD0D0' : '#fff'}
+                key={index}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.firstCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[1] === correctOptions[1] ? '#A0F4BD' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.secondCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[1] === question.thirdCorrect ? '#FCD0D0' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.thirdCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[1] === question.fourthCorrect ? '#FCD0D0' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.fourthCorrect}</Typography>
+            </Stack>
+        </>
+    )
 
-    //@ts-expect-error first
-    const displayedThirdOptions = question?.thirdOptions.map((thirdOption, index) => (
-        <Stack
-            direction='row'
-            justifyContent='space-between'
-            flex={1}
-            minHeight='50px'
-            height='auto'
-            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
-            alignItems='center'
-            //@ts-expect-error question
-            bgcolor={index === Number(question?.thirdCorrect) ? '#A0F4BD' : index === answer[2] ? '#FCD0D0' : '#fff'}
-            key={index}
-        >
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{thirdOption}</Typography>
-        </Stack>
-    ))
+    const displayedThirdOptions =  (
+        <>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[2] === question.firstCorrect ? '#FCD0D0' : '#fff'}
+                key={index}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.firstCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[2] === question.secondCorrect ? '#FCD0D0' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.secondCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[2] === correctOptions[2] ? '#A0F4BD' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.thirdCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[2] === question.fourthCorrect ? '#FCD0D0' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.fourthCorrect}</Typography>
+            </Stack>
+        </>
+    )
     
-    //@ts-expect-error first
-    const displayedFourthOptions = question?.fourthOptions.map((fourthOption, index) => (
-        <Stack
-            direction='row'
-            justifyContent='space-between'
-            flex={1}
-            minHeight='50px'
-            height='auto'
-            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
-            alignItems='center'
-            //@ts-expect-error question
-            bgcolor={index === Number(question?.fourthCorrect) ? '#A0F4BD' : index === answer[3] ? '#FCD0D0' : '#fff'}
-            key={index}
-        >
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{fourthOption}</Typography>
-        </Stack>
-    ))
+    const displayedFourthOptions =  (
+        <>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[3] === question.firstCorrect ? '#FCD0D0' : '#fff'}
+                key={index}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.firstCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[3] === question.secondCorrect ? '#FCD0D0' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.secondCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[3] === question.thirdCorrect ? '#FCD0D0' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.thirdCorrect}</Typography>
+            </Stack>
+            <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                minHeight='50px'
+                height='auto'
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                alignItems='center'
+                //@ts-expect-error question
+                bgcolor={answers[3] === correctOptions[3] ? '#A0F4BD' : '#fff'}
+            >
+                {/*//@ts-expect-error question */}
+                <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{question.fourthCorrect}</Typography>
+            </Stack>
+        </>
+    )
 
     if(selectQuestions === 'Correct Questions' && !isRight) return <></>
     else if(selectQuestions === 'Wrong Questions' && isRight) return <></>
@@ -163,7 +350,8 @@ export default function QuestionDropDowns({selectQuestions, question, answer, in
                         bgcolor='#fcfcfc'
                     >       
                         <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={12} fontWeight={500}>
-                            First Select:
+                           {/*//@ts-expect-error question*/}
+                            {question.firstLabel}
                         </Typography>
                     </Stack>
                     {displayedFirstOptions}
@@ -177,7 +365,8 @@ export default function QuestionDropDowns({selectQuestions, question, answer, in
                         bgcolor='#fcfcfc'
                     >       
                         <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={12} fontWeight={500}>
-                            Second Select:
+                        {/*//@ts-expect-error question*/}
+                        {question.secondLabel}
                         </Typography>
                     </Stack>
                     {displayedSecondOptions}
@@ -191,7 +380,8 @@ export default function QuestionDropDowns({selectQuestions, question, answer, in
                         bgcolor='#fcfcfc'
                     >       
                         <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={12} fontWeight={500}>
-                            Third Select:
+                        {/*//@ts-expect-error question*/}
+                        {question.thirdLabel}
                         </Typography>
                     </Stack>
                     {displayedThirdOptions}
@@ -205,7 +395,8 @@ export default function QuestionDropDowns({selectQuestions, question, answer, in
                         bgcolor='#fcfcfc'
                     >       
                         <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={12} fontWeight={500}>
-                            Fourth Select:
+                        {/*//@ts-expect-error question*/}
+                        {question.fourthLabel}
                         </Typography>
                     </Stack>
                     {displayedFourthOptions}

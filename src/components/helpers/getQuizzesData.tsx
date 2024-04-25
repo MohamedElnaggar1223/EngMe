@@ -1,11 +1,19 @@
-import { collection, query, where, documentId, getDocs } from "firebase/firestore"
+import { collection, query, where, documentId, getDocs, doc, getDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 
 //@ts-expect-error course
 export const getQuizzesData = async (courses) => {
     const quizzesRef = collection(db, 'quizzes')
     //@ts-expect-error course
-    const coursesQuizzes = courses?.map(course => course?.quizzes).flat()
+    const coursesDocs = courses?.map(async (course) => {
+        const courseDoc = doc(db, 'courses', course)
+        const courseData = await getDoc(courseDoc)
+        return {...courseData.data(), id: courseData.id}
+    })
+
+    const coursesData = await Promise.all(coursesDocs)
+    const coursesQuizzes = coursesData?.map(course => course?.quizzes).flat()
+    console.log(coursesQuizzes)
     if(coursesQuizzes?.length)
     {
         const queryRef = query(quizzesRef, where(documentId(), 'in', coursesQuizzes))

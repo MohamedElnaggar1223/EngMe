@@ -1,15 +1,18 @@
 
 import { Accordion, AccordionSummary, Stack, Typography, AccordionDetails } from "@mui/material";
 import { Suspense, lazy } from "react";
-import QuizProps from "../../../../interfaces/QuizProps";
+import AssessmentProps from "../../../../interfaces/AssessmentProps";
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
 interface GradeCard{
-    assessmentsArray?: QuizProps[],
+    assessmentsArray?: AssessmentProps[],
     index: number
+    setQuestions: React.Dispatch<React.SetStateAction<string>>,
+    setSelectedAssessment: React.Dispatch<React.SetStateAction<string>>,
+    questions: string
 }
 
-export default function GradeCardQuiz({assessmentsArray, index}: GradeCard) 
+export default function GradeCardAssessment({assessmentsArray, index, questions, setQuestions, setSelectedAssessment}: GradeCard) 
 {
 const displayedAssessments = assessmentsArray?.map((assessment, index) => (
     <Stack
@@ -46,14 +49,37 @@ const displayedAssessments = assessmentsArray?.map((assessment, index) => (
             height='100%'
             textAlign='center'
             alignItems='center'
-            justifyContent='center'
+            direction='row'
+            justifyContent='space-between'
             flex={1}
-            pl={4}
+            px={1.5}
+            gap={1}
             sx={{
                 borderRight: '1px solid rgba(0, 0, 0, 0.1)'
             }}
+            maxWidth='55%'
+            minWidth='55%'
         >
+            {/*//@ts-expect-error assessment */}
             <Typography fontFamily='Inter' fontSize={16} fontWeight={500}>{assessment?.grade}%</Typography>
+            <button 
+                onClick={() => {
+                    if(questions)
+                    {
+                        setSelectedAssessment('')
+                        setQuestions('')
+                    }
+                    else
+                    {
+                        setQuestions(assessment.id)
+                        //@ts-expect-error assessment
+                        setSelectedAssessment(assessment.assessmentId)
+                    }
+                }} 
+                className='px-2 ml-auto text-nowrap w-fit py-1.5 rounded-lg h-fit font-semibold max-h-8 text-xs outline-none text-black font-[Inter] bg-[#226E9F]'
+            >
+                {questions === assessment.id ? "Hide Report" : "Show Report"}
+            </button>
         </Stack>
     </Stack>
 ))

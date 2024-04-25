@@ -5,11 +5,16 @@ const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
 interface GradeCard{
     quizzesArray?: QuizProps[],
-    index: number
+    index: number,
+    setQuestions: React.Dispatch<React.SetStateAction<string>>,
+    setSelectedQuiz: React.Dispatch<React.SetStateAction<string>>,
+    questions: string
 }
 
-export default function GradeCardQuiz({quizzesArray, index}: GradeCard) 
+export default function GradeCardQuiz({quizzesArray, index, questions, setQuestions, setSelectedQuiz}: GradeCard) 
 {
+    console.log(quizzesArray)
+
     const displayedQuizzes = quizzesArray?.map((quiz, index) => (
         <Stack
             direction='row'
@@ -45,14 +50,33 @@ export default function GradeCardQuiz({quizzesArray, index}: GradeCard)
                 height='100%'
                 textAlign='center'
                 alignItems='center'
-                justifyContent='center'
+                direction='row'
+                justifyContent='space-between'
                 flex={1}
-                pl={4}
+                px={2}
+                gap={4}
                 sx={{
                     borderRight: '1px solid rgba(0, 0, 0, 0.1)'
                 }}
             >
                 <Typography fontFamily='Inter' fontSize={16} fontWeight={500}>{quiz.grade}/{quiz.answers.length}</Typography>
+                <button 
+                    onClick={() => {
+                        if(questions)
+                        {
+                            setSelectedQuiz('')
+                            setQuestions('')
+                        }
+                        else
+                        {
+                            setQuestions(quiz.id)
+                            setSelectedQuiz(quiz.quizId)
+                        }
+                    }} 
+                    className='px-2 w-fit py-1.5 rounded-lg h-fit font-semibold max-h-8 text-xs outline-none text-black font-[Inter] bg-[#226E9F]'
+                >
+                    {questions === quiz.id ? "Hide Report" : "Show Report"}
+                </button>
             </Stack>
         </Stack>
     ))

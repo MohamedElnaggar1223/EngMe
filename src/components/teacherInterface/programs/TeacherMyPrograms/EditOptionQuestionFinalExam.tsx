@@ -11,6 +11,8 @@ function EditOptionQuestion({ program, finalExam, index, question })
 {
     const queryClient = useQueryClient()
 
+    console.log(finalExam, program, question)
+
     const IOSSwitch = styled((props: SwitchProps) => (
         <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
     ))(({ theme }) => ({
@@ -300,7 +302,7 @@ function EditOptionQuestion({ program, finalExam, index, question })
                             newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
                             return newData
                         })
-                    }} checked={question.correctOption.includes('3')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
+                    }} checked={question.correctOption.includes('0')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                 </Stack>
                 <Stack
                     justifyContent='center'
@@ -368,7 +370,7 @@ function EditOptionQuestion({ program, finalExam, index, question })
                             newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
                             return newData
                         })
-                    }} checked={question.correctOption.includes('3')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
+                    }} checked={question.correctOption.includes('1')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                 </Stack>
             </Stack>
             <Stack
@@ -453,7 +455,7 @@ function EditOptionQuestion({ program, finalExam, index, question })
                                 newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
                                 return newData
                             })
-                        }} checked={question.correctOption.includes('3')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
+                        }} checked={question.correctOption.includes('2')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                     </Stack>
                 </Stack>
                 <Stack
