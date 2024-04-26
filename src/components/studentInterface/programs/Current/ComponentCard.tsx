@@ -58,7 +58,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
 
     const { data: assessments } = useQuery({
         queryKey: ['assessments', course.programId, course.id],
-        queryFn: () => getAssessmentsData([course]),
+        queryFn: () => getAssessmentsData([course.id]),
         enabled: !!course,
         refetchOnMount: true
     })
@@ -72,7 +72,7 @@ function ComponentCard({index, course, disabled}: ComponentCard)
 
     const { data: quizzes } = useQuery({
         queryKey: ['quizzes', course.programId, course.id],
-        queryFn: () => getQuizzesData([course]),
+        queryFn: () => getQuizzesData([course.id]),
         enabled: !!course,
         refetchOnMount: true
     })

@@ -2,23 +2,20 @@ import { collection, doc, query, and, where, getDoc, getDocs, updateDoc, limit, 
 import { db } from "../../firebase/firebaseConfig"
 import { setExamSessionTime } from "./setExamSessionTime"
 
-export const setSubmitExamSessionAssessment = async (studentId: string, assessmentId: string) => {
+export const setSubmitExamSessionTroubleshoot = async (studentId: string, troubleshootId: string) => {
   try
   {
-
     const examSessionRef = collection(db, 'examSession')
-    const studentAssessmentRef = collection(db, 'studentAssessment')
-    const assessmentDoc = doc(db, 'assessments', assessmentId)
+    const studentTroubleshootRef = collection(db, 'studentTroubleshoot')
+    const troubleshootDoc = doc(db, 'troubleshoot', troubleshootId)
 
-    const queryExamSession = query(examSessionRef, and(where('studentId', '==', studentId), where('assessmentId', '==', assessmentId)), limit(1))
-    const queryStudentAssessment = query(studentAssessmentRef, and(where('studentId', '==', studentId), where('assessmentId', '==', assessmentId)))
-    const assessmentData = await getDoc(assessmentDoc)
-    const studentAssessmentDocs = await getDocs(queryStudentAssessment)
+    const queryExamSession = query(examSessionRef, and(where('studentId', '==', studentId), where('troubleshootId', '==', troubleshootId)), limit(1))
+    const queryStudentTroubleshoot = query(studentTroubleshootRef, and(where('studentId', '==', studentId), where('troubleshootId', '==', troubleshootId)))
+    const troubleshootData = await getDoc(troubleshootDoc)
+    const studentTroubleshootDocs = await getDocs(queryStudentTroubleshoot)
     const examSessionData = await getDocs(queryExamSession)
-    const courseDoc = doc(db, 'courses', assessmentData.data()?.courseId)
-    const courseData = await getDoc(courseDoc)
 
-    const orderedAssessmentsArray = studentAssessmentDocs.docs.slice().sort((a, b) => {
+    const orderedTroubleshootsArray = studentTroubleshootDocs.docs.slice().sort((a, b) => {
         const dateA = a.data().createdAt.toDate();
         const dateB = b.data().createdAt.toDate();
       
@@ -27,7 +24,7 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
       })
 
     //@ts-expect-error anyerr
-    const correctOptions = assessmentData?.data()?.questions.map(question => {
+    const correctOptions = troubleshootData?.data()?.questions.map(question => {
         if(question.type === 'dropdowns')
         {
           const correctOptions = [question.firstCorrect, question.secondCorrect, question.thirdCorrect, question.fourthCorrect]
@@ -38,7 +35,7 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
           return question.correctOption
         }
       })
-      const answers = orderedAssessmentsArray[0]?.data()?.answers
+      const answers = orderedTroubleshootsArray[0]?.data()?.answers
       //@ts-expect-error anyerror
       const results = correctOptions.map((option, index) => {
         if(typeof answers[index] === 'object')
@@ -55,7 +52,7 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
         else return Number(answers[index]) === Number(option)
       })
 
-    const questions = assessmentData?.data()?.questions as []
+    const questions = troubleshootData?.data()?.questions as []
     //@ts-expect-error anyerror
     const wrongQuestions = results.slice().reduce((acc, option, index) => {
         if(!option)
@@ -78,16 +75,16 @@ export const setSubmitExamSessionAssessment = async (studentId: string, assessme
     }
     else
     {
-        await updateDoc(doc(troubleshootref, troubleshootdocs.docs[0].id), { questions: troubleshootdocs.docs[0].data().questions ? [...troubleshootdocs.docs[0].data().questions, ...wrongQuestions] : [...wrongQuestions] })
+        await updateDoc(doc(troubleshootref, troubleshootdocs.docs[0].id), { questions: [...wrongQuestions] })
     }
 
     //@ts-expect-error anyerror
     const grade = (((results.slice().filter(res => !!res)).length / results.length) * 100).toFixed(2)
     
-    const studentAssessmentDoc = doc(db, 'studentAssessment', orderedAssessmentsArray[0]?.id)
+    const studentTroubleshootDoc = doc(db, 'studentTroubleshoot', orderedTroubleshootsArray[0]?.id)
 
-    await updateDoc(studentAssessmentDoc, {...orderedAssessmentsArray[0].data(), grade})
-    await setExamSessionTime(examSessionData.docs[0].id, studentId, `/programs/current/${courseData.data()?.programId}`)
+    await updateDoc(studentTroubleshootDoc, {...orderedTroubleshootsArray[0].data(), grade})
+    await setExamSessionTime(examSessionData.docs[0].id, studentId, `/troubleshootexam`)
   }
   catch(e)
   {

@@ -93,6 +93,11 @@ export default function AuthProvider({ children })
                 //@ts-expect-error tserror
                 navigate(`/quiz/${examSession[0].quizId}`)
             }
+            else if (type === 'troubleshoot')
+            {
+                //@ts-expect-error tserror
+                navigate(`/troubleshootexam/${examSession[0].troubleshootId}`)
+            }
             else
             {
                 //@ts-expect-error tserror

@@ -17,6 +17,9 @@ import { setBackQuestionFinalExam } from "../../../helpers/setBackQuestionFinalE
 import { setBackQuestionQuiz } from "../../../helpers/setBackQuestionQuiz";
 import { cn } from "../../../libs/utils";
 import CancelIcon from '@mui/icons-material/Cancel';
+import { setBackQuestionTroubleshoot } from "../../../helpers/setBackQuestionTroubleshoot";
+import { setLastQuestionExamSessionTroubleshoot } from "../../../helpers/setLastQuestionExamSessionTroubleshoot";
+import { setSubmitExamSessionTroubleshoot } from "../../../helpers/setSubmitExamSessionTroubleshoot";
 
 interface Question{
     firstCorrect: string,
@@ -36,12 +39,13 @@ interface ExamQuestionProps{
     index: number,
     total: number,
     programId?: string,
+    troubleshootId?: string,
     assessmentId?: string,
     quizId?: string,
     finalExamId?: string
 }
 
-function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, index, total, programId }: ExamQuestionProps)
+function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, index, total, programId, troubleshootId }: ExamQuestionProps)
 {
     const queryClient = useQueryClient()
     //@ts-expect-error context
@@ -184,6 +188,30 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                 connectedOption: ''
             })
         }
+        else if(troubleshootId)
+            {
+                await setBackQuestionTroubleshoot(userData.id, troubleshootId, index)
+                setFirstSelectOption({
+                    isDragging: false,
+                    isConnected: false,
+                    connectedOption: ''
+                })
+                setSecondSelectOption({
+                    isDragging: false,
+                    isConnected: false,
+                    connectedOption: ''
+                })
+                setThirdSelectOption({
+                    isDragging: false,
+                    isConnected: false,
+                    connectedOption: ''
+                })
+                setFourthSelectOption({
+                    isDragging: false,
+                    isConnected: false,
+                    connectedOption: ''
+                })
+            }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
 
@@ -260,6 +288,30 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                 connectedOption: ''
             })
         }
+        else if(troubleshootId)
+            {
+                await setLastQuestionExamSessionTroubleshoot(userData.id, troubleshootId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
+                setFirstSelectOption({
+                    isDragging: false,
+                    isConnected: false,
+                    connectedOption: ''
+                })
+                setSecondSelectOption({
+                    isDragging: false,
+                    isConnected: false,
+                    connectedOption: ''
+                })
+                setThirdSelectOption({
+                    isDragging: false,
+                    isConnected: false,
+                    connectedOption: ''
+                })
+                setFourthSelectOption({
+                    isDragging: false,
+                    isConnected: false,
+                    connectedOption: ''
+                })
+            }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
 
@@ -339,6 +391,32 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                 isConnected: false,
                 connectedOption: ''
             })
+        }
+        else if(troubleshootId)
+        {
+            await setLastQuestionExamSessionTroubleshoot(userData.id, troubleshootId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
+            await setSubmitExamSessionTroubleshoot(userData.id, troubleshootId)
+            setFirstSelectOption({
+                isDragging: false,
+                isConnected: false,
+                connectedOption: ''
+            })
+            setSecondSelectOption({
+                isDragging: false,
+                isConnected: false,
+                connectedOption: ''
+            })
+            setThirdSelectOption({
+                isDragging: false,
+                isConnected: false,
+                connectedOption: ''
+            })
+            setFourthSelectOption({
+                isDragging: false,
+                isConnected: false,
+                connectedOption: ''
+            })
+            navigate(`/programs/current/${programId}`)
         }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
         navigate('/')

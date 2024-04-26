@@ -83,30 +83,30 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
         
     })
 
-    const { data: courses, isSuccess: isCoursesSuccess } = useQuery({
+    const { data: courses, isLoading: isCoursesLoading } = useQuery({
         queryKey: ['courses', program?.id ?? ''],
         queryFn: () => getCoursesData(program),
         refetchOnMount: true,
         enabled: !!program.id
     })
 
-    const { data: assessments, isSuccess: isAssessmentsSuccess } = useQuery({
+    const { data: assessments, isLoading: isAssessmentsLoading } = useQuery({
         queryKey: ['assessments', program?.id ?? ''],
-        queryFn: () => getAssessmentsData(courses),
+        queryFn: () => getAssessmentsData(courses?.map(course => course.id)),
         enabled: !!courses,
         refetchOnMount: true
     })
 
-    const { data: lessons, isSuccess: isLessonsSuccess } = useQuery({
+    const { data: lessons, isLoading: isLessonsLoading } = useQuery({
         queryKey: ['lessons', program?.id ?? ''],
-        queryFn: () => getLessonsData(courses),
+        queryFn: () => getLessonsData(courses?.map(course => course.id)),
         enabled: !!courses,
         refetchOnMount: true
     })
 
-    const { data: quizzes, isSuccess: isQuizzesSuccess } = useQuery({
+    const { data: quizzes, isLoading: isQuizzesLoading } = useQuery({
         queryKey: ['quizzes', program?.id ?? ''],
-        queryFn: () => getQuizzesData(courses),
+        queryFn: () => getQuizzesData(courses?.map(course => course.id)),
         enabled: !!courses,
         refetchOnMount: true
     })
@@ -261,6 +261,8 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
 
         return canRequest
     }
+
+    console.log(isLessonsLoading, isAssessmentsLoading, isCoursesLoading, isQuizzesLoading)
 
     return (
         <>
@@ -612,7 +614,7 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
             {
                 programShow === 'components' ?
                 //<ProgramExploreCourseComponents /> :
-                [isLessonsSuccess, isAssessmentsSuccess, isCoursesSuccess, isQuizzesSuccess].every(Boolean) ?
+                ![isLessonsLoading, isAssessmentsLoading, isCoursesLoading, isQuizzesLoading].every(Boolean) ?
                     <ProgramExploreCourseComponents /> :
                 <></>:
                 <Suspense>

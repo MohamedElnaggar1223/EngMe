@@ -17,6 +17,8 @@ const Lesson = lazy(() => import("./components/studentInterface/programs/Current
 // import { BrowserView, MobileView } from "react-device-detect"
 import { BrowserView, MobileView } from "react-device-detect"
 import Test from "./components/Test"
+import TroubleshootExam from "./components/studentInterface/troubleshoot/TroubleshootExam"
+import Troubleshoot from "./components/studentInterface/programs/Current/Troubleshoot"
 const MobileLogin = lazy(() => import("./components/authentication/login/MobileLogin"))
 const KnowledgeBankPdf = lazy(() => import("./components/studentInterface/knowledgebank/KnowledgeBankPdf"))
 const TeacherInterfaceTeacherProfile = lazy(() => import("./components/teacherInterface/teacherProfile/TeacherInterfaceTeacherProfile"))
@@ -185,6 +187,28 @@ function App() {
 												student: 
 													<Suspense>
 														<Lesson />
+													</Suspense>
+											}}
+										</PrivateRoute>
+									} />
+								</Route>
+								<Route path='troubleshootexam'>
+									<Route index element={
+										<PrivateRoute>
+											{{
+												student: 
+													<Suspense>
+														<TroubleshootExam />
+													</Suspense>
+											}}
+										</PrivateRoute>
+									} />
+									<Route path=':id' element={
+										<PrivateRoute>
+											{{
+												student: 
+													<Suspense>
+														<Troubleshoot />
 													</Suspense>
 											}}
 										</PrivateRoute>

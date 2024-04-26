@@ -1,4 +1,4 @@
-import { collection, doc, query, and, where, getDoc, getDocs, updateDoc, limit } from "firebase/firestore"
+import { collection, doc, query, and, where, getDoc, getDocs, updateDoc, limit, addDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 import { setExamSessionTime } from "./setExamSessionTime"
 
@@ -43,11 +43,38 @@ export const setSubmitExamSessionQuiz = async (studentId: string, quizId: string
       }
       else if(Array.isArray(option))
       {
-        const arrayAnswers = Object.values(answers[index]).map((answer) => option.includes(answer))
+        //@ts-expect-error answer
+        const arrayAnswers = Object.values(answers[index]).map((answer) => option.includes(answer.toString()))
         return arrayAnswers.every(Boolean)
       }
-      else return answers[index] === Number(option)
+      else return Number(answers[index]) === Number(option)
     })
+
+    const questions = quizData?.data()?.questions as []
+    //@ts-expect-error anyerror
+    const wrongQuestions = results.slice().reduce((acc, option, index) => {
+        if(!option)
+        {
+          acc.push(questions[index])
+        }
+        return acc
+    }, []) 
+
+    const troubleshootref = collection(db, 'troubleshoot')
+    const troubleshootquery = query(troubleshootref, where('studentId', '==', studentId))
+    const troubleshootdocs = await getDocs(troubleshootquery)
+    if(troubleshootdocs.docs.length === 0)
+    {
+        const newTroubleshoot = {
+            studentId,
+            questions: wrongQuestions
+        }
+        await addDoc(troubleshootref, newTroubleshoot)
+    }
+    else
+    {
+        await updateDoc(doc(troubleshootref, troubleshootdocs.docs[0].id), { questions: troubleshootdocs.docs[0].data().questions ? [...troubleshootdocs.docs[0].data().questions, ...wrongQuestions] : [...wrongQuestions] })
+    }
     //@ts-expect-error anyerror
     const grade = (results.slice().filter(res => !!res)).length
     // const grade = (((results.slice().filter(res => !!res)).length / results.length) * 100).toFixed(2)

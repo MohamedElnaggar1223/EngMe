@@ -16,6 +16,9 @@ import image from '../../../../assets/watermark.png'
 import { setBackQuestionAssessment } from "../../../helpers/setBackQuestionAssessment"
 import { setBackQuestionFinalExam } from "../../../helpers/setBackQuestionFinalExam"
 import { setBackQuestionQuiz } from "../../../helpers/setBackQuestionQuiz"
+import { setBackQuestionTroubleshoot } from "../../../helpers/setBackQuestionTroubleshoot"
+import { setLastQuestionExamSessionTroubleshoot } from "../../../helpers/setLastQuestionExamSessionTroubleshoot"
+import { setSubmitExamSessionTroubleshoot } from "../../../helpers/setSubmitExamSessionTroubleshoot"
 
 interface Question{
     options: string[],
@@ -28,12 +31,13 @@ interface ExamQuestionProps{
     index: number,
     total: number,
     programId?: string,
+    troubleshootId?: string,
     assessmentId?: string,
     quizId?: string,
     finalExamId?: string
 }
 
-export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId, question, index, total, programId }: ExamQuestionProps)
+export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId, question, index, total, programId, troubleshootId }: ExamQuestionProps)
 {
     const queryClient = useQueryClient()
     //@ts-expect-error context
@@ -58,6 +62,11 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
             await setBackQuestionFinalExam(userData.id, finalExamId, index)
             setSelectedOption(-1)
         }
+        else if(troubleshootId)
+        {
+            await setBackQuestionTroubleshoot(userData.id, troubleshootId, index)
+            setSelectedOption(-1)
+        }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
     }
 
@@ -75,6 +84,11 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
         else if(finalExamId)
         {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, selectedOption)
+            setSelectedOption(-1)
+        }
+        else if(troubleshootId)
+        {
+            await setLastQuestionExamSessionTroubleshoot(userData.id, troubleshootId, index, selectedOption)
             setSelectedOption(-1)
         }
         await queryClient.invalidateQueries({queryKey: ['examSession']})
@@ -98,6 +112,12 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
         {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, selectedOption)
             await setSubmitExamSessionFinalExam(userData.id, finalExamId)
+            setSelectedOption(-1)
+        }
+        else if(troubleshootId)
+        {
+            await setLastQuestionExamSessionTroubleshoot(userData.id, troubleshootId, index, selectedOption)
+            await setSubmitExamSessionTroubleshoot(userData.id, troubleshootId)
             setSelectedOption(-1)
         }
         await queryClient.invalidateQueries({queryKey: ['examSession']})

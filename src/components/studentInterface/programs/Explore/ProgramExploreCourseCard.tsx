@@ -23,7 +23,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
 
     const { data: assessments } = useQuery({
         queryKey: ['assessments', course.id, 'currentCard'],
-        queryFn: () => getAssessmentsData([course]),
+        queryFn: () => getAssessmentsData([course.id]),
         enabled: !!course,
         refetchOnMount: true
     })
@@ -37,7 +37,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
     //console.log(lessons)
     const { data: quizzes } = useQuery({
         queryKey: ['quizzes', course.id, 'currentCard'],
-        queryFn: () => getQuizzesData([course]),
+        queryFn: () => getQuizzesData([course.id]),
         enabled: !!course,
         refetchOnMount: true
     })
@@ -92,7 +92,7 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
         )
     })
 
-    const displayedQuizzes = quizzes?.map((_: unknown, index: number) => (
+    const displayedQuizzes = quizzes?.map((quiz: unknown, index: number) => (
         <Stack
             direction='row'
             justifyContent='space-between'
@@ -110,7 +110,8 @@ export default function ProgramExploreCourseCard({ course, index }: ProgramExplo
                 </SvgIcon>
                 Quiz
             </Typography>
-            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>30 mins</Typography>
+            {/*//@ts-expect-error course*/}
+            <Typography fontFamily='Inter' fontSize={14} fontWeight={500}>{quiz.duration ? quiz.duration : "30 mins"}</Typography>
             <Stack></Stack>
         </Stack>
     ))
