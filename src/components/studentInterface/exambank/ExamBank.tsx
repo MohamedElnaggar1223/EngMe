@@ -1,9 +1,12 @@
 import { Box, SvgIcon, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { createContext, lazy, useState } from "react";
+import { createContext, lazy, useContext, useEffect, useMemo, useState } from "react";
 import { getExamBank } from "../../helpers/getExamBank";
 import ExamBankContent from "./ExamBankContent";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { getStudentCurrentPrograms } from "../../helpers/getStudentCurrentPrograms";
+import { AuthContext } from "../../authentication/auth/AuthProvider";
 const QuizBank = lazy(() => import("./QuizBank"))
 
 interface ExamBankProps{
@@ -18,6 +21,24 @@ export default function ExamBank({ admin }: ExamBankProps)
     const [selected, setSelected] = useState('')
     const [examClicked, setExamClicked] = useState(null)
     const [open, setOpen] = useState(true)
+
+    const navigate = useNavigate()
+
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const { data: studentPrograms } = useQuery({
+        queryKey: ['studentPrograms', userData?.id],
+        queryFn: () => getStudentCurrentPrograms(userData?.id)
+    })
+
+    const allowedKnowledgeBank = useMemo(() => {
+        return (studentPrograms?.slice().filter(program => program?.knowledgeBank)?.length ?? 0) > 0
+    }, [studentPrograms])
+
+    useEffect(() => {
+        if(!allowedKnowledgeBank) navigate('/') 
+    }, [allowedKnowledgeBank, navigate])
 
     const { data: examBankMajors } = useQuery({
         queryKey: ['examBankMajors'],

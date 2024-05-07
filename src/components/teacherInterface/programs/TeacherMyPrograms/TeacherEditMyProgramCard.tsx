@@ -30,6 +30,8 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
     const [image, setImage] = useState(program?.image ?? '')
     const [price, setPrice] = useState(program?.price ?? '')
     const [paused, setPaused] = useState(program?.paused ?? false)
+    const [examBank, setExamBank] = useState(program?.examBank ?? false)
+    const [knowledgeBank, setKnowledgeBank] = useState(program?.knowledgeBank ?? false)
     const [newPrereq, setNewPrePreq] = useState('')
     const [error, setError] = useState('')
 
@@ -77,14 +79,14 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
             queryClient.setQueryData(['teacherPrograms', userData?.id], (oldData: []) => {
                 //@ts-expect-error program
                 const filteredArray = oldData.slice().filter(programData => programData.id !== program?.id)
-                const newArray = [...filteredArray, program ? {...program, name: programName, category: programType, description: programDesc, duration, expiry, level, paused} : {name: programName, category: programType, description: programDesc, duration, expiry, level, paused, courses: [], prerequisites: [], averageRating: 5, totalFeedbacks: 0, teacherId: userData?.id, image } ]
+                const newArray = [...filteredArray, program ? {...program, name: programName, category: programType, description: programDesc, duration, expiry, level, examBank, knowledgeBank, paused} : {name: programName, category: programType, description: programDesc, duration, expiry, level, examBank, knowledgeBank, paused, courses: [], prerequisites: [], averageRating: 5, totalFeedbacks: 0, teacherId: userData?.id, image } ]
 
                 return newArray
             })
 
             return () => queryClient.setQueryData(['teacherPrograms', userData?.id], previousData)
         },
-        mutationFn: () => setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, newPrereq, program, image ?? '', discount ?? 0)
+        mutationFn: () => setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, examBank, knowledgeBank, newPrereq, program, image ?? '', discount ?? 0)
     })
 
     const displayedEditPrereqs = prereqs?.map(prereq =>  
@@ -380,6 +382,26 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                 >
                     <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }}>New Students</InputLabel>
                     <IOSSwitch checked={!paused} onChange={() => setPaused(prev => !prev)} />
+                </Stack>
+                <Stack
+                    gap={1.5}
+                    width='150px'
+                    alignItems='center'
+                    justifyContent='center'
+                    pl={-8}
+                >
+                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }}>Exam Bank</InputLabel>
+                    <IOSSwitch checked={examBank} onChange={() => setExamBank(prev => !prev)} />
+                </Stack>
+                <Stack
+                    gap={1.5}
+                    width='150px'
+                    alignItems='center'
+                    justifyContent='center'
+                    pl={-8}
+                >
+                    <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }}>Knowledge Bank</InputLabel>
+                    <IOSSwitch checked={knowledgeBank} onChange={() => setKnowledgeBank(prev => !prev)} />
                 </Stack>
             </Stack>
             <Stack

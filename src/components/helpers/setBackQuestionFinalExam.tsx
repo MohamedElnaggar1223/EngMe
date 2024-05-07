@@ -12,7 +12,7 @@ export const setBackQuestionFinalExam = async (studentId: string, finalExamId: s
 
         const examSessionRefDoc = doc(db, 'examSession', oldExamSessionData.docs[0].id)
         
-        await updateDoc(examSessionRefDoc, {...oldExamSessionData.docs[0].data(), lastQuestion: index + 1})
+        await updateDoc(examSessionRefDoc, {...oldExamSessionData.docs[0].data(), lastQuestion: index - 1})
     }
     catch(e)
     {

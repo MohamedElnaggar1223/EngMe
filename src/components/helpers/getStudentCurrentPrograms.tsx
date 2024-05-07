@@ -1,6 +1,7 @@
 import { collection, query, where, getDocs } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 import { getProgramsData } from "./getProgramsData"
+import ProgramProps from "../../interfaces/ProgramProps"
 
 export const getStudentCurrentPrograms = async (studentId: string) => {
     const studentProgramRef = collection(db, 'studentProgram')
@@ -16,5 +17,5 @@ export const getStudentCurrentPrograms = async (studentId: string) => {
         return new Date() > studentProgram?.data().endDate.toDate() ? {...program, expired: true} : {...program, expired: false}
     })
     
-    return finalArray
+    return finalArray as ProgramProps[]
 }

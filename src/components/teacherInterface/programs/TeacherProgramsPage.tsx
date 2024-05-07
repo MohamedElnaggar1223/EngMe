@@ -17,8 +17,6 @@ export default function Programs()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
 
-    const isAdmin = userData?.email === import.meta.env.VITE_ADMIN_EMAIL
-    
     const [tab, setTab] = useState('Explore')
 
     const { data: teacherPrograms, isLoading } = useQuery({
@@ -117,44 +115,38 @@ export default function Programs()
                             </Box>
                         </Stack>
                     }
-                    {
-                        isAdmin &&
-                        <Stack
-                            alignItems='center'
-                            onClick={() => setTab('Knowledge Bank')}
-                            sx={{ cursor: 'pointer' }}
+                    <Stack
+                        alignItems='center'
+                        onClick={() => setTab('Knowledge Bank')}
+                        sx={{ cursor: 'pointer' }}
+                    >
+                        <Typography>Knowledge Bank</Typography>
+                        <Box
+                            position='relative'
+                            border='0px'
+                            height='6px'
+                            bgcolor={tab === 'Knowledge Bank' ? '#FF9F06' : '#fff'}
+                            width={{xs: '80px', sm: '120px', lg: '180px'}}
                         >
-                            <Typography>Knowledge Bank</Typography>
-                            <Box
-                                position='relative'
-                                border='0px'
-                                height='6px'
-                                bgcolor={tab === 'Knowledge Bank' ? '#FF9F06' : '#fff'}
-                                width={{xs: '80px', sm: '120px', lg: '180px'}}
-                            >
 
-                            </Box>
-                        </Stack>
-                    }
-                    {
-                        isAdmin &&
-                        <Stack
-                            alignItems='center'
-                            onClick={() => setTab('Exam Bank')}
-                            sx={{ cursor: 'pointer' }}
+                        </Box>
+                    </Stack>
+                    <Stack
+                        alignItems='center'
+                        onClick={() => setTab('Exam Bank')}
+                        sx={{ cursor: 'pointer' }}
+                    >
+                        <Typography>Exam Bank</Typography>
+                        <Box
+                            position='relative'
+                            border='0px'
+                            height='6px'
+                            bgcolor={tab === 'Exam Bank' ? '#FF9F06' : '#fff'}
+                            width={{xs: '80px', sm: '120px', lg: '180px'}}
                         >
-                            <Typography>Exam Bank</Typography>
-                            <Box
-                                position='relative'
-                                border='0px'
-                                height='6px'
-                                bgcolor={tab === 'Exam Bank' ? '#FF9F06' : '#fff'}
-                                width={{xs: '80px', sm: '120px', lg: '180px'}}
-                            >
 
-                            </Box>
-                        </Stack>
-                    }
+                        </Box>
+                    </Stack>
                 </Stack>
                 <Box
                     position='relative'

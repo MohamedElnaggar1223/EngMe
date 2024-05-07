@@ -1,13 +1,21 @@
 import { Box, SvgIcon, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { getKnowledgeBank } from "../../helpers/getKnowledgeBank"
 import KnowledgeBankContent from "./KnowledgeBankContent"
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
+import { getStudentCurrentPrograms } from "../../helpers/getStudentCurrentPrograms"
+import { AuthContext } from "../../authentication/auth/AuthProvider"
+import { useNavigate } from "react-router-dom"
 
 export default function KnowledgeBank() 
 {
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const navigate = useNavigate()
+
     const [selectedMajor, setSelectedMajor] = useState(null)
     const [open, setOpen] = useState(true)
 
@@ -15,6 +23,19 @@ export default function KnowledgeBank()
         queryKey: ['knowledgeBankMajors'],
         queryFn: () => getKnowledgeBank()
     })
+
+    const { data: studentPrograms } = useQuery({
+        queryKey: ['studentPrograms', userData?.id],
+        queryFn: () => getStudentCurrentPrograms(userData?.id)
+    })
+
+    const allowedKnowledgeBank = useMemo(() => {
+        return (studentPrograms?.slice().filter(program => program?.knowledgeBank)?.length ?? 0) > 0
+    }, [studentPrograms])
+
+    useEffect(() => {
+        if(!allowedKnowledgeBank) navigate('/') 
+    }, [allowedKnowledgeBank, navigate])
 
     const displayedMajors = knowledgeBankMajors?.map(major => (
         <Box

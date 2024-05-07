@@ -12,7 +12,7 @@ export const setBackQuestionTroubleshoot = async (studentId: string, troubleshoo
 
         const examSessionRefDoc = doc(db, 'examSession', oldExamSessionData.docs[0].id)
         
-        await updateDoc(examSessionRefDoc, {...oldExamSessionData.docs[0].data(), lastQuestion: index + 1})
+        await updateDoc(examSessionRefDoc, {...oldExamSessionData.docs[0].data(), lastQuestion: index - 1})
     }
     catch(e)
     {

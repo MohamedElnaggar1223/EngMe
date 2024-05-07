@@ -980,7 +980,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                     onClick={handleBackQuestion}
                     disabled={index === 0}
                 >
-                    Skip
+                    Back
                 </Button>
                 {
                     index + 1 === total ?

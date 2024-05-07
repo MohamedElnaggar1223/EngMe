@@ -23,5 +23,7 @@ export default interface ProgramProps{
     price?: string,
     level?: string,
     discount?: number,
+    examBank?: boolean,
+    knowledgeBank?: boolean,
 }
 

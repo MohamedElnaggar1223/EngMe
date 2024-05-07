@@ -4,8 +4,10 @@ import { getStorage, ref, getDownloadURL } from "firebase/storage"
 import { useNavigate, useParams } from "react-router-dom"
 import { Document, Page, pdfjs } from 'react-pdf';
 import { db } from "../../../firebase/firebaseConfig"
-import { useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Box, Stack, Typography, Button } from "@mui/material";
+import { AuthContext } from "../../authentication/auth/AuthProvider";
+import { getStudentCurrentPrograms } from "../../helpers/getStudentCurrentPrograms";
 
 export default function KnowledgeBankPdf() 
 {
@@ -15,6 +17,22 @@ export default function KnowledgeBankPdf()
     const [pageNumber, setPageNumber] = useState(1);
 
     const navigate = useNavigate()
+
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+
+    const { data: studentPrograms } = useQuery({
+        queryKey: ['studentPrograms', userData?.id],
+        queryFn: () => getStudentCurrentPrograms(userData?.id)
+    })
+
+    const allowedKnowledgeBank = useMemo(() => {
+        return (studentPrograms?.slice().filter(program => program?.knowledgeBank)?.length ?? 0) > 0
+    }, [studentPrograms])
+
+    useEffect(() => {
+        if(!allowedKnowledgeBank) navigate('/') 
+    }, [allowedKnowledgeBank, navigate])
 
     const getKnowledgeBank = async (id: string) => {
         const knowledgeBankRef = doc(db, 'knowledgeBankContent', id)
