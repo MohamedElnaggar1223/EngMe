@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, AccordionDetails, Input, Snackbar, Alert } from '@mui/material'
+import { Box, Stack, Typography, SvgIcon, Avatar, Button, Accordion, AccordionSummary, AccordionDetails, Input, Snackbar, Alert, CircularProgress, Dialog } from '@mui/material'
 import ReactApexChart from "react-apexcharts";
 import star from '../../../../assets/Star 4.png'
 import { memo, useContext, useMemo, useState, lazy, Suspense, createContext, useEffect, useRef } from 'react';
@@ -26,6 +26,7 @@ import { getStudentQuizzes } from '../../../helpers/getStudentQuizzes'
 import { getProgramFinalExams } from '../../../helpers/getProgramFinalExams'
 import { getStudentProgramFinalExams } from '../../../helpers/getStudentProgramFinalExams'
 import { getStudentCompletedProgram } from '../../../helpers/getStudentCompletedProgram'
+import { setStudentProgramCertificate } from '../../../helpers/setStudentProgramCertificate'
 import { getStudentProgramComment } from '../../../helpers/getStudentProgramComment'
 import { StarOutline, StarRate } from '@mui/icons-material'
 import { setStudentProgramComment } from '../../../helpers/setStudentProgramComment'
@@ -61,6 +62,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     const [feedback, setFeedback] = useState('')
     const [disappear, setDisappear] = useState(false)
     const [requestSuccess, setRequestSuccess] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if(submitFeedback) {
@@ -165,7 +167,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
 
     const { data: assessments } = useQuery({
         queryKey: ['assessments', program.id, 'currentCard'],
-        queryFn: () => getAssessmentsData(courses),
+        queryFn: () => getAssessmentsData(courses?.map(course => course.id)),
         enabled: !!courses,
         refetchOnMount: true
     })
@@ -179,7 +181,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     //console.log(lessons)
     const { data: quizzes } = useQuery({
         queryKey: ['quizzes', program.id, 'currentCard'],
-        queryFn: () => getQuizzesData(courses),
+        queryFn: () => getQuizzesData(courses?.map(course => course.id)),
         enabled: !!courses,
         refetchOnMount: true
     })
@@ -222,6 +224,16 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
 		queryFn: () => getStudentCompletedProgram(userData.id, program.id),
         enabled: !!completed
 	})
+
+    const { mutate: mutateAcceptCertificate } = useMutation({
+        onMutate: () => {
+            setLoading(true)
+        },
+        onSettled: () => {
+            setLoading(false)
+        },
+        mutationFn: () => setStudentProgramCertificate(completedProgram?.id ?? '')
+    })
 
     // const { mutate: mutateCertificate } = useMutation({
     //     onMutate: () => {
@@ -284,7 +296,8 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     }
     , [finalExams, studentFinalExams, program])
 
-    const materialCount = (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length) + 1
+    const materialCount = (assessments?.length ?? [].length) + (lessons?.length ?? [].length) + (quizzes?.length ?? [].length)
+    const materialCountWithExams = materialCount + 1
     const materialFinished = useMemo(() => {
         const newStudentAssessment = studentAssessment?.slice().reduce((result, currentAssessment) => {
             //@ts-expect-error reduction
@@ -367,9 +380,30 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
         return (newStudentAssessment?.length ?? [].length) + (studentLesson?.length ?? [].length) + (newStudentQuiz?.length ?? [].length) + newStudentFinalExamLength
     }, [studentAssessment, studentLesson, studentQuizzes, studentFinalExams])
 
-    const progress = materialCount !== 0 ? ((materialFinished/materialCount)*100).toFixed() : 0
+    const materialFinishedWithoutExams = useMemo(() => {
+        //@ts-expect-error grade
+        return materialFinished - (studentFinalExams?.slice().find(studentFinalExamData => Number(studentFinalExamData?.grade) > 85) ? 1 : 0)
+    }, [materialFinished, studentFinalExams])
 
-    const finalExamProgress = materialCount !== 0 ? ((materialFinished/(materialCount))*100).toFixed() : 0
+    const progress = materialCount !== 0 ? ((materialFinished/materialCountWithExams)*100).toFixed() : 0
+
+    const finalExamProgress = materialCount !== 0 ? ((materialFinishedWithoutExams/(materialCount))*100).toFixed() : 0
+
+    if(program.name === 'Discount Test')
+    {
+        console.log(studentAssessment)
+        console.log(studentQuizzes)
+        console.log(studentFinalExams)
+        console.log(materialFinished)
+        console.log(materialCount)
+        console.log(materialCountWithExams)
+        console.log(materialFinishedWithoutExams)
+        console.log(progress)
+        console.log(finalExamProgress)
+        console.log(quizzes)
+        console.log(lessons)
+        console.log(finalExams)
+    }
     ////console.log(materialCount, materialFinished, progress)
 
     // const coursePercentage = 
@@ -403,6 +437,9 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
     return (
         <>
         {successAlert}
+        <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+            <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+        </Dialog>
         <Accordion expanded={expand} sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
                 style: { 
@@ -743,7 +780,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
                                                     opacity: 1
                                                 }
                                             }}
-                                            // onClick={() => console.log('ts')}
+                                            onClick={() => mutateAcceptCertificate()}
                                             type='submit'
                                         >
                                             Request Certificate

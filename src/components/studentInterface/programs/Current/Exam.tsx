@@ -11,6 +11,7 @@ import { db } from "../../../../firebase/firebaseConfig";
 import ExamQuestionOptions from "./ExamQuestionOptions";
 import ExamQuestionSelects from "./ExamQuestionSelects";
 import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
+import ExamFiveQuestionThreeOptions from "./ExamFiveQuestionThreeOptions";
 
 // import ExamQuestionOptions from "./ExamQuestionOptions";
 // import ExamQuestionSelects from "./ExamQuestionSelects";
@@ -62,7 +63,7 @@ export default function Exam()
     }
     
     const { data: finalExam } = useQuery({
-        queryKey: ['examSessionAssessment'],
+        queryKey: ['examSessionFinalExam'],
         queryFn: () => getFinalExam(id ?? '')
     })
     
@@ -96,6 +97,15 @@ export default function Exam()
     //@ts-expect-error type
     const displayedQuestions = finalExam?.questions?.map((question, index) => 
         question.type === 'options' ?
+        question.correctOption.length > 1 ?
+        //@ts-expect-error errrrr
+        <ExamQuestionTwoOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
+        //@ts-expect-error errrrr
+        <ExamQuestionOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
+        question.type === 'fiveOptions' ?
+        question.correctOption.length > 2 ?
+        //@ts-expect-error errrrr
+        <ExamFiveQuestionThreeOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
         question.correctOption.length > 1 ?
         //@ts-expect-error errrrr
         <ExamQuestionTwoOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :

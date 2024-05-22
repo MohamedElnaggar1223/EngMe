@@ -58,7 +58,7 @@ function ExamBankCard({ ebContent }: CardProps)
             justifyContent='center'
             gap={5}
             pb={8}
-            height='140px'
+            height='240px'
             mx='20%'
         >
             <SvgIcon sx={{ fontSize: 56, mb: -4, mr: -2 }}>

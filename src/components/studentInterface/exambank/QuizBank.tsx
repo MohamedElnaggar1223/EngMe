@@ -2,6 +2,8 @@ import { Stack } from '@mui/material'
 import { useState } from 'react'
 import ExamQuestionOptions from './ExamQuestionOptions'
 import ExamQuestionSelects from './ExamQuestionSelects'
+import ExamQuestionTwoOptions from './ExamQuestionTwoOptions'
+import ExamFiveQuestionThreeOptions from './ExamFiveQuestionThreeOptions'
 
 interface Props {
     id: string,
@@ -15,8 +17,20 @@ export default function QuizBank(ebContent: Props)
     const [number, setNumber] = useState(0)
 
     const displayedQuestions = ebContent?.questions?.map((question, index) => 
-        //@ts-expect-error type
-        question?.type === 'options' ?
+        //@ts-expect-error errrrr
+        question.type === 'options' ?
+        //@ts-expect-error errrrr
+        question.correctOption.length > 1 ?
+        <ExamQuestionTwoOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+        <ExamQuestionOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+        //@ts-expect-error errrrr
+        question.type === 'fiveOptions' ?
+        //@ts-expect-error errrrr
+        question.correctOption.length > 2 ?
+        <ExamFiveQuestionThreeOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+        //@ts-expect-error errrrr
+        question.correctOption.length > 1 ?
+        <ExamQuestionTwoOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
         <ExamQuestionOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
         <ExamQuestionSelects setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} />
     )

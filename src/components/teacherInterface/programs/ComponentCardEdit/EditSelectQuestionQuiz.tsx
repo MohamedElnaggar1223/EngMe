@@ -103,18 +103,32 @@ function EditSelectQuestion({ course, quiz, index, question })
                             value={question.type}
                             // value={level}
                             // onChange={(e) => setLevel(e.target.value)}
-                            onChange={() => {
-                                queryClient.setQueryData(['quizEdit', quiz?.id ?? '', course.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = oldData ? [...oldData] : []
-                                    const oldQuestion = newData[index]
-                                    newData[index] = { question: oldQuestion.question, correctOption: ['0'], options: [oldQuestion.firstCorrect, oldQuestion.secondCorrect, oldQuestion.thirdCorrect, oldQuestion.fourthCorrect], type: 'options' }
-                                    return newData
-                                })
+                            onChange={(e) => {
+                                if(e.target.value === 'options')
+                                {
+                                    queryClient.setQueryData(['quizEdit', quiz?.id ?? '', course.id], (oldData: unknown) => {
+                                        //@ts-expect-error oldata
+                                        const newData = oldData ? [...oldData] : []
+                                        const oldQuestion = newData[index]
+                                        newData[index] = { question: oldQuestion.question, correctOption: ['0'], options: [oldQuestion.firstCorrect, oldQuestion.secondCorrect, oldQuestion.thirdCorrect, oldQuestion.fourthCorrect], type: 'options' }
+                                        return newData
+                                    })
+                                }
+                                else 
+                                {
+                                    queryClient.setQueryData(['quizEdit', quiz?.id ?? '', course.id], (oldData: unknown) => {
+                                        //@ts-expect-error oldata
+                                        const newData = oldData ? [...oldData] : []
+                                        const oldQuestion = newData[index]
+                                        newData[index] = { question: oldQuestion.question, correctOption: ['0'], options: [oldQuestion.firstCorrect, oldQuestion.secondCorrect, oldQuestion.thirdCorrect, oldQuestion.fourthCorrect, ''], type: 'fiveOptions' }
+                                        return newData
+                                    })
+                                }
                             }}
                         >
                             <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='options'>Options</MenuItem>
                             <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='dropdowns'>Drop Downs</MenuItem>
+                            <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='fiveOptions'>Five Options</MenuItem>
                         </Select>
                     </Stack>
                 </Stack>

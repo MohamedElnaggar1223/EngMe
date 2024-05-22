@@ -1,14 +1,65 @@
 import { ExpandMore } from '@mui/icons-material'
-import { Stack, InputLabel, Input, Select, MenuItem, Button, SvgIcon, Typography } from '@mui/material'
+import { Stack, InputLabel, Input, Select, MenuItem, Switch, SwitchProps, styled, Button, SvgIcon, Typography } from '@mui/material'
 import { memo } from 'react'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useQueryClient } from '@tanstack/react-query';
 
 //@ts-expect-error anytype
 // eslint-disable-next-line react-refresh/only-export-components
-function EditSelectQuestion({ course, assessment, index, question }) 
+function EditFiveOptionQuestion({ course, assessment, index, question }) 
 {
     const queryClient = useQueryClient()
+    
+    const IOSSwitch = styled((props: SwitchProps) => (
+        <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+    ))(({ theme }) => ({
+        width: 42,
+        height: 26,
+        padding: 0,
+        '& .MuiSwitch-switchBase': {
+        padding: 0,
+        margin: 2,
+        transitionDuration: '300ms',
+        '&.Mui-checked': {
+            transform: 'translateX(16px)',
+            color: '#fff',
+            '& + .MuiSwitch-track': {
+            backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
+            opacity: 1,
+            border: 0,
+            },
+            '&.Mui-disabled + .MuiSwitch-track': {
+            opacity: 0.5,
+            },
+        },
+        '&.Mui-focusVisible .MuiSwitch-thumb': {
+            color: '#33cf4d',
+            border: '6px solid #fff',
+        },
+        '&.Mui-disabled .MuiSwitch-thumb': {
+            color:
+            theme.palette.mode === 'light'
+                ? theme.palette.grey[100]
+                : theme.palette.grey[600],
+        },
+        '&.Mui-disabled + .MuiSwitch-track': {
+            opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
+        },
+        },
+        '& .MuiSwitch-thumb': {
+        boxSizing: 'border-box',
+        width: 22,
+        height: 22,
+        },
+        '& .MuiSwitch-track': {
+        borderRadius: 26 / 2,
+        backgroundColor: theme.palette.mode === 'light' ? '#FF3333' : '#39393D',
+        opacity: 1,
+        transition: theme.transitions.create(['background-color'], {
+            duration: 500,
+        }),
+        },
+    }));
 
     return (
         <Stack
@@ -63,7 +114,7 @@ function EditSelectQuestion({ course, assessment, index, question })
                             onChange={(e) => {
                                 queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = oldData ? [...oldData] : []
+                                    const newData = [...oldData]
                                     const oldQuestion = newData[index]
                                     newData[index] = {...oldQuestion, question: e.target.value}
                                     return newData
@@ -102,15 +153,15 @@ function EditSelectQuestion({ course, assessment, index, question })
                             labelId="Level"
                             value={question.type}
                             // value={level}
-                            // onChange={(e) => setLevel(e.target.value)}
+                            // onChange={(e) => handleQuestionChange(e, index, 'type')}
                             onChange={(e) => {
-                                if(e.target.value === 'options')
+                                if(e.target.value === 'dropdowns')
                                 {
                                     queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                                         //@ts-expect-error oldata
-                                        const newData = oldData ? [...oldData] : []
+                                        const newData = [...oldData]
                                         const oldQuestion = newData[index]
-                                        newData[index] = { question: oldQuestion.question, correctOption: ['0'], options: [oldQuestion.firstCorrect, oldQuestion.secondCorrect, oldQuestion.thirdCorrect, oldQuestion.fourthCorrect], type: 'options' }
+                                        newData[index] = { question: oldQuestion.question, firstCorrect: oldQuestion.options[0], secondCorrect: oldQuestion.options[1], thirdCorrect: oldQuestion.options[2], fourthCorrect: oldQuestion.options[3], firstLabel: '', secondLabel: '', thirdLabel: '', fourthLabel: '', type: 'dropdowns' }
                                         return newData
                                     })
                                 }
@@ -120,7 +171,7 @@ function EditSelectQuestion({ course, assessment, index, question })
                                         //@ts-expect-error oldata
                                         const newData = oldData ? [...oldData] : []
                                         const oldQuestion = newData[index]
-                                        newData[index] = { question: oldQuestion.question, correctOption: ['0'], options: [oldQuestion.firstCorrect, oldQuestion.secondCorrect, oldQuestion.thirdCorrect, oldQuestion.fourthCorrect, ''], type: 'fiveOptions' }
+                                        newData[index] = { question: oldQuestion.question, correctOption: ['0'], options: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3]], type: 'options' }
                                         return newData
                                     })
                                 }
@@ -170,7 +221,7 @@ function EditSelectQuestion({ course, assessment, index, question })
                         reader(e.target.files![0]).then((result: string) =>
                         queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                             //@ts-expect-error oldData
-                            const newData = oldData ? [...oldData] : []
+                            const newData = [...oldData]
                             const oldQuestion = newData[index]
                             newData[index] = { ...oldQuestion, image: result}
                             return newData
@@ -208,10 +259,10 @@ function EditSelectQuestion({ course, assessment, index, question })
                         flex={1}
                         justifyContent='center'
                     >
+                        <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600, alignSelf: 'center' }} id='LessonDescription'>Option 1</InputLabel>
                         <Input 
                             color='primary' 
                             disableUnderline
-                            placeholder='First Label'
                             aria-labelledby='LessonDescription'
                             sx={{
                                 border: '1px solid rgba(0, 0, 0, 0.20)',
@@ -219,53 +270,50 @@ function EditSelectQuestion({ course, assessment, index, question })
                                 borderRadius: '5px',
                                 paddingX: 1,
                                 paddingY: 0.5,
+                                flex: 1,
                                 bgcolor: '#F8F8F8',
                                 textAlign: 'center'
                             }}
-                            inputProps={{ style: { fontWeight: 600, textAlign: 'center', fontSize: 16 } }}
-                            value={question.firstLabel}
+                            inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
+                            value={question.options[0]}
                             onChange={(e) => {
                                 queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = oldData ? [...oldData] : []
-                                    newData[index] = {...newData[index], firstLabel: e.target.value}
+                                    const newData = [...oldData]
+                                    //@ts-expect-error oldata
+                                    newData[index] = {...newData[index], options: newData[index].options.map((option, index) => index === 0 ? e.target.value : option)}
                                     return newData
                                 })
                             }}
                         />
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                placeholder='First Option'
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.firstCorrect}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = oldData ? [...oldData] : []
-                                        newData[index] = {...newData[index], firstCorrect: e.target.value}
-                                        return newData
-                                    })
-                                }}
-                            />
-                        </Stack>
                     </Stack>
+                    <IOSSwitch onChange={() => {
+                        queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
+                            //@ts-expect-error oldata
+                            const newData = [...oldData]
+                            let newCorrectOptions
+                            if(newData[index].correctOption.length > 2) 
+                            {
+                                if(newData[index].correctOption.includes('0'))
+                                {
+                                    newCorrectOptions = newData[index].correctOption.filter((option: string) => option !== '0')
+                                }
+                                else
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption[0], ...newData[index].correctOption[1], '0']
+                                }
+                            }
+                            else
+                            {
+                                if(!(newData[index].correctOption.includes('0')))
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption, '0']
+                                }
+                            }
+                            newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
+                            return newData
+                        })
+                    }} checked={question.correctOption.includes('0')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                 </Stack>
                 <Stack
                     justifyContent='center'
@@ -279,10 +327,10 @@ function EditSelectQuestion({ course, assessment, index, question })
                         flex={1}
                         justifyContent='center'
                     >
+                        <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600, alignSelf: 'center' }} id='LessonDescription'>Option 2</InputLabel>
                         <Input 
                             color='primary' 
                             disableUnderline
-                            placeholder='Second Label'
                             aria-labelledby='LessonDescription'
                             sx={{
                                 border: '1px solid rgba(0, 0, 0, 0.20)',
@@ -290,53 +338,50 @@ function EditSelectQuestion({ course, assessment, index, question })
                                 borderRadius: '5px',
                                 paddingX: 1,
                                 paddingY: 0.5,
+                                flex: 1,
                                 bgcolor: '#F8F8F8',
                                 textAlign: 'center'
                             }}
-                            inputProps={{ style: { fontWeight: 600, textAlign: 'center', fontSize: 16 } }}
-                            value={question.secondLabel}
+                            inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
+                            value={question.options[1]}
                             onChange={(e) => {
                                 queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = oldData ? [...oldData] : []
-                                    newData[index] = {...newData[index], secondLabel: e.target.value}
+                                    const newData = [...oldData]
+                                    //@ts-expect-error oldata
+                                    newData[index] = {...newData[index], options: newData[index].options.map((option, index) => index === 1 ? e.target.value : option)}
                                     return newData
                                 })
                             }}
                         />
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                placeholder='Second Option'
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.secondCorrect}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = oldData ? [...oldData] : []
-                                        newData[index] = {...newData[index], secondCorrect: e.target.value}
-                                        return newData
-                                    })
-                                }}
-                            />
-                        </Stack>
                     </Stack>
+                    <IOSSwitch onChange={() => {
+                        queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
+                            //@ts-expect-error oldata
+                            const newData = [...oldData]
+                            let newCorrectOptions
+                            if(newData[index].correctOption.length > 2) 
+                            {
+                                if(newData[index].correctOption.includes('1'))
+                                {
+                                    newCorrectOptions = newData[index].correctOption.filter((option: string) => option !== '1')
+                                }
+                                else
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption[0], ...newData[index].correctOption[1], '1']
+                                }
+                            }
+                            else
+                            {
+                                if(!(newData[index].correctOption.includes('1')))
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption, '1']
+                                }
+                            }
+                            newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
+                            return newData
+                        })
+                    }} checked={question.correctOption.includes('1')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                 </Stack>
             </Stack>
             <Stack
@@ -350,49 +395,24 @@ function EditSelectQuestion({ course, assessment, index, question })
                 <Stack
                     justifyContent='center'
                     flex={1}
-                    gap={3}
-                    direction='row'
+                    gap={1.5}
                 >
                     <Stack
-                        direction='column'
-                        gap={1.5}
-                        flex={1}
                         justifyContent='center'
+                        flex={1}
+                        gap={3}
+                        direction='row'
                     >
-                        <Input 
-                            color='primary' 
-                            disableUnderline
-                            placeholder='Third Label'
-                            aria-labelledby='LessonDescription'
-                            sx={{
-                                border: '1px solid rgba(0, 0, 0, 0.20)',
-                                background: '#fff',
-                                borderRadius: '5px',
-                                paddingX: 1,
-                                paddingY: 0.5,
-                                bgcolor: '#F8F8F8',
-                                textAlign: 'center'
-                            }}
-                            inputProps={{ style: { fontWeight: 600, textAlign: 'center', fontSize: 16 } }}
-                            value={question.thirdLabel}
-                            onChange={(e) => {
-                                queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = oldData ? [...oldData] : []
-                                    newData[index] = {...newData[index], thirdLabel: e.target.value}
-                                    return newData
-                                })
-                            }}
-                        />
                         <Stack
-                            direction='row'
+                            direction='column'
+                            gap={1.5}
                             flex={1}
-                            gap={2}
+                            justifyContent='center'
                         >
+                            <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600, alignSelf: 'center' }} id='LessonDescription'>Option 3</InputLabel>
                             <Input 
                                 color='primary' 
                                 disableUnderline
-                                placeholder='Third Option'
                                 aria-labelledby='LessonDescription'
                                 sx={{
                                     border: '1px solid rgba(0, 0, 0, 0.20)',
@@ -400,24 +420,141 @@ function EditSelectQuestion({ course, assessment, index, question })
                                     borderRadius: '5px',
                                     paddingX: 1,
                                     paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
                                     flex: 1,
+                                    bgcolor: '#F8F8F8',
+                                    textAlign: 'center'
                                 }}
                                 inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.thirdCorrect}
+                                value={question.options[2]}
                                 onChange={(e) => {
                                     queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                                         //@ts-expect-error oldata
-                                        const newData = oldData ? [...oldData] : []
-                                        newData[index] = {...newData[index], thirdCorrect: e.target.value}
+                                        const newData = [...oldData]
+                                        // newData[index].options[2] = e.target.value
+                                        //@ts-expect-error oldata
+                                        newData[index] = {...newData[index], options: newData[index].options.map((option, index) => index === 2 ? e.target.value : option)}
                                         return newData
                                     })
                                 }}
                             />
                         </Stack>
+
+                        <IOSSwitch onChange={() => {
+                            queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
+                                //@ts-expect-error oldata
+                                const newData = [...oldData]
+                                let newCorrectOptions
+
+                                if(newData[index].correctOption.length > 2) 
+                                {
+                                    if(newData[index].correctOption.includes('2'))
+                                    {
+                                        newCorrectOptions = newData[index].correctOption.filter((option: string) => option !== '2')
+                                    }
+                                    else
+                                    {
+                                        newCorrectOptions = [...newData[index].correctOption[0], ...newData[index].correctOption[1], '2']
+                                    }
+                                }
+                                else
+                                {
+                                    if(!(newData[index].correctOption.includes('2')))
+                                    {
+                                        newCorrectOptions = [...newData[index].correctOption, '2']
+                                    }
+                                }
+                                    newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
+                                return newData
+                            })
+                        }} checked={question.correctOption.includes('2')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                     </Stack>
                 </Stack>
+                <Stack
+                    justifyContent='center'
+                    flex={1}
+                    gap={1.5}
+                >
+                    <Stack
+                        justifyContent='center'
+                        flex={1}
+                        gap={3}
+                        direction='row'
+                    >
+                        <Stack
+                            direction='column'
+                            gap={1.5}
+                            flex={1}
+                            justifyContent='center'
+                        >
+                            <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600, alignSelf: 'center' }} id='LessonDescription'>Option 4</InputLabel>
+                            <Input 
+                                color='primary' 
+                                disableUnderline
+                                aria-labelledby='LessonDescription'
+                                sx={{
+                                    border: '1px solid rgba(0, 0, 0, 0.20)',
+                                    background: '#fff',
+                                    borderRadius: '5px',
+                                    paddingX: 1,
+                                    paddingY: 0.5,
+                                    flex: 1,
+                                    bgcolor: '#F8F8F8',
+                                    textAlign: 'center'
+                                }}
+                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
+                                value={question.options[3]}
+                                onChange={(e) => {
+                                    queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
+                                        //@ts-expect-error oldata
+                                        const newData = [...oldData]
+                                        // newData[index].options[3] = e.target.value
+                                        //@ts-expect-error oldata
+                                        newData[index] = {...newData[index], options: newData[index].options.map((option, index) => index === 3 ? e.target.value : option)}
+                                        return newData
+                                    })
+                                }}
+                            />
+                        </Stack>
+
+                        <IOSSwitch onChange={() => {
+                            queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
+                                //@ts-expect-error oldata
+                                const newData = [...oldData]
+                                let newCorrectOptions
+
+                                if(newData[index].correctOption.length > 2) 
+                                {
+                                    if(newData[index].correctOption.includes('3'))
+                                    {
+                                        newCorrectOptions = newData[index].correctOption.filter((option: string) => option !== '3')
+                                    }
+                                    else
+                                    {
+                                        newCorrectOptions = [...newData[index].correctOption[0], ...newData[index].correctOption[1], '3']
+                                    }
+                                }
+                                else
+                                {
+                                    if(!(newData[index].correctOption.includes('3')))
+                                    {
+                                        newCorrectOptions = [...newData[index].correctOption, '3']
+                                    }
+                                }
+                                    newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
+                                return newData
+                            })
+                        }} checked={question.correctOption.includes('3')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
+                    </Stack>
+                </Stack>
+            </Stack>
+            <Stack
+                justifyContent='center'
+                flex={1}
+                gap={1.5}
+                maxWidth={528}
+                px={7}
+                ml={10.5}
+            >
                 <Stack
                     justifyContent='center'
                     flex={1}
@@ -430,10 +567,10 @@ function EditSelectQuestion({ course, assessment, index, question })
                         flex={1}
                         justifyContent='center'
                     >
+                        <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600, alignSelf: 'center' }} id='LessonDescription'>Option 5</InputLabel>
                         <Input 
                             color='primary' 
                             disableUnderline
-                            placeholder='Fourth Label'
                             aria-labelledby='LessonDescription'
                             sx={{
                                 border: '1px solid rgba(0, 0, 0, 0.20)',
@@ -441,58 +578,58 @@ function EditSelectQuestion({ course, assessment, index, question })
                                 borderRadius: '5px',
                                 paddingX: 1,
                                 paddingY: 0.5,
+                                flex: 1,
                                 bgcolor: '#F8F8F8',
                                 textAlign: 'center'
                             }}
-                            inputProps={{ style: { fontWeight: 600, textAlign: 'center', fontSize: 16 } }}
-                            value={question.fourthLabel}
+                            inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
+                            value={question.options[4]}
                             onChange={(e) => {
                                 queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
                                     //@ts-expect-error oldata
-                                    const newData = oldData ? [...oldData] : []
-                                    newData[index] = {...newData[index], fourthLabel: e.target.value}
+                                    const newData = [...oldData]
+                                    // newData[index].options[3] = e.target.value
+                                    //@ts-expect-error oldata
+                                    newData[index] = {...newData[index], options: newData[index].options.map((option, index) => index === 4 ? e.target.value : option)}
                                     return newData
                                 })
                             }}
                         />
-                        <Stack
-                            direction='row'
-                            flex={1}
-                            gap={2}
-                        >
-                            <Input 
-                                color='primary' 
-                                disableUnderline
-                                placeholder='Fourth Option'
-                                aria-labelledby='LessonDescription'
-                                sx={{
-                                    border: '1px solid rgba(0, 0, 0, 0.20)',
-                                    background: '#fff',
-                                    borderRadius: '5px',
-                                    paddingX: 1,
-                                    paddingY: 0.5,
-                                    bgcolor: '#F8F8F8',
-                                    textAlign: 'center',
-                                    flex: 1,
-                                }}
-                                inputProps={{ style: { textAlign: 'center', fontSize: 20 } }}
-                                value={question.fourthCorrect}
-                                onChange={(e) => {
-                                    queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
-                                        //@ts-expect-error oldata
-                                        const newData = oldData ? [...oldData] : []
-                                        newData[index] = {...newData[index], fourthCorrect: e.target.value}
-                                        return newData
-                                    })
-                                }}
-                            />
-                        </Stack>
                     </Stack>
+
+                    <IOSSwitch onChange={() => {
+                        queryClient.setQueryData(['assessmentEdit', assessment?.id ?? '', course.id], (oldData: unknown) => {
+                            //@ts-expect-error oldata
+                            const newData = [...oldData]
+                            let newCorrectOptions
+
+                            if(newData[index].correctOption.length > 2) 
+                            {
+                                if(newData[index].correctOption.includes('4'))
+                                {
+                                    newCorrectOptions = newData[index].correctOption.filter((option: string) => option !== '4')
+                                }
+                                else
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption[0], ...newData[index].correctOption[1], '4']
+                                }
+                            }
+                            else
+                            {
+                                if(!(newData[index].correctOption.includes('4')))
+                                {
+                                    newCorrectOptions = [...newData[index].correctOption, '4']
+                                }
+                            }
+                                newData[index] = {...newData[index], correctOption: newCorrectOptions ? newCorrectOptions : newData[index].correctOption}
+                            return newData
+                        })
+                    }} checked={question.correctOption.includes('4')} sx={{ alignSelf: 'flex-end', mb: 1.5 }} />
                 </Stack>
             </Stack>
         </Stack>
     )
 }
 
-const memoizedEditSelectQuestion = memo(EditSelectQuestion)
-export default memoizedEditSelectQuestion
+const memoizedEditFiveOptionQuestion = memo(EditFiveOptionQuestion)
+export default memoizedEditFiveOptionQuestion

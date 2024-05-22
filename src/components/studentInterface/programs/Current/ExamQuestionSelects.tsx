@@ -45,6 +45,7 @@ interface ExamQuestionProps{
     finalExamId?: string
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, index, total, programId, troubleshootId }: ExamQuestionProps)
 {
     const queryClient = useQueryClient()

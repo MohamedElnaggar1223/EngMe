@@ -76,7 +76,7 @@ export default function ExamBankContent({ id }: ExamBankContentProps)
                     justifyContent='center'
                     gap={5}
                     pb={2}
-                    height='180px'
+                    height='240px'
                     maxWidth='450px'
                     key={ebContent.id}
                     >

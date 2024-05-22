@@ -3,7 +3,7 @@ import ProgramProps from "../../../../interfaces/ProgramProps";
 import { getProgramFinalExams } from "../../../helpers/getProgramFinalExams";
 import { useContext, useEffect, useState } from "react";
 import FinalExamCard from "./FinalExamCard";
-import { Box, Button, Stack, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, Stack, SvgIcon, Typography } from "@mui/material";
 import { setProgramFinalExam } from "../../../helpers/setProgramFinalExam";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
@@ -18,6 +18,7 @@ export default function FinalExams(program: ProgramProps)
     const { userData } = useContext(AuthContext)
 
     const [edit, setEdited] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const { data: finalExams, isLoading: isFinalExamsLoading } = useQuery({
 		queryKey: ['finalExams', program.id],
@@ -66,6 +67,12 @@ export default function FinalExams(program: ProgramProps)
 	})
 
     const { mutate } = useMutation({
+        onMutate: () => {
+            setLoading(true)
+        },
+        onSettled: () => {
+            setLoading(false)
+        },
         mutationFn: (version: string) => setProgramFinalExam(version, program)
     })
 
@@ -163,6 +170,9 @@ export default function FinalExams(program: ProgramProps)
                 :
                 <></>
             }
+            <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+            </Dialog>
         </Box>
     )
 }

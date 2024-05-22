@@ -14,6 +14,7 @@ import { getExamSession } from "../../../helpers/getExamSession";
 import { setExamSessionTime } from "../../../helpers/setExamSessionTime";
 import ExamQuestionSelects from "./ExamQuestionSelects";
 import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
+import ExamFiveQuestionThreeOptions from "./ExamFiveQuestionThreeOptions";
 
 export default function Assessment() 
 {
@@ -118,11 +119,20 @@ export default function Assessment()
         question.type === 'options' ?
         question.correctOption.length > 1 ?
         //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions assessmentId={assessment.id}  programId={assessment.programId} question={question} index={index} total={assessment?.questions?.length} /> :
+        <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
         //@ts-expect-error errrrr
-        <ExamQuestionOptions assessmentId={assessment.id} programId={assessment.programId} question={question} index={index} total={assessment?.questions?.length} /> :
+        <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+        question.type === 'fiveOptions' ?
+        question.correctOption.length > 2 ?
         //@ts-expect-error errrrr
-        <ExamQuestionSelects assessmentId={assessment.id} programId={assessment.programId} question={question} index={index} total={assessment?.questions?.length} />
+        <ExamFiveQuestionThreeOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+        question.correctOption.length > 1 ?
+        //@ts-expect-error errrrr
+        <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+        //@ts-expect-error errrrr
+        <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+        //@ts-expect-error errrrr
+        <ExamQuestionSelects assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />
     )
 
     if(isLoading) return <></>

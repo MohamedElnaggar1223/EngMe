@@ -5,6 +5,7 @@ import { setProgramFinalExam } from "../../../helpers/setProgramFinalExam";
 // import { setProgramFinalExam } from "../../../helpers/setProgramFinalExam";
 const EditOptionQuestion = lazy(() => import("./EditOptionQuestionFinalExam"))
 const EditSelectQuestion = lazy(() => import("./EditSelectQuestionFinalExam"))
+const EditFiveOptionQuestion = lazy(() => import("./EditFiveOptionQuestionFinalExam"))
 
 //@ts-expect-error context
 export const EditFinalExamContext = createContext()
@@ -51,6 +52,11 @@ function FinalExamCardEdit({ version, program, setEdited, finalExam })
             <EditOptionQuestion program={program} finalExam={finalExam} index={index} question={question} key={index} />
         </Suspense>
         :
+        question.type === 'fiveOptions' ? 
+        <Suspense>
+            <EditFiveOptionQuestion program={program} finalExam={finalExam} index={index} question={question} key={index} />
+        </Suspense>
+        :
         <Suspense key={index}>
             <EditSelectQuestion program={program} finalExam={finalExam} index={index} question={question} key={index} />
         </Suspense>
@@ -65,6 +71,10 @@ function FinalExamCardEdit({ version, program, setEdited, finalExam })
         if(question.type === 'options')
         {
             return question.question.length === 0 || question.options[0].length === 0 || question.options[1].length === 0 || question.options[2].length === 0 || question.options[3].length === 0
+        }
+        else if(question.type === 'fiveOptions')
+        {
+            return question.question.length === 0 || question.options[0].length === 0 || question.options[1].length === 0 || question.options[2].length === 0 || question.options[3].length === 0 || question.options[4].length === 0   
         }
         else
         {

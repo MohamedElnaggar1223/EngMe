@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { setExamBankData } from "../../helpers/setExamBankData";
 const EditOptionQuestion = lazy(() => import("./EditOptionQuestionExamBank"))
 const EditSelectQuestion = lazy(() => import("./EditSelectQuestionExamBank"))
+const EditFiveOptionQuestion = lazy(() => import("./EditFiveOptionQuestionExamBank"))
 
 //@ts-expect-error context
 export const EditQuizContext = createContext()
@@ -48,6 +49,11 @@ function ExamBankEditExam({ setEdited, examBank })
             <EditOptionQuestion examBank={examBank} index={index} question={question} key={index} />
         </Suspense>
         :
+        question.type === 'fiveOptions' ?
+        <Suspense key={index}>
+            <EditFiveOptionQuestion examBank={examBank} index={index} question={question} key={index} />
+        </Suspense>
+        :
         <Suspense key={index}>
             <EditSelectQuestion examBank={examBank} index={index} question={question} key={index} />
         </Suspense>
@@ -64,6 +70,10 @@ function ExamBankEditExam({ setEdited, examBank })
         if(question.type === 'options')
         {
             return question.question.length === 0 || question.options[0].length === 0 || question.options[1].length === 0 || question.options[2].length === 0 || question.options[3].length === 0
+        }
+        else if(question.type === 'fiveOptions')
+        {
+            return question.question.length === 0 || question.options[0].length === 0 || question.options[1].length === 0 || question.options[2].length === 0 || question.options[3].length === 0 || question.options[4].length === 0   
         }
         else
         {

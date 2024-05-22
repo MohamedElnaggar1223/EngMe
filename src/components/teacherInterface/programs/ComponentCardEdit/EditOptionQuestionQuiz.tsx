@@ -10,8 +10,6 @@ function EditOptionQuestion({ course, quiz, index, question })
 {
     const queryClient = useQueryClient()
     
-    console.log(quiz, course, question)
-    
     const IOSSwitch = styled((props: SwitchProps) => (
         <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
     ))(({ theme }) => ({
@@ -156,18 +154,32 @@ function EditOptionQuestion({ course, quiz, index, question })
                             value={question.type}
                             // value={level}
                             // onChange={(e) => handleQuestionChange(e, index, 'type')}
-                            onChange={() => {
-                                queryClient.setQueryData(['quizEdit', quiz?.id ?? '', course.id], (oldData: unknown) => {
-                                    //@ts-expect-error oldata
-                                    const newData = [...oldData]
-                                    const oldQuestion = newData[index]
-                                    newData[index] = { question: oldQuestion.question, firstCorrect: oldQuestion.options[0], secondCorrect: oldQuestion.options[1], thirdCorrect: oldQuestion.options[2], fourthCorrect: oldQuestion.options[3], firstLabel: '', secondLabel: '', thirdLabel: '', fourthLabel: '', type: 'dropdowns' }
-                                    return newData
-                                })
+                            onChange={(e) => {
+                                if(e.target.value === 'dropdowns')
+                                {
+                                    queryClient.setQueryData(['quizEdit', quiz?.id ?? '', course.id], (oldData: unknown) => {
+                                        //@ts-expect-error oldata
+                                        const newData = [...oldData]
+                                        const oldQuestion = newData[index]
+                                        newData[index] = { question: oldQuestion.question, firstCorrect: oldQuestion.options[0], secondCorrect: oldQuestion.options[1], thirdCorrect: oldQuestion.options[2], fourthCorrect: oldQuestion.options[3], firstLabel: '', secondLabel: '', thirdLabel: '', fourthLabel: '', type: 'dropdowns' }
+                                        return newData
+                                    })
+                                }
+                                else 
+                                {
+                                    queryClient.setQueryData(['quizEdit', quiz?.id ?? '', course.id], (oldData: unknown) => {
+                                        //@ts-expect-error oldata
+                                        const newData = oldData ? [...oldData] : []
+                                        const oldQuestion = newData[index]
+                                        newData[index] = { question: oldQuestion.question, correctOption: ['0'], options: [oldQuestion.options[0], oldQuestion.options[1], oldQuestion.options[2], oldQuestion.options[3], ''], type: 'fiveOptions' }
+                                        return newData
+                                    })
+                                }
                             }}
                         >
                             <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='options'>Options</MenuItem>
                             <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='dropdowns'>Drop Downs</MenuItem>
+                            <MenuItem sx={{ background: '#F8F8F8', fontSize: 16, fontWeight: 500, fontFamily: 'Inter', color: '#000' }} value='fiveOptions'>Five Options</MenuItem>
                         </Select>
                     </Stack>
                 </Stack>
