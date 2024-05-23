@@ -93,7 +93,7 @@ function ProgramCurrentCard({program, completed}: ProgramCurrentCard)
         setFeedback(limitedWords);
     };
 
-    async function handleSubmitFeedback(){
+    async function handleSubmitFeedback() {
         setSubmitFeedback(true)
         await setStudentProgramComment(userData.id, program.id, feedback, selectedStars)
     }
