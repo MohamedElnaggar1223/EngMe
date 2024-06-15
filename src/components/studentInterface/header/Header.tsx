@@ -244,7 +244,8 @@ function Header()
                             flex: 1,
                             zIndex: 99999,
                             borderRadius: '6px',
-                            overflow: 'hidden',
+                            maxHeight: '400px',
+                            overflow: 'auto',
                             height: openNot ? 'auto' : '0px'
                         }} 
                         ref={notRef}

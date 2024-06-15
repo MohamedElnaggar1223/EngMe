@@ -39,6 +39,7 @@ export default function StudentInstructors({ disabled }: { disabled?: boolean })
                 direction='row'
                 justifyContent='flex-start'
                 alignItems='center'
+                overflow='auto'
                 px={4}
                 py={2}
                 gap={{xs: 4, sm: 6, lg: 12}}

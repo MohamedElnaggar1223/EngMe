@@ -13,5 +13,5 @@ export const getNotifications = async() => {
     //@ts-expect-error notif
     const sortedArray = notificationsData.sort((a, b) => b.createdAt - a.createdAt);
     
-    return sortedArray.slice(0, 5)
+    return sortedArray
 }

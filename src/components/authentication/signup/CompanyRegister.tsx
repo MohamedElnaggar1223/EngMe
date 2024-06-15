@@ -32,7 +32,7 @@ export default function CompanyRegister()
                         color="info"
                         variant="outlined"
                         placeholder="Company's Name"
-                        type='email'
+                        type='text'
                         value={companyName}
                         onChange={(e) => setCompanyName(e.target.value)}
                         inputProps={{
@@ -54,7 +54,7 @@ export default function CompanyRegister()
                         color="info"
                         variant="outlined"
                         placeholder="Full Name"
-                        type='email'
+                        type='text'
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         inputProps={{

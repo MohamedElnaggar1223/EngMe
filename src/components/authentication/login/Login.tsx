@@ -2,7 +2,7 @@ import { memo, useState, createContext } from "react"
 import { Box, Stack, Typography } from "@mui/material"
 import StudentLogIn from "./StudentLogIn"
 import TeacherLogIn from "./TeacherLogIn"
-import icon from '../../../assets/Ellipse 1.png'
+import icon from '../../../assets/Engme logo.png'
 import CompanyRegister from "../signup/CompanyRegister"
 import StudentSignUp from "../signup/StudentSignUp"
 import TeacherSignUp from "../signup/TeacherSignUp"
@@ -42,7 +42,7 @@ function Login()
                     left='1%'
                 >
                     <Link to='https://www.engmecamp.com/'>
-                        <img src={icon} width='109px' height='100px' />
+                        <img src={icon} width='80px' height='80px' />
                     </Link>
                 </Box>
                 {/* <iframe 

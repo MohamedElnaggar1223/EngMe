@@ -1,7 +1,7 @@
 import FormControl from "@mui/material/FormControl";
 import { Alert, Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../firebase/firebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { LoginContext } from "./Login";
@@ -13,6 +13,7 @@ export default function TeacherLogIn()
 
     const[email, setEmail] = useState('')
     const[password, setPassword] = useState('')
+    const [reset, setReset] = useState('')
 
     const [error, setError] = useState('')
 
@@ -65,6 +66,18 @@ export default function TeacherLogIn()
     //     setVerifyPassword(password === confirmPassword)
     // }, [password, confirmPassword])
 
+    const handleResetPass = async () => {
+        if(email)
+        {
+            await sendPasswordResetEmail(auth, email)
+            setReset('Password Reset Email Sent Successfully')
+        }
+        else
+        {
+            setError('Please Enter Your Email!')
+        }
+    }
+
     useEffect(() => {
         setCanSave([password].every(Boolean))
     }, [password])
@@ -88,7 +101,8 @@ export default function TeacherLogIn()
                 }}
                 onSubmit={logIn}
             >
-                {error && <Alert severity="error">{error}</Alert>}
+                {error && !reset && <Alert severity="error">{error}</Alert>}
+                {reset && !error && <Alert severity="success">{reset}</Alert>}
                 <FormControl sx={{ flex: 1 }}>
                     <TextField 
                         fullWidth
@@ -132,6 +146,9 @@ export default function TeacherLogIn()
                             }
                         }}
                     />
+                </FormControl>
+                <FormControl>
+                    <Typography onClick={handleResetPass} fontSize={14} fontFamily='Inter' sx={{ color: '#1976d2', ml: 0.5, mt: -2.5, cursor: 'pointer' }}>Forgot Password?</Typography>
                 </FormControl>
                 <Box
                     flex={1}
