@@ -33,6 +33,7 @@ export default function InstructorsApplications()
                 name: string, 
                 email: string, 
                 number: string,
+                programs: string[],
             }[]
             return teachersData.filter((teacher: {id:string, email: string}) => !restIds?.includes(teacher.email))
         },
@@ -55,6 +56,7 @@ export default function InstructorsApplications()
         name: string, 
         email: string, 
         number: string,
+        programs: string[],
     }) => (
         <InstructorExisting key={teacher.id} {...teacher} />
     ))
