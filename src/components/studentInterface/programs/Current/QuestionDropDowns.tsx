@@ -11,6 +11,9 @@ interface QuestionDropDowns {
 
 export default function QuestionDropDowns({selectQuestions, question, answer, index}: QuestionDropDowns) 
 {
+    console.log(selectQuestions)
+    console.log(answer)
+
     const correctOptions = useMemo(() => {
         //@ts-expect-error anyerr
         if(question.type === 'dropdowns')
@@ -21,11 +24,10 @@ export default function QuestionDropDowns({selectQuestions, question, answer, in
         }
     }, [question])
 
-    //@ts-expect-error anyerr
-    const answers = Object.values(answer)
+    const answers = Object.values(answer ?? {})
 
     const isRight = useMemo(() => {
-        return correctOptions?.every((option, index) => answers[index] === option)
+        return answers.length ? correctOptions?.every((option, index) => answers[index] === option) : false
     }, [answers, correctOptions])
 
     const icon = 
@@ -400,6 +402,23 @@ export default function QuestionDropDowns({selectQuestions, question, answer, in
                         </Typography>
                     </Stack>
                     {displayedFourthOptions}
+                    {//@ts-expect-error question
+                    question?.explanation && (
+                        <Stack
+                            direction='row'
+                            justifyContent='center'
+                            flex={1}
+                            // height='30px'
+                            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                            alignItems='center'
+                            bgcolor='#D0EBFC'
+                        >       
+                            <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
+                                {/*//@ts-expect-error question*/}
+                                {question?.explanation}
+                            </Typography>
+                        </Stack>
+                    )}
                 </AccordionDetails>
             </Accordion>
         </Suspense>

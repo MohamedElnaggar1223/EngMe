@@ -27,7 +27,7 @@ export default function Question({selectQuestions, question, answer, index }: Qu
     }, [question])
 
     //@ts-expect-error question
-    const answers = typeof answer === 'object' ? Object.values(answer) : answer.toString()
+    const answers = typeof answer === 'object' ? Object.values(answer) : typeof answer === 'number' ? answer.toString() : null
 
     const result = useMemo(() => {
         //@ts-expect-error question
@@ -130,6 +130,23 @@ export default function Question({selectQuestions, question, answer, index }: Qu
                         </Typography>
                     </Stack>
                     {displayedOptions}
+                    {//@ts-expect-error question
+                    question?.explanation && (
+                        <Stack
+                            direction='row'
+                            justifyContent='center'
+                            flex={1}
+                            // height='30px'
+                            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingX: 8, paddingY: 0.5 }}
+                            alignItems='center'
+                            bgcolor='#D0EBFC'
+                        >       
+                            <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
+                                {/*//@ts-expect-error question*/}
+                                {question?.explanation}
+                            </Typography>
+                        </Stack>
+                    )}
                 </AccordionDetails>
             </Accordion>
         </Suspense>

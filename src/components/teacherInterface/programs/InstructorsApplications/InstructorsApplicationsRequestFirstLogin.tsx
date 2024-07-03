@@ -17,7 +17,7 @@ export default function InstructorsApplicationsRequestFirstLogin(teacher: teache
     const { mutate } = useMutation({
         onSettled: () => setSuccess(true),
         // mutationFn: () => setTeacherRequest(undefined, undefined, undefined, undefined, undefined, request, password)
-        mutationFn: () => axios.post('https://engmestripeapi.onrender.com/generate-teacher-account', { teacher }, { headers: { "Content-Type": "application/json" } })
+        mutationFn: () => axios.post('https://engmestripeapi.vercel.app/generate-teacher-account', { teacher }, { headers: { "Content-Type": "application/json" } })
         // mutationFn: () => axios.post('http://localhost:3001/generate-teacher-account', { teacher }, { headers: { "Content-Type": "application/json" } })
     })
 

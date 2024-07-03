@@ -62,7 +62,7 @@ export default function AuthProvider({ children })
     useEffect(() => {
         const initiatebackend = () => {
             axios.get('https://engmebackendzoom.onrender.com/')
-            axios.get('https://engmestripeapi.onrender.com/')
+            axios.get('https://engmestripeapi.vercel.app/')
         }
 
         initiatebackend()

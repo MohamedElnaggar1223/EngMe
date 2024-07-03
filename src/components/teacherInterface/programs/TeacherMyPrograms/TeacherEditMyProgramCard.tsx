@@ -25,7 +25,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
     const [programDesc, setProgramDesc] = useState(program?.description ?? '')
     const [duration, setDuration] = useState(program?.duration ?? '')
     const [expiry, setExpiry] = useState(program?.expiry ?? '')
-    const [discount, setDiscount] = useState(program?.discount ?? 0)
+    const [discount, setDiscount] = useState(program?.discount?.toString() ?? '')
     const [level, setLevel] = useState(program?.level ?? 'Beginner')
     const [image, setImage] = useState(program?.image ?? '')
     const [price, setPrice] = useState(program?.price ?? '')
@@ -86,7 +86,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
 
             return () => queryClient.setQueryData(['teacherPrograms', userData?.id], previousData)
         },
-        mutationFn: () => setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, examBank, knowledgeBank, newPrereq, program, image ?? '', discount ?? 0)
+        mutationFn: () => setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, examBank, knowledgeBank, newPrereq, program, image ?? '', parseInt(discount) ?? 0)
     })
 
     const displayedEditPrereqs = prereqs?.map(prereq =>  
@@ -416,7 +416,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                     width='fit-content'
                 >
                     <InputLabel sx={{ color: '#000', fontSize: 16, fontFamily: 'Inter', fontWeight: 600 }} id='Prereqs'>Prerequisites</InputLabel>
-                    <Input 
+                    <Select 
                         color='primary' 
                         disableUnderline
                         aria-labelledby='Prereqs'
@@ -427,17 +427,21 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                             borderRadius: '5px',
                             paddingX: 1,
                             paddingY: 0.5,
+                            maxHeight: '41px',
                             bgcolor: '#F8F8F8'
                         }}
                         value={newPrereq}
                         onChange={(e) => setNewPrePreq(e.target.value)}
-                    />
+                    >
+                        {(queryClient.getQueryData(['teacherPrograms', userData?.id]) as []).filter((programData: ProgramProps) => programData.id !== program?.id && !prereqs?.map(prog => prog.id).includes(programData.id)).map((programData: ProgramProps) => (<MenuItem value={programData.name}>{programData.name}</MenuItem>))}
+                    </Select>
                 </Stack>
                 <Stack
                     direction='row'
                     gap={6}
                     justifyContent='flex-start'
                     flex={1}
+                    maxHeight={82}
                 >
                     {displayedEditPrereqs}
                 </Stack>
@@ -491,7 +495,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                     color='primary' 
                     disableUnderline
                     aria-labelledby='Expiry'
-                    placeholder="in Days"
+                    placeholder=""
                     sx={{
                         border: '1px solid rgba(0, 0, 0, 0.20)',
                         width: '100%',
@@ -507,7 +511,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                     value={discount}
 
                     onChange={(e) => {
-                        if(e.target.value.match("^[0-9]*$")) setDiscount(parseInt(e.target.value))
+                        if(e.target.value.match("^[0-9]*$")) setDiscount(e.target.value)
                     }}
                 />
             </Stack>

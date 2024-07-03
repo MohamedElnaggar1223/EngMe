@@ -118,7 +118,7 @@ export default function TeacherCard()
             hourlyRate
         }
 
-        const response = await axios.post('https://engmestripeapi.onrender.com/create-checkout-session', body, {
+        const response = await axios.post('https://engmestripeapi.vercel.app/create-checkout-session', body, {
             headers
         })
         

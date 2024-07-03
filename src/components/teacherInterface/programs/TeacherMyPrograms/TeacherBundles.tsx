@@ -164,9 +164,9 @@ export default function TeacherBundles({ programs }: Props)
             </div>
             {add && (
                 <div className='flex flex-col gap-6 mb-6'>
-                    <p className='font-[Inter] font-medium text-sm'>{addedPrograms?.length ?? 0}/3 Programs Added (add up to 3 programs)</p>
+                    <p className='font-[Inter] font-medium text-sm'>Programs Added</p>
                     {programs.map(program => (
-                        <div onClick={(e) => (addedPrograms?.length ?? 0) < 3 || addedPrograms?.includes(program.id) ? setAddedPrograms(prev => (prev ? prev.includes(program.id) ? prev.slice().filter(p => p !== program.id) : [...prev, program.id] : [program.id])) : e.stopPropagation()} key={program.id} className={cn('px-6 py-4 rounded-3xl flex items-center justify-between bg-gradient-to-r from-orange-400 to-orange-600 via-orange-500', addedPrograms?.includes(program.id) || addedPrograms?.length === 3 ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80 cursor-pointer')}>
+                        <div onClick={() => setAddedPrograms(prev => (prev ? prev.includes(program.id) ? prev.slice().filter(p => p !== program.id) : [...prev, program.id] : [program.id]))} key={program.id} className={cn('px-6 py-4 rounded-3xl flex items-center justify-between bg-gradient-to-r from-orange-400 to-orange-600 via-orange-500', addedPrograms?.includes(program.id) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-80 cursor-pointer')}>
                             <p className='font-[Inter] font-semibold text-xl'>{program.name}</p>
                             <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
                                 <path fillRule="evenodd" clipRule="evenodd" d="M8.17479 0H10.8252C11.4319 0 11.9109 0.478992 11.9109 1.05378V7.12101H17.9462C18.521 7.12101 19 7.6 19 8.17479V10.8252C19 11.4319 18.521 11.9109 17.9462 11.9109H11.9109V17.9462C11.9109 18.521 11.4319 19 10.8252 19H8.17479C7.6 19 7.12101 18.521 7.12101 17.9462V11.9109H1.05378C0.478992 11.9109 0 11.4319 0 10.8252V8.17479C0 7.6 0.478992 7.12101 1.05378 7.12101H7.12101V1.05378C7.12101 0.478992 7.6 0 8.17479 0Z" fill="white"/>

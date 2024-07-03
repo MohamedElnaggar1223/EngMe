@@ -193,6 +193,14 @@ export default function ProgramExploreCard({ setPageShowed, program }: ProgramEx
                         (program?.discount ?? 0) > 0 &&
                         <p className='text-[#FF7E00] font-bold font-[Inter] mb-0 text-right'>{program?.discount}% OFF!</p>
                     }
+                    {
+                        (program?.discount ?? 0) > 0 ? (
+                            //@ts-expect-error DISCOUNT
+                            <p className='text-[#FF7E00] font-bold font-[Inter] mb-0 text-right'>${(program?.price ?? 0) - ((program?.price ?? 0) * (program?.discount ?? 0) / 100)}</p>
+                        ) : (
+                            <p className='text-[#000] font-semibold font-[Inter] mb-0 text-right'>${program?.price}</p>
+                        )
+                    }
                 </Box>
             </CardContent>
         </Card>

@@ -107,7 +107,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
             studentId: userData.id
         }
 
-        const response = await axios.post('https://engmestripeapi.onrender.com/create-checkout-session', body, {
+        const response = await axios.post('https://engmestripeapi.vercel.app/create-checkout-session', body, {
             headers
         })
         
@@ -187,7 +187,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
             const explorePropgramsFiltered = exploreProgramsData.filter(async (program) => {
                 const teacherDoc = doc(db, "teachers", program.teacherId ?? '');
                 const teacherData = await getDoc(teacherDoc);
-                return !teacherData.data()?.firstLoginLink
+                return teacherData.data() && !teacherData.data()?.firstLoginLink
             })
 
             const finalExplorePrograms = await Promise.all(explorePropgramsFiltered)
@@ -196,7 +196,6 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
     
             return finalExplorePrograms
     
-            return exploreProgramsData
         }
         else if(teacherId)
         {
@@ -212,7 +211,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
             const explorePropgramsFiltered = exploreProgramsData.filter(async (program) => {
                 const teacherDoc = doc(db, "teachers", program.teacherId ?? '');
                 const teacherData = await getDoc(teacherDoc);
-                return !teacherData.data()?.firstLoginLink
+                return teacherData.data() && !teacherData.data()?.firstLoginLink
             })
 
             const finalExplorePrograms = await Promise.all(explorePropgramsFiltered)
@@ -237,7 +236,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
             const explorePropgramsFiltered = exploreProgramsData.filter(async (program) => {
                 const teacherDoc = doc(db, "teachers", program.teacherId ?? '');
                 const teacherData = await getDoc(teacherDoc);
-                return !teacherData.data()?.firstLoginLink
+                return teacherData.data() && !teacherData.data()?.firstLoginLink
             })
 
             const finalExplorePrograms = await Promise.all(explorePropgramsFiltered)

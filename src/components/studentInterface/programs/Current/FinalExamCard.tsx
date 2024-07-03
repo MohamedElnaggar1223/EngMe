@@ -69,7 +69,7 @@ function FinalExamCard({ program, version, disabled, setQuestions, finalExam, qu
                     borderTopLeftRadius: '15px',
                 }}
             >
-                <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>{version}</Typography>
+                <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>{(version as string).replace('Version', 'Exam')}</Typography>
                 {/*//@ts-expect-error grade */}
                 {!foundExam?.grade && <Typography fontSize={14} fontFamily='Inter' fontWeight={500}>{(Number(finalExam?.duration?.split(' ')[0]) / 60).toFixed(1)} Hours</Typography>}
                 {

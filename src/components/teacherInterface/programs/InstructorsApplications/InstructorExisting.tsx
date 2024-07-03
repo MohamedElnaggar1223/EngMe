@@ -1,12 +1,16 @@
 import { useMutation } from "@tanstack/react-query"
 import { Alert, Box, Button, Stack, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
+// import { collection, deleteDoc, doc, getDocs, query, where } from "firebase/firestore"
+import { deleteDoc, doc } from "firebase/firestore"
+import { db } from "../../../../firebase/firebaseConfig"
 
 interface teacherProps{
     id: string, 
     name: string, 
     email: string, 
     number: string,
+    programs: string[],
 }
 
 export default function InstructorExisting(teacher: teacherProps) 
@@ -17,6 +21,48 @@ export default function InstructorExisting(teacher: teacherProps)
         onSettled: () => setSuccess(true),
         // mutationFn: () => setTeacherRequest(undefined, undefined, undefined, undefined, undefined, request, password)
         mutationFn: async () => {
+            await deleteDoc(doc(db, 'teachers', teacher.id))
+            await deleteDoc(doc(db, 'users', teacher.id))
+            // const teacherStrpeCollection = collection(db, 'teacherStripe')
+            // const teacherScheduleCollection = collection(db, 'teacherSchedule')
+            // const coursesCollection = collection(db, 'courses')
+            // const programsCollection = collection(db, 'programs')
+
+            // const teacherPrograms = teacher.programs.map(async (program) => {
+            //     const programCourses = await getDocs(query(coursesCollection, where('programId', '==', program)))
+
+            //     const lessons = programCourses.docs.map(doc => (doc.data().lessons as []))
+            //     const quizzes = programCourses.docs.map(doc => (doc.data().quizzes as []))
+            //     const assessments = programCourses.docs.map(doc => (doc.data().assessments as []))
+
+            //     const flattedLessons = lessons.flat()
+            //     const flattedQuizzes = quizzes.flat()
+            //     const flattedAssessments = assessments.flat()
+
+
+
+            //     const deleteLessons = flattedLessons.map(async (lesson) => {
+            //         await deleteDoc(doc(db, 'lessons', lesson))
+            //     })
+
+            //     const deleteQuizzes = flattedQuizzes.map(async (quiz) => {
+            //         await deleteDoc(doc(db, 'quizzes', quiz))
+            //     })
+
+            //     const deleteAssessments = flattedAssessments.map(async (assessment) => {
+            //         await deleteDoc(doc(db, 'assessments', assessment))
+            //     })
+
+            //     const deleteCourses = programCourses.docs.map(async (course) => {
+            //         await deleteDoc(doc(db, 'courses', course.id))
+            //     })
+
+            //     await Promise.all(deleteLessons)
+            //     await Promise.all(deleteQuizzes)
+            //     await Promise.all(deleteAssessments)
+            //     await Promise.all(deleteCourses)
+            // })
+
 
         }
         // mutationFn: () => axios.post('http://localhost:3001/generate-teacher-account', { teacher }, { headers: { "Content-Type": "application/json" } })
