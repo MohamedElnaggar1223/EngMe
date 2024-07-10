@@ -1,5 +1,5 @@
-import { useMutation } from "@tanstack/react-query"
-import { Alert, Box, Button, Stack, Typography } from "@mui/material"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { Alert, Box, Button, CircularProgress, Dialog, Stack, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 // import { collection, deleteDoc, doc, getDocs, query, where } from "firebase/firestore"
 import { deleteDoc, doc } from "firebase/firestore"
@@ -15,10 +15,20 @@ interface teacherProps{
 
 export default function InstructorExisting(teacher: teacherProps) 
 {
+    const queryClient = useQueryClient()
+
     const [success, setSuccess] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const { mutate } = useMutation({
-        onSettled: () => setSuccess(true),
+        onMutate: () => setLoading(true),
+        onSettled: async () => {
+            setLoading(false)
+            setSuccess(true)
+            await queryClient.invalidateQueries({
+                queryKey: ['teacherExists']
+            })
+        },
         // mutationFn: () => setTeacherRequest(undefined, undefined, undefined, undefined, undefined, request, password)
         mutationFn: async () => {
             await deleteDoc(doc(db, 'teachers', teacher.id))
@@ -113,7 +123,7 @@ export default function InstructorExisting(teacher: teacherProps)
                         direction='row'
                         height='35px'
                     >
-                        {success && <Alert severity="success">Regenerated link successfully!</Alert>}
+                        {success && <Alert severity="success">Deleted Teacher Successfully!</Alert>}
                         <Button
                             sx={{
                                 color: '#fff',
@@ -140,6 +150,9 @@ export default function InstructorExisting(teacher: teacherProps)
                     </Stack>
                 </Stack>
             </Stack>
+            <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+            </Dialog>
         </Box>
     )
 }
