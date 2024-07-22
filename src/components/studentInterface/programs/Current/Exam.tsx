@@ -12,6 +12,7 @@ import ExamQuestionOptions from "./ExamQuestionOptions";
 import ExamQuestionSelects from "./ExamQuestionSelects";
 import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
 import ExamFiveQuestionThreeOptions from "./ExamFiveQuestionThreeOptions";
+import { setExamSessionTime } from "../../../helpers/setExamSessionTime";
 
 // import ExamQuestionOptions from "./ExamQuestionOptions";
 // import ExamQuestionSelects from "./ExamQuestionSelects";
@@ -68,7 +69,7 @@ export default function Exam()
     })
     
     const handleSetExamSessionTime = async () => {
-        //@ts-expect-error session
+        // @ts-expect-error session
         await setExamSessionTime(examSession[0]?.id ?? '', userData.id, `/programs/current/${finalExam?.programId}`)
         //await queryClient.invalidateQueries({ queryKey: ['examSession'] })
     }
