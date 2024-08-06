@@ -1,5 +1,5 @@
 import { useContext, useState } from "react"
-import { Typography, Stack, styled, SwitchProps, Switch, Box, Input, InputLabel, MenuItem, Select, TextareaAutosize, Button, SvgIcon, Avatar, Alert } from "@mui/material"
+import { Typography, Stack, styled, SwitchProps, Switch, Box, Input, InputLabel, MenuItem, Select, TextareaAutosize, Button, SvgIcon, Avatar, Alert, Dialog, CircularProgress } from "@mui/material"
 import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query"
 import ProgramProps from "../../../../interfaces/ProgramProps"
 import { setTeacherRemovePrereq } from "../../../helpers/setTeacherRemovePrereq"
@@ -34,6 +34,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
     const [knowledgeBank, setKnowledgeBank] = useState(program?.knowledgeBank ?? false)
     const [newPrereq, setNewPrePreq] = useState('')
     const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
 
     const {data: prereqs } = useQuery({
         queryKey: ['preReqData', program?.id],
@@ -72,22 +73,42 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
 
     const canSave = [programName, programDesc, programType, duration, expiry, level, image].every(Boolean)
 
-    const { mutate: mutateEdit } = useMutation({
-        onMutate: () => {
-            const previousData = queryClient.getQueryData(['teacherPrograms', userData?.id])
+    // const { mutate: mutateEdit } = useMutation({
+    //     onMutate: () => {
+    //         setLoading(true)
+    //         // const previousData = queryClient.getQueryData(['teacherPrograms', userData?.id])
 
-            queryClient.setQueryData(['teacherPrograms', userData?.id], (oldData: []) => {
-                //@ts-expect-error program
-                const filteredArray = oldData.slice().filter(programData => programData.id !== program?.id)
-                const newArray = [...filteredArray, program ? {...program, name: programName, category: programType, description: programDesc, duration, expiry, level, examBank, knowledgeBank, paused} : {name: programName, category: programType, description: programDesc, duration, expiry, level, examBank, knowledgeBank, paused, courses: [], prerequisites: [], averageRating: 5, totalFeedbacks: 0, teacherId: userData?.id, image } ]
+    //         // queryClient.setQueryData(['teacherPrograms', userData?.id], (oldData: []) => {
+    //         //     //@ts-expect-error program
+    //         //     const filteredArray = oldData.slice().filter(programData => programData.id !== program?.id)
+    //         //     const newArray = [...filteredArray, program ? {...program, name: programName, category: programType, description: programDesc, duration, expiry, level, examBank, knowledgeBank, paused} : {name: programName, category: programType, description: programDesc, duration, expiry, level, examBank, knowledgeBank, paused, courses: [], prerequisites: [], averageRating: 5, totalFeedbacks: 0, teacherId: userData?.id, image } ]
 
-                return newArray
-            })
+    //         //     return newArray
+    //         // })
 
-            return () => queryClient.setQueryData(['teacherPrograms', userData?.id], previousData)
-        },
-        mutationFn: () => setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, examBank, knowledgeBank, newPrereq, program, image ?? '', parseInt(discount) ?? 0)
-    })
+    //         // return () => queryClient.setQueryData(['teacherPrograms', userData?.id], previousData)
+    //     },
+    //     mutationFn: async () => {
+    //         await setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, examBank, knowledgeBank, newPrereq, program, image ?? '', parseInt(discount) ?? 0)
+    //         await new Promise(resolve => setTimeout(resolve, 3000))
+    //     },
+    //     onSettled: async () => {
+    //         setLoading(false)
+    //         await queryClient.invalidateQueries({ queryKey: ['teacherPrograms', userData?.id] })
+    //     }
+    // })
+    
+    const handleSave = async () => {
+        if(!canSave) return setError('Please Enter All Details!')
+
+        setLoading(true)
+
+        await setProgramData(userData?.id, programName, programDesc, programType, level, duration, expiry, price, paused, examBank, knowledgeBank, newPrereq, program, image ?? '', parseInt(discount) ?? 0)
+
+        await queryClient.invalidateQueries({ queryKey: ['teacherPrograms', userData?.id] })
+        setLoading(false)
+        setEdit(prev => !prev)
+    }
 
     const displayedEditPrereqs = prereqs?.map(prereq =>  
         <Stack
@@ -162,6 +183,9 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
             pb={8}
             pt={8}
         >
+            <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+            </Dialog>
             {
                 error &&
                 <Alert sx={{ mb: 4 }} severity="error">{error}</Alert>
@@ -603,13 +627,7 @@ export default function TeacherEditMyProgramCard({program, setEdit}: TeacherEdit
                                 opacity: 1
                             },
                         }}
-                        onClick={() => {
-                            (canSave && 
-                            setEdit(prev => !prev))
-                            canSave ?
-                            mutateEdit() :
-                            setError('Please Enter All Details!')
-                        }}
+                        onClick={handleSave}
                     >
                         Confirm
                     </Button>
