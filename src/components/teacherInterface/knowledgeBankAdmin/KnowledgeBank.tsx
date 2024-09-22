@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Input, Slide, Stack, SvgIcon, Typography } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { forwardRef, useState } from "react";
+import { forwardRef, useContext, useState } from "react";
 import { getKnowledgeBank } from "../../helpers/getKnowledgeBank";
 import KnowledgeBankContent from "./KnowledgeBankContent";
 import { setKnowledgeBankMajor } from "../../helpers/setKnowledgeBankMajor";
@@ -11,6 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import { TransitionProps } from '@mui/material/transitions';
 import { setEditKnowledgeBankMajor } from "../../helpers/setEditKnowledgeBankMajor";
+import { AuthContext } from "../../authentication/auth/AuthProvider";
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -26,6 +27,10 @@ export default function KnowledgeBank()
 {
     const queryClient = useQueryClient()
 
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+    const isAdmin = userData.email === import.meta.env.VITE_ADMIN_EMAIL
+
     const [selectedMajor, setSelectedMajor] = useState(null)
     const [add, setAdd] = useState(false)
     const [majorAdded, setMajorAdded] = useState('')
@@ -37,7 +42,7 @@ export default function KnowledgeBank()
 
     const { data: knowledgeBankMajors } = useQuery({
         queryKey: ['knowledgeBankMajors'],
-        queryFn: () => getKnowledgeBank()
+        queryFn: () => getKnowledgeBank({ isAdmin, teacherId: userData.id })
     })
 
     const { mutate } = useMutation({
@@ -52,7 +57,7 @@ export default function KnowledgeBank()
             return () => queryClient.setQueryData(['knowledgeBankMajors'], previousData)
         },
         onSettled: () => setMajorAdded(''),
-        mutationFn: () => setKnowledgeBankMajor(majorAdded)
+        mutationFn: () => setKnowledgeBankMajor(majorAdded, userData.id)
     })
 
     const { mutate: mutateEdit } = useMutation({

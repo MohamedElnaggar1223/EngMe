@@ -49,17 +49,6 @@ export default function TeacherTestimonials()
                 >
                     Student & Program Analytics
                 </Typography>
-                <Typography
-                    fontWeight={700}
-                    fontFamily='Inter'
-                    fontSize={18}
-                    mr={6}
-                    sx={{
-                        color: '#226E9F'
-                    }}
-                >
-                    View All
-                </Typography>
             </Box>
             <Box
                 py={3}

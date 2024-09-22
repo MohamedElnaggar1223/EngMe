@@ -1,5 +1,5 @@
-import { Box, Stack, Typography, SvgIcon, Button, Accordion, AccordionSummary, AccordionDetails, Dialog, CircularProgress } from '@mui/material'
-import { memo, useState, lazy, Suspense, useRef, useContext } from 'react';
+import { Box, Stack, Typography, SvgIcon, Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material'
+import { memo, useState, lazy, Suspense, useRef } from 'react';
 // eslint-disable-next-line react-refresh/only-export-components
 // const Components = lazy(() => import('./Components'))
 // // eslint-disable-next-line react-refresh/only-export-components
@@ -9,7 +9,7 @@ import { memo, useState, lazy, Suspense, useRef, useContext } from 'react';
 // // eslint-disable-next-line react-refresh/only-export-components
 // const Grades = lazy(() => import('./Grades'))
 import ProgramProps from '../../../../interfaces/ProgramProps';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getProgramsData } from '../../../helpers/getProgramsData';
 // eslint-disable-next-line react-refresh/only-export-components
 const Components = lazy(() => import('./Components'))
@@ -18,23 +18,23 @@ const FinalExams = lazy(() => import('./FinalExams'))
 // eslint-disable-next-line react-refresh/only-export-components
 const Discussions = lazy(() => import('./Discussions'))
 import TeacherEditMyProgramCard from './TeacherEditMyProgramCard';
-import { Delete } from '@mui/icons-material';
-import { db } from '../../../../firebase/firebaseConfig';
-import { collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
-import { AuthContext } from '../../../authentication/auth/AuthProvider';
+// import { Delete } from '@mui/icons-material';
+// import { db } from '../../../../firebase/firebaseConfig';
+// import { collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
+// import { AuthContext } from '../../../authentication/auth/AuthProvider';
 
 // eslint-disable-next-line react-refresh/only-export-components
 function TeacherMyProgramCard(program: ProgramProps) 
 {
-    //@ts-expect-error AuthContext
-    const { userData } = useContext(AuthContext)
-    const queryClient = useQueryClient()
+    // //@ts-expect-error AuthContext
+    // const { userData } = useContext(AuthContext)
+    // const queryClient = useQueryClient()
 
     const [programPage, setProgramPage] = useState('Components')
     const [expand, setExpand] = useState(false)
     const [edit, setEdit] = useState(false)
     const testRef = useRef<HTMLDivElement>(null)
-    const [loading, setLoading] = useState(false)
+    // const [loading, setLoading] = useState(false)
 
     function handleExpand(e: React.MouseEvent<HTMLDivElement, MouseEvent>)
     {
@@ -62,45 +62,45 @@ function TeacherMyProgramCard(program: ProgramProps)
         <Typography noWrap sx={{ textDecoration: 'underline' }} fontSize={18} fontFamily='Inter' fontWeight={400}>{prereq?.name}</Typography>
     ) 
 
-    const handleDeleteProgram = async () => {
-        setLoading(true)
+    // const handleDeleteProgram = async () => {
+    //     setLoading(true)
 
-        const programDoc = doc(db, 'programs', program.id)
-        const coursesCollection = collection(db, 'courses')
-        const coursesQuery = query(coursesCollection, where('programId', '==', program.id))
-        const coursesSnapshot = await getDocs(coursesQuery)
-        const assessmentsCollection = collection(db, 'assessments')
-        const assessmentsQuery = query(assessmentsCollection, where('courseId', 'in', coursesSnapshot.docs.map(doc => doc.id)))
-        const assessmentsSnapshot = await getDocs(assessmentsQuery)
-        const quizzesCollection = collection(db, 'quizzes')
-        const quizzesQuery = query(quizzesCollection, where('courseId', 'in', coursesSnapshot.docs.map(doc => doc.id)))
-        const quizzesSnapshot = await getDocs(quizzesQuery)
-        const finalExamsCollection = collection(db, 'finalExams')
-        const finalExamsQuery = query(finalExamsCollection, where('programId', '==', program.id))
-        const finalExamsSnapshot = await getDocs(finalExamsQuery)
-        const lessonsCollection = collection(db, 'lessons')
-        const lessonsQuery = query(lessonsCollection, where('courseId', 'in', coursesSnapshot.docs.map(doc => doc.id)))
-        const lessonsSnapshot = await getDocs(lessonsQuery)
+    //     const programDoc = doc(db, 'programs', program.id)
+    //     const coursesCollection = collection(db, 'courses')
+    //     const coursesQuery = query(coursesCollection, where('programId', '==', program.id))
+    //     const coursesSnapshot = await getDocs(coursesQuery)
+    //     const assessmentsCollection = collection(db, 'assessments')
+    //     const assessmentsQuery = query(assessmentsCollection, where('courseId', 'in', coursesSnapshot.docs.map(doc => doc.id)))
+    //     const assessmentsSnapshot = await getDocs(assessmentsQuery)
+    //     const quizzesCollection = collection(db, 'quizzes')
+    //     const quizzesQuery = query(quizzesCollection, where('courseId', 'in', coursesSnapshot.docs.map(doc => doc.id)))
+    //     const quizzesSnapshot = await getDocs(quizzesQuery)
+    //     const finalExamsCollection = collection(db, 'finalExams')
+    //     const finalExamsQuery = query(finalExamsCollection, where('programId', '==', program.id))
+    //     const finalExamsSnapshot = await getDocs(finalExamsQuery)
+    //     const lessonsCollection = collection(db, 'lessons')
+    //     const lessonsQuery = query(lessonsCollection, where('courseId', 'in', coursesSnapshot.docs.map(doc => doc.id)))
+    //     const lessonsSnapshot = await getDocs(lessonsQuery)
 
-        const programDelete = await deleteDoc(programDoc)
-        const coursesDelete = coursesSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
-        const assessmentsDelete = assessmentsSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
-        const quizzesDelete = quizzesSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
-        const finalExamsDelete = finalExamsSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
-        const lessonsDelete = lessonsSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
+    //     const programDelete = await deleteDoc(programDoc)
+    //     const coursesDelete = coursesSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
+    //     const assessmentsDelete = assessmentsSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
+    //     const quizzesDelete = quizzesSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
+    //     const finalExamsDelete = finalExamsSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
+    //     const lessonsDelete = lessonsSnapshot.docs.map(async (doc) => await deleteDoc(doc.ref))
 
-        await Promise.all([programDelete, ...coursesDelete, ...assessmentsDelete, ...quizzesDelete, ...finalExamsDelete, ...lessonsDelete])
+    //     await Promise.all([programDelete, ...coursesDelete, ...assessmentsDelete, ...quizzesDelete, ...finalExamsDelete, ...lessonsDelete])
 
-        await queryClient.invalidateQueries({ queryKey: ['teacherPrograms', userData?.id] })
+    //     await queryClient.invalidateQueries({ queryKey: ['teacherPrograms', userData?.id] })
         
-        setLoading(false)
-    }
+    //     setLoading(false)
+    // }
 
     return (
         <>
-        <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+        {/* <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
             <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
-        </Dialog>
+        </Dialog> */}
         <Accordion expanded={expand} sx={{ width: 'auto', '.css-o4b71y-MuiAccordionSummary-content': { margin: 0 }, padding: 0, height: 'auto' , borderRadius: '20px', overflow: 'hidden'}} 
             TransitionProps={{ 
                 style: { 
@@ -120,7 +120,7 @@ function TeacherMyProgramCard(program: ProgramProps)
                     // background: '#E8E8E8',
                 }}
             >
-                <Delete onClick={handleDeleteProgram} sx={{ color: '#FF7E00', fontSize: 32, cursor: 'pointer', position: 'absolute', right: 20, bottom: 20 }} />
+                {/* <Delete onClick={handleDeleteProgram} sx={{ color: '#FF7E00', fontSize: 32, cursor: 'pointer', position: 'absolute', right: 20, bottom: 20 }} /> */}
                 <Box
                     maxWidth='100%'
                     flex={1}

@@ -10,12 +10,15 @@ import InstructorsApplications from './InstructorsApplications/InstructorsApplic
 import ProgramsPriceShare from './ProgramsPriceShare/ProgramsPriceShare'
 import ProgramsExplore from '../../studentInterface/programs/Explore/ProgramsExplore'
 import TeacherBundles from './TeacherMyPrograms/TeacherBundles'
+import DeletePrograms from './TeacherMyPrograms/DeletePrograms'
 const TeacherMyPrograms = lazy(() => import('./TeacherMyPrograms/TeacherMyPrograms'))
 
 export default function Programs() 
 {
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
+
+    const isAdmin = userData?.email === import.meta.env.VITE_ADMIN_EMAIL
 
     const [tab, setTab] = useState('Explore')
 
@@ -147,6 +150,24 @@ export default function Programs()
 
                         </Box>
                     </Stack>
+                    {isAdmin && (
+                        <Stack
+                            alignItems='center'
+                            onClick={() => setTab('Delete Programs')}
+                            sx={{ cursor: 'pointer' }}
+                        >
+                            <Typography>Delete Programs</Typography>
+                            <Box
+                                position='relative'
+                                border='0px'
+                                height='6px'
+                                bgcolor={tab === 'Delete Programs' ? '#FF9F06' : '#fff'}
+                                width={{xs: '80px', sm: '120px', lg: '180px'}}
+                            >
+
+                            </Box>
+                        </Stack>
+                    )}
                 </Stack>
                 <Box
                     position='relative'
@@ -222,6 +243,11 @@ export default function Programs()
                     tab === "Programs' Price Share" ?
                     <Suspense>
                         <ProgramsPriceShare />
+                    </Suspense>
+                    :
+                    tab === 'Delete Programs' ?
+                    <Suspense>
+                        <DeletePrograms />
                     </Suspense>
                     :
                     <></>

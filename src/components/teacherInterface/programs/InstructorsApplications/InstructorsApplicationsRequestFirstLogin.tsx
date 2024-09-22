@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
-import { Alert, Box, Button, Stack, Typography } from "@mui/material"
+import { Alert, Box, Button, CircularProgress, Stack, Typography } from "@mui/material"
 import axios from "axios"
 import { useEffect, useState } from "react"
 
@@ -13,9 +13,14 @@ interface teacherProps{
 export default function InstructorsApplicationsRequestFirstLogin(teacher: teacherProps) 
 {
     const [success, setSuccess] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const { mutate } = useMutation({
-        onSettled: () => setSuccess(true),
+        onMutate: () => setLoading(true),
+        onSettled: () => {
+            setSuccess(true)
+            setLoading(false)
+        },
         // mutationFn: () => setTeacherRequest(undefined, undefined, undefined, undefined, undefined, request, password)
         mutationFn: () => axios.post('https://engmestripeapi.vercel.app/generate-teacher-account', { teacher }, { headers: { "Content-Type": "application/json" } })
         // mutationFn: () => axios.post('http://localhost:3001/generate-teacher-account', { teacher }, { headers: { "Content-Type": "application/json" } })
@@ -87,12 +92,15 @@ export default function InstructorsApplicationsRequestFirstLogin(teacher: teache
                                 justifyContent: 'center',
                                 width: '160px',
                                 alignSelf: 'flex-end',
-                                height: '38px'
+                                height: '38px',
+                                gap: '4px'
                             }}
+                            disabled={loading}
                             onClick={() => {
                                 mutate()
                             }}
                         >
+                            {loading && <CircularProgress size='12px' sx={{ color: '#fff' }} />}
                             Re generate
                         </Button>
                     </Stack>

@@ -21,6 +21,9 @@ import { getProgramsData } from '../../../helpers/getProgramsData'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { loadStripe } from '@stripe/stripe-js'
+import { v4 as uuidv4 } from 'uuid';
+import { addDoc, collection } from 'firebase/firestore'
+import { db } from '../../../../firebase/firebaseConfig'
 
 export default function ProgramsExploreProgram({ explorePrograms }: { explorePrograms: ProgramProps[]}) 
 {
@@ -149,6 +152,7 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
         queryClient.invalidateQueries({
             queryKey: ['explorePrograms', userData?.id],
         })
+        setLoading(false)
     }
 
     const { mutate } = useMutation({
@@ -196,36 +200,51 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
     // }
 
     const handlePayment = async () => {
-        const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-
-        const headers = {
-            "Content-Type": "application/json"
-        }
-
-        const postProgram = {...program, image: ''}
-
-        const body = {
-            program: postProgram,
-            studentId: userData.id
-        }
-
-        const response = await axios.post('https://engmestripeapi.vercel.app/create-checkout-session', body, {
-            headers
-        })
-        
-        // const response = await axios.post('http://localhost:3001/create-checkout-session', body, {
-        //     headers
-        // })
-
-        const session = response.data
-
-        const result = await stripe?.redirectToCheckout({
-            sessionId: session.id
-        })
-
-        if(result?.error)
+        if(parseFloat(program.price!) > 0) 
         {
-            console.error(result.error)
+            const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+    
+            const headers = {
+                "Content-Type": "application/json"
+            }
+    
+            const postProgram = {...program, image: ''}
+    
+            const body = {
+                program: postProgram,
+                studentId: userData.id
+            }
+    
+            const response = await axios.post('https://engmestripeapi.vercel.app/create-checkout-session', body, {
+                headers
+            })
+            
+            // const response = await axios.post('http://localhost:3001/create-checkout-session', body, {
+            //     headers
+            // })
+    
+            const session = response.data
+    
+            const result = await stripe?.redirectToCheckout({
+                sessionId: session.id
+            })
+    
+            if(result?.error)
+            {
+                console.error(result.error)
+            }
+        }
+        else 
+        {
+            const newOrder = {
+                studentId: userData.id,
+                programId: program.id,
+                orderId: uuidv4(),
+                status: 'accepted'
+            }
+
+            await addDoc(collection(db, 'orders'), newOrder)
+            navigate('/programs/current', { replace: true })
         }
     }
     

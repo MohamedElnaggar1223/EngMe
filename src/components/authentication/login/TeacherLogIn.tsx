@@ -11,8 +11,8 @@ export default function TeacherLogIn()
     //@ts-expect-error context
     const { setSelectedPage } = useContext(LoginContext)
 
-    const[email, setEmail] = useState('')
-    const[password, setPassword] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
     const [reset, setReset] = useState('')
 
     const [error, setError] = useState('')
@@ -28,6 +28,7 @@ export default function TeacherLogIn()
                 const userRef = collection(db, 'users')
                 const queryUser = query(userRef, where('userId', '==', email))
                 const userDoc = await getDocs(queryUser)
+                console.log(userDoc)
     
                 if(userDoc.docs.length && userDoc.docs[0]?.data().role === 'teacher')
                 {

@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Input, Slide, Stack, SvgIcon, Typography } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { forwardRef, useState } from "react";
+import { forwardRef, useContext, useState } from "react";
 import { getExamBank } from "../../helpers/getExamBank";
 import ExamBankContent from "./ExamBankContent";
 import { setExamBankMajor } from "../../helpers/setExamBankMajor";
@@ -11,6 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import { setEditExamBankMajor } from "../../helpers/setEditExamBankMajor";
 import { TransitionProps } from '@mui/material/transitions';
+import { AuthContext } from "../../authentication/auth/AuthProvider";
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -28,6 +29,9 @@ export default function ExamBank()
 {
     const queryClient = useQueryClient()
 
+    //@ts-expect-error context
+    const { userData } = useContext(AuthContext)
+    const isAdmin = userData.email === import.meta.env.VITE_ADMIN_EMAIL
     const [selectedMajor, setSelectedMajor] = useState(null)
     const [add, setAdd] = useState(false)
     const [majorAdded, setMajorAdded] = useState('')
@@ -39,7 +43,7 @@ export default function ExamBank()
 
     const { data: examBankMajors } = useQuery({
         queryKey: ['examBankMajors'],
-        queryFn: () => getExamBank()
+        queryFn: () => getExamBank({ isAdmin, teacherId: userData.id })
     })
 
     const { mutate } = useMutation({
@@ -54,7 +58,7 @@ export default function ExamBank()
             return () => queryClient.setQueryData(['examBankMajors'], previousData)
         },
         onSettled: () => setMajorAdded(''),
-        mutationFn: () => setExamBankMajor(majorAdded)
+        mutationFn: () => setExamBankMajor(majorAdded, userData.id)
     })
 
     const { mutate: mutateEdit } = useMutation({

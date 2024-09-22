@@ -20,6 +20,8 @@ export default function Components(program: ProgramProps)
         enabled: !!program.id
     })
 
+    console.log(userData)
+
     const { data: studentCourses, isLoading: studentCourseLoading } = useQuery({
         queryKey: ['studentCourse'],
         //@ts-expect-error undefined
@@ -31,6 +33,7 @@ export default function Components(program: ProgramProps)
     // if(queryClient.isFetching({ queryKey: ['courses', programId] })) return <></>
 	// const courses = queryClient.getQueryData(['courses', programId])
     //console.log(studentCourses)
+    console.log(studentCourses)
 	const displayedCourses = ((!isLoading && !studentCourseLoading) && courses?.map((course, index) => {  
         if(index === 0)
         {
@@ -52,6 +55,7 @@ export default function Components(program: ProgramProps)
             }
             //@ts-expect-error tserr
             const completedCourses = courses.slice(0, index - 1).every(course => studentCourses?.map(studentCourse => studentCourse?.courseId)?.includes(course.id))
+            console.log(completedCourses)
             if(completedCourses)
             {
                 return (
