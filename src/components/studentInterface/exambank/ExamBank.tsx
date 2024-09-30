@@ -22,10 +22,12 @@ export default function ExamBank({ admin }: ExamBankProps)
     const [examClicked, setExamClicked] = useState(null)
     const [open, setOpen] = useState(true)
 
+    
     const navigate = useNavigate()
-
+    
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
+    const isAdmin = userData.email === import.meta.env.VITE_ADMIN_EMAIL
 
     const { data: studentPrograms } = useQuery({
         queryKey: ['studentPrograms', userData?.id],
@@ -42,7 +44,7 @@ export default function ExamBank({ admin }: ExamBankProps)
 
     const { data: examBankMajors } = useQuery({
         queryKey: ['examBankMajors'],
-        queryFn: () => getExamBank()
+        queryFn: () => getExamBank({ isAdmin, teacherId: userData.id })
     })
 
     const displayedMajors = examBankMajors?.map(major => (

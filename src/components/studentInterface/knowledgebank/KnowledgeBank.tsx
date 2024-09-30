@@ -13,6 +13,7 @@ export default function KnowledgeBank()
 {
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
+    const isAdmin = userData.email === import.meta.env.VITE_ADMIN_EMAIL
 
     const navigate = useNavigate()
 
@@ -21,7 +22,7 @@ export default function KnowledgeBank()
 
     const { data: knowledgeBankMajors } = useQuery({
         queryKey: ['knowledgeBankMajors'],
-        queryFn: () => getKnowledgeBank()
+        queryFn: () => getKnowledgeBank({ isAdmin, teacherId: userData.id })
     })
 
     const { data: studentPrograms } = useQuery({
