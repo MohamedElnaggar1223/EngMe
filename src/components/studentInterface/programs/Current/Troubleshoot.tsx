@@ -11,6 +11,8 @@ import { getExamSession } from "../../../helpers/getExamSession";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import ExamQuestionSelects from "./ExamQuestionSelects";
 import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
+import ExamFiveQuestionThreeOptions from "./ExamFiveQuestionThreeOptions";
+
 
 export default function Troubleshoot() 
 {
@@ -40,6 +42,15 @@ export default function Troubleshoot()
     //@ts-expect-error errrrr
     const displayedQuestions = troubleshoot?.questions?.map((question, index) => 
         question.type === 'options' ?
+        question.correctOption.length > 1 ?
+        //@ts-expect-error errrrr
+        <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+        //@ts-expect-error errrrr
+        <ExamQuestionOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+        question.type === 'fiveOptions' ?
+        question.correctOption.length > 2 ?
+        //@ts-expect-error errrrr
+        <ExamFiveQuestionThreeOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
         question.correctOption.length > 1 ?
         //@ts-expect-error errrrr
         <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :

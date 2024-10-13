@@ -9,6 +9,8 @@ export const setSubmitExamSessionTroubleshoot = async (studentId: string, troubl
     const studentTroubleshootRef = collection(db, 'studentTroubleshoot')
     const troubleshootDoc = doc(db, 'troubleshoot', troubleshootId)
 
+    console.log(studentId, troubleshootId)
+
     const queryExamSession = query(examSessionRef, and(where('studentId', '==', studentId), where('troubleshootId', '==', troubleshootId)), limit(1))
     const queryStudentTroubleshoot = query(studentTroubleshootRef, and(where('studentId', '==', studentId), where('troubleshootId', '==', troubleshootId)))
     const troubleshootData = await getDoc(troubleshootDoc)
@@ -52,6 +54,8 @@ export const setSubmitExamSessionTroubleshoot = async (studentId: string, troubl
         else return Number(answers[index]) === Number(option)
       })
 
+      console.log("answers: ", answers)
+      console.log("results: ", results)
     const questions = troubleshootData?.data()?.questions as []
     //@ts-expect-error anyerror
     const wrongQuestions = results.slice().reduce((acc, option, index) => {
@@ -61,6 +65,9 @@ export const setSubmitExamSessionTroubleshoot = async (studentId: string, troubl
         }
         return acc
     }, []) 
+
+    console.log("wrongQuestions: ", wrongQuestions)
+    console.log("questions: ", questions)
 
     const troubleshootref = collection(db, 'troubleshoot')
     const troubleshootquery = query(troubleshootref, where('studentId', '==', studentId))
@@ -80,6 +87,8 @@ export const setSubmitExamSessionTroubleshoot = async (studentId: string, troubl
 
     //@ts-expect-error anyerror
     const grade = (((results.slice().filter(res => !!res)).length / results.length) * 100).toFixed(2)
+
+    console.log("grade: ", grade)
     
     const studentTroubleshootDoc = doc(db, 'studentTroubleshoot', orderedTroubleshootsArray[0]?.id)
 
