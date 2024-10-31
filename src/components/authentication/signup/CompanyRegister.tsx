@@ -4,8 +4,38 @@ import { useState } from "react";
 export default function CompanyRegister() 
 {
     const [companyName, setCompanyName] = useState('')
+    const [companyEmail, setCompanyEmail] = useState('')
     const [name, setName] = useState('')
     const [details, setDetails] = useState('')
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
+
+    const handleSendMail = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        try {
+            setLoading(true)
+            await fetch('https://engmestripeapi.vercel.app/send-mail-company', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    companyName,
+                    email: companyEmail,
+                    name,
+                    message: details
+                })
+            })
+            setLoading(false)
+            setCompanyName('')
+            setCompanyEmail('')
+            setName('')
+            setDetails('')
+        } catch (error) {
+            console.error(error)
+            setError('An error occurred while sending the email')
+        }
+    }
 
     return (
         <Box
@@ -22,10 +52,11 @@ export default function CompanyRegister()
                     flexDirection: 'column',
                     gap: '30px',
                 }}
-                onSubmit={() => {}}
+                onSubmit={handleSendMail}
             >
                 <FormControl sx={{ flex: 1 }}>
                     <TextField 
+                        disabled={loading}
                         fullWidth
                         required
                         
@@ -48,6 +79,30 @@ export default function CompanyRegister()
                 </FormControl>
                 <FormControl sx={{ flex: 1 }}>
                     <TextField 
+                        disabled={loading}
+                        fullWidth
+                        required
+                        
+                        color="info"
+                        variant="outlined"
+                        placeholder="Company's Email"
+                        type='text'
+                        value={companyEmail}
+                        onChange={(e) => setCompanyEmail(e.target.value)}
+                        inputProps={{
+                            style: {
+                                textAlign: 'left',
+                                textIndent: '80px',
+                                fontSize: 18,
+                                // border: '1px solid rgba(0, 0, 0, 1)',
+                                borderRadius: '5px'
+                            }
+                        }}
+                    />
+                </FormControl>
+                <FormControl sx={{ flex: 1 }}>
+                    <TextField 
+                        disabled={loading}
                         fullWidth
                         required
                         
@@ -71,6 +126,7 @@ export default function CompanyRegister()
                 <FormControl sx={{ flex: 1 }}>
                     <TextareaAutosize 
                         minRows={8}
+                        disabled={loading}
                         required
                         color="info"
                         placeholder="Type your text here"
@@ -109,12 +165,15 @@ export default function CompanyRegister()
                             background: '#226E9F',
                             opacity: 1
                         },
-                        paddingY: 1.5
+                        paddingY: 1.5,
+                        opacity: loading ? 0.65 : 1
                     }}
                     type="submit"
+                    disabled={loading}
                 >
-                    Send
+                    {loading ? "Sending..." : "Send"}
                 </Button>
+                {error && <Typography color='error'>{error}</Typography>}
             </form>
         </Box>
     )
