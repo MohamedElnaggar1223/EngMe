@@ -1,4 +1,5 @@
 import { Box, Stack, Typography, FormControl, TextField, TextareaAutosize, Button } from "@mui/material";
+import axios from "axios";
 import { useState } from "react";
 
 export default function CompanyRegister() 
@@ -14,17 +15,16 @@ export default function CompanyRegister()
         e.preventDefault()
         try {
             setLoading(true)
-            await fetch('https://engmestripeapi.vercel.app/send-mail-company', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    companyName,
-                    email: companyEmail,
-                    name,
-                    message: details
-                })
+            const headers = {
+                "Content-Type": "application/json"
+            }
+            await axios.post('https://engmestripeapi.vercel.app/send-mail-company', {
+                companyName,
+                email: companyEmail,
+                name,
+                message: details
+            }, {
+                headers
             })
             setLoading(false)
             setCompanyName('')
@@ -34,6 +34,9 @@ export default function CompanyRegister()
         } catch (error) {
             console.error(error)
             setError('An error occurred while sending the email')
+        }
+        finally {
+            setLoading(false)
         }
     }
 
