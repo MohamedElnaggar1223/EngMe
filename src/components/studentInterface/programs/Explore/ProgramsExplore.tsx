@@ -132,7 +132,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
             effect={'cards'}
             grabCursor={true}
             modules={[EffectCards]}
-            className="mySwiper relative"
+            className="relative mySwiper"
             key={bundle.id}
             onClick={() => {
                 mutateBundles(bundle)
@@ -142,6 +142,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore)
             <div className='absolute flex flex-col gap-2 w-full text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-5 right-5 z-50'>
                 <p> <span className='font-bold'>Price: </span>${bundle.price}</p>
                 {bundle.discount !== 0 && <p><span className='font-bold'>Discount: </span>{bundle.discount}%</p>}
+            <p className='font-light'>Swipe for more</p>
             </div>
         </Swiper>
     ))

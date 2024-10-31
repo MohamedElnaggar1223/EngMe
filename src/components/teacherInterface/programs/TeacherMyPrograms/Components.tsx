@@ -30,7 +30,7 @@ function Components(program: ProgramProps)
 
     const displayedCourses = !isLoading && courses?.map((course, index) => 
         <Suspense>
-            <ComponentCard index={index} course={course as CourseProps} />
+            <ComponentCard index={index} course={course as CourseProps} courses={courses.map(course => course.id)} />
         </Suspense>
     )
 
@@ -46,7 +46,7 @@ function Components(program: ProgramProps)
             // return () => queryClient.setQueryData(['courses', program?.id], previousData)
             setLoading(true)
         },
-        onSuccess: async (data) => {
+        onSettled: async (data) => {
             if(data) {
                 setLoading(false)
                 queryClient.setQueryData(['courses', program?.id], courses ? [...courses, data] : [data])

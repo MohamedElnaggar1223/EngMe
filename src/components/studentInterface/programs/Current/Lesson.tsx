@@ -75,7 +75,15 @@ export default function Lesson()
     return (
         //@ts-expect-error lesson
         lesson?.content?.type === 'Videos/' ?
-        <ReactPlayer url={lesson?.dataDisplayed} width="100%" height="100%" controls={true} config={{ file: { attributes: { controlsList: 'nodownload' } } }} />
+        <>
+            <Stack
+                direction="column"
+                alignItems="start"
+            >
+                <Button sx={{ textTransform: 'none', fontSize: 16 }} onClick={() => navigate(`/programs/current/${lesson?.programId}`)}>Back</Button>
+            </Stack>
+            <ReactPlayer url={lesson?.dataDisplayed} width="100%" height="100%" controls={true} config={{ file: { attributes: { controlsList: 'nodownload' } } }} />
+        </>
         :
         // <embed src={lesson?.dataDisplayed} type="video/mp4" width="100%" height="900px" />
         <Box sx={{ width: '950px', mx: 'auto', display: 'flex', flex: 1, '*': { width: '100%' }, mt: 5 }}>

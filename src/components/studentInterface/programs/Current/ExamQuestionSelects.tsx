@@ -20,6 +20,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { setBackQuestionTroubleshoot } from "../../../helpers/setBackQuestionTroubleshoot";
 import { setLastQuestionExamSessionTroubleshoot } from "../../../helpers/setLastQuestionExamSessionTroubleshoot";
 import { setSubmitExamSessionTroubleshoot } from "../../../helpers/setSubmitExamSessionTroubleshoot";
+import { Tooltip } from "@mui/material";
 
 interface Question{
     firstCorrect: string,
@@ -732,6 +733,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
             </Stack>
             <div className='flex justify-between w-screen max-w-[1024px]'>
                 <div className='flex flex-col gap-12'>
+                    <Tooltip title={question.firstLabel}>
                     <div 
                         onClick={() => {
                             setFirstSelectOption(prev => ({...prev, isDragging: !prev.isDragging, isConnected: false, connectedOption: ''}))
@@ -745,6 +747,8 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                         <input readOnly value={question.firstLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
                         <div ref={firstOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !firstSelectOption.isDragging && firstSelectOption.connectedOption === '' && 'hidden')} />
                     </div>
+                    </Tooltip>
+                    <Tooltip title={question.secondLabel}>
                     <div 
                         onClick={() => {
                             setFirstSelectOption(prev => ({...prev, isDragging: false}))
@@ -758,6 +762,8 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                         <input readOnly value={question.secondLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
                         <div ref={secondOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !secondSelectOption.isDragging && secondSelectOption.connectedOption === '' && 'hidden')} />
                     </div>
+                    </Tooltip>
+                    <Tooltip title={question.thirdLabel}>
                     <div 
                         onClick={() => {
                             setFirstSelectOption(prev => ({...prev, isDragging: false}))
@@ -771,6 +777,8 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                         <input readOnly value={question.thirdLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
                         <div ref={thirdOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !thirdSelectOption.isDragging && thirdSelectOption.connectedOption === '' && 'hidden')} />
                     </div>
+                    </Tooltip>
+                    <Tooltip title={question.fourthLabel}>
                     <div 
                         onClick={() => {
                             setFirstSelectOption(prev => ({...prev, isDragging: false}))
@@ -784,8 +792,10 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                         <input readOnly value={question.fourthLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
                         <div ref={fourthOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !fourthSelectOption.isDragging && fourthSelectOption.connectedOption === '' && 'hidden')} />
                     </div>
+                    </Tooltip>
                 </div>
                 <div className='flex flex-col gap-12'>
+                    <Tooltip title={correctOptionsShuffled[0]}>
                     <div 
                         onClick={(e) => {
                             if(firstLabelConnected)
@@ -827,6 +837,8 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                         <input readOnly value={correctOptionsShuffled[0]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
                         {firstLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
                     </div>
+                    </Tooltip>
+                    <Tooltip title={correctOptionsShuffled[1]}>
                     <div 
                         onClick={(e) => {
                             if(secondLabelConnected)
@@ -868,6 +880,8 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                         <input readOnly value={correctOptionsShuffled[1]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
                         {secondLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
                     </div>
+                    </Tooltip>
+                    <Tooltip title={correctOptionsShuffled[2]}>
                     <div 
                         onClick={(e) => {
                             if(thirdLabelConnected)
@@ -909,6 +923,8 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                         <input readOnly value={correctOptionsShuffled[2]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
                         {thirdLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
                     </div>
+                    </Tooltip>
+                    <Tooltip title={correctOptionsShuffled[3]}>
                     <div 
                         onClick={(e) => {
                             if(fourthLabelConnected)
@@ -950,6 +966,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                         <input readOnly value={correctOptionsShuffled[3]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
                         {fourthLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
                     </div>
+                    </Tooltip>
                 </div>
                 
             </div>

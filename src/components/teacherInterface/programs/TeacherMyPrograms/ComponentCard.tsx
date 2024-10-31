@@ -1,33 +1,41 @@
 import { memo, useMemo, useRef, useState } from "react";
-import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails } from "@mui/material";
+import { Accordion, AccordionSummary, Stack, SvgIcon, Typography, AccordionDetails, Dialog, CircularProgress } from "@mui/material";
 // import { PageContext } from "../../../Layout";
 import CourseProps from "../../../../interfaces/CourseProps";
-import {  useQuery } from "@tanstack/react-query";
+import {  useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAssessmentsData } from "../../../helpers/getAssessmentsData";
 import { getLessonsData } from "../../../helpers/getLessonsData";
 import { getQuizzesData } from "../../../helpers/getQuizzesData";
 // import { AuthContext } from "../../../authentication/auth/AuthProvider";
-import { ExpandMore } from "@mui/icons-material";
+import { Delete, ExpandMore } from "@mui/icons-material";
 import ComponentCardEditLesson from "../ComponentCardEdit/ComponentCardEditLesson";
 import ComponentCardEditQuiz from "../ComponentCardEdit/ComponentCardEditQuiz";
 import ComponentCardEditAssessment from "../ComponentCardEdit/ComponentCardEditAssessment";
+import { collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { db } from "../../../../firebase/firebaseConfig";
 
 interface ComponentCard{
     index: number,
     course: CourseProps,
+    courses: string[],
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-function ComponentCard({index, course}: ComponentCard) 
+function ComponentCard({index, course, courses}: ComponentCard) 
 {
+    const queryClient = useQueryClient()
+    
     // const queryClient = useQueryClient()
     ////@ts-expect-error context
     // const { userData } = useContext(AuthContext)
     const [edited, setEdited] = useState('')
     const [added, setAdded] = useState('')
     const [expand, setExpand] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const testRef = useRef<HTMLDivElement>(null)
+
+    console.log(course)
 
     const { data: assessments } = useQuery({
         queryKey: ['assessments', course.programId, course.id],
@@ -65,6 +73,43 @@ function ComponentCard({index, course}: ComponentCard)
             setExpand(prev => !prev)
             !expand && testRef.current?.scrollIntoView({ behavior: 'smooth', block: !expand ? 'center' : 'end', inline: !expand ? 'center' : 'end' })
         }
+    }
+
+    const handleDeleteCourse = async () => {
+        setLoading(true)
+        const assessmentsToDelete = course.assessments
+        const lessonsToDelete = course.lessons
+        const quizzesToDelete = course.quizzes
+
+        const assessmentsCollection = collection(db, 'assessments')
+        const lessonsCollection = collection(db, 'lessons')
+        const quizzesCollection = collection(db, 'quizzes')
+        const courseCollection = collection(db, 'courses')
+        const programCollection = collection(db, 'programs')
+        const programDoc = doc(programCollection, course.programId)
+
+        await Promise.all([
+            assessmentsToDelete?.map(async(assessment) => {
+                const assessmentDoc = doc(assessmentsCollection, assessment)
+                await deleteDoc(assessmentDoc)
+            }),
+            lessonsToDelete?.map(async(lesson) => {
+                const lessonDoc = doc(lessonsCollection, lesson)
+                await deleteDoc(lessonDoc)
+            }),
+            quizzesToDelete?.map(async(quiz) => {
+                const quizDoc = doc(quizzesCollection, quiz)
+                await deleteDoc(quizDoc)
+            }),
+            deleteDoc(doc(courseCollection, course.id)),
+            updateDoc(programDoc, {
+                courses: courses.filter(c => c !== course.id)
+            })
+        ])
+        await queryClient.invalidateQueries({
+            queryKey: ['courses', course.programId]
+        })
+        setLoading(false)
     }
 
     const editedComponent = useMemo(() => (
@@ -341,8 +386,13 @@ function ComponentCard({index, course}: ComponentCard)
                         </SvgIcon>
                         <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Course {index + 1}</Typography>
                     </Stack>
-                    <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{lessons?.length} Lessons</Typography>
-                    <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{course.duration.split(" ")[0] === '00' ? '0' : course.duration.split(" ")[0]} Hours</Typography>
+                    <Typography sx={{ color: '#fff', textAlign: 'center' }} fontFamily='Inter' fontSize={16} fontWeight={500}>{lessons?.length} Lessons</Typography>
+                    <Typography sx={{ color: '#fff', textAlign: 'center' }} fontFamily='Inter' fontSize={16} fontWeight={500}>
+                        {course.duration.split(" ")[0] === '00' ? '0' : course.duration.split(" ")[0]} Hours
+                        <SvgIcon onClick={() => handleDeleteCourse()} sx={{ fontSize: 18, marginLeft: '2rem', cursor: 'pointer' }}>
+                            <Delete />
+                        </SvgIcon>
+                    </Typography>
                 </Stack>
             </AccordionSummary>
             <AccordionDetails sx={{ background: '#F8F8F8', paddingY: 0, paddingX: 0 }}>
@@ -366,6 +416,9 @@ function ComponentCard({index, course}: ComponentCard)
             </AccordionDetails>
         </Accordion>
         {!expand && <div ref={testRef} style={{ marginTop: 'auto', height: '1px' }}></div>}
+        <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+            <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+        </Dialog>
         </>
 )
 }

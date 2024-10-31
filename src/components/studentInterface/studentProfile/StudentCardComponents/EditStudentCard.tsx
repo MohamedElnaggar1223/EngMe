@@ -51,12 +51,19 @@ setEdit }: StudentCardEditProps)
         }
     }
 
-    const { data: citiesData, isSuccess: CitySuccess } = useQuery({
+    const { data: citiesData, isSuccess: CitySuccess, refetch, isLoading, isError } = useQuery({
         queryFn: () => getCitiesOfCountry(country),
         queryKey: ['cities'],
         refetchOnMount: false,
         enabled: !!countriesData
     })
+
+    useEffect(() => {
+        refetch()
+    }, [country, refetch])
+
+    console.log(isError)
+    console.log(isLoading)
 
     const handleImageChange = (file: File) => {
         const reader = (readFile: File) =>
@@ -87,7 +94,7 @@ setEdit }: StudentCardEditProps)
         onMutate: () => {
             setEdit(false)
         },
-        mutationFn: () => setStudentData(userData.id, { name, image })
+        mutationFn: () => setStudentData(userData.id, { name, image, city, country })
     })
 
     return (
@@ -234,10 +241,11 @@ setEdit }: StudentCardEditProps)
                             }}
                             IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', position: 'absolute', left: '80%' }} />}                            variant='standard'
                             disableUnderline
+                            disabled={isLoading}
                             //@ts-expect-error ddd
                             onChange={(e) => setCity(e.target.value)}
                         >
-                            { cities.map(city => <MenuItem value={city} key={city}>{city}</MenuItem>) }
+                            { cities.map((city, index) => <MenuItem value={city} key={index}>{city}</MenuItem>) }
                         </Select>
                         <Select
                             defaultValue={country}
@@ -258,8 +266,10 @@ setEdit }: StudentCardEditProps)
                             }}
                             IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(34,110,159, 0.2)', paddingLeft: 1, height: '100%', position: 'absolute', left: '80%' }} />}                            variant='standard'
                             disableUnderline
-                            //@ts-expect-error ddd
-                            onChange={(e) => setCountry(e.target.value)}
+                            onChange={(e) => {
+                                //@ts-expect-error ddd
+                                setCountry(e.target.value)
+                            }}
                         >
                             { countries.map(country => <MenuItem value={country} key={country}>{country}</MenuItem>) }
                         </Select>

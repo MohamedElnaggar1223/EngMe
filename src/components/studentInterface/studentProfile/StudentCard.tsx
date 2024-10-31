@@ -11,10 +11,12 @@ export default function StudentCard()
 
     const [name, setName] = useState(userData?.name)
     const [major, setMajor] = useState(userData?.occupation ?? 'Software Engineer')
-    const [city, setCity] = useState('Cairo')
-    const [country, setCountry] = useState('Egypt')
+    const [city, setCity] = useState(userData?.city ?? 'Cairo')
+    const [country, setCountry] = useState(userData?.country ?? 'Egypt')
     const [image, setImage] = useState(userData?.image)
     const [edit, setEdit] = useState(false)
+
+    console.log(userData)
 
     useLayoutEffect(() => {
         setName(userData?.name)

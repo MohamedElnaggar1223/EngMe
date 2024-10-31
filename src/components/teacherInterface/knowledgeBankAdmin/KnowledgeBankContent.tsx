@@ -83,12 +83,12 @@ export default function KnowledgeBankContent({ id }: KnowledgeBankContent)
                 position='relative'
                 width='auto'
                 px={1}
-                py={6}
+                py={2}
                 bgcolor='#FEF4EB'
                 borderRadius='15px'
                 alignItems='center'
                 justifyContent='center'
-                gap={5}
+                gap={1}
                 pb={2}
                 height='180px'
                 key={kbContent.id}
