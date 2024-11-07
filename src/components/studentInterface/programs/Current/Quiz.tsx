@@ -12,9 +12,9 @@ import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import ExamQuestionSelects from "./ExamQuestionSelects";
 import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
 import ExamFiveQuestionThreeOptions from "./ExamFiveQuestionThreeOptions";
+import { setExamSessionTime } from "../../../helpers/setExamSessionTime";
 
-export default function Quiz() 
-{
+export default function Quiz() {
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
 
@@ -34,7 +34,7 @@ export default function Quiz()
         const quizRef = doc(db, 'quizzes', id)
         const quizDoc = await getDoc(quizRef)
 
-        const quizData = {...quizDoc.data(), id: quizDoc.id}
+        const quizData = { ...quizDoc.data(), id: quizDoc.id }
 
         return quizData
     }
@@ -44,31 +44,31 @@ export default function Quiz()
         queryFn: () => getQuiz(id ?? '')
     })
     //@ts-expect-error errrrr
-    const displayedQuestions = quiz?.questions?.map((question, index) => 
+    const displayedQuestions = quiz?.questions?.map((question, index) =>
         question.type === 'options' ?
-        question.correctOption.length > 1 ?
-        //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-        question.type === 'fiveOptions' ?
-        question.correctOption.length > 2 ?
-        //@ts-expect-error errrrr
-        <ExamFiveQuestionThreeOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-        question.correctOption.length > 1 ?
-        //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionSelects quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} />
+            question.correctOption.length > 1 ?
+                //@ts-expect-error errrrr
+                <ExamQuestionTwoOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+                //@ts-expect-error errrrr
+                <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+            question.type === 'fiveOptions' ?
+                question.correctOption.length > 2 ?
+                    //@ts-expect-error errrrr
+                    <ExamFiveQuestionThreeOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+                    question.correctOption.length > 1 ?
+                        //@ts-expect-error errrrr
+                        <ExamQuestionTwoOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+                        //@ts-expect-error errrrr
+                        <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+                //@ts-expect-error errrrr
+                <ExamQuestionSelects quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} />
     )
 
     const handleSetExamSessionTime = async () => {
         //@ts-expect-error course
         const courseDoc = doc(db, 'courses', quiz?.courseId)
         const courseData = await getDoc(courseDoc)
-        //@ts-expect-error session
+        //@ts-expect-error course
         await setExamSessionTime(examSession[0]?.id ?? '', userData.id, `/programs/current/${courseData.data()?.programId}`)
         //await queryClient.invalidateQueries({ queryKey: ['examSession'] })
     }
@@ -76,11 +76,11 @@ export default function Quiz()
     const { mutate: mutateSession } = useMutation({
         onMutate: () => {
             const previousData = queryClient.getQueryData(['examSession'])
-            
+
             queryClient.setQueryData(['examSession'], () => {
                 return []
             })
-            
+
             return () => queryClient.setQueryData(['examSession'], previousData)
         },
         mutationFn: () => handleSetExamSessionTime()
@@ -93,15 +93,12 @@ export default function Quiz()
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if(startTime && endTime)
-            {
+            if (startTime && endTime) {
                 const difference = endTime - Timestamp.now().toMillis()
-                if(difference > 0)
-                {
+                if (difference > 0) {
                     setTimeDifference(difference)
                 }
-                else
-                {
+                else {
                     mutateSession()
                     navigate('/')
                 }
@@ -112,13 +109,13 @@ export default function Quiz()
         //eslint-disable-next-line
     }, [startTime, endTime, timeDifference])
 
-    if(isLoading) return <></>
+    if (isLoading) return <></>
 
     return (
         <Box
             width='100%'
         >
-            
+
             <Stack
                 justifyContent='space-between'
                 direction='row'

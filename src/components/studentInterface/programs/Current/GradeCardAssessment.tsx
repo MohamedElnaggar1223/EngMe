@@ -2,9 +2,12 @@
 import { Accordion, AccordionSummary, Stack, Typography, AccordionDetails } from "@mui/material";
 import { Suspense, lazy } from "react";
 import AssessmentProps from "../../../../interfaces/AssessmentProps";
+// import { collection, doc, getDoc } from "firebase/firestore";
+// import { db } from "../../../../firebase/firebaseConfig";
+// import { useQuery } from "@tanstack/react-query";
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
-interface GradeCard{
+interface GradeCard {
     assessmentsArray?: AssessmentProps[],
     index: number
     setQuestions: React.Dispatch<React.SetStateAction<string>>,
@@ -12,19 +15,34 @@ interface GradeCard{
     questions: string
 }
 
-export default function GradeCardAssessment({assessmentsArray, index, questions, setQuestions, setSelectedAssessment}: GradeCard) 
-{
-const displayedAssessments = assessmentsArray?.map((assessment, index) => (
-    <Stack
-        direction='row'
-        justifyContent='space-between'
-        flex={1}
-        height='50px'
-        sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingY: 0 }}
-        alignItems='center'
-        bgcolor='rgba(0, 0, 0, 0.05)'
-    >
-        {/* <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
+export default function GradeCardAssessment({ assessmentsArray, index, questions, setQuestions, setSelectedAssessment }: GradeCard) {
+    // const { data: assessmentsData, isLoading } = useQuery({
+    //     queryKey: ['assessmentsStudentCards', index],
+    //     queryFn: async () => {
+    //         if (!assessmentsArray) return []
+    //         return await Promise.all(assessmentsArray?.map(async (assessment) => {
+    //             const assessmentsCollection = collection(db, 'assessments')
+    //             const assessmentDoc = doc(assessmentsCollection, assessment.assessmentId)
+    //             const assessmentData = await getDoc(assessmentDoc)
+    //             return { ...assessmentData.data(), id: assessmentData.id }
+    //         }))
+    //     },
+    //     enabled: !!assessmentsArray
+    // })
+
+    // if (isLoading) return <></>
+
+    const displayedAssessments = assessmentsArray?.map((assessment, index) => (
+        <Stack
+            direction='row'
+            justifyContent='space-between'
+            flex={1}
+            height='50px'
+            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)', paddingY: 0 }}
+            alignItems='center'
+            bgcolor='rgba(0, 0, 0, 0.05)'
+        >
+            {/* <Typography sx={{ display: 'flex', alignItems: 'center', gap: 3, marginLeft: -5 }} fontFamily='Inter' fontSize={14} fontWeight={500}>
             <SvgIcon>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M20.2759 0H16.1379H7.86207H3.72414C1.67172 0 0 1.67172 0 3.72414V6.62069V17.3793V20.2759C0 22.3283 1.67172 24 3.72414 24H7.86207H16.1379H20.2759C22.3283 24 24 22.3283 24 20.2759V17.3793V6.62069V3.72414C24 1.67172 22.3283 0 20.2759 0ZM8.27586 0.827586H15.7241V6.2069H8.27586V0.827586ZM0.827586 3.72414C0.827586 2.1269 2.1269 0.827586 3.72414 0.827586H7.44828V6.2069H0.827586V3.72414ZM7.44828 23.1724H3.72414C2.1269 23.1724 0.827586 21.8731 0.827586 20.2759V17.7931H7.44828V23.1724ZM15.7241 23.1724H8.27586V17.7931H15.7241V23.1724ZM23.1724 20.2759C23.1724 21.8731 21.8731 23.1724 20.2759 23.1724H16.5517V17.7931H23.1724V20.2759ZM23.1724 16.9655H0.827586V7.03448H23.1724V16.9655ZM23.1724 6.2069H16.5517V0.827586H20.2759C21.8731 0.827586 23.1724 2.1269 23.1724 3.72414V6.2069Z" fill="#226E9F"/>
@@ -33,93 +51,90 @@ const displayedAssessments = assessmentsArray?.map((assessment, index) => (
             </SvgIcon>
             Introductory Lesson
         </Typography> */}
-        <Stack
-            bgcolor='#FEF4EB'
-            height='100%'
-            textAlign='center'
-            alignItems='center'
-            justifyContent='center'
-            pr={4}
-            flex={1}
-        >
-            <Typography fontFamily='Inter' fontSize={16} fontWeight={500}>{index === 0 ? 'First Take' : 'Retake'}</Typography>
-        </Stack>
-        <Stack
-            bgcolor='rgba(255, 255, 255, 0.80)'
-            height='100%'
-            textAlign='center'
-            alignItems='center'
-            direction='row'
-            justifyContent='space-between'
-            flex={1}
-            px={1.5}
-            gap={1}
-            sx={{
-                borderRight: '1px solid rgba(0, 0, 0, 0.1)'
-            }}
-            maxWidth='55%'
-            minWidth='55%'
-        >
-            {/*//@ts-expect-error assessment */}
-            <Typography fontFamily='Inter' fontSize={16} fontWeight={500}>{assessment?.grade}%</Typography>
-            <button 
-                onClick={() => {
-                    if(questions)
-                    {
-                        setSelectedAssessment('')
-                        setQuestions('')
-                    }
-                    else
-                    {
-                        setQuestions(assessment.id)
-                        //@ts-expect-error assessment
-                        setSelectedAssessment(assessment.assessmentId)
-                    }
-                }} 
-                className='px-2 ml-auto text-nowrap w-fit py-1.5 rounded-lg h-fit font-semibold max-h-8 text-xs outline-none text-black font-[Inter] bg-[#226E9F]'
+            <Stack
+                bgcolor='#FEF4EB'
+                height='100%'
+                textAlign='center'
+                alignItems='center'
+                justifyContent='center'
+                pr={4}
+                flex={1}
             >
-                {questions === assessment.id ? "Hide Report" : "Show Report"}
-            </button>
-        </Stack>
-    </Stack>
-))
-return (
-    <Suspense>
-    <Accordion sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon sx={{ paddingRight: 2, paddingLeft: 6, color: '#fff' }} />}
+                <Typography fontFamily='Inter' fontSize={16} fontWeight={500}>{index === 0 ? 'First Take' : 'Retake'}</Typography>
+            </Stack>
+            <Stack
+                bgcolor='rgba(255, 255, 255, 0.80)'
+                height='100%'
+                textAlign='center'
+                alignItems='center'
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                px={1.5}
+                gap={1}
                 sx={{
-                    padding: 0,
-                    margin: '0 !important',
-                    boxShadow: 'none',
-                    background: '#FF9F06',
+                    borderRight: '1px solid rgba(0, 0, 0, 0.1)'
                 }}
+                maxWidth='55%'
+                minWidth='55%'
             >
-                <Stack
-                    justifyContent='space-between'
-                    // px={4}
-                    bgcolor='#FF9F06'
-                    direction='row'
-                    flex={1}
-                    height='100%'
-                    pl={10}
-                    minWidth= '300px'
+                {/*//@ts-expect-error assessment */}
+                <Typography fontFamily='Inter' fontSize={16} fontWeight={500}>{assessment?.grade}%</Typography>
+                <button
+                    onClick={() => {
+                        if (questions) {
+                            setSelectedAssessment('')
+                            setQuestions('')
+                        }
+                        else {
+                            setQuestions(assessment.id)
+                            setSelectedAssessment(assessment.assessmentId)
+                        }
+                    }}
+                    className='px-2 ml-auto text-nowrap w-fit py-1.5 rounded-lg h-fit font-semibold max-h-8 text-xs outline-none text-black font-[Inter] bg-[#226E9F]'
+                >
+                    {questions === assessment.id ? "Hide Report" : "Show Report"}
+                </button>
+            </Stack>
+        </Stack>
+    ))
+    return (
+        <Suspense>
+            <Accordion sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon sx={{ paddingRight: 2, paddingLeft: 6, color: '#fff' }} />}
+                    sx={{
+                        padding: 0,
+                        margin: '0 !important',
+                        boxShadow: 'none',
+                        background: '#FF9F06',
+                    }}
                 >
                     <Stack
                         justifyContent='space-between'
+                        // px={4}
+                        bgcolor='#FF9F06'
                         direction='row'
-                        gap={8}
-                        // px={8}
+                        flex={1}
+                        height='100%'
+                        pl={10}
+                        minWidth='300px'
                     >
-                        <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Assessment {index + 1}</Typography>
+                        <Stack
+                            justifyContent='space-between'
+                            direction='row'
+                            gap={8}
+                        // px={8}
+                        >
+                            <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Assessment {index + 1}</Typography>
+                        </Stack>
+                        <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Grade</Typography>
                     </Stack>
-                    <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Grade</Typography>
-                </Stack>
-            </AccordionSummary>
-            <AccordionDetails sx={{ background: '#F8F8F8', paddingY: 0, paddingX: 0 }}>
-                {displayedAssessments}
-            </AccordionDetails>
-        </Accordion>
-    </Suspense>
-)
+                </AccordionSummary>
+                <AccordionDetails sx={{ background: '#F8F8F8', paddingY: 0, paddingX: 0 }}>
+                    {displayedAssessments}
+                </AccordionDetails>
+            </Accordion>
+        </Suspense>
+    )
 }

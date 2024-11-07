@@ -1,9 +1,12 @@
 import { Accordion, AccordionSummary, Stack, Typography, AccordionDetails } from "@mui/material";
 import { Suspense, lazy } from "react";
 import QuizProps from "../../../../interfaces/QuizProps";
+import { useQuery } from "@tanstack/react-query";
+import { collection, doc, getDoc } from "firebase/firestore";
+import { db } from "../../../../firebase/firebaseConfig";
 const ExpandMoreIcon = lazy(() => import('@mui/icons-material/ExpandMore'));
 
-interface GradeCard{
+interface GradeCard {
     quizzesArray?: QuizProps[],
     index: number,
     setQuestions: React.Dispatch<React.SetStateAction<string>>,
@@ -11,9 +14,27 @@ interface GradeCard{
     questions: string
 }
 
-export default function GradeCardQuiz({quizzesArray, index, questions, setQuestions, setSelectedQuiz}: GradeCard) 
-{
+export default function GradeCardQuiz({ quizzesArray, index, questions, setQuestions, setSelectedQuiz }: GradeCard) {
     console.log(quizzesArray)
+
+    const { data: quizzesData, isLoading } = useQuery({
+        queryKey: ['quizzesStudentCards', index],
+        queryFn: async () => {
+            if (!quizzesArray) return []
+            return await Promise.all(quizzesArray?.map(async (quiz) => {
+                const quizzesCollection = collection(db, 'quizzes')
+                const quizDoc = doc(quizzesCollection, quiz.quizId)
+                const quizData = await getDoc(quizDoc)
+                return { ...quizData.data(), id: quizData.id }
+            }))
+        },
+        enabled: !!quizzesArray
+    })
+
+    if (isLoading) return <></>
+
+    // console.log("quizzesArray: ", quizzesArray[0])
+    // console.log("quizzesStudentCards: ", quizzesData[0])
 
     const displayedQuizzes = quizzesArray?.map((quiz, index) => (
         <Stack
@@ -59,20 +80,19 @@ export default function GradeCardQuiz({quizzesArray, index, questions, setQuesti
                     borderRight: '1px solid rgba(0, 0, 0, 0.1)'
                 }}
             >
-                <Typography fontFamily='Inter' fontSize={16} fontWeight={500}>{quiz.grade}/{quiz.answers.length}</Typography>
-                <button 
+                {/*//@ts-expect-error value */}
+                <Typography fontFamily='Inter' fontSize={16} fontWeight={500}>{quiz?.grade}/{quizzesData?.find(q => q?.id === quiz.quizId)?.questions?.length}</Typography>
+                <button
                     onClick={() => {
-                        if(questions)
-                        {
+                        if (questions) {
                             setSelectedQuiz('')
                             setQuestions('')
                         }
-                        else
-                        {
+                        else {
                             setQuestions(quiz.id)
                             setSelectedQuiz(quiz.quizId)
                         }
-                    }} 
+                    }}
                     className='px-2 w-fit py-1.5 rounded-lg h-fit font-semibold max-h-8 text-xs outline-none text-black font-[Inter] bg-[#226E9F]'
                 >
                     {questions === quiz.id ? "Hide Report" : "Show Report"}
@@ -83,7 +103,7 @@ export default function GradeCardQuiz({quizzesArray, index, questions, setQuesti
 
     return (
         <Suspense>
-        <Accordion sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
+            <Accordion sx={{ '.css-o4b71y-MuiAccordionSummary-content': { margin: 0, boxShadow: 'none' }, boxShadow: 'none', '.css-1g92jzo-MuiPaper-root-MuiAccordion-root': { boxShadow: 'none' } }}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon sx={{ paddingRight: 2, paddingLeft: 6, color: '#fff' }} />}
                     sx={{
@@ -101,13 +121,13 @@ export default function GradeCardQuiz({quizzesArray, index, questions, setQuesti
                         flex={1}
                         height='100%'
                         pl={10}
-                        minWidth= '300px'
+                        minWidth='300px'
                     >
                         <Stack
                             justifyContent='space-between'
                             direction='row'
                             gap={8}
-                            // px={8}
+                        // px={8}
                         >
                             <Typography sx={{ color: '#fff' }} fontFamily='Inter' fontSize={16} fontWeight={500}>Quiz {index + 1}</Typography>
                         </Stack>
