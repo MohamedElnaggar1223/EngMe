@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography"
 import { useContext, useState } from "react"
 import { ExamBankContext } from "./ExamBank";
 
-interface Question{
+interface Question {
     firstOptions: string[],
     secondOptions: string[],
     thirdOptions: string[],
@@ -24,7 +24,7 @@ interface Question{
     fourthCorrect: string,
 }
 
-interface ExamQuestionProps{
+interface ExamQuestionProps {
     question: Question,
     index: number,
     total: number,
@@ -32,10 +32,10 @@ interface ExamQuestionProps{
     quizId?: string,
     finalExamId?: string,
     setNumber: React.Dispatch<React.SetStateAction<number>>
+    examEnded: boolean
 }
 
-export default function ExamQuestionSelects({ question, index, total, setNumber }: ExamQuestionProps)
-{ 
+export default function ExamQuestionSelects({ question, index, total, setNumber, examEnded }: ExamQuestionProps) {
     //@ts-expect-error context
     const { setExamClicked } = useContext(ExamBankContext)
 
@@ -86,7 +86,7 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                 <Typography fontFamily='Inter'>Q{index + 1}: What color is an {question.firstLabel}</Typography>
                 <Typography fontFamily='Inter' sx={{ justifySelf: 'flex-end' }}>{index + 1}/{total}</Typography>
             </Stack>
-            <Stack 
+            <Stack
                 flex={1}
                 gap={4}
             >
@@ -105,7 +105,7 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                             sx={{
                                 width: '380px !important',
                                 height: '45px !important',
-                                boxShadow: check ? question.firstCorrect === firstSelectOption.toString() ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' :  '0px 0px 0px 1px rgba(0,0,0,1)',
+                                boxShadow: (check || examEnded) ? question.firstCorrect === firstSelectOption.toString() ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' : '0px 0px 0px 1px rgba(0,0,0,1)',
                                 borderRadius: '5px !important',
                                 outline: 'none !important',
                                 boxSizing: 'border-box !important',
@@ -117,7 +117,7 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                                     boxShadow: '0px 0px 0px 1px rgba(0,0,0,0.39)',
                                     background: '#fff',
                                 }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'left', textIndent: '5px'
-                                
+
                             }}
                             id='firstSelect'
                             IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '80%' }} />}
@@ -141,7 +141,7 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                             sx={{
                                 width: '380px !important',
                                 height: '45px !important',
-                                boxShadow: check ? question.secondCorrect === secondSelectOption.toString() ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' :  '0px 0px 0px 1px rgba(0,0,0,1)',
+                                boxShadow: (check || examEnded) ? question.secondCorrect === secondSelectOption.toString() ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' : '0px 0px 0px 1px rgba(0,0,0,1)',
                                 borderRadius: '5px !important',
                                 outline: 'none !important',
                                 boxSizing: 'border-box !important',
@@ -152,7 +152,7 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                                     boxShadow: '0px 0px 0px 1px rgba(0,0,0,0.39)',
                                     background: '#fff',
                                 }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'left', textIndent: '5px'
-                                
+
                             }}
                             id='secondSelect'
                             IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '80%' }} />}
@@ -181,7 +181,7 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                             sx={{
                                 width: '380px !important',
                                 height: '45px !important',
-                                boxShadow: check ? question.thirdCorrect === thirdSelectOption.toString() ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' :  '0px 0px 0px 1px rgba(0,0,0,1)',
+                                boxShadow: (check || examEnded) ? question.thirdCorrect === thirdSelectOption.toString() ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' : '0px 0px 0px 1px rgba(0,0,0,1)',
                                 borderRadius: '5px !important',
                                 outline: 'none !important',
                                 boxSizing: 'border-box !important',
@@ -192,7 +192,7 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                                     boxShadow: '0px 0px 0px 1px rgba(0,0,0,0.39)',
                                     background: '#fff',
                                 }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'left', textIndent: '5px'
-                                
+
                             }}
                             id='thirdSelect'
                             IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '80%' }} />}
@@ -216,7 +216,7 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                             sx={{
                                 width: '380px !important',
                                 height: '45px !important',
-                                boxShadow: check ? question.fourthCorrect === fourthSelectOption.toString() ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' :  '0px 0px 0px 1px rgba(0,0,0,1)',
+                                boxShadow: (check || examEnded) ? question.fourthCorrect === fourthSelectOption.toString() ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' : '0px 0px 0px 1px rgba(0,0,0,1)',
                                 borderRadius: '5px !important',
                                 outline: 'none !important',
                                 boxSizing: 'border-box !important',
@@ -227,7 +227,7 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                                     boxShadow: '0px 0px 0px 1px rgba(0,0,0,0.39)',
                                     background: '#fff',
                                 }, fontSize: 14, fontWeight: 500, fontFamily: 'Inter', color: '#000', textAlign: 'left', textIndent: '5px'
-                                
+
                             }}
                             id='fourthSelect'
                             IconComponent={() => <ExpandMore sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)', paddingLeft: 3, height: '100%', zIndex: 1, position: 'absolute', left: '80%' }} />}
@@ -272,62 +272,62 @@ export default function ExamQuestionSelects({ question, index, total, setNumber 
                 </Button>
                 {
                     index + 1 === total ?
-                    <Button
-                        sx={{
-                            width: '180px',
-                            height: '54px',
-                            background: '#9D9D9D',
-                            color: '#fff',
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            textTransform: 'none',
-                            fontWeight: 500,
-                            border: '0px',
-                            borderRadius: '15px',
-                            '&:hover': {
+                        <Button
+                            sx={{
+                                width: '180px',
+                                height: '54px',
                                 background: '#9D9D9D',
-                                opacity: 1
-                            },
-                            marginBottom: 3
-                        }}
-                        onClick={() => setExamClicked(null)}
-                    >
-                        Submit
-                    </Button>
-                    :
-                    <Button
-                        sx={{
-                            width: '180px',
-                            height: '54px',
-                            background: '#9D9D9D',
-                            color: '#fff',
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            textTransform: 'none',
-                            fontWeight: 500,
-                            border: '0px',
-                            borderRadius: '15px',
-                            '&:hover': {
+                                color: '#fff',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 500,
+                                border: '0px',
+                                borderRadius: '15px',
+                                '&:hover': {
+                                    background: '#9D9D9D',
+                                    opacity: 1
+                                },
+                                marginBottom: 3
+                            }}
+                            onClick={() => setExamClicked(null)}
+                        >
+                            Submit
+                        </Button>
+                        :
+                        <Button
+                            sx={{
+                                width: '180px',
+                                height: '54px',
                                 background: '#9D9D9D',
-                                opacity: 1
-                            },
-                            marginBottom: 3
-                        }}
-                        onClick={() => {
-                            setFirstSelectOption('')
-                            setSecondSelectOption('')
-                            setThirdSelectOption('')
-                            setFourthSelectOption('')
-                            setCheck(false)
-                            setNumber(index + 1)
-                        }}
-                    >
-                        Next
-                    </Button>
+                                color: '#fff',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 500,
+                                border: '0px',
+                                borderRadius: '15px',
+                                '&:hover': {
+                                    background: '#9D9D9D',
+                                    opacity: 1
+                                },
+                                marginBottom: 3
+                            }}
+                            onClick={() => {
+                                setFirstSelectOption('')
+                                setSecondSelectOption('')
+                                setThirdSelectOption('')
+                                setFourthSelectOption('')
+                                setCheck(false)
+                                setNumber(index + 1)
+                            }}
+                        >
+                            Next
+                        </Button>
                 }
             </Stack>
             {
-                check  && (question.firstCorrect !== firstSelectOption.toString() || question.secondCorrect !== secondSelectOption.toString() || question.thirdCorrect !== thirdSelectOption.toString() || question.fourthCorrect !== fourthSelectOption.toString()) &&
+                (check || examEnded) && (question.firstCorrect !== firstSelectOption.toString() || question.secondCorrect !== secondSelectOption.toString() || question.thirdCorrect !== thirdSelectOption.toString() || question.fourthCorrect !== fourthSelectOption.toString()) &&
                 <Stack
                     bgcolor='#FEF4EB'
                     borderRadius='20px'

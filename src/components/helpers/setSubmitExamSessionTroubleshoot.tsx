@@ -122,6 +122,13 @@ export const setSubmitExamSessionTroubleshoot = async (studentId: string, troubl
       }
     })
     const answers = orderedTroubleshootsArray[0]?.data()?.answers
+
+    if (answers.length < correctOptions.length) {
+      const remainingAnswers = correctOptions.length - answers.length
+      const newAnswers = Array(remainingAnswers).fill(['-9999'])
+      answers.push(...newAnswers)
+    }
+
     //@ts-expect-error anyerror
     const results = correctOptions.map((option, index) => {
       if (typeof option === 'object' && !Array.isArray(option)) {

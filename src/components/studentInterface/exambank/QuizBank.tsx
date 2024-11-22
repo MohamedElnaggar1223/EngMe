@@ -1,38 +1,53 @@
-import { Stack } from '@mui/material'
-import { useState } from 'react'
+import { Box, Stack, Typography } from '@mui/material'
+import { useEffect, useMemo, useState } from 'react'
 import ExamQuestionOptions from './ExamQuestionOptions'
 import ExamQuestionSelects from './ExamQuestionSelects'
 import ExamQuestionTwoOptions from './ExamQuestionTwoOptions'
 import ExamFiveQuestionThreeOptions from './ExamFiveQuestionThreeOptions'
+import { Timestamp } from 'firebase/firestore'
 
 interface Props {
     id: string,
     questions: [],
     majorId: string,
     title: string
+    duration?: string
 }
 
-export default function QuizBank(ebContent: Props) 
-{
+export default function QuizBank(ebContent: Props) {
     const [number, setNumber] = useState(0)
+    const [examEnded, setExamEnded] = useState(false)
 
-    const displayedQuestions = ebContent?.questions?.map((question, index) => 
+    const duration = ebContent?.duration?.split(' ')[0] ?? '0'
+    const durationInMinutes = parseInt(duration ?? 0)
+    const [timeDifference, setTimeDifference] = useState<number>()
+
+    const startTime = useMemo(() => new Date(), [])
+    const endTime = useMemo(() => {
+        const end = new Date()
+        end.setMinutes(end.getMinutes() + durationInMinutes)
+        return end
+    }, [durationInMinutes])
+
+    console.log(endTime)
+
+    const displayedQuestions = ebContent?.questions?.map((question, index) =>
         //@ts-expect-error errrrr
         question.type === 'options' ?
-        //@ts-expect-error errrrr
-        question.correctOption.length > 1 ?
-        <ExamQuestionTwoOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-        <ExamQuestionOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        question.type === 'fiveOptions' ?
-        //@ts-expect-error errrrr
-        question.correctOption.length > 2 ?
-        <ExamFiveQuestionThreeOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        question.correctOption.length > 1 ?
-        <ExamQuestionTwoOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-        <ExamQuestionOptions setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-        <ExamQuestionSelects setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} />
+            //@ts-expect-error errrrr
+            question.correctOption.length > 1 ?
+                <ExamQuestionTwoOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+                <ExamQuestionOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+            //@ts-expect-error errrrr
+            question.type === 'fiveOptions' ?
+                //@ts-expect-error errrrr
+                question.correctOption.length > 2 ?
+                    <ExamFiveQuestionThreeOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+                    //@ts-expect-error errrrr
+                    question.correctOption.length > 1 ?
+                        <ExamQuestionTwoOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+                        <ExamQuestionOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+                <ExamQuestionSelects examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} />
     )
 
     // function handleNext()
@@ -40,6 +55,23 @@ export default function QuizBank(ebContent: Props)
     //     setSelectedOption(0)
     //     setNumber(prev => prev + 1)
     // }
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (startTime && endTime) {
+                const difference = endTime.getTime() - Timestamp.now().toMillis()
+                if (difference > 0) {
+                    setTimeDifference(difference)
+                }
+                else {
+                    setExamEnded(true)
+                }
+            }
+        }, 1000)
+
+        return () => clearInterval(interval)
+        //eslint-disable-next-line
+    }, [startTime, endTime, timeDifference])
+
     return (
         <Stack
             flex={1}
@@ -47,6 +79,23 @@ export default function QuizBank(ebContent: Props)
             mb={8}
             alignItems='center'
         >
+            <Box
+                boxShadow='0px 4px 4px 0px rgba(0, 0, 0, 0.25)'
+                textAlign='center'
+                borderRadius='15px'
+                mr={34}
+                mt={4}
+                display='flex'
+                justifyContent='center'
+                alignItems='center'
+                height='60px'
+                width='180px'
+                ml='auto'
+            >
+                <Typography fontSize={16} fontFamily='Inter' fontWeight={500}>
+                    {timeDifference ? Math.floor(timeDifference / (1000 * 60 * 60)).toString().length > 1 ? Math.floor(timeDifference / (1000 * 60 * 60)) : `0${timeDifference && Math.floor(timeDifference / (1000 * 60 * 60))}` : '00'}:{timeDifference ? Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)).toString().length > 1 ? Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60)) : `0${timeDifference && Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))}` : '00'}:{timeDifference ? Math.floor((timeDifference % (1000 * 60)) / 1000).toString().length > 1 ? Math.floor((timeDifference % (1000 * 60)) / 1000) : `0${timeDifference && Math.floor((timeDifference % (1000 * 60)) / 1000)}` : '00'}
+                </Typography>
+            </Box>
             <Stack
                 width='fit-content'
                 boxShadow='0px 4px 4px 0px rgba(0, 0, 0, 0.25)'

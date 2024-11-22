@@ -15,9 +15,9 @@ import { setExamSessionTime } from "../../../helpers/setExamSessionTime";
 import ExamQuestionSelects from "./ExamQuestionSelects";
 import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
 import ExamFiveQuestionThreeOptions from "./ExamFiveQuestionThreeOptions";
+import { setSubmitExamSessionAssessment } from "../../../helpers/setSubmitExamSessionAssessment";
 
-export default function Assessment() 
-{
+export default function Assessment() {
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
     const queryClient = useQueryClient()
@@ -31,20 +31,20 @@ export default function Assessment()
         queryFn: () => getExamSession(userData.id)
     })
 
-    
+
     const { mutate: mutateSession } = useMutation({
         onMutate: () => {
             const previousData = queryClient.getQueryData(['examSession'])
-            
+
             queryClient.setQueryData(['examSession'], () => {
                 return []
             })
-            
+
             return () => queryClient.setQueryData(['examSession'], previousData)
         },
         mutationFn: () => handleSetExamSessionTime()
     })
-    
+
     //@ts-expect-error test
     const startTime = (examSession[0]?.startTime)?.toDate()
     //@ts-expect-error test
@@ -52,19 +52,19 @@ export default function Assessment()
 
     // const [index, setIndex] = useState(Number(localStorage.getItem('index')) || 0)
     // const [questions, setQuestions] = useState<number[]>([])
-    
-    
+
+
     const { id } = useParams()
-    
+
     const getAssessment = async (id: string) => {
         const assessmentRef = doc(db, 'assessments', id)
         const assessmentDoc = await getDoc(assessmentRef)
-        
-        const assessmentData = {...assessmentDoc.data(), id: assessmentDoc.id}
+
+        const assessmentData = { ...assessmentDoc.data(), id: assessmentDoc.id }
 
         return assessmentData
     }
-    
+
     const { data: assessment } = useQuery({
         queryKey: ['examSessionAssessment'],
         queryFn: () => getAssessment(id ?? '')
@@ -78,20 +78,17 @@ export default function Assessment()
         await setExamSessionTime(examSession[0]?.id ?? '', userData.id, `/programs/current/${courseData.data()?.programId}`)
         //await queryClient.invalidateQueries({ queryKey: ['examSession'] })
     }
-    
+
     // console.log(assessment)
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if(startTime && endTime)
-            {
+            if (startTime && endTime) {
                 const difference = endTime - Timestamp.now().toMillis()
-                if(difference > 0)
-                {
+                if (difference > 0) {
                     setTimeDifference(difference)
                 }
-                else
-                {
+                else {
                     mutateSession()
                     navigate('/')
                 }
@@ -115,30 +112,39 @@ export default function Assessment()
     // }, [index])
 
     //@ts-expect-error errrrr
-    const displayedQuestions = assessment?.questions?.map((question, index) => 
+    const displayedQuestions = assessment?.questions?.map((question, index) =>
         question.type === 'options' ?
-        question.correctOption.length > 1 ?
-        //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-        question.type === 'fiveOptions' ?
-        question.correctOption.length > 2 ?
-        //@ts-expect-error errrrr
-        <ExamFiveQuestionThreeOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-        question.correctOption.length > 1 ?
-        //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionSelects assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />
+            question.correctOption.length > 1 ?
+                //@ts-expect-error errrrr
+                <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+                //@ts-expect-error errrrr
+                <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+            question.type === 'fiveOptions' ?
+                question.correctOption.length > 2 ?
+                    //@ts-expect-error errrrr
+                    <ExamFiveQuestionThreeOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+                    question.correctOption.length > 1 ?
+                        //@ts-expect-error errrrr
+                        <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+                        //@ts-expect-error errrrr
+                        <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+                //@ts-expect-error errrrr
+                <ExamQuestionSelects assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />
     )
 
-    if(isLoading) return <></>
+    const handleExitExam = async () => {
+        if (assessment?.id) {
+            await setSubmitExamSessionAssessment(userData.id, assessment.id)
+        }
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
+        navigate('/')
+    }
+
+    if (isLoading) return <></>
     else return (
         <Box
             width='100%'
+            position='relative'
         >
             <Stack
                 justifyContent='space-between'
@@ -204,6 +210,11 @@ export default function Assessment()
                     displayedQuestions?.length && displayedQuestions[Number(examSession[0]?.lastQuestion)]
                 }
             </Box>
+            <div className='absolute flex flex-col gap-2 w-fit text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-10 left-5 z-50'>
+                <button className='bg-[#FF7E00] text-white px-4 py-2 rounded-md' onClick={() => handleExitExam()}>
+                    Exit Exam
+                </button>
+            </div>
         </Box>
     )
 }

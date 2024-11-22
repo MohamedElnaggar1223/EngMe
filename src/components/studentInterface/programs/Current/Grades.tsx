@@ -107,9 +107,9 @@ export default function Grades(program: ProgramProps) {
 	const organizedAssessments = studentAssessment ? Object.groupBy(studentAssessment, assessmentId) : {}
 
 	//@ts-expect-error quiz
-	const displayedQuizzes = Object.values(organizedQuizzes).map((quizzesArray, index) => <GradeCardQuiz index={index} questions={questions} setQuestions={setQuestions} setSelectedQuiz={setSelectedQuiz} quizzesArray={quizzesArray} />)
+	const displayedQuizzes = Object.values(organizedQuizzes).reverse().map((quizzesArray, index) => <GradeCardQuiz index={index} questions={questions} setQuestions={setQuestions} setSelectedQuiz={setSelectedQuiz} quizzesArray={quizzesArray} />)
 	//@ts-expect-error quiz
-	const displayedAssessments = Object.values(organizedAssessments).map((assessmentsArray, index) => <GradeCardAssessment index={index} questions={questions} setQuestions={setQuestions} setSelectedAssessment={setSelectedAssessment} assessmentsArray={assessmentsArray} />)
+	const displayedAssessments = Object.values(organizedAssessments).reverse().map((assessmentsArray, index) => <GradeCardAssessment index={index} questions={questions} setQuestions={setQuestions} setSelectedAssessment={setSelectedAssessment} assessmentsArray={assessmentsArray} />)
 
 	if (quizzesLoading || studentQuizzesLoading || assessmentsLoading || studentAssessmentsLoading) return <CircularProgress />
 	return (

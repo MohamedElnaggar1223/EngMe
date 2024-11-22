@@ -1,4 +1,4 @@
-import { doc, deleteDoc, updateDoc, arrayRemove } from "firebase/firestore"
+import { doc, deleteDoc, updateDoc, arrayRemove, getDoc } from "firebase/firestore"
 import { db } from "../../firebase/firebaseConfig"
 
 export const setDeleteLesson = async (lesson: unknown, course: unknown) => {
@@ -6,25 +6,17 @@ export const setDeleteLesson = async (lesson: unknown, course: unknown) => {
     const lessonDoc = doc(db, 'lessons', lesson.id)
     //@ts-expect-error lesson
     const courseDoc = doc(db, 'courses', course.id)
+    const courseData = await getDoc(courseDoc)
 
     //@ts-expect-error duration
-    if(lesson?.duration)
-    {
-        //@ts-expect-error duration
-        const courseDuration = course?.duration
-    
-        const totalCourseDuration = parseInt(courseDuration?.split(' ')[0]) * 3600 + parseInt(courseDuration?.split(' ')[2]) * 60 + parseInt(courseDuration?.split(' ')[4])
+    if (lesson?.duration) {
+        // Course duration is now stored in seconds directly
+        const currentTotalSeconds: number = courseData.data()?.duration || 0;
+        //@ts-expect-error duration - lesson duration is already in seconds
+        const lessonSeconds: number = lesson.duration;
+        const newTotalSeconds: number = currentTotalSeconds - lessonSeconds;
 
-        //@ts-expect-error duration
-        const newDuration = (totalCourseDuration - lesson?.duration).toString()
-        
-        const sec_num = parseInt(newDuration, 10)
-        const hours_duration = Math.floor(sec_num / 3600);
-        const minutes_duration = Math.floor((sec_num - (hours_duration * 3600)) / 60)
-        const seconds_duration = sec_num - (hours_duration * 3600) - (minutes_duration * 60);
-
-        const finalDuration = `${hours_duration} Hours ${minutes_duration} Minutes ${seconds_duration} Seconds`
-        await updateDoc(courseDoc, { duration: `${finalDuration}` })
+        await updateDoc(courseDoc, { duration: newTotalSeconds })
     }
 
     await deleteDoc(lessonDoc)

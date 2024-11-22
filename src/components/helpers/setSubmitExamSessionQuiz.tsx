@@ -129,6 +129,12 @@ export const setSubmitExamSessionQuiz = async (studentId: string, quizId: string
 
   const answers = orderedQuizzesArray[0]?.data()?.answers
 
+  if (answers.length < correctOptions.length) {
+    const remainingAnswers = correctOptions.length - answers.length
+    const newAnswers = Array(remainingAnswers).fill(['-9999'])
+    answers.push(...newAnswers)
+  }
+
   console.log(answers)
 
   //@ts-expect-error anyerror

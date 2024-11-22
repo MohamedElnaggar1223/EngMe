@@ -3,19 +3,22 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useContext } from "react";
 import ExamQuestionOptions from "./ExamQuestionOptions";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { doc, getDoc } from "firebase/firestore";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../../../firebase/firebaseConfig";
 import { getExamSession } from "../../../helpers/getExamSession";
 import { AuthContext } from "../../../authentication/auth/AuthProvider";
 import ExamQuestionSelects from "./ExamQuestionSelects";
 import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
 import ExamFiveQuestionThreeOptions from "./ExamFiveQuestionThreeOptions";
+import { setSubmitExamSessionTroubleshoot } from "../../../helpers/setSubmitExamSessionTroubleshoot";
 
 
-export default function Troubleshoot() 
-{
+export default function Troubleshoot() {
+    const queryClient = useQueryClient()
+    const navigate = useNavigate()
+
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
 
@@ -30,7 +33,7 @@ export default function Troubleshoot()
         const troubleshootRef = doc(db, 'troubleshoot', id)
         const troubleshootDoc = await getDoc(troubleshootRef)
 
-        const troubleshootData = {...troubleshootDoc.data(), id: troubleshootDoc.id}
+        const troubleshootData = { ...troubleshootDoc.data(), id: troubleshootDoc.id }
 
         return troubleshootData
     }
@@ -40,31 +43,40 @@ export default function Troubleshoot()
         queryFn: () => getTroubleshoot(id ?? '')
     })
     //@ts-expect-error errrrr
-    const displayedQuestions = troubleshoot?.questions?.map((question, index) => 
+    const displayedQuestions = troubleshoot?.questions?.map((question, index) =>
         question.type === 'options' ?
-        question.correctOption.length > 1 ?
-        //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-        question.type === 'fiveOptions' ?
-        question.correctOption.length > 2 ?
-        //@ts-expect-error errrrr
-        <ExamFiveQuestionThreeOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-        question.correctOption.length > 1 ?
-        //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionSelects troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} />
+            question.correctOption.length > 1 ?
+                //@ts-expect-error errrrr
+                <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+                //@ts-expect-error errrrr
+                <ExamQuestionOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+            question.type === 'fiveOptions' ?
+                question.correctOption.length > 2 ?
+                    //@ts-expect-error errrrr
+                    <ExamFiveQuestionThreeOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+                    question.correctOption.length > 1 ?
+                        //@ts-expect-error errrrr
+                        <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+                        //@ts-expect-error errrrr
+                        <ExamQuestionOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+                //@ts-expect-error errrrr
+                <ExamQuestionSelects troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} />
     )
 
-    if(isLoading) return <></>
+    const handleExitExam = async () => {
+        if (troubleshoot?.id) {
+            await setSubmitExamSessionTroubleshoot(userData.id, troubleshoot.id)
+        }
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
+        navigate('/')
+    }
+
+    if (isLoading) return <></>
 
     return (
         <Box
             width='100%'
+            position='relative'
         >
             <Stack
                 justifyContent='space-between'
@@ -91,6 +103,11 @@ export default function Troubleshoot()
                     displayedQuestions?.length && displayedQuestions[Number(examSession[0]?.lastQuestion)]
                 }
             </Box>
+            <div className='absolute flex flex-col gap-2 w-full text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-5 right-5 z-50'>
+                <button className='bg-[#FF7E00] text-white px-4 py-2 rounded-md' onClick={() => handleExitExam()}>
+                    Exit Exam
+                </button>
+            </div>
         </Box>
     )
 }

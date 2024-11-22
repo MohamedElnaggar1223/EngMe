@@ -9,22 +9,21 @@ import { getStudentCurrentPrograms } from "../../helpers/getStudentCurrentProgra
 import { AuthContext } from "../../authentication/auth/AuthProvider";
 const QuizBank = lazy(() => import("./QuizBank"))
 
-interface ExamBankProps{
+interface ExamBankProps {
     admin?: boolean
 }
 
 //@ts-expect-error context
 export const ExamBankContext = createContext()
 
-export default function ExamBank({ admin }: ExamBankProps) 
-{
+export default function ExamBank({ admin }: ExamBankProps) {
     const [selected, setSelected] = useState('')
     const [examClicked, setExamClicked] = useState(null)
     const [open, setOpen] = useState(true)
 
-    
+
     const navigate = useNavigate()
-    
+
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
     const isAdmin = userData.email === import.meta.env.VITE_ADMIN_EMAIL
@@ -34,17 +33,17 @@ export default function ExamBank({ admin }: ExamBankProps)
         queryFn: () => getStudentCurrentPrograms(userData?.id)
     })
 
-    const allowedKnowledgeBank = useMemo(() => {
-        return (studentPrograms?.slice().filter(program => program?.knowledgeBank)?.length ?? 0) > 0
+    const allowedExamBank: string[] = useMemo(() => {
+        return (studentPrograms?.slice().filter(program => program?.examBank)?.map(program => program.teacherId) as string[] ?? [] as string[])
     }, [studentPrograms])
 
     useEffect(() => {
-        if(!allowedKnowledgeBank) navigate('/') 
-    }, [allowedKnowledgeBank, navigate])
+        if (!allowedExamBank?.length) navigate('/')
+    }, [allowedExamBank, navigate])
 
     const { data: examBankMajors } = useQuery({
         queryKey: ['examBankMajors'],
-        queryFn: () => getExamBank({ isAdmin, teacherId: userData.id })
+        queryFn: () => getExamBank({ isAdmin, teacherIds: allowedExamBank ? allowedExamBank : [] as string[] })
     })
 
     const displayedMajors = examBankMajors?.map(major => (
@@ -93,11 +92,11 @@ export default function ExamBank({ admin }: ExamBankProps)
                         >
                             <SvgIcon onClick={() => setOpen(prev => !prev)} sx={{ cursor: 'pointer', position: 'absolute', zIndex: 2, top: '2.5%', left: !open ? '20%' : '85%', ':hover': { boxShadow: 'inset 0px 0px 0px 9999px rgba(0, 0, 0, 0.05)', borderRadius: '9999px' }, p: 0.5, alignSelf: 'center' }}>
                                 {
-                                    open 
-                                    ?
-                                    <ArrowBackIos sx={{ color: '#226E9F' }} />
-                                    :
-                                    <ArrowForwardIos sx={{ color: '#226E9F' }} />
+                                    open
+                                        ?
+                                        <ArrowBackIos sx={{ color: '#226E9F' }} />
+                                        :
+                                        <ArrowForwardIos sx={{ color: '#226E9F' }} />
                                 }
                             </SvgIcon>
                             <Typography noWrap sx={{ color: '#226E9F' }} fontSize={18} fontFamily='Inter' fontWeight={700}>Exam Bank</Typography>
@@ -106,12 +105,12 @@ export default function ExamBank({ admin }: ExamBankProps)
                     {open && displayedMajors}
                 </Box>
                 {
-                examClicked 
-                ?
-                    //@ts-expect-error content
-                    <QuizBank {...examClicked} />
-                :
-                    <ExamBankContent id={selected} />
+                    examClicked
+                        ?
+                        //@ts-expect-error content
+                        <QuizBank {...examClicked} />
+                        :
+                        <ExamBankContent id={selected} />
                 }
             </Box>
         </ExamBankContext.Provider>

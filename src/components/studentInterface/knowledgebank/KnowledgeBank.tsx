@@ -9,8 +9,7 @@ import { getStudentCurrentPrograms } from "../../helpers/getStudentCurrentProgra
 import { AuthContext } from "../../authentication/auth/AuthProvider"
 import { useNavigate } from "react-router-dom"
 
-export default function KnowledgeBank() 
-{
+export default function KnowledgeBank() {
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
     const isAdmin = userData.email === import.meta.env.VITE_ADMIN_EMAIL
@@ -20,10 +19,6 @@ export default function KnowledgeBank()
     const [selectedMajor, setSelectedMajor] = useState(null)
     const [open, setOpen] = useState(true)
 
-    const { data: knowledgeBankMajors } = useQuery({
-        queryKey: ['knowledgeBankMajors'],
-        queryFn: () => getKnowledgeBank({ isAdmin, teacherId: userData.id })
-    })
 
     const { data: studentPrograms } = useQuery({
         queryKey: ['studentPrograms', userData?.id],
@@ -31,12 +26,17 @@ export default function KnowledgeBank()
     })
 
     const allowedKnowledgeBank = useMemo(() => {
-        return (studentPrograms?.slice().filter(program => program?.knowledgeBank)?.length ?? 0) > 0
+        return (studentPrograms?.slice().filter(program => program?.knowledgeBank)?.map(program => program.teacherId) as string[] ?? [] as string[])
     }, [studentPrograms])
 
     useEffect(() => {
-        if(!allowedKnowledgeBank) navigate('/') 
+        if (!allowedKnowledgeBank?.length) navigate('/')
     }, [allowedKnowledgeBank, navigate])
+
+    const { data: knowledgeBankMajors } = useQuery({
+        queryKey: ['knowledgeBankMajors'],
+        queryFn: () => getKnowledgeBank({ isAdmin, teacherIds: allowedKnowledgeBank ? allowedKnowledgeBank : [] as string[] })
+    })
 
     const displayedMajors = knowledgeBankMajors?.map(major => (
         <Box
@@ -60,10 +60,10 @@ export default function KnowledgeBank()
     ))
 
     const displayedContent = selectedMajor ?
-    //@ts-expect-error major
-    <KnowledgeBankContent {...selectedMajor} />
-    :
-    <></>
+        //@ts-expect-error major
+        <KnowledgeBankContent {...selectedMajor} />
+        :
+        <></>
 
     return (
         <Box
@@ -91,11 +91,11 @@ export default function KnowledgeBank()
                 >
                     <SvgIcon onClick={() => setOpen(prev => !prev)} sx={{ cursor: 'pointer', position: 'absolute', zIndex: 2, top: '2.5%', left: !open ? '20%' : '85%', ':hover': { boxShadow: 'inset 0px 0px 0px 9999px rgba(0, 0, 0, 0.05)', borderRadius: '9999px' }, p: 0.5, alignSelf: 'center' }}>
                         {
-                            open 
-                            ?
-                            <ArrowBackIosIcon sx={{ color: '#FF7E00' }} />
-                            :
-                            <ArrowForwardIosIcon sx={{ color: '#FF7E00' }} />
+                            open
+                                ?
+                                <ArrowBackIosIcon sx={{ color: '#FF7E00' }} />
+                                :
+                                <ArrowForwardIosIcon sx={{ color: '#FF7E00' }} />
                         }
                     </SvgIcon>
                     <Typography noWrap sx={{ color: '#FF7E00' }} fontSize={18} fontFamily='Inter' fontWeight={700}>Knowledge Bank</Typography>

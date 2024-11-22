@@ -13,6 +13,7 @@ import ExamQuestionSelects from "./ExamQuestionSelects";
 import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
 import ExamFiveQuestionThreeOptions from "./ExamFiveQuestionThreeOptions";
 import { setExamSessionTime } from "../../../helpers/setExamSessionTime";
+import { setSubmitExamSessionQuiz } from "../../../helpers/setSubmitExamSessionQuiz";
 
 export default function Quiz() {
     //@ts-expect-error context
@@ -109,11 +110,20 @@ export default function Quiz() {
         //eslint-disable-next-line
     }, [startTime, endTime, timeDifference])
 
+    const handleExitExam = async () => {
+        if (quiz?.id) {
+            await setSubmitExamSessionQuiz(userData.id, quiz.id)
+        }
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
+        navigate('/')
+    }
+
     if (isLoading) return <></>
 
     return (
         <Box
             width='100%'
+            position='relative'
         >
 
             <Stack
@@ -157,6 +167,11 @@ export default function Quiz() {
                     displayedQuestions?.length && displayedQuestions[Number(examSession[0]?.lastQuestion)]
                 }
             </Box>
+            <div className='absolute flex flex-col gap-2 w-full text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-5 right-5 z-50'>
+                <button className='bg-[#FF7E00] text-white px-4 py-2 rounded-md' onClick={() => handleExitExam()}>
+                    Exit Exam
+                </button>
+            </div>
         </Box>
     )
 }

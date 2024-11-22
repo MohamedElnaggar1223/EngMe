@@ -13,13 +13,13 @@ import ExamQuestionSelects from "./ExamQuestionSelects";
 import ExamQuestionTwoOptions from "./ExamQuestionTwoOptions";
 import ExamFiveQuestionThreeOptions from "./ExamFiveQuestionThreeOptions";
 import { setExamSessionTime } from "../../../helpers/setExamSessionTime";
+import { setSubmitExamSessionFinalExam } from "../../../helpers/setSubmitExamSessionFinalExam";
 
 // import ExamQuestionOptions from "./ExamQuestionOptions";
 // import ExamQuestionSelects from "./ExamQuestionSelects";
 // import ExamQuestionPic from "./ExamQuestionPic";
 
-export default function Exam() 
-{
+export default function Exam() {
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
     const queryClient = useQueryClient()
@@ -33,15 +33,15 @@ export default function Exam()
         queryFn: () => getExamSession(userData.id)
     })
 
-    
+
     const { mutate: mutateSession } = useMutation({
         onMutate: () => {
             const previousData = queryClient.getQueryData(['examSession'])
-            
+
             queryClient.setQueryData(['examSession'], () => {
                 return []
             })
-            
+
             return () => queryClient.setQueryData(['examSession'], previousData)
         },
         mutationFn: () => handleSetExamSessionTime()
@@ -51,40 +51,37 @@ export default function Exam()
     const startTime = (examSession[0]?.startTime)?.toDate()
     //@ts-expect-error test
     const endTime = (examSession[0]?.endTime)?.toDate()
-    
+
     const { id } = useParams()
-    
+
     const getFinalExam = async (id: string) => {
         const finalExamRef = doc(db, 'finalExams', id)
         const finalExamDoc = await getDoc(finalExamRef)
-        
-        const finalExamData = {...finalExamDoc.data(), id: finalExamDoc.id}
+
+        const finalExamData = { ...finalExamDoc.data(), id: finalExamDoc.id }
 
         return finalExamData
     }
-    
+
     const { data: finalExam } = useQuery({
         queryKey: ['examSessionFinalExam'],
         queryFn: () => getFinalExam(id ?? '')
     })
-    
+
     const handleSetExamSessionTime = async () => {
         // @ts-expect-error session
         await setExamSessionTime(examSession[0]?.id ?? '', userData.id, `/programs/current/${finalExam?.programId}`)
         //await queryClient.invalidateQueries({ queryKey: ['examSession'] })
     }
-    
+
     useEffect(() => {
         const interval = setInterval(() => {
-            if(startTime && endTime)
-            {
+            if (startTime && endTime) {
                 const difference = endTime - Timestamp.now().toMillis()
-                if(difference > 0)
-                {
+                if (difference > 0) {
                     setTimeDifference(difference)
                 }
-                else
-                {
+                else {
                     mutateSession()
                     navigate('/')
                 }
@@ -96,30 +93,39 @@ export default function Exam()
     }, [startTime, endTime, timeDifference])
 
     //@ts-expect-error type
-    const displayedQuestions = finalExam?.questions?.map((question, index) => 
+    const displayedQuestions = finalExam?.questions?.map((question, index) =>
         question.type === 'options' ?
-        question.correctOption.length > 1 ?
-        //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
-        question.type === 'fiveOptions' ?
-        question.correctOption.length > 2 ?
-        //@ts-expect-error errrrr
-        <ExamFiveQuestionThreeOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
-        question.correctOption.length > 1 ?
-        //@ts-expect-error errrrr
-        <ExamQuestionTwoOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
-        //@ts-expect-error errrrr
-        <ExamQuestionSelects finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} />
+            question.correctOption.length > 1 ?
+                //@ts-expect-error errrrr
+                <ExamQuestionTwoOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
+                //@ts-expect-error errrrr
+                <ExamQuestionOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
+            question.type === 'fiveOptions' ?
+                question.correctOption.length > 2 ?
+                    //@ts-expect-error errrrr
+                    <ExamFiveQuestionThreeOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
+                    question.correctOption.length > 1 ?
+                        //@ts-expect-error errrrr
+                        <ExamQuestionTwoOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
+                        //@ts-expect-error errrrr
+                        <ExamQuestionOptions finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} /> :
+                //@ts-expect-error errrrr
+                <ExamQuestionSelects finalExamId={finalExam.id} question={question} index={index} total={finalExam?.questions?.length} />
     )
 
-    if(isLoading) return <></>
+    const handleExitExam = async () => {
+        if (finalExam?.id) {
+            await setSubmitExamSessionFinalExam(userData.id, finalExam.id)
+        }
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
+        navigate('/')
+    }
+
+    if (isLoading) return <></>
     else return (
         <Box
             width='100%'
+            position='relative'
         >
             <Stack
                 justifyContent='space-between'
@@ -186,6 +192,11 @@ export default function Exam()
                     displayedQuestions?.length && displayedQuestions[Number(examSession[0]?.lastQuestion)]
                 }
             </Box>
+            <div className='absolute flex flex-col gap-2 w-full text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-5 right-5 z-50'>
+                <button className='bg-[#FF7E00] text-white px-4 py-2 rounded-md' onClick={() => handleExitExam()}>
+                    Exit Exam
+                </button>
+            </div>
         </Box>
     )
 }
