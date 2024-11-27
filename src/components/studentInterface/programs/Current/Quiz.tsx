@@ -44,26 +44,26 @@ export default function Quiz() {
         queryKey: ['examSessionQuiz'],
         queryFn: () => getQuiz(id ?? '')
     })
-    //@ts-expect-error errrrr
-    const displayedQuestions = quiz?.questions?.map((question, index) =>
-        question.type === 'options' ?
-            question.correctOption.length > 1 ?
-                //@ts-expect-error errrrr
-                <ExamQuestionTwoOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-                //@ts-expect-error errrrr
-                <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-            question.type === 'fiveOptions' ?
-                question.correctOption.length > 2 ?
-                    //@ts-expect-error errrrr
-                    <ExamFiveQuestionThreeOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-                    question.correctOption.length > 1 ?
-                        //@ts-expect-error errrrr
-                        <ExamQuestionTwoOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-                        //@ts-expect-error errrrr
-                        <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
-                //@ts-expect-error errrrr
-                <ExamQuestionSelects quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} />
-    )
+    // //@ts-expect-error errrrr
+    // const displayedQuestions = quiz?.questions?.map((question, index) =>
+    //     question.type === 'options' ?
+    //         question.correctOption.length > 1 ?
+    //             //@ts-expect-error errrrr
+    //             <ExamQuestionTwoOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+    //             //@ts-expect-error errrrr
+    //             <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+    //         question.type === 'fiveOptions' ?
+    //             question.correctOption.length > 2 ?
+    //                 //@ts-expect-error errrrr
+    //                 <ExamFiveQuestionThreeOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+    //                 question.correctOption.length > 1 ?
+    //                     //@ts-expect-error errrrr
+    //                     <ExamQuestionTwoOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+    //                     //@ts-expect-error errrrr
+    //                     <ExamQuestionOptions quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+    //             //@ts-expect-error errrrr
+    //             <ExamQuestionSelects quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} />
+    // )
 
     const handleSetExamSessionTime = async () => {
         //@ts-expect-error course
@@ -164,10 +164,28 @@ export default function Quiz() {
             >
                 {
                     //@ts-expect-error lastQuestion
-                    displayedQuestions?.length && displayedQuestions[Number(examSession[0]?.lastQuestion)]
+                    quiz?.questions?.length && quiz?.questions?.map((question, index) =>
+                        question.type === 'options' ?
+                            question.correctOption.length > 1 ?
+                                //@ts-expect-error errrrr
+                                <ExamQuestionTwoOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+                                //@ts-expect-error errrrr
+                                <ExamQuestionOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+                            question.type === 'fiveOptions' ?
+                                question.correctOption.length > 2 ?
+                                    //@ts-expect-error errrrr
+                                    <ExamFiveQuestionThreeOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+                                    question.correctOption.length > 1 ?
+                                        //@ts-expect-error errrrr
+                                        <ExamQuestionTwoOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+                                        //@ts-expect-error errrrr
+                                        <ExamQuestionOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} /> :
+                                //@ts-expect-error errrrr
+                                <ExamQuestionSelects hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} quizId={quiz.id} question={question} index={index} total={quiz?.questions?.length} />
+                    )
                 }
             </Box>
-            <div className='absolute flex flex-col gap-2 w-full text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-5 right-5 z-50'>
+            <div className='absolute flex flex-col gap-2 w-fit text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-10 left-5 z-50'>
                 <button className='bg-[#FF7E00] text-white px-4 py-2 rounded-md' onClick={() => handleExitExam()}>
                     Exit Exam
                 </button>

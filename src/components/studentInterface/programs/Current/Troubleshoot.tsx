@@ -42,26 +42,26 @@ export default function Troubleshoot() {
         queryKey: ['examSessionTroubleshoot'],
         queryFn: () => getTroubleshoot(id ?? '')
     })
-    //@ts-expect-error errrrr
-    const displayedQuestions = troubleshoot?.questions?.map((question, index) =>
-        question.type === 'options' ?
-            question.correctOption.length > 1 ?
-                //@ts-expect-error errrrr
-                <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-                //@ts-expect-error errrrr
-                <ExamQuestionOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-            question.type === 'fiveOptions' ?
-                question.correctOption.length > 2 ?
-                    //@ts-expect-error errrrr
-                    <ExamFiveQuestionThreeOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-                    question.correctOption.length > 1 ?
-                        //@ts-expect-error errrrr
-                        <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-                        //@ts-expect-error errrrr
-                        <ExamQuestionOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
-                //@ts-expect-error errrrr
-                <ExamQuestionSelects troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} />
-    )
+    // //@ts-expect-error errrrr
+    // const displayedQuestions = troubleshoot?.questions?.map((question, index) =>
+    //     question.type === 'options' ?
+    //         question.correctOption.length > 1 ?
+    //             //@ts-expect-error errrrr
+    //             <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+    //             //@ts-expect-error errrrr
+    //             <ExamQuestionOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+    //         question.type === 'fiveOptions' ?
+    //             question.correctOption.length > 2 ?
+    //                 //@ts-expect-error errrrr
+    //                 <ExamFiveQuestionThreeOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+    //                 question.correctOption.length > 1 ?
+    //                     //@ts-expect-error errrrr
+    //                     <ExamQuestionTwoOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+    //                     //@ts-expect-error errrrr
+    //                     <ExamQuestionOptions troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+    //             //@ts-expect-error errrrr
+    //             <ExamQuestionSelects troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} />
+    // )
 
     const handleExitExam = async () => {
         if (troubleshoot?.id) {
@@ -100,10 +100,28 @@ export default function Troubleshoot() {
             >
                 {
                     //@ts-expect-error lastQuestion
-                    displayedQuestions?.length && displayedQuestions[Number(examSession[0]?.lastQuestion)]
+                    troubleshoot?.questions?.length && troubleshoot?.questions?.map((question, index) =>
+                        question.type === 'options' ?
+                            question.correctOption.length > 1 ?
+                                //@ts-expect-error errrrr
+                                <ExamQuestionTwoOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+                                //@ts-expect-error errrrr
+                                <ExamQuestionOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+                            question.type === 'fiveOptions' ?
+                                question.correctOption.length > 2 ?
+                                    //@ts-expect-error errrrr
+                                    <ExamFiveQuestionThreeOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+                                    question.correctOption.length > 1 ?
+                                        //@ts-expect-error errrrr
+                                        <ExamQuestionTwoOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+                                        //@ts-expect-error errrrr
+                                        <ExamQuestionOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} /> :
+                                //@ts-expect-error errrrr
+                                <ExamQuestionSelects hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} troubleshootId={troubleshoot.id} question={question} index={index} total={troubleshoot?.questions?.length} />
+                    )
                 }
             </Box>
-            <div className='absolute flex flex-col gap-2 w-full text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-5 right-5 z-50'>
+            <div className='absolute flex flex-col gap-2 w-fit text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-10 left-5 z-50'>
                 <button className='bg-[#FF7E00] text-white px-4 py-2 rounded-md' onClick={() => handleExitExam()}>
                     Exit Exam
                 </button>

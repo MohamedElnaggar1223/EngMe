@@ -1,10 +1,9 @@
 import Button from "@mui/material/Button"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import Box from "@mui/material/Box"
 import { SvgIcon } from "@mui/material"
-import { ExamBankContext } from "./ExamBank"
 
 interface Question {
     options: string[],
@@ -23,32 +22,35 @@ interface ExamQuestionProps {
     finalExamId?: string,
     setNumber: React.Dispatch<React.SetStateAction<number>>
     examEnded: boolean
+    hidden: boolean
+    setExamEnded: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function ExamQuestionOptions({ question, index, total, setNumber, examEnded }: ExamQuestionProps) {
-    //@ts-expect-error context
-    const { setExamClicked } = useContext(ExamBankContext)
+export default function ExamQuestionOptions({ question, index, total, setNumber, examEnded, hidden, setExamEnded }: ExamQuestionProps) {
+    // //@ts-expect-error context
+    // const { setExamClicked } = useContext(ExamBankContext)
 
     const [selectedOption, setSelectedOption] = useState(-1)
     const [check, setCheck] = useState(false)
 
     const displayedOptions = question.options.map((option, index) => (
         <Box
-            boxShadow={selectedOption === index ? (check || examEnded) ? question.correctOption === index.toString() ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' : '0px 0px 0px 5px rgba(255,126,0,1)' : '0px 0px 0px 1px rgba(0,0,0,1)'}
+            boxShadow={selectedOption.toString() === index.toString() ? (check || examEnded) ? question.correctOption.includes(index.toString()) ? '0px 0px 0px 2px rgba(0,195,66,1)' : '0px 0px 0px 2px rgba(255,0,0,1)' : '0px 0px 0px 5px rgba(255,126,0,1)' : '0px 0px 0px 1px rgba(0,0,0,1)'}
             borderRadius='10px'
+            key={index}
             sx={{
                 textIndent: '25px',
                 cursor: 'pointer'
             }}
             width='790px'
             py={2}
-            onClick={() => setSelectedOption(index)}
+            onClick={() => examEnded ? () => { } : setSelectedOption(index)}
             position='relative'
         >
             <Typography>{option}</Typography>
             {
-                (selectedOption === index && (check || examEnded)) ?
-                    question.correctOption === index.toString() ?
+                (selectedOption.toString() === index.toString() && (check || examEnded)) ?
+                    question.correctOption.includes(index.toString()) ?
                         <SvgIcon sx={{ position: 'absolute', left: '94%', top: '28%' }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="27" viewBox="0 0 28 27" fill="none">
                                 <circle cx="13.5312" cy="13.5" r="13" fill="#00C342" stroke="#00C342" />
@@ -74,6 +76,8 @@ export default function ExamQuestionOptions({ question, index, total, setNumber,
             flex={1}
             alignItems='center'
             mt={6}
+            key={index}
+            className={hidden ? '!hidden absolute opacity-0' : ''}
         >
             {
                 question?.image &&
@@ -119,6 +123,31 @@ export default function ExamQuestionOptions({ question, index, total, setNumber,
                         },
                         marginBottom: 3
                     }}
+                    disabled={index === 0}
+                    // onClick={() => handleBackQuestion()}
+                    onClick={() => setNumber(index - 1)}
+                // disabled={end}
+                >
+                    Back
+                </Button>
+                <Button
+                    sx={{
+                        width: '180px',
+                        height: '54px',
+                        background: '#FEF4EB',
+                        color: '#000',
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        border: '0px',
+                        borderRadius: '15px',
+                        '&:hover': {
+                            background: '#FEF4EB',
+                            opacity: 1
+                        },
+                        marginBottom: 3
+                    }}
                     disabled={selectedOption === -1}
                     // disabled={end}
                     onClick={() => setCheck(true)}
@@ -145,7 +174,7 @@ export default function ExamQuestionOptions({ question, index, total, setNumber,
                                 },
                                 marginBottom: 3
                             }}
-                            onClick={() => setExamClicked(null)}
+                            onClick={() => setExamEnded(true)}
                         >
                             Submit
                         </Button>
@@ -169,8 +198,8 @@ export default function ExamQuestionOptions({ question, index, total, setNumber,
                                 marginBottom: 3
                             }}
                             onClick={() => {
-                                setSelectedOption(-1)
-                                setCheck(false)
+                                // setSelectedOption(-1)
+                                // setCheck(false)
                                 setNumber(index + 1)
                             }}
                         >
@@ -179,7 +208,7 @@ export default function ExamQuestionOptions({ question, index, total, setNumber,
                 }
             </Stack>
             {
-                (check || examEnded) && selectedOption.toString() !== question.correctOption &&
+                (check || examEnded) && (!question.correctOption.includes(selectedOption.toString())) &&
                 <Stack
                     bgcolor='#FEF4EB'
                     borderRadius='20px'

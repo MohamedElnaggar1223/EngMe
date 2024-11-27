@@ -20,13 +20,13 @@ import { setBackQuestionTroubleshoot } from "../../../helpers/setBackQuestionTro
 import { setLastQuestionExamSessionTroubleshoot } from "../../../helpers/setLastQuestionExamSessionTroubleshoot"
 import { setSubmitExamSessionTroubleshoot } from "../../../helpers/setSubmitExamSessionTroubleshoot"
 
-interface Question{
+interface Question {
     options: string[],
     question: string,
     image?: string
 }
 
-interface ExamQuestionProps{
+interface ExamQuestionProps {
     question: Question,
     index: number,
     total: number,
@@ -34,11 +34,11 @@ interface ExamQuestionProps{
     troubleshootId?: string,
     assessmentId?: string,
     quizId?: string,
-    finalExamId?: string
+    finalExamId?: string,
+    hidden?: boolean
 }
 
-export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId, question, index, total, programId, troubleshootId }: ExamQuestionProps)
-{
+export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId, question, index, total, programId, troubleshootId, hidden }: ExamQuestionProps) {
     const queryClient = useQueryClient()
     //@ts-expect-error context
     const { userData } = useContext(AuthContext)
@@ -47,80 +47,68 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
     const navigate = useNavigate()
 
     const handleBackQuestion = async () => {
-        if(assessmentId)
-        {
+        if (assessmentId) {
             await setBackQuestionAssessment(userData.id, assessmentId, index)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        else if(quizId)
-        {
+        else if (quizId) {
             await setBackQuestionQuiz(userData.id, quizId, index)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        else if(finalExamId)
-        {
+        else if (finalExamId) {
             await setBackQuestionFinalExam(userData.id, finalExamId, index)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        else if(troubleshootId)
-        {
+        else if (troubleshootId) {
             await setBackQuestionTroubleshoot(userData.id, troubleshootId, index)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        await queryClient.invalidateQueries({queryKey: ['examSession']})
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
     }
 
     const handleSetLastQuestionExamSession = async () => {
-        if(assessmentId)
-        {
+        if (assessmentId) {
             await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        else if(quizId)
-        {
+        else if (quizId) {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, selectedOption)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        else if(finalExamId)
-        {
+        else if (finalExamId) {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, selectedOption)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        else if(troubleshootId)
-        {
+        else if (troubleshootId) {
             await setLastQuestionExamSessionTroubleshoot(userData.id, troubleshootId, index, selectedOption)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        await queryClient.invalidateQueries({queryKey: ['examSession']})
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
     }
 
     const handleSubmitExamSession = async () => {
-        if(assessmentId)
-        {
+        if (assessmentId) {
             await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, selectedOption)
             await setSubmitExamSessionAssessment(userData.id, assessmentId)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
             navigate(`/programs/current/${programId}`)
         }
-        else if(quizId)
-        {
+        else if (quizId) {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, selectedOption)
             await setSubmitExamSessionQuiz(userData.id, quizId)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        else if(finalExamId)
-        {
+        else if (finalExamId) {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, selectedOption)
             await setSubmitExamSessionFinalExam(userData.id, finalExamId)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        else if(troubleshootId)
-        {
+        else if (troubleshootId) {
             await setLastQuestionExamSessionTroubleshoot(userData.id, troubleshootId, index, selectedOption)
             await setSubmitExamSessionTroubleshoot(userData.id, troubleshootId)
-            setSelectedOption(-1)
+            // setSelectedOption(-1)
         }
-        await queryClient.invalidateQueries({queryKey: ['examSession']})
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
         navigate('/')
     }
 
@@ -148,7 +136,7 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
 
     const displayedOptions = question.options.map((option, index) => (
         <Box
-            boxShadow={selectedOption === index ? '0px 0px 0px 5px rgba(255,126,0,1)' :'0px 0px 0px 1px rgba(0,0,0,1)'}
+            boxShadow={selectedOption === index ? '0px 0px 0px 5px rgba(255,126,0,1)' : '0px 0px 0px 1px rgba(0,0,0,1)'}
             borderRadius='10px'
             sx={{
                 textIndent: '25px',
@@ -169,6 +157,8 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
             gap={4}
             flex={1}
             alignItems='center'
+            key={index}
+            className={hidden ? '!hidden absolute opacity-0' : ''}
             mt={6}
             style={{
                 backgroundImage: `url("${image}")`,
@@ -193,11 +183,11 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
                 <Typography>Q{index + 1}: {question.question}</Typography>
                 <Typography sx={{ justifySelf: 'flex-end' }}>{index + 1}/{total}</Typography>
             </Stack>
-            <Stack 
+            <Stack
                 flex={1}
                 gap={4}
             >
-               {displayedOptions}
+                {displayedOptions}
             </Stack>
             <Stack
                 direction='row'
@@ -223,57 +213,57 @@ export default function ExamQuestionOptions({ finalExamId, quizId, assessmentId,
                     }}
                     disabled={index === 0}
                     onClick={() => handleBackQuestion()}
-                    // disabled={end}
+                // disabled={end}
                 >
                     Back
                 </Button>
                 {
                     index + 1 === total ?
-                    <Button
-                        sx={{
-                            width: '180px',
-                            height: '54px',
-                            background: '#9D9D9D',
-                            color: '#fff',
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            textTransform: 'none',
-                            fontWeight: 500,
-                            border: '0px',
-                            borderRadius: '15px',
-                            '&:hover': {
+                        <Button
+                            sx={{
+                                width: '180px',
+                                height: '54px',
                                 background: '#9D9D9D',
-                                opacity: 1
-                            },
-                            marginBottom: 3
-                        }}
-                        onClick={() => mutateSubmitExamSession()}
-                    >
-                        Submit
-                    </Button>
-                    :
-                    <Button
-                        sx={{
-                            width: '180px',
-                            height: '54px',
-                            background: '#9D9D9D',
-                            color: '#fff',
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            textTransform: 'none',
-                            fontWeight: 500,
-                            border: '0px',
-                            borderRadius: '15px',
-                            '&:hover': {
+                                color: '#fff',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 500,
+                                border: '0px',
+                                borderRadius: '15px',
+                                '&:hover': {
+                                    background: '#9D9D9D',
+                                    opacity: 1
+                                },
+                                marginBottom: 3
+                            }}
+                            onClick={() => mutateSubmitExamSession()}
+                        >
+                            Submit
+                        </Button>
+                        :
+                        <Button
+                            sx={{
+                                width: '180px',
+                                height: '54px',
                                 background: '#9D9D9D',
-                                opacity: 1
-                            },
-                            marginBottom: 3
-                        }}
-                        onClick={() => mutateLastQuestionSession()}
-                    >
-                        Next
-                    </Button>
+                                color: '#fff',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 500,
+                                border: '0px',
+                                borderRadius: '15px',
+                                '&:hover': {
+                                    background: '#9D9D9D',
+                                    opacity: 1
+                                },
+                                marginBottom: 3
+                            }}
+                            onClick={() => mutateLastQuestionSession()}
+                        >
+                            Next
+                        </Button>
                 }
             </Stack>
         </Stack>

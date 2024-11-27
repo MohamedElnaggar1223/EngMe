@@ -22,7 +22,7 @@ import { setLastQuestionExamSessionTroubleshoot } from "../../../helpers/setLast
 import { setSubmitExamSessionTroubleshoot } from "../../../helpers/setSubmitExamSessionTroubleshoot";
 import { Tooltip } from "@mui/material";
 
-interface Question{
+interface Question {
     firstCorrect: string,
     secondCorrect: string,
     thirdCorrect: string,
@@ -35,7 +35,7 @@ interface Question{
     image?: string
 }
 
-interface ExamQuestionProps{
+interface ExamQuestionProps {
     question: Question,
     index: number,
     total: number,
@@ -44,14 +44,14 @@ interface ExamQuestionProps{
     assessmentId?: string,
     quizId?: string,
     finalExamId?: string
+    hidden?: boolean
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, index, total, programId, troubleshootId }: ExamQuestionProps)
-{
+function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, index, total, programId, troubleshootId, hidden }: ExamQuestionProps) {
     const queryClient = useQueryClient()
     //@ts-expect-error context
-    const { userData } = useContext(AuthContext)   
+    const { userData } = useContext(AuthContext)
 
     const [firstLabelConnected, setFirstLabelConnected] = useState(false)
     const [secondLabelConnected, setSecondLabelConnected] = useState(false)
@@ -93,7 +93,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
     const connectedSecondOption = useRef<HTMLDivElement>(null)
     const connectedThirdOption = useRef<HTMLDivElement>(null)
     const connectedFourthOption = useRef<HTMLDivElement>(null)
-    
+
     const navigate = useNavigate()
 
     function shuffleArray(array: Array<string>) {
@@ -118,309 +118,297 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
     }, [question])
 
     const handleBackQuestion = async () => {
-        if(assessmentId)
-        {
+        if (assessmentId) {
             await setBackQuestionAssessment(userData.id, assessmentId, index)
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
         }
-        else if(quizId)
-        {
+        else if (quizId) {
             await setBackQuestionQuiz(userData.id, quizId, index)
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
         }
-        else if(finalExamId)
-        {
+        else if (finalExamId) {
             await setBackQuestionFinalExam(userData.id, finalExamId, index)
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
         }
-        else if(troubleshootId)
-            {
-                await setBackQuestionTroubleshoot(userData.id, troubleshootId, index)
-                setFirstSelectOption({
-                    isDragging: false,
-                    isConnected: false,
-                    connectedOption: ''
-                })
-                setSecondSelectOption({
-                    isDragging: false,
-                    isConnected: false,
-                    connectedOption: ''
-                })
-                setThirdSelectOption({
-                    isDragging: false,
-                    isConnected: false,
-                    connectedOption: ''
-                })
-                setFourthSelectOption({
-                    isDragging: false,
-                    isConnected: false,
-                    connectedOption: ''
-                })
-            }
-        await queryClient.invalidateQueries({queryKey: ['examSession']})
+        else if (troubleshootId) {
+            await setBackQuestionTroubleshoot(userData.id, troubleshootId, index)
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+        }
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
     }
 
     const handleSetLastQuestionExamSession = async () => {
-        if(assessmentId)
-        {
+        if (assessmentId) {
             await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
         }
-        else if(quizId)
-        {
+        else if (quizId) {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
         }
-        else if (finalExamId)
-        {
+        else if (finalExamId) {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
         }
-        else if(troubleshootId)
-            {
-                await setLastQuestionExamSessionTroubleshoot(userData.id, troubleshootId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
-                setFirstSelectOption({
-                    isDragging: false,
-                    isConnected: false,
-                    connectedOption: ''
-                })
-                setSecondSelectOption({
-                    isDragging: false,
-                    isConnected: false,
-                    connectedOption: ''
-                })
-                setThirdSelectOption({
-                    isDragging: false,
-                    isConnected: false,
-                    connectedOption: ''
-                })
-                setFourthSelectOption({
-                    isDragging: false,
-                    isConnected: false,
-                    connectedOption: ''
-                })
-            }
-        await queryClient.invalidateQueries({queryKey: ['examSession']})
+        else if (troubleshootId) {
+            await setLastQuestionExamSessionTroubleshoot(userData.id, troubleshootId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+        }
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
     }
 
     const handleSubmitExamSession = async () => {
-        if(assessmentId)
-        {
+        if (assessmentId) {
             await setLastQuestionExamSessionAssessment(userData.id, assessmentId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
             await setSubmitExamSessionAssessment(userData.id, assessmentId)
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
             navigate(`/programs/current/${programId}`)
         }
-        else if(quizId)
-        {
+        else if (quizId) {
             await setLastQuestionExamSessionQuiz(userData.id, quizId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
             await setSubmitExamSessionQuiz(userData.id, quizId)
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
         }
-        else if(finalExamId)
-        {
+        else if (finalExamId) {
             await setLastQuestionExamSessionFinalExam(userData.id, finalExamId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
             await setSubmitExamSessionFinalExam(userData.id, finalExamId)
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
         }
-        else if(troubleshootId)
-        {
+        else if (troubleshootId) {
             await setLastQuestionExamSessionTroubleshoot(userData.id, troubleshootId, index, [firstSelectOption.connectedOption, secondSelectOption.connectedOption, thirdSelectOption.connectedOption, fourthSelectOption.connectedOption])
             await setSubmitExamSessionTroubleshoot(userData.id, troubleshootId)
-            setFirstSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setSecondSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setThirdSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
-            setFourthSelectOption({
-                isDragging: false,
-                isConnected: false,
-                connectedOption: ''
-            })
+            // setFirstSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setSecondSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setThirdSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
+            // setFourthSelectOption({
+            //     isDragging: false,
+            //     isConnected: false,
+            //     connectedOption: ''
+            // })
             navigate(`/programs/current/${programId}`)
         }
-        await queryClient.invalidateQueries({queryKey: ['examSession']})
+        await queryClient.invalidateQueries({ queryKey: ['examSession'] })
         navigate('/')
     }
 
@@ -429,25 +417,25 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
             // if(quizId)
             // {
             //     const previousData = queryClient.getQueryData(['examSession', quizId])
-    
+
             //     queryClient.setQueryData(['examSession', quizId], (oldData: unknown) => {
             //         //@ts-expect-error unknown
             //         const oldDataArray = oldData[0]
             //         return {...oldDataArray, lastQuestion: oldDataArray.lastQuestion + 1}
             //     })
-    
+
             //     return () => queryClient.setQueryData(['examSession', quizId], previousData)
             // }
             // else if(assessmentId)
             // {
             //     const previousData = queryClient.getQueryData(['examSession', assessmentId])
-    
+
             //     queryClient.setQueryData(['examSession', assessmentId], (oldData: unknown) => {
             //         //@ts-expect-error unknown
             //         const oldDataArray = oldData[0]
             //         return {...oldDataArray, lastQuestion: oldDataArray.lastQuestion + 1}
             //     })
-    
+
             //     return () => queryClient.setQueryData(['examSession', assessmentId], previousData)
             // }
         },
@@ -464,8 +452,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
             const clientY = e.clientY
 
             const lineRect = parentFirstOption.current?.getBoundingClientRect()
-            if(firstOptionLine.current && lineRect)
-            {
+            if (firstOptionLine.current && lineRect) {
                 const lineRectX = ((lineRect.x + 104) + lineRect.width / 2)
                 const lineRectY = (lineRect.y + lineRect.height / 2)
 
@@ -475,22 +462,21 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                 const yDistance = Math.abs(clientY - lineRectY)
 
                 const distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2))
-                
+
                 const angle = getAngle(lineRectX, lineRectY, clientX, clientY)
-                
+
                 firstOptionLine.current.style.width = `${distance}px`
                 firstOptionLine.current.style.transformOrigin = 'top left'
                 firstOptionLine.current.style.transform = `rotate(${angle}deg)`
                 // console.log(angle)
             }
         }
-        if(firstSelectOption.isDragging)
-        {
+        if (firstSelectOption.isDragging) {
             window.addEventListener('mousemove', handleLineFollowPointer)
         }
 
         return () => {
-            if(firstSelectOption.isDragging) window.removeEventListener('mousemove', handleLineFollowPointer)
+            if (firstSelectOption.isDragging) window.removeEventListener('mousemove', handleLineFollowPointer)
         }
     }, [firstSelectOption])
 
@@ -500,8 +486,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
             const clientY = e.clientY
 
             const lineRect = parentSecondOption.current?.getBoundingClientRect()
-            if(secondOptionLine.current && lineRect)
-            {
+            if (secondOptionLine.current && lineRect) {
                 const lineRectX = ((lineRect.x + 104) + lineRect.width / 2)
                 const lineRectY = (lineRect.y + lineRect.height / 2)
 
@@ -511,23 +496,22 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                 const yDistance = Math.abs(clientY - lineRectY)
 
                 const distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2))
-                
+
                 const angle = getAngle(lineRectX, lineRectY, clientX, clientY)
-                
+
                 secondOptionLine.current.style.width = `${distance}px`
                 secondOptionLine.current.style.transformOrigin = 'top left'
                 secondOptionLine.current.style.transform = `rotate(${angle}deg)`
                 // console.log(angle)
             }
         }
-        if(secondSelectOption.isDragging)
-        {
+        if (secondSelectOption.isDragging) {
 
             window.addEventListener('mousemove', handleLineFollowPointer)
         }
 
         return () => {
-            if(secondSelectOption.isDragging) window.removeEventListener('mousemove', handleLineFollowPointer)
+            if (secondSelectOption.isDragging) window.removeEventListener('mousemove', handleLineFollowPointer)
         }
     }, [secondSelectOption])
 
@@ -537,8 +521,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
             const clientY = e.clientY
 
             const lineRect = parentThirdOption.current?.getBoundingClientRect()
-            if(thirdOptionLine.current && lineRect)
-            {
+            if (thirdOptionLine.current && lineRect) {
                 const lineRectX = ((lineRect.x + 104) + lineRect.width / 2)
                 const lineRectY = (lineRect.y + lineRect.height / 2)
 
@@ -548,23 +531,22 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                 const yDistance = Math.abs(clientY - lineRectY)
 
                 const distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2))
-                
+
                 const angle = getAngle(lineRectX, lineRectY, clientX, clientY)
-                
+
                 thirdOptionLine.current.style.width = `${distance}px`
                 thirdOptionLine.current.style.transformOrigin = 'top left'
                 thirdOptionLine.current.style.transform = `rotate(${angle}deg)`
                 // console.log(angle)
             }
         }
-        if(thirdSelectOption.isDragging)
-        {
+        if (thirdSelectOption.isDragging) {
 
             window.addEventListener('mousemove', handleLineFollowPointer)
         }
 
         return () => {
-            if(thirdSelectOption.isDragging) window.removeEventListener('mousemove', handleLineFollowPointer)
+            if (thirdSelectOption.isDragging) window.removeEventListener('mousemove', handleLineFollowPointer)
         }
     }, [thirdSelectOption])
 
@@ -574,8 +556,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
             const clientY = e.clientY
 
             const lineRect = parentFourthOption.current?.getBoundingClientRect()
-            if(fourthOptionLine.current && lineRect)
-            {
+            if (fourthOptionLine.current && lineRect) {
                 const lineRectX = ((lineRect.x + 104) + lineRect.width / 2)
                 const lineRectY = (lineRect.y + lineRect.height / 2)
 
@@ -585,23 +566,22 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                 const yDistance = Math.abs(clientY - lineRectY)
 
                 const distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2))
-                
+
                 const angle = getAngle(lineRectX, lineRectY, clientX, clientY)
-                
+
                 fourthOptionLine.current.style.width = `${distance}px`
                 fourthOptionLine.current.style.transformOrigin = 'top left'
                 fourthOptionLine.current.style.transform = `rotate(${angle}deg)`
                 // console.log(angle)
             }
         }
-        if(fourthSelectOption.isDragging)
-        {
+        if (fourthSelectOption.isDragging) {
 
             window.addEventListener('mousemove', handleLineFollowPointer)
         }
 
         return () => {
-            if(fourthSelectOption.isDragging) window.removeEventListener('mousemove', handleLineFollowPointer)
+            if (fourthSelectOption.isDragging) window.removeEventListener('mousemove', handleLineFollowPointer)
         }
     }, [fourthSelectOption])
 
@@ -613,7 +593,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
     //     setFourthSelectOption('')
     //     setIndex(prev => prev + 1)
     // }
-    
+
     // const end = number === total
 
     // const questionsOptions = [question.firstCorrect, question.secondCorrect, question.thirdCorrect, question.fourthCorrect]
@@ -657,21 +637,17 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
         const activeLine = firstSelectOption.isDragging ? firstOptionLine : secondSelectOption.isDragging ? secondOptionLine : thirdSelectOption.isDragging ? thirdOptionLine : fourthSelectOption.isDragging ? fourthOptionLine : null
         const activeParent = firstSelectOption.isDragging ? parentFirstOption : secondSelectOption.isDragging ? parentSecondOption : thirdSelectOption.isDragging ? parentThirdOption : fourthSelectOption.isDragging ? parentFourthOption : null
 
-        if(firstSelectOption.isDragging)
-        {
-            setFirstSelectOption(prev => ({...prev, connectedOption: answer, isDragging: false}))
+        if (firstSelectOption.isDragging) {
+            setFirstSelectOption(prev => ({ ...prev, connectedOption: answer, isDragging: false }))
         }
-        else if(secondSelectOption.isDragging)
-        {
-            setSecondSelectOption(prev => ({...prev, connectedOption: answer, isDragging: false}))
+        else if (secondSelectOption.isDragging) {
+            setSecondSelectOption(prev => ({ ...prev, connectedOption: answer, isDragging: false }))
         }
-        else if(thirdSelectOption.isDragging)
-        {
-            setThirdSelectOption(prev => ({...prev, connectedOption: answer, isDragging: false}))
+        else if (thirdSelectOption.isDragging) {
+            setThirdSelectOption(prev => ({ ...prev, connectedOption: answer, isDragging: false }))
         }
-        else if(fourthSelectOption.isDragging)
-        {
-            setFourthSelectOption(prev => ({...prev, connectedOption: answer, isDragging: false}))
+        else if (fourthSelectOption.isDragging) {
+            setFourthSelectOption(prev => ({ ...prev, connectedOption: answer, isDragging: false }))
         }
 
         const lineRect = activeParent?.current?.getBoundingClientRect()
@@ -679,8 +655,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
 
 
 
-        if(lineRect && connectedRect && activeLine?.current)
-        {
+        if (lineRect && connectedRect && activeLine?.current) {
             const lineRectX = ((lineRect.x + 208) + lineRect.width / 2)
             const lineRectY = (lineRect.y + lineRect.height / 2)
 
@@ -691,9 +666,9 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
             const yDistance = Math.abs(connectedRectY - lineRectY)
 
             const distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2))
-            
+
             const angle = getAngle(lineRectX, lineRectY, connectedRectX, connectedRectY)
-            
+
             activeLine.current.style.width = `${distance}px`
             activeLine.current.style.transformOrigin = 'top left'
             activeLine.current.style.transform = `rotate(${angle}deg)`
@@ -707,6 +682,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
             flex={1}
             alignItems='center'
             mt={6}
+            key={index}
             style={{
                 backgroundImage: `url("${image}")`,
                 backgroundSize: 'contain',
@@ -714,6 +690,7 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                 backgroundPositionX: '50%',
                 backgroundBlendMode: ''
             }}
+            className={hidden ? '!hidden absolute opacity-0' : ''}
         >
             {
                 question?.image &&
@@ -734,241 +711,209 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
             <div className='flex justify-between w-screen max-w-[1024px]'>
                 <div className='flex flex-col gap-12'>
                     <Tooltip title={question.firstLabel}>
-                    <div 
-                        onClick={() => {
-                            setFirstSelectOption(prev => ({...prev, isDragging: !prev.isDragging, isConnected: false, connectedOption: ''}))
-                            setSecondSelectOption(prev => ({...prev, isDragging: false}))
-                            setThirdSelectOption(prev => ({...prev, isDragging: false}))
-                            setFourthSelectOption(prev => ({...prev, isDragging: false}))
-                        }} 
-                        ref={parentFirstOption} 
-                        className='relative flex cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
-                    >
-                        <input readOnly value={question.firstLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
-                        <div ref={firstOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !firstSelectOption.isDragging && firstSelectOption.connectedOption === '' && 'hidden')} />
-                    </div>
+                        <div
+                            onClick={() => {
+                                setFirstSelectOption(prev => ({ ...prev, isDragging: !prev.isDragging, isConnected: false, connectedOption: '' }))
+                                setSecondSelectOption(prev => ({ ...prev, isDragging: false }))
+                                setThirdSelectOption(prev => ({ ...prev, isDragging: false }))
+                                setFourthSelectOption(prev => ({ ...prev, isDragging: false }))
+                            }}
+                            ref={parentFirstOption}
+                            className='relative flex cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
+                        >
+                            <input readOnly value={question.firstLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
+                            <div ref={firstOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !firstSelectOption.isDragging && firstSelectOption.connectedOption === '' && 'hidden')} />
+                        </div>
                     </Tooltip>
                     <Tooltip title={question.secondLabel}>
-                    <div 
-                        onClick={() => {
-                            setFirstSelectOption(prev => ({...prev, isDragging: false}))
-                            setSecondSelectOption(prev => ({...prev, isDragging: !prev.isDragging, isConnected: false, connectedOption: ''}))
-                            setThirdSelectOption(prev => ({...prev, isDragging: false}))
-                            setFourthSelectOption(prev => ({...prev, isDragging: false}))
-                        }}
-                        ref={parentSecondOption} 
-                        className='relative flex cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
-                    >
-                        <input readOnly value={question.secondLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
-                        <div ref={secondOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !secondSelectOption.isDragging && secondSelectOption.connectedOption === '' && 'hidden')} />
-                    </div>
+                        <div
+                            onClick={() => {
+                                setFirstSelectOption(prev => ({ ...prev, isDragging: false }))
+                                setSecondSelectOption(prev => ({ ...prev, isDragging: !prev.isDragging, isConnected: false, connectedOption: '' }))
+                                setThirdSelectOption(prev => ({ ...prev, isDragging: false }))
+                                setFourthSelectOption(prev => ({ ...prev, isDragging: false }))
+                            }}
+                            ref={parentSecondOption}
+                            className='relative flex cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
+                        >
+                            <input readOnly value={question.secondLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
+                            <div ref={secondOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !secondSelectOption.isDragging && secondSelectOption.connectedOption === '' && 'hidden')} />
+                        </div>
                     </Tooltip>
                     <Tooltip title={question.thirdLabel}>
-                    <div 
-                        onClick={() => {
-                            setFirstSelectOption(prev => ({...prev, isDragging: false}))
-                            setSecondSelectOption(prev => ({...prev, isDragging: false}))
-                            setThirdSelectOption(prev => ({...prev, isDragging: !prev.isDragging, isConnected: false, connectedOption: ''}))
-                            setFourthSelectOption(prev => ({...prev, isDragging: false}))
-                        }}
-                        ref={parentThirdOption} 
-                        className='relative flex cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
-                    >
-                        <input readOnly value={question.thirdLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
-                        <div ref={thirdOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !thirdSelectOption.isDragging && thirdSelectOption.connectedOption === '' && 'hidden')} />
-                    </div>
+                        <div
+                            onClick={() => {
+                                setFirstSelectOption(prev => ({ ...prev, isDragging: false }))
+                                setSecondSelectOption(prev => ({ ...prev, isDragging: false }))
+                                setThirdSelectOption(prev => ({ ...prev, isDragging: !prev.isDragging, isConnected: false, connectedOption: '' }))
+                                setFourthSelectOption(prev => ({ ...prev, isDragging: false }))
+                            }}
+                            ref={parentThirdOption}
+                            className='relative flex cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
+                        >
+                            <input readOnly value={question.thirdLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
+                            <div ref={thirdOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !thirdSelectOption.isDragging && thirdSelectOption.connectedOption === '' && 'hidden')} />
+                        </div>
                     </Tooltip>
                     <Tooltip title={question.fourthLabel}>
-                    <div 
-                        onClick={() => {
-                            setFirstSelectOption(prev => ({...prev, isDragging: false}))
-                            setSecondSelectOption(prev => ({...prev, isDragging: false}))
-                            setThirdSelectOption(prev => ({...prev, isDragging: false}))
-                            setFourthSelectOption(prev => ({...prev, isDragging: !prev.isDragging, isConnected: false, connectedOption: ''}))
-                        }}
-                        ref={parentFourthOption} 
-                        className='relative flex cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
-                    >
-                        <input readOnly value={question.fourthLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
-                        <div ref={fourthOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !fourthSelectOption.isDragging && fourthSelectOption.connectedOption === '' && 'hidden')} />
-                    </div>
+                        <div
+                            onClick={() => {
+                                setFirstSelectOption(prev => ({ ...prev, isDragging: false }))
+                                setSecondSelectOption(prev => ({ ...prev, isDragging: false }))
+                                setThirdSelectOption(prev => ({ ...prev, isDragging: false }))
+                                setFourthSelectOption(prev => ({ ...prev, isDragging: !prev.isDragging, isConnected: false, connectedOption: '' }))
+                            }}
+                            ref={parentFourthOption}
+                            className='relative flex cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
+                        >
+                            <input readOnly value={question.fourthLabel} className='min-w-52 cursor-pointer max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
+                            <div ref={fourthOptionLine} onClick={(e) => e.stopPropagation()} className={cn("line absolute h-1 bg-black top-[18px] left-[208px] cursor-default", !fourthSelectOption.isDragging && fourthSelectOption.connectedOption === '' && 'hidden')} />
+                        </div>
                     </Tooltip>
                 </div>
                 <div className='flex flex-col gap-12'>
                     <Tooltip title={correctOptionsShuffled[0]}>
-                    <div 
-                        onClick={(e) => {
-                            if(firstLabelConnected)
-                            {
-                                if(firstSelectOption.isDragging || secondSelectOption.isDragging || thirdSelectOption.isDragging || fourthSelectOption.isDragging)
-                                {
-                                    e.stopPropagation()
-                                }
-                                else
-                                {
-                                    setFirstLabelConnected(false)
-                                    if(firstSelectOption.connectedOption === correctOptionsShuffled[0])
-                                    {
-                                        setFirstSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
+                        <div
+                            onClick={(e) => {
+                                if (firstLabelConnected) {
+                                    if (firstSelectOption.isDragging || secondSelectOption.isDragging || thirdSelectOption.isDragging || fourthSelectOption.isDragging) {
+                                        e.stopPropagation()
                                     }
-                                    else if(secondSelectOption.connectedOption === correctOptionsShuffled[0])
-                                    {
-                                        setSecondSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
-                                    }
-                                    else if(thirdSelectOption.connectedOption === correctOptionsShuffled[0])
-                                    {
-                                        setThirdSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
-                                    }
-                                    else if(fourthSelectOption.connectedOption === correctOptionsShuffled[0])
-                                    {
-                                        setFourthSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
+                                    else {
+                                        setFirstLabelConnected(false)
+                                        if (firstSelectOption.connectedOption === correctOptionsShuffled[0]) {
+                                            setFirstSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (secondSelectOption.connectedOption === correctOptionsShuffled[0]) {
+                                            setSecondSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (thirdSelectOption.connectedOption === correctOptionsShuffled[0]) {
+                                            setThirdSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (fourthSelectOption.connectedOption === correctOptionsShuffled[0]) {
+                                            setFourthSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                setFirstLabelConnected(true)
-                                handleConnect(connectedFirstOption, correctOptionsShuffled[0])
-                            }
-                        }}
-                        ref={connectedFirstOption} 
-                        className='relative flex min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
-                    >
-                        <input readOnly value={correctOptionsShuffled[0]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
-                        {firstLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
-                    </div>
+                                else {
+                                    setFirstLabelConnected(true)
+                                    handleConnect(connectedFirstOption, correctOptionsShuffled[0])
+                                }
+                            }}
+                            ref={connectedFirstOption}
+                            className='relative flex min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
+                        >
+                            <input readOnly value={correctOptionsShuffled[0]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
+                            {firstLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
+                        </div>
                     </Tooltip>
                     <Tooltip title={correctOptionsShuffled[1]}>
-                    <div 
-                        onClick={(e) => {
-                            if(secondLabelConnected)
-                            {
-                                if(firstSelectOption.isDragging || secondSelectOption.isDragging || thirdSelectOption.isDragging || fourthSelectOption.isDragging)
-                                {
-                                    e.stopPropagation()
-                                }
-                                else
-                                {
-                                    setSecondLabelConnected(false)
-                                    if(firstSelectOption.connectedOption === correctOptionsShuffled[1])
-                                    {
-                                        setFirstSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
+                        <div
+                            onClick={(e) => {
+                                if (secondLabelConnected) {
+                                    if (firstSelectOption.isDragging || secondSelectOption.isDragging || thirdSelectOption.isDragging || fourthSelectOption.isDragging) {
+                                        e.stopPropagation()
                                     }
-                                    else if(secondSelectOption.connectedOption === correctOptionsShuffled[1])
-                                    {
-                                        setSecondSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
-                                    }
-                                    else if(thirdSelectOption.connectedOption === correctOptionsShuffled[1])
-                                    {
-                                        setThirdSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
-                                    }
-                                    else if(fourthSelectOption.connectedOption === correctOptionsShuffled[1])
-                                    {
-                                        setFourthSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
+                                    else {
+                                        setSecondLabelConnected(false)
+                                        if (firstSelectOption.connectedOption === correctOptionsShuffled[1]) {
+                                            setFirstSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (secondSelectOption.connectedOption === correctOptionsShuffled[1]) {
+                                            setSecondSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (thirdSelectOption.connectedOption === correctOptionsShuffled[1]) {
+                                            setThirdSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (fourthSelectOption.connectedOption === correctOptionsShuffled[1]) {
+                                            setFourthSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                setSecondLabelConnected(true)
-                                handleConnect(connectedSecondOption, correctOptionsShuffled[1])
-                            }
-                        }}
-                        ref={connectedSecondOption} 
-                        className='relative flex min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
-                    >
-                        <input readOnly value={correctOptionsShuffled[1]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
-                        {secondLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
-                    </div>
+                                else {
+                                    setSecondLabelConnected(true)
+                                    handleConnect(connectedSecondOption, correctOptionsShuffled[1])
+                                }
+                            }}
+                            ref={connectedSecondOption}
+                            className='relative flex min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
+                        >
+                            <input readOnly value={correctOptionsShuffled[1]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
+                            {secondLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
+                        </div>
                     </Tooltip>
                     <Tooltip title={correctOptionsShuffled[2]}>
-                    <div 
-                        onClick={(e) => {
-                            if(thirdLabelConnected)
-                            {
-                                if(firstSelectOption.isDragging || secondSelectOption.isDragging || thirdSelectOption.isDragging || fourthSelectOption.isDragging)
-                                {
-                                    e.stopPropagation()
-                                }
-                                else
-                                {
-                                    setThirdLabelConnected(false)
-                                    if(firstSelectOption.connectedOption === correctOptionsShuffled[2])
-                                    {
-                                        setFirstSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
+                        <div
+                            onClick={(e) => {
+                                if (thirdLabelConnected) {
+                                    if (firstSelectOption.isDragging || secondSelectOption.isDragging || thirdSelectOption.isDragging || fourthSelectOption.isDragging) {
+                                        e.stopPropagation()
                                     }
-                                    else if(secondSelectOption.connectedOption === correctOptionsShuffled[2])
-                                    {
-                                        setSecondSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
-                                    }
-                                    else if(thirdSelectOption.connectedOption === correctOptionsShuffled[2])
-                                    {
-                                        setThirdSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
-                                    }
-                                    else if(fourthSelectOption.connectedOption === correctOptionsShuffled[2])
-                                    {
-                                        setFourthSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
+                                    else {
+                                        setThirdLabelConnected(false)
+                                        if (firstSelectOption.connectedOption === correctOptionsShuffled[2]) {
+                                            setFirstSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (secondSelectOption.connectedOption === correctOptionsShuffled[2]) {
+                                            setSecondSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (thirdSelectOption.connectedOption === correctOptionsShuffled[2]) {
+                                            setThirdSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (fourthSelectOption.connectedOption === correctOptionsShuffled[2]) {
+                                            setFourthSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                setThirdLabelConnected(true)
-                                handleConnect(connectedThirdOption, correctOptionsShuffled[2])
-                            }
-                        }}
-                        ref={connectedThirdOption} 
-                        className='relative flex min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
-                    >
-                        <input readOnly value={correctOptionsShuffled[2]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
-                        {thirdLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
-                    </div>
+                                else {
+                                    setThirdLabelConnected(true)
+                                    handleConnect(connectedThirdOption, correctOptionsShuffled[2])
+                                }
+                            }}
+                            ref={connectedThirdOption}
+                            className='relative flex min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
+                        >
+                            <input readOnly value={correctOptionsShuffled[2]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
+                            {thirdLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
+                        </div>
                     </Tooltip>
                     <Tooltip title={correctOptionsShuffled[3]}>
-                    <div 
-                        onClick={(e) => {
-                            if(fourthLabelConnected)
-                            {
-                                if(firstSelectOption.isDragging || secondSelectOption.isDragging || thirdSelectOption.isDragging || fourthSelectOption.isDragging)
-                                {
-                                    e.stopPropagation()
-                                }
-                                else
-                                {
-                                    setFourthLabelConnected(false)
-                                    if(firstSelectOption.connectedOption === correctOptionsShuffled[3])
-                                    {
-                                        setFirstSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
+                        <div
+                            onClick={(e) => {
+                                if (fourthLabelConnected) {
+                                    if (firstSelectOption.isDragging || secondSelectOption.isDragging || thirdSelectOption.isDragging || fourthSelectOption.isDragging) {
+                                        e.stopPropagation()
                                     }
-                                    else if(secondSelectOption.connectedOption === correctOptionsShuffled[3])
-                                    {
-                                        setSecondSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
-                                    }
-                                    else if(thirdSelectOption.connectedOption === correctOptionsShuffled[3])
-                                    {
-                                        setThirdSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
-                                    }
-                                    else if(fourthSelectOption.connectedOption === correctOptionsShuffled[3])
-                                    {
-                                        setFourthSelectOption(prev => ({...prev, connectedOption: '', isDragging: true, isConnected: false}))
+                                    else {
+                                        setFourthLabelConnected(false)
+                                        if (firstSelectOption.connectedOption === correctOptionsShuffled[3]) {
+                                            setFirstSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (secondSelectOption.connectedOption === correctOptionsShuffled[3]) {
+                                            setSecondSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (thirdSelectOption.connectedOption === correctOptionsShuffled[3]) {
+                                            setThirdSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
+                                        else if (fourthSelectOption.connectedOption === correctOptionsShuffled[3]) {
+                                            setFourthSelectOption(prev => ({ ...prev, connectedOption: '', isDragging: true, isConnected: false }))
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                setFourthLabelConnected(true)
-                                handleConnect(connectedFourthOption, correctOptionsShuffled[3])
-                            }
-                        }}
-                        ref={connectedFourthOption} 
-                        className='relative flex min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
-                    >
-                        <input readOnly value={correctOptionsShuffled[3]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
-                        {fourthLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
-                    </div>
+                                else {
+                                    setFourthLabelConnected(true)
+                                    handleConnect(connectedFourthOption, correctOptionsShuffled[3])
+                                }
+                            }}
+                            ref={connectedFourthOption}
+                            className='relative flex min-w-52 max-w-52 min-h-[45px] max-h-[45px] p-0 m-0'
+                        >
+                            <input readOnly value={correctOptionsShuffled[3]} className='cursor-pointer min-w-52 max-w-52 min-h-[45px] max-h-[45px] text-center font-[Inter] font-semibold shadow-lg border border-[rgba(0,0,0,0.15)]' />
+                            {fourthLabelConnected && <CancelIcon className='absolute top-[10px] right-[180px]' />}
+                        </div>
                     </Tooltip>
                 </div>
-                
+
             </div>
 
 
@@ -1002,53 +947,53 @@ function ExamQuestionSelects({ finalExamId, quizId, assessmentId, question, inde
                 </Button>
                 {
                     index + 1 === total ?
-                    <Button
-                        sx={{
-                            width: '180px',
-                            height: '54px',
-                            background: '#9D9D9D',
-                            color: '#fff',
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            textTransform: 'none',
-                            fontWeight: 500,
-                            border: '0px',
-                            borderRadius: '15px',
-                            '&:hover': {
+                        <Button
+                            sx={{
+                                width: '180px',
+                                height: '54px',
                                 background: '#9D9D9D',
-                                opacity: 1
-                            },
-                            marginBottom: 3
-                        }}
-                        onClick={() => mutateSubmitExamSession()}
-                        disabled={firstSelectOption.connectedOption === '' || secondSelectOption.connectedOption === '' || thirdSelectOption.connectedOption === '' || fourthSelectOption.connectedOption === ''}
-                    >
-                        Submit
-                    </Button>
-                    :
-                    <Button
-                        sx={{
-                            width: '180px',
-                            height: '54px',
-                            background: '#9D9D9D',
-                            color: '#fff',
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            textTransform: 'none',
-                            fontWeight: 500,
-                            border: '0px',
-                            borderRadius: '15px',
-                            '&:hover': {
+                                color: '#fff',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 500,
+                                border: '0px',
+                                borderRadius: '15px',
+                                '&:hover': {
+                                    background: '#9D9D9D',
+                                    opacity: 1
+                                },
+                                marginBottom: 3
+                            }}
+                            onClick={() => mutateSubmitExamSession()}
+                            disabled={firstSelectOption.connectedOption === '' || secondSelectOption.connectedOption === '' || thirdSelectOption.connectedOption === '' || fourthSelectOption.connectedOption === ''}
+                        >
+                            Submit
+                        </Button>
+                        :
+                        <Button
+                            sx={{
+                                width: '180px',
+                                height: '54px',
                                 background: '#9D9D9D',
-                                opacity: 1
-                            },
-                            marginBottom: 3
-                        }}
-                        disabled={firstSelectOption.connectedOption === '' || secondSelectOption.connectedOption === '' || thirdSelectOption.connectedOption === '' || fourthSelectOption.connectedOption === ''}
-                        onClick={() => mutateLastQuestionSession()}
-                    >
-                        Next
-                    </Button>
+                                color: '#fff',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 500,
+                                border: '0px',
+                                borderRadius: '15px',
+                                '&:hover': {
+                                    background: '#9D9D9D',
+                                    opacity: 1
+                                },
+                                marginBottom: 3
+                            }}
+                            disabled={firstSelectOption.connectedOption === '' || secondSelectOption.connectedOption === '' || thirdSelectOption.connectedOption === '' || fourthSelectOption.connectedOption === ''}
+                            onClick={() => mutateLastQuestionSession()}
+                        >
+                            Next
+                        </Button>
                 }
             </Stack>
 

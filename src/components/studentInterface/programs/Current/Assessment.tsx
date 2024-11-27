@@ -111,26 +111,26 @@ export default function Assessment() {
     //     localStorage.setItem('index', JSON.stringify(index))
     // }, [index])
 
-    //@ts-expect-error errrrr
-    const displayedQuestions = assessment?.questions?.map((question, index) =>
-        question.type === 'options' ?
-            question.correctOption.length > 1 ?
-                //@ts-expect-error errrrr
-                <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-                //@ts-expect-error errrrr
-                <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-            question.type === 'fiveOptions' ?
-                question.correctOption.length > 2 ?
-                    //@ts-expect-error errrrr
-                    <ExamFiveQuestionThreeOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-                    question.correctOption.length > 1 ?
-                        //@ts-expect-error errrrr
-                        <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-                        //@ts-expect-error errrrr
-                        <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
-                //@ts-expect-error errrrr
-                <ExamQuestionSelects assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />
-    )
+    // //@ts-expect-error errrrr
+    // const displayedQuestions = assessment?.questions?.map((question, index) =>
+    //     question.type === 'options' ?
+    //         question.correctOption.length > 1 ?
+    //             //@ts-expect-error errrrr
+    //             <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+    //             //@ts-expect-error errrrr
+    //             <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+    //         question.type === 'fiveOptions' ?
+    //             question.correctOption.length > 2 ?
+    //                 //@ts-expect-error errrrr
+    //                 <ExamFiveQuestionThreeOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+    //                 question.correctOption.length > 1 ?
+    //                     //@ts-expect-error errrrr
+    //                     <ExamQuestionTwoOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+    //                     //@ts-expect-error errrrr
+    //                     <ExamQuestionOptions assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+    //             //@ts-expect-error errrrr
+    //             <ExamQuestionSelects assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />
+    // )
 
     const handleExitExam = async () => {
         if (assessment?.id) {
@@ -207,7 +207,25 @@ export default function Assessment() {
                     //     total={questions.length}
                     // />
                     //@ts-expect-error lastQuestion
-                    displayedQuestions?.length && displayedQuestions[Number(examSession[0]?.lastQuestion)]
+                    assessment?.questions?.length && assessment?.questions?.map((question, index) =>
+                        question.type === 'options' ?
+                            question.correctOption.length > 1 ?
+                                //@ts-expect-error errrrr
+                                <ExamQuestionTwoOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+                                //@ts-expect-error errrrr
+                                <ExamQuestionOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+                            question.type === 'fiveOptions' ?
+                                question.correctOption.length > 2 ?
+                                    //@ts-expect-error errrrr
+                                    <ExamFiveQuestionThreeOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+                                    question.correctOption.length > 1 ?
+                                        //@ts-expect-error errrrr
+                                        <ExamQuestionTwoOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+                                        //@ts-expect-error errrrr
+                                        <ExamQuestionOptions hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} /> :
+                                //@ts-expect-error errrrr
+                                <ExamQuestionSelects hidden={index !== Number(examSession[0]?.lastQuestion)} key={index} assessmentId={assessment.id} question={question} index={index} total={assessment?.questions?.length} />
+                    )
                 }
             </Box>
             <div className='absolute flex flex-col gap-2 w-fit text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-10 left-5 z-50'>

@@ -31,24 +31,24 @@ export default function QuizBank(ebContent: Props) {
 
     console.log(endTime)
 
-    const displayedQuestions = ebContent?.questions?.map((question, index) =>
-        //@ts-expect-error errrrr
-        question.type === 'options' ?
-            //@ts-expect-error errrrr
-            question.correctOption.length > 1 ?
-                <ExamQuestionTwoOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-                <ExamQuestionOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-            //@ts-expect-error errrrr
-            question.type === 'fiveOptions' ?
-                //@ts-expect-error errrrr
-                question.correctOption.length > 2 ?
-                    <ExamFiveQuestionThreeOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-                    //@ts-expect-error errrrr
-                    question.correctOption.length > 1 ?
-                        <ExamQuestionTwoOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-                        <ExamQuestionOptions examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
-                <ExamQuestionSelects examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} />
-    )
+    // const displayedQuestions = ebContent?.questions?.map((question, index) =>
+    //     //@ts-expect-error errrrr
+    //     question.type === 'options' ?
+    //         //@ts-expect-error errrrr
+    //         question.correctOption.length > 1 ?
+    //             <ExamQuestionTwoOptions key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+    //             <ExamQuestionOptions key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+    //         //@ts-expect-error errrrr
+    //         question.type === 'fiveOptions' ?
+    //             //@ts-expect-error errrrr
+    //             question.correctOption.length > 2 ?
+    //                 <ExamFiveQuestionThreeOptions key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+    //                 //@ts-expect-error errrrr
+    //                 question.correctOption.length > 1 ?
+    //                     <ExamQuestionTwoOptions key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+    //                     <ExamQuestionOptions key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+    //             <ExamQuestionSelects key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} />
+    // )
 
     // function handleNext()
     // {
@@ -212,7 +212,24 @@ export default function QuizBank(ebContent: Props) {
                             }
                     </Box>
                 </Stack> */}
-                {displayedQuestions[number]}
+                {ebContent?.questions?.map((question, index) =>
+                    //@ts-expect-error errrrr
+                    question.type === 'options' ?
+                        //@ts-expect-error errrrr
+                        question.correctOption.length > 1 ?
+                            <ExamQuestionTwoOptions setExamEnded={setExamEnded} hidden={index !== number} key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+                            <ExamQuestionOptions setExamEnded={setExamEnded} hidden={index !== number} key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+                        //@ts-expect-error errrrr
+                        question.type === 'fiveOptions' ?
+                            //@ts-expect-error errrrr
+                            question.correctOption.length > 2 ?
+                                <ExamFiveQuestionThreeOptions setExamEnded={setExamEnded} hidden={index !== number} key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+                                //@ts-expect-error errrrr
+                                question.correctOption.length > 1 ?
+                                    <ExamQuestionTwoOptions setExamEnded={setExamEnded} hidden={index !== number} key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+                                    <ExamQuestionOptions setExamEnded={setExamEnded} hidden={index !== number} key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} /> :
+                            <ExamQuestionSelects setExamEnded={setExamEnded} hidden={index !== number} key={index} examEnded={examEnded} setNumber={setNumber} question={question} index={index} total={ebContent?.questions?.length} />
+                )}
                 {/* <Stack
                     direction='row'
                     gap={2}
