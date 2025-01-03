@@ -154,7 +154,7 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore) 
             queryClient.invalidateQueries({
                 queryKey: ['currentPrograms', userData?.id],
             })
-            navigate('/programs/current', { replace: true })
+            navigate('/', { replace: true })
         }
     }
 

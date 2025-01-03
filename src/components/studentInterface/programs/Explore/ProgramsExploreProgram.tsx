@@ -242,7 +242,7 @@ export default function ProgramsExploreProgram({ explorePrograms }: { explorePro
 
             await addDoc(collection(db, 'orders'), newOrder)
             await setStudentRequestProgram('', userData.id, program.id)
-            navigate('/programs/current', { replace: true })
+            navigate('/', { replace: true })
         }
     }
 
