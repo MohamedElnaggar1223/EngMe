@@ -5,20 +5,19 @@ import { useQuery } from "@tanstack/react-query";
 import ProgramProps from "../../../../../interfaces/ProgramProps";
 import { getProgramComments } from "../../../../helpers/getProgramComments";
 
-interface ProgramExploreCourseComments{
+interface ProgramExploreCourseComments {
     program: ProgramProps,
     NoAdd?: boolean
 }
 
-export default function ProgramExploreCourseComments({program, NoAdd}: ProgramExploreCourseComments) 
-{
+export default function ProgramExploreCourseComments({ program, NoAdd }: ProgramExploreCourseComments) {
     const { data: programComments } = useQuery({
         queryKey: ['programComments', program.id],
         queryFn: () => getProgramComments(program.id)
     })
 
     //@ts-expect-error comment
-    const displayedComments = programComments?.map(comment => <Comment {...comment} />) ?? []
+    const displayedComments = programComments?.map((comment, index) => <Comment key={index} {...comment} />) ?? []
 
     return (
         <Stack

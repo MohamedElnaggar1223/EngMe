@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography"
 import { useState } from "react"
 import Box from "@mui/material/Box"
 import { SvgIcon } from "@mui/material"
+import { useNavigate } from "react-router-dom"
 
 interface Question {
     options: string[],
@@ -32,6 +33,8 @@ export default function ExamQuestionOptions({ question, index, total, setNumber,
 
     const [selectedOption, setSelectedOption] = useState<string[]>([])
     const [check, setCheck] = useState(false)
+
+    const navigate = useNavigate()
 
     const displayedOptions = question.options.map((option, index) => (
         <Box
@@ -105,6 +108,30 @@ export default function ExamQuestionOptions({ question, index, total, setNumber,
                 direction='row'
                 gap={2}
             >
+                <Button
+                    sx={{
+                        width: '180px',
+                        height: '54px',
+                        background: '#FEF4EB',
+                        color: '#000',
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        border: '0px',
+                        borderRadius: '15px',
+                        '&:hover': {
+                            background: '#FEF4EB',
+                            opacity: 1
+                        },
+                        marginBottom: 3
+                    }}
+                    // onClick={() => handleBackQuestion()}
+                    onClick={() => navigate('/')}
+                // disabled={end}
+                >
+                    Exit
+                </Button>
                 <Button
                     sx={{
                         width: '180px',

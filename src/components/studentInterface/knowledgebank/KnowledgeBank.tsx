@@ -40,10 +40,10 @@ export default function KnowledgeBank() {
 
     const displayedMajors = knowledgeBankMajors?.map(major => (
         <Box
-            px={8}
+            px={2}
             my={3.5}
             py={2}
-            width='60%'
+            width='80%'
             //@ts-expect-error major
             bgcolor={selectedMajor?.id === major?.id ? '#fff' : ''}
             //@ts-expect-error major

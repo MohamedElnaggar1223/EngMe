@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography"
 import { useEffect, useMemo, useRef, useState } from "react"
 import CancelIcon from '@mui/icons-material/Cancel';
 import { cn } from "../../libs/utils"
+import { useNavigate } from "react-router-dom"
 
 interface Question {
     firstOptions: string[],
@@ -40,6 +41,8 @@ interface ExamQuestionProps {
 export default function ExamQuestionSelects({ question, index, total, setNumber, examEnded, hidden, setExamEnded }: ExamQuestionProps) {
     // //@ts-expect-error context
     // const { setExamClicked } = useContext(ExamBankContext)
+
+    const navigate = useNavigate()
 
     const [firstLabelConnected, setFirstLabelConnected] = useState(false)
     const [secondLabelConnected, setSecondLabelConnected] = useState(false)
@@ -584,6 +587,30 @@ export default function ExamQuestionSelects({ question, index, total, setNumber,
                 direction='row'
                 gap={2}
             >
+                <Button
+                    sx={{
+                        width: '180px',
+                        height: '54px',
+                        background: '#FEF4EB',
+                        color: '#000',
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        border: '0px',
+                        borderRadius: '15px',
+                        '&:hover': {
+                            background: '#FEF4EB',
+                            opacity: 1
+                        },
+                        marginBottom: 3
+                    }}
+                    // onClick={() => handleBackQuestion()}
+                    onClick={() => navigate('/')}
+                // disabled={end}
+                >
+                    Exit
+                </Button>
                 <Button
                     sx={{
                         width: '180px',

@@ -171,9 +171,9 @@ export default function ProgramsExplore({ setTab, teacherId }: ProgramsExplore) 
         >
             {bundle?.programs.map(programId => <SwiperSlide className='bg-[#FEF4EB]' key={programId}><BundleCard programId={programId} /></SwiperSlide>)}
             <div className='absolute flex flex-col gap-2 w-fit text-left items-end justify-end text-[#FF7E00] font-[Inter] bottom-10 left-5 z-50'>
-                <p> <span className='font-bold'>Price: </span>${bundle.price}</p>
-                {bundle.discount !== 0 && <p><span className='font-bold'>Discount: </span>{bundle.discount}%</p>}
-                <p className='font-light'>Swipe for more</p>
+                {bundle.discount !== 100 && <p> <span className='font-bold'>Price: </span>${bundle.price}</p>}
+                {bundle.discount !== 0 ? bundle.discount !== 100 ? <p><span className='font-bold'>Discount: </span>{bundle.discount}%</p> : <p><span className='font-bold'>FREE</span></p> : null}
+                <p className='font-black text-blue-800'>Swipe for more</p>
             </div>
         </Swiper>
     ))

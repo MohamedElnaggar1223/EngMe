@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Input, Slide, Stack, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Input, Slide, Stack, SvgIcon, Typography } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { forwardRef, useContext, useState } from "react";
 import { getKnowledgeBank } from "../../helpers/getKnowledgeBank";
@@ -19,12 +19,11 @@ const Transition = forwardRef(function Transition(
         children: React.ReactElement<any, any>;
     },
     ref: React.Ref<unknown>,
-    ) {
+) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function KnowledgeBank() 
-{
+export default function KnowledgeBank() {
     const queryClient = useQueryClient()
 
     //@ts-expect-error context
@@ -39,6 +38,7 @@ export default function KnowledgeBank()
     const [edited, setEdited] = useState('')
     const [deleted, setDeleted] = useState('')
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const { data: knowledgeBankMajors } = useQuery({
         queryKey: ['knowledgeBankMajors'],
@@ -47,33 +47,24 @@ export default function KnowledgeBank()
 
     const { mutate } = useMutation({
         onMutate: () => {
-            const previousData = queryClient.getQueryData(['knowledgeBankMajors'])
-
-            queryClient.setQueryData(['knowledgeBankMajors'], (oldData: unknown) => {
-                //@ts-expect-error oldData
-                return (oldData && oldData?.length > 0) ? [...oldData, { major: majorAdded, content: [] }] : [{ major: majorAdded, content: [] }]
-            })
-
-            return () => queryClient.setQueryData(['knowledgeBankMajors'], previousData)
+            setLoading(true)
         },
-        onSettled: () => setMajorAdded(''),
+        onSettled: () => {
+            setMajorAdded('')
+            setLoading(false)
+            queryClient.invalidateQueries({ queryKey: ['knowledgeBankMajors'] })
+        },
         mutationFn: () => setKnowledgeBankMajor(majorAdded, userData.id)
     })
 
     const { mutate: mutateEdit } = useMutation({
         onMutate: () => {
-            const previousData = queryClient.getQueryData(['knowledgeBankMajors'])
-
-            queryClient.setQueryData(['knowledgeBankMajors'], (oldData: unknown) => {
-                //@ts-expect-error oldData
-                return (oldData && oldData?.length > 0) ? oldData.map((major: unknown) => major.id === edit ? { ...major, major: edited } : major) : []
-            })
-
-            return () => queryClient.setQueryData(['knowledgeBankMajors'], previousData)
+            setLoading(true)
         },
         onSettled: () => {
             setEdit('')
             setEdited('')
+            setLoading(false)
             queryClient.invalidateQueries({ queryKey: ['knowledgeBankMajors'] })
         },
         mutationFn: () => setEditKnowledgeBankMajor(edited, edit)
@@ -121,48 +112,48 @@ export default function KnowledgeBank()
             >
                 {
                     edit !== major.id ?
-                    //@ts-expect-error major
-                    <Typography alignSelf='center' noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>{major?.major}</Typography>
-                    :
-                    <Stack
-                        direction='row'
-                        gap={0.5}
-                        alignItems='center'
-                        justifyContent='center'
-                    >
-                        <Input
-                            value={edited}
-                            onClick={(e) => e.stopPropagation()}
-                            onChange={(e) => setEdited(e.target.value)}
-                        />
-                        <CheckIcon 
-                            onClick={(e) => { 
-                                e.stopPropagation()
-                                mutateEdit()
-                            }} 
-                            sx={{ fontSize: 20, color: '#9ca3af', p: 0.5, ':hover': { boxShadow: 'inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1)', borderRadius: '9999px' } }} />
-                    </Stack>
+                        //@ts-expect-error major
+                        <Typography alignSelf='center' noWrap fontSize={18} fontFamily='Inter' fontWeight={600}>{major?.major}</Typography>
+                        :
+                        <Stack
+                            direction='row'
+                            gap={0.5}
+                            alignItems='center'
+                            justifyContent='center'
+                        >
+                            <Input
+                                value={edited}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) => setEdited(e.target.value)}
+                            />
+                            <CheckIcon
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    mutateEdit()
+                                }}
+                                sx={{ fontSize: 20, color: '#9ca3af', p: 0.5, ':hover': { boxShadow: 'inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1)', borderRadius: '9999px' } }} />
+                        </Stack>
                 }
                 <Stack
                     direction='column'
                     gap={0.5}
                 >
 
-                    <EditIcon 
+                    <EditIcon
                         onClick={(e) => {
                             e.stopPropagation()
                             setEdit(major.id)
                             //@ts-expect-error major
                             setEdited(major.major)
                         }}
-                        sx={{ fontSize: 20, color: '#9ca3af', p: 0.5, ':hover': { boxShadow: 'inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1)', borderRadius: '9999px' } }} 
+                        sx={{ fontSize: 20, color: '#9ca3af', p: 0.5, ':hover': { boxShadow: 'inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1)', borderRadius: '9999px' } }}
                     />
-                    <DeleteForeverIcon 
+                    <DeleteForeverIcon
                         onClick={(e) => {
                             e.stopPropagation()
                             setDialogOpen(true)
                             setDeleted(major.id)
-                        }} 
+                        }}
                         sx={{ fontSize: 20, color: '#9ca3af', p: 0.5, ':hover': { boxShadow: 'inset 0px 0px 12px 0px rgba(0, 0, 0, 0.1)', borderRadius: '9999px' } }} />
 
                 </Stack>
@@ -171,10 +162,10 @@ export default function KnowledgeBank()
     ))
 
     const displayedContent = selectedMajor ?
-    //@ts-expect-error major
-    <KnowledgeBankContent {...selectedMajor} />
-    :
-    <></>
+        //@ts-expect-error major
+        <KnowledgeBankContent {...selectedMajor} />
+        :
+        <></>
 
     const handleClose = () => {
         setDialogOpen(false)
@@ -205,55 +196,55 @@ export default function KnowledgeBank()
                 >
                     <DialogTitle sx={{ mx: 1, mt: 2, mb: 3 }}>Are you sure you want to delete This KnowledgeBank Major?</DialogTitle>
                     <DialogContent>
-                    <DialogContentText id="alert-dialog-slide-description">
-                    </DialogContentText>
+                        <DialogContentText id="alert-dialog-slide-description">
+                        </DialogContentText>
                     </DialogContent>
                     <DialogActions sx={{ display: 'flex', justifyContent: 'space-evenly', mx: 4, mb: 4 }}>
-                    <Button 
-                        sx={{
-                            width: '120px',
-                            height: '50px',
-                            background: '#fff',
-                            color: '#000',
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            textTransform: 'none',
-                            fontWeight: 400,
-                            border: '1px solid #000',
-                            borderRadius: '10px',
-                            '&:hover': {
+                        <Button
+                            sx={{
+                                width: '120px',
+                                height: '50px',
                                 background: '#fff',
-                                opacity: 1
-                            }
-                        }}
-                        onClick={handleClose}
-                    >
-                        No
-                    </Button>
-                    <Button 
-                        sx={{
-                            width: '120px',
-                            height: '50px',
-                            background: '#D30000',
-                            color: '#fff',
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            textTransform: 'none',
-                            fontWeight: 400,
-                            border: '0',
-                            borderRadius: '10px',
-                            '&:hover': {
+                                color: '#000',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 400,
+                                border: '1px solid #000',
+                                borderRadius: '10px',
+                                '&:hover': {
+                                    background: '#fff',
+                                    opacity: 1
+                                }
+                            }}
+                            onClick={handleClose}
+                        >
+                            No
+                        </Button>
+                        <Button
+                            sx={{
+                                width: '120px',
+                                height: '50px',
                                 background: '#D30000',
-                                opacity: 1
-                            }
-                        }}
-                        onClick={() => {
-                            mutateDelete()
-                            handleClose()
-                        }}
-                    >
-                        Yes
-                    </Button>
+                                color: '#fff',
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                textTransform: 'none',
+                                fontWeight: 400,
+                                border: '0',
+                                borderRadius: '10px',
+                                '&:hover': {
+                                    background: '#D30000',
+                                    opacity: 1
+                                }
+                            }}
+                            onClick={() => {
+                                mutateDelete()
+                                handleClose()
+                            }}
+                        >
+                            Yes
+                        </Button>
                     </DialogActions>
                 </Dialog>
             }
@@ -275,11 +266,11 @@ export default function KnowledgeBank()
                 >
                     <SvgIcon onClick={() => setOpen(prev => !prev)} sx={{ cursor: 'pointer', position: 'absolute', zIndex: 2, top: '2.5%', left: !open ? '20%' : '85%', ':hover': { boxShadow: 'inset 0px 0px 0px 9999px rgba(0, 0, 0, 0.05)', borderRadius: '9999px' }, p: 0.5, alignSelf: 'center' }}>
                         {
-                            open 
-                            ?
-                            <ArrowBackIosIcon sx={{ color: '#FF7E00' }} />
-                            :
-                            <ArrowForwardIosIcon sx={{ color: '#FF7E00' }} />
+                            open
+                                ?
+                                <ArrowBackIosIcon sx={{ color: '#FF7E00' }} />
+                                :
+                                <ArrowForwardIosIcon sx={{ color: '#FF7E00' }} />
                         }
                     </SvgIcon>
                 </Box>
@@ -287,7 +278,7 @@ export default function KnowledgeBank()
                 {
                     open && add &&
                     <Input
-                        sx={{ 
+                        sx={{
                             flex: 1,
                             fontSize: 20,
                             width: add ? 'auto' : '0px',
@@ -333,29 +324,29 @@ export default function KnowledgeBank()
                         minHeight: '50px'
                     }}
                     onClick={() => {
-                        if(!add)
-                        {
+                        if (!add) {
                             setAdd(true)
                         }
-                        else if(add && !majorAdded)
-                        {
+                        else if (add && !majorAdded) {
                             setAdd(false)
                         }
-                        else if(add && majorAdded)
-                        {
+                        else if (add && majorAdded) {
                             mutate()
                         }
                     }}
                 >
                     <SvgIcon sx={{ fontSize: 20, fontWeight: 400 }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
-                            <path fillRule="evenodd" clipRule="evenodd" d="M8.17479 0H10.8252C11.4319 0 11.9109 0.478992 11.9109 1.05378V7.12101H17.9462C18.521 7.12101 19 7.6 19 8.17479V10.8252C19 11.4319 18.521 11.9109 17.9462 11.9109H11.9109V17.9462C11.9109 18.521 11.4319 19 10.8252 19H8.17479C7.6 19 7.12101 18.521 7.12101 17.9462V11.9109H1.05378C0.478992 11.9109 0 11.4319 0 10.8252V8.17479C0 7.6 0.478992 7.12101 1.05378 7.12101H7.12101V1.05378C7.12101 0.478992 7.6 0 8.17479 0Z" fill="white"/>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M8.17479 0H10.8252C11.4319 0 11.9109 0.478992 11.9109 1.05378V7.12101H17.9462C18.521 7.12101 19 7.6 19 8.17479V10.8252C19 11.4319 18.521 11.9109 17.9462 11.9109H11.9109V17.9462C11.9109 18.521 11.4319 19 10.8252 19H8.17479C7.6 19 7.12101 18.521 7.12101 17.9462V11.9109H1.05378C0.478992 11.9109 0 11.4319 0 10.8252V8.17479C0 7.6 0.478992 7.12101 1.05378 7.12101H7.12101V1.05378C7.12101 0.478992 7.6 0 8.17479 0Z" fill="white" />
                         </svg>
                     </SvgIcon>
                     <Typography textAlign='left' noWrap fontFamily='Inter' fontSize={14}>Add Major</Typography>
                 </Button>}
             </Box>
             {displayedContent}
+            <Dialog open={loading} PaperProps={{ style: { background: 'transparent', backgroundColor: 'transparent', overflow: 'hidden', boxShadow: 'none' } }}>
+                <CircularProgress size='46px' sx={{ color: '#FF7E00' }} />
+            </Dialog>
         </Box>
     )
 }
